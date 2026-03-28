@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crescent Studio — AI 웹·앱 개발</title>
+<meta name="description" content="쇼핑몰부터 AI 챗봇까지. 웹이든 앱이든 AI로 빠르게 만들어드립니다.">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+body {
+  background: #07080f;
+  color: #dde2f0;
+  font-family: 'Pretendard', sans-serif;
+  font-size: 16px; line-height: 1.7;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-text-size-adjust: 100%;
+  margin: 0; padding: 0;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --y:  #f5c518;
+  --y2: #ffd94a;
+  --yg: rgba(245,197,24,.11);
+  --yb: rgba(245,197,24,.22);
+  --n1: #07080f;
+  --n2: #0b0d1c;
+  --n3: #0f1220;
+  --n4: #141728;
+  --bd: rgba(221,226,240,.07);
+  --td: rgba(221,226,240,.52);
+  --tf: rgba(221,226,240,.24);
+}
+
+/* ── STARS ── */
+#stars {
+  position: fixed; inset: 0; z-index: 0;
+  background: #07080f; pointer-events: none; overflow: hidden;
+  will-change: opacity;
+}
+.s {
+  position: absolute; border-radius: 50%;
+  animation: tw var(--d,4s) ease-in-out infinite var(--dl,0s);
+}
+@keyframes tw {
+  0%,100%{ opacity:var(--a,.06); }
+  50%    { opacity:var(--b,.4); }
+}
+
+/* ── WRAP ── */
+.pg { position: relative; z-index: 1; overflow: visible; }
+
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  padding: 18px 52px;
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(7,8,15,.93); backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--bd);
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-name {
+  font-family:'Pretendard', sans-serif;
+  font-size:20px; font-weight:700; letter-spacing:-.01em; color:#dde2f0;
+  line-height:1;
+}
+.nav-cta {
+  background:var(--y); border:none; cursor:pointer;
+  padding:10px 26px;
+  font-family:'Pretendard',sans-serif; font-size:13px; font-weight:600; letter-spacing:.07em;
+  color:#07080f; transition:background .2s,transform .2s;
+}
+.nav-cta:hover { background:var(--y2); transform:translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  min-height:100vh; background:#07080f;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:140px 52px 90px; position:relative; overflow:visible;
+}
+/* large crescent bg */
+.hero-moon {
+  position:absolute; right:-80px; top:50%; transform:translateY(-50%);
+  width:560px; height:560px; pointer-events:none;
+  animation:mfloat 15s ease-in-out infinite;
+}
+@keyframes mfloat {
+  0%,100%{ transform:translateY(-50%) rotate(-3deg); }
+  50%    { transform:translateY(calc(-50% - 20px)) rotate(2deg); }
+}
+
+.hero-tag {
+  font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--y); margin-bottom:22px;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-tag::before { content:''; width:26px; height:1px; background:var(--y); }
+
+.hero h1 {
+  font-family:'Pretendard', sans-serif;
+  font-size:clamp(48px,7vw,98px);
+  font-weight:700; line-height:1.08; letter-spacing:-.03em;
+  margin-bottom:28px; max-width:780px;
+}
+.hero h1 b { font-weight:600; font-style:italic; color:var(--y); }
+
+.hero-sub {
+  font-size:17px; color:var(--td); font-weight:300;
+  max-width:500px; line-height:1.85; margin-bottom:50px;
+}
+.hero-sub strong { color:#dde2f0; font-weight:500; }
+
+.hero-actions { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+.btn-fill {
+  background:var(--y); border:none; cursor:pointer;
+  padding:16px 40px;
+  font-family:'Pretendard',sans-serif; font-size:15px; font-weight:600; letter-spacing:.06em;
+  color:#07080f; transition:all .25s;
+}
+.btn-fill:hover { background:var(--y2); transform:translateY(-2px); box-shadow:0 10px 30px rgba(245,197,24,.2); }
+.btn-line {
+  background:none; border:none; cursor:pointer;
+  font-family:'Pretendard',sans-serif; font-size:15px; font-weight:400; letter-spacing:.02em;
+  color:var(--td); display:flex; align-items:center; gap:8px; transition:color .2s;
+}
+.btn-line:hover { color:#dde2f0; }
+.ar { transition:transform .2s; display:inline-block; }
+.btn-line:hover .ar { transform:translateX(5px); }
+
+/* ai badge strip */
+.hero-badges {
+  margin-top:52px; display:flex; gap:10px; flex-wrap:wrap;
+}
+.badge {
+  display:flex; align-items:center; gap:7px;
+  border:1px solid var(--bd); padding:7px 14px;
+  font-size:12px; font-weight:400; color:var(--td); letter-spacing:.03em;
+}
+.badge span { color:var(--y); font-weight:600; }
+
+/* ── SHARED SECTION ── */
+.sec { padding:100px 52px; position:relative; z-index:1; }
+.sec-n1 { background:#07080f; }
+.sec-n2 { background:#0b0d1c; }
+.sec-n3 { background:#0f1220; }
+
+.sec-eyebrow {
+  font-size:10px; font-weight:600; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--y); margin-bottom:16px;
+  display:flex; align-items:center; gap:10px;
+}
+.sec-eyebrow::before { content:''; width:20px; height:1px; background:var(--y); opacity:.7; }
+
+.sec h2 {
+  font-family:'Pretendard', sans-serif;
+  font-size:clamp(34px,4vw,56px);
+  font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:16px;
+}
+.sec h2 em { font-style:italic; font-weight:600; color:var(--y); }
+.sec-desc { color:var(--td); font-size:16px; line-height:1.85; max-width:520px; font-weight:300; }
+
+/* ── WHAT WE MAKE ── */
+.cats-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; background:var(--bd); border:1px solid var(--bd);
+}
+.cat-card {
+  background:#07080f; padding:38px 32px;
+  position:relative; overflow:hidden; transition:background .25s;
+  cursor:default;
+}
+.cat-card:hover { background:#0b0d1c; }
+.cat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--y),transparent);
+  opacity:0; transition:opacity .3s;
+}
+.cat-card:hover::before { opacity:1; }
+.cat-emoji { font-size:32px; display:block; margin-bottom:16px; }
+.cat-card h3 {
+  font-family:'Pretendard', sans-serif;
+  font-size:21px; font-weight:700; margin-bottom:10px; letter-spacing:-.02em;
+}
+.cat-card p { font-size:13px; color:var(--td); line-height:1.8; font-weight:300; margin-bottom:16px; }
+.cat-examples {
+  display:flex; gap:6px; flex-wrap:wrap; margin-top:4px;
+}
+.ex-chip {
+  font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tf); background:rgba(245,197,24,.05);
+  border:1px solid rgba(245,197,24,.1); padding:3px 9px;
+}
+
+/* ── AI SECTION ── */
+.ai-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+  background:var(--bd); border:1px solid var(--bd);
+}
+.ai-card {
+  background:#0b0d1c; padding:44px 40px;
+  position:relative; overflow:hidden; transition:background .25s;
+}
+.ai-card:hover { background:#0f1220; }
+.ai-card.wide { grid-column:1/-1; }
+.ai-icon {
+  font-size:30px; margin-bottom:18px; display:block;
+  filter:drop-shadow(0 0 10px rgba(245,197,24,.25));
+}
+.ai-card h3 {
+  font-family:'Pretendard', sans-serif;
+  font-size:22px; font-weight:700; margin-bottom:10px;
+}
+.ai-card p { font-size:14px; color:var(--td); line-height:1.85; font-weight:300; }
+/* pulsing AI dot */
+.ai-live {
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:11px; color:var(--y); letter-spacing:.1em; text-transform:uppercase;
+  margin-top:16px;
+}
+.ai-live-dot {
+  width:7px; height:7px; border-radius:50%; background:var(--y);
+  box-shadow:0 0 10px var(--y);
+  animation:pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100%{ transform:scale(1); opacity:1; }
+  50%    { transform:scale(1.3); opacity:.7; }
+}
+/* model logos row */
+.ai-models {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:20px;
+}
+.model-tag {
+  font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:#07080f; background:var(--y); padding:4px 12px;
+}
+.model-tag.dim {
+  color:var(--td); background:none; border:1px solid var(--bd);
+}
+
+/* ── PROCESS ── */
+.process-steps {
+  margin-top:60px; display:flex; flex-direction:column; gap:2px;
+}
+.step {
+  background:#0b0d1c; padding:34px 44px;
+  display:grid; grid-template-columns:52px 1fr auto;
+  align-items:center; gap:28px;
+  border:1px solid var(--bd); border-bottom:none; transition:background .25s;
+}
+.step:last-child { border-bottom:1px solid var(--bd); }
+.step:hover { background:#0f1220; }
+.step-n {
+  font-family:'Pretendard', sans-serif;
+  font-size:46px; font-weight:800; color:rgba(245,197,24,.1); line-height:1;
+}
+.step-body h3 {
+  font-family:'Pretendard', sans-serif;
+  font-size:21px; font-weight:600; margin-bottom:5px;
+}
+.step-body p { font-size:13px; color:var(--td); font-weight:300; line-height:1.75; }
+.step-time {
+  font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--y); border:1px solid var(--yb); padding:6px 14px;
+  background:var(--yg); white-space:nowrap;
+}
+
+/* ── PRICING ── */
+.price-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; background:var(--bd); border:1px solid var(--bd);
+}
+.pc {
+  background:#0b0d1c; padding:46px 36px;
+  position:relative; overflow:hidden; transition:background .25s;
+}
+.pc:hover { background:#0f1220; }
+.pc.hot {
+  background:#0f1220;
+  box-shadow:inset 0 0 0 1px rgba(245,197,24,.28);
+}
+.pc-hot-badge {
+  position:absolute; top:0; right:0;
+  background:var(--y); color:#07080f;
+  font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  padding:5px 16px;
+}
+.pc-name {
+  font-size:10px; font-weight:600; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--y); margin-bottom:20px;
+}
+.pc-price {
+  font-family:'Pretendard', sans-serif;
+  font-size:50px; font-weight:700; line-height:1; margin-bottom:6px;
+}
+.pc-price sup { font-size:22px; vertical-align:super; font-weight:400; }
+.pc-period { font-size:12px; color:var(--tf); letter-spacing:.04em; margin-bottom:10px; }
+.pc-duration {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--yg); border:1px solid var(--yb);
+  padding:4px 12px; margin-bottom:30px;
+  font-size:12px; font-weight:500; color:var(--y); letter-spacing:.05em;
+}
+.pc-hr { border:none; border-top:1px solid var(--bd); margin-bottom:26px; }
+.pc-list { list-style:none; margin-bottom:34px; }
+.pc-list li {
+  font-size:13px; color:var(--td); padding:7px 0;
+  border-bottom:1px solid var(--bd);
+  display:flex; align-items:flex-start; gap:10px; font-weight:300;
+}
+.pc-list li svg { flex-shrink:0; margin-top:4px; }
+.pc-btn {
+  width:100%; padding:13px; cursor:pointer;
+  font-family:'Pretendard',sans-serif; font-size:12px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; transition:all .25s;
+}
+.pc-btn.ghost { background:none; border:1px solid rgba(245,197,24,.25); color:var(--td); }
+.pc-btn.ghost:hover { border-color:var(--y); color:#dde2f0; background:var(--yg); }
+.pc-btn.solid { background:var(--y); border:none; color:#07080f; }
+.pc-btn.solid:hover { background:var(--y2); box-shadow:0 4px 20px rgba(245,197,24,.2); }
+
+/* ── CONTACT ── */
+.contact-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start;
+}
+.cl-left p { color:var(--td); font-size:15px; line-height:1.9; font-weight:300; margin-bottom:40px; }
+.cl-links { display:flex; flex-direction:column; }
+.cl-link {
+  display:flex; align-items:center; gap:18px; padding:17px 0;
+  border-bottom:1px solid var(--bd); text-decoration:none;
+  color:var(--td); font-size:14px; transition:color .2s;
+}
+.cl-link:hover { color:#dde2f0; }
+.cl-link:hover .cl-icon { border-color:var(--y); background:var(--yg); }
+.cl-icon {
+  width:40px; height:40px; border:1px solid rgba(245,197,24,.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0; transition:all .2s;
+}
+.cf { display:flex; flex-direction:column; gap:16px; }
+.fr { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.ff { display:flex; flex-direction:column; gap:6px; }
+.ff label {
+  font-size:10px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--tf); font-weight:500;
+}
+.ff input,.ff textarea,.ff select {
+  background:#0b0d1c; border:1px solid var(--bd);
+  color:#dde2f0; padding:13px 15px;
+  font-family:'Pretendard',sans-serif; font-size:14px; font-weight:300;
+  outline:none; transition:border-color .2s;
+  border-radius:0; -webkit-appearance:none; appearance:none;
+}
+.ff input:focus,.ff textarea:focus,.ff select:focus { border-color:var(--y); }
+.ff textarea { resize:vertical; min-height:120px; }
+.ff select option { background:#0b0d1c; }
+.cf-submit {
+  background:var(--y); border:none; cursor:pointer; padding:16px;
+  font-family:'Pretendard',sans-serif; font-size:13px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:#07080f; transition:all .25s;
+}
+.cf-submit:hover { background:var(--y2); box-shadow:0 6px 22px rgba(245,197,24,.18); }
+
+/* ── FOOTER ── */
+footer {
+  background:#07080f; border-top:1px solid var(--bd);
+  padding:32px 52px; position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.fl { display:flex; align-items:center; gap:10px; }
+.fl-name {
+  font-family:'Pretendard', sans-serif;
+  font-size:15px; font-weight:600; letter-spacing:.06em; color:var(--td);
+}
+.fl-copy,.fr-copy { font-size:12px; color:var(--tf); }
+
+/* ── UTIL ── */
+.div { height:1px; background:linear-gradient(90deg,transparent,var(--bd),transparent); position:relative; z-index:1; }
+.fi { opacity:1; transform:none; transition:opacity .75s ease,transform .75s ease; }
+.fi.on { opacity:1; transform:none; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav { padding:16px 20px; }
+  .hero { padding:110px 20px 60px; }
+  .hero-moon { display:none; }
+  .sec { padding:70px 20px; }
+  .cats-grid,.ai-grid,.price-grid { grid-template-columns:1fr; }
+  .ai-card.wide { grid-column:auto; }
+  .step { grid-template-columns:44px 1fr; }
+  .step-time { display:none; }
+  .contact-grid { grid-template-columns:1fr; gap:48px; }
+  .fr { grid-template-columns:1fr; }
+  footer { flex-direction:column; gap:8px; text-align:center; padding:24px 20px; }
+  .hero-badges { gap:8px; }
+}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="pg">
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+      <defs>
+        <mask id="cm">
+          <circle cx="21" cy="21" r="18" fill="white"/>
+          <circle cx="31" cy="16" r="14" fill="black"/>
+        </mask>
+      </defs>
+      <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#cm)"/>
+    </svg>
+    <span class="nav-logo-name">Crescent <span style="font-weight:300">Studio</span></span>
+  </a>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-moon" viewBox="0 0 560 560" fill="none">
+    <defs>
+      <radialGradient id="hf" cx="36%" cy="33%" r="60%" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="#ffe082" stop-opacity=".85"/>
+        <stop offset="35%"  stop-color="#f5c518" stop-opacity=".48"/>
+        <stop offset="75%"  stop-color="#c8860a" stop-opacity=".16"/>
+        <stop offset="100%" stop-color="#7a4a00" stop-opacity=".03"/>
+      </radialGradient>
+      <radialGradient id="hs" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#060810"/>
+        <stop offset="100%" stop-color="#07080f"/>
+      </radialGradient>
+      <filter id="mg"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <circle cx="280" cy="280" r="260" stroke="rgba(245,197,24,.03)" stroke-width="1" fill="none"/>
+    <circle cx="280" cy="280" r="218" fill="url(#hf)" filter="url(#mg)"/>
+    <circle cx="370" cy="254" r="194" fill="url(#hs)"/>
+    <circle cx="176" cy="240" r="6"   fill="rgba(245,197,24,.1)"/>
+    <circle cx="194" cy="318" r="4"   fill="rgba(245,197,24,.07)"/>
+    <circle cx="138" cy="294" r="9"   fill="rgba(245,197,24,.055)"/>
+    <circle cx="430" cy="112" r="2"   fill="rgba(245,197,24,.65)"/>
+    <circle cx="468" cy="174" r="1.4" fill="rgba(245,197,24,.45)"/>
+    <circle cx="406" cy="90"  r="2.6" fill="rgba(245,197,24,.55)"/>
+    <circle cx="460" cy="246" r="1.2" fill="rgba(245,197,24,.35)"/>
+    <circle cx="414" cy="162" r="1.3" fill="rgba(245,197,24,.3)"/>
+  </svg>
+
+  <div class="hero-tag">AI 웹 · 앱 개발 스튜디오</div>
+
+  <h1>웹이든 앱이든,<br><b>AI로 빠르게</b><br>만들어드립니다.</h1>
+
+  <p class="hero-sub">
+    쇼핑몰, 예약 시스템, AI 챗봇, iOS 앱까지.<br>
+    <strong>Claude · GPT 등 최신 AI</strong>를 적극 활용해<br>
+    절반의 시간과 비용으로 완성합니다.
+  </p>
+
+  <div class="hero-actions">
+    <button class="btn-fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+    <button class="btn-line" onclick="document.getElementById('what').scrollIntoView({behavior:'smooth'})">
+      만들 수 있는 것들 <span class="ar">→</span>
+    </button>
+  </div>
+
+  <div class="hero-badges">
+    <div class="badge">🌐 웹사이트 · 쇼핑몰</div>
+    <div class="badge">📱 iOS · Android 앱</div>
+    <div class="badge">🤖 <span>AI</span> 챗봇 · 자동화</div>
+    <div class="badge">⚡ 2~4주 완성</div>
+    <div class="badge">💬 무료 상담</div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- WHAT WE MAKE -->
+<section class="sec sec-n2 fi" id="what">
+  <div class="sec-eyebrow">만들 수 있는 것들</div>
+  <h2>어떤 걸<br><em>만들 수 있나요?</em></h2>
+  <p class="sec-desc">간단한 랜딩 페이지부터 복잡한 플랫폼까지. 필요한 거의 모든 디지털 제품을 만들 수 있습니다.</p>
+
+  <div class="cats-grid fi">
+
+    <div class="cat-card">
+      <span class="cat-emoji">🛍️</span>
+      <h3>쇼핑몰 · 커머스</h3>
+      <p>상품 관리, 장바구니, 결제 연동까지. 내 브랜드에 딱 맞는 쇼핑몰을 만들어드립니다.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">브랜드 쇼핑몰</span>
+        <span class="ex-chip">예약 판매</span>
+        <span class="ex-chip">구독 서비스</span>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <span class="cat-emoji">📅</span>
+      <h3>예약 · 관리 시스템</h3>
+      <p>미용실, 네일샵, 병원, 학원 등 예약부터 고객 관리까지 한 곳에서 해결하는 시스템.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">예약 플랫폼</span>
+        <span class="ex-chip">고객 관리</span>
+        <span class="ex-chip">스케줄 관리</span>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <span class="cat-emoji">🤖</span>
+      <h3>AI 챗봇 · 자동화</h3>
+      <p>Claude, GPT를 연동한 맞춤형 AI 서비스. 고객 응대, 콘텐츠 생성, 데이터 분석 자동화.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">AI 고객 응대</span>
+        <span class="ex-chip">문서 자동화</span>
+        <span class="ex-chip">AI 분석 도구</span>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <span class="cat-emoji">📱</span>
+      <h3>iOS · Android 앱</h3>
+      <p>App Store에 실제로 출시되는 모바일 앱. 알림, GPS, 카메라 등 네이티브 기능도 모두 지원.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">생활 편의</span>
+        <span class="ex-chip">헬스 · 운동</span>
+        <span class="ex-chip">소셜 · 커뮤니티</span>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <span class="cat-emoji">🏢</span>
+      <h3>기업 · 브랜드 사이트</h3>
+      <p>회사 소개, 포트폴리오, 랜딩 페이지. 브랜드 이미지에 맞는 세련된 웹사이트를 빠르게.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">기업 소개</span>
+        <span class="ex-chip">랜딩 페이지</span>
+        <span class="ex-chip">포트폴리오</span>
+      </div>
+    </div>
+
+    <div class="cat-card">
+      <span class="cat-emoji">💬</span>
+      <h3>커뮤니티 · 플랫폼</h3>
+      <p>회원 가입, 게시판, 실시간 채팅, 매칭 기능이 있는 플랫폼 서비스. B2B, B2C 모두 가능.</p>
+      <div class="cat-examples">
+        <span class="ex-chip">매칭 서비스</span>
+        <span class="ex-chip">커뮤니티</span>
+        <span class="ex-chip">SaaS 도구</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- AI SECTION -->
+<section class="sec sec-n1 fi" id="ai">
+  <div class="sec-eyebrow">AI 활용</div>
+  <h2>왜 <em>AI 개발</em>이<br>다른가요?</h2>
+  <p class="sec-desc">최신 AI를 개발 도구로 적극 활용합니다. 속도와 비용, 그리고 완성도 모두 달라집니다.</p>
+
+  <div class="ai-grid fi">
+
+    <div class="ai-card">
+      <span class="ai-icon">⚡</span>
+      <h3>2~4배 빠른 개발</h3>
+      <p>AI가 반복적인 코드 작업을 처리합니다. 개발자는 핵심 로직과 UX에만 집중하기 때문에 같은 품질을 훨씬 짧은 시간에 완성합니다.</p>
+    </div>
+
+    <div class="ai-card">
+      <span class="ai-icon">💰</span>
+      <h3>절반 이하의 비용</h3>
+      <p>개발 시간이 줄면 비용도 줄어듭니다. 대형 에이전시 대비 절반 이하의 비용으로 같은 수준의 결과물을 받을 수 있습니다.</p>
+    </div>
+
+    <div class="ai-card">
+      <span class="ai-icon">🧠</span>
+      <h3>AI 기능을 바로 탑재</h3>
+      <p>챗봇, 이미지 분석, 자동 요약, 맞춤 추천 등 AI 기능을 처음부터 제품에 녹여 만들 수 있습니다. 나중에 붙이는 게 아닙니다.</p>
+    </div>
+
+    <div class="ai-card">
+      <span class="ai-icon">🔄</span>
+      <h3>빠른 수정과 반영</h3>
+      <p>방향이 바뀌어도 빠르게 반영합니다. AI 도구 덕분에 수정 사이클이 짧아져 원하는 결과에 더 빠르게 도달합니다.</p>
+    </div>
+
+    <!-- AI model strip -->
+    <div class="ai-card wide">
+      <div class="ai-live"><div class="ai-live-dot"></div>활용 중인 AI</div>
+      <div class="ai-models" style="margin-top:18px;">
+        <span class="model-tag">Claude</span>
+        <span class="model-tag">GPT-4o</span>
+        <span class="model-tag">Gemini</span>
+        <span class="model-tag dim">Cursor</span>
+        <span class="model-tag dim">Supabase AI</span>
+        <span class="model-tag dim">Vercel AI SDK</span>
+      </div>
+      <p style="margin-top:18px;font-size:13px;color:var(--tf);font-weight:300;">프로젝트 목적에 맞는 AI를 선택해 개발합니다. 특정 AI를 원하시면 말씀해주세요.</p>
+    </div>
+
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- PROCESS -->
+<section class="sec sec-n2 fi" id="process">
+  <div class="sec-eyebrow">진행 과정</div>
+  <h2>어떻게<br><em>진행되나요?</em></h2>
+  <p class="sec-desc">복잡하지 않습니다. 아이디어만 있으면 시작할 수 있어요.</p>
+
+  <div class="process-steps fi">
+    <div class="step">
+      <div class="step-n">01</div>
+      <div class="step-body">
+        <h3>무료 상담</h3>
+        <p>어떤 걸 만들고 싶은지 편하게 말씀해주세요. 기획서 없어도 됩니다. 아이디어 수준이어도 충분합니다.</p>
+      </div>
+      <div class="step-time">1~2일</div>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <div class="step-body">
+        <h3>범위 확정 · 견적</h3>
+        <p>핵심 기능을 함께 정리하고 명확한 견적을 드립니다. 중간에 추가 비용이 생기지 않습니다.</p>
+      </div>
+      <div class="step-time">2~3일</div>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <div class="step-body">
+        <h3>개발 · 중간 공유</h3>
+        <p>진행하면서 중간 결과물을 주기적으로 보여드립니다. 피드백을 바로 반영합니다.</p>
+      </div>
+      <div class="step-time">2~4주</div>
+    </div>
+    <div class="step">
+      <div class="step-n">04</div>
+      <div class="step-body">
+        <h3>출시 · 배포</h3>
+        <p>웹은 도메인 연결 · 배포까지, 앱은 App Store 심사 제출까지 전부 처리합니다.</p>
+      </div>
+      <div class="step-time">출시 완료</div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- PRICING -->
+<section class="sec sec-n1 fi" id="pricing">
+  <div class="sec-eyebrow">가격 안내</div>
+  <h2>얼마나<br><em>드나요?</em></h2>
+  <p class="sec-desc">규모에 따라 달라집니다. 정확한 견적은 상담 후 안내드립니다. 숨겨진 비용 없습니다.</p>
+
+  <div class="price-grid fi">
+
+    <div class="pc">
+      <div class="pc-name">라이트</div>
+      <div class="pc-price"><sup>₩</sup>100만~</div>
+      <div class="pc-period">랜딩 페이지 · 소개 사이트</div>
+      <div class="pc-duration">⏱ 1~2주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>반응형 웹 디자인</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>모바일 최적화</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>도메인 · 배포 포함</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>1개월 수정 지원</li>
+      </ul>
+      <button class="pc-btn ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+    <div class="pc hot">
+      <div class="pc-hot-badge">가장 많이 선택</div>
+      <div class="pc-name">스탠다드</div>
+      <div class="pc-price"><sup>₩</sup>300만~</div>
+      <div class="pc-period">쇼핑몰 · 예약 시스템 · 앱</div>
+      <div class="pc-duration">⏱ 3~4주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>주요 기능 3~5개</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>로그인 · 결제 연동</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>DB · 서버 포함</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>AI 기능 연동 가능</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>웹 또는 앱 선택</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>3개월 유지보수</li>
+      </ul>
+      <button class="pc-btn solid" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+    <div class="pc">
+      <div class="pc-name">커스텀</div>
+      <div class="pc-price"><sup>₩</sup>500만~</div>
+      <div class="pc-period">플랫폼 · 복잡한 시스템</div>
+      <div class="pc-duration">⏱ 4~8주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>기능 범위 무제한</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>웹 + 앱 동시 개발</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>관리자 페이지</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>AI 고급 연동</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>지속 운영 지원</li>
+      </ul>
+      <button class="pc-btn ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- CONTACT -->
+<section class="sec sec-n2 fi" id="contact">
+  <div class="contact-grid">
+
+    <div class="cl-left fi">
+      <div class="sec-eyebrow">무료 상담</div>
+      <h2 style="margin-bottom:18px;">어떤 걸<br><em>만들고 싶으세요?</em></h2>
+      <p>기획서 없어도 돼요.<br>"이런 거 만들 수 있나요?" 수준으로도 충분합니다.<br>24시간 내에 답변 드립니다.</p>
+      <div class="cl-links">
+        <a class="cl-link" href="/cdn-cgi/l/email-protection#dfb7bab3b3b09fbcadbaacbcbab1abf1acabaabbb6b0">
+          <div class="cl-icon">✉</div><span class="__cf_email__" data-cfemail="6109040d0d0e210213041202040f154f12151405080e">[email&#160;protected]</span>
+        </a>
+        <a class="cl-link" href="#">
+          <div class="cl-icon">💬</div>카카오톡으로 바로 연락
+        </a>
+        <a class="cl-link" href="https://github.com/fine9090" target="_blank">
+          <div class="cl-icon">⌥</div>GitHub · fine9090
+        </a>
+      </div>
+    </div>
+
+    <form class="cf fi" onsubmit="onSend(event)">
+      <div class="fr">
+        <div class="ff"><label>이름</label><input type="text" placeholder="홍길동" required></div>
+        <div class="ff"><label>연락처</label><input type="text" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="ff"><label>이메일</label><input type="email" placeholder="hello@example.com" required></div>
+      <div class="ff">
+        <label>만들고 싶은 것</label>
+        <select>
+          <option value="">선택해주세요</option>
+          <option>쇼핑몰 · 커머스</option>
+          <option>예약 · 관리 시스템</option>
+          <option>AI 챗봇 · 자동화</option>
+          <option>iOS · Android 앱</option>
+          <option>기업 · 브랜드 사이트</option>
+          <option>커뮤니티 · 플랫폼</option>
+          <option>아직 잘 모르겠어요</option>
+        </select>
+      </div>
+      <div class="ff">
+        <label>어떤 걸 만들고 싶으신가요?</label>
+        <textarea placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다. 예) 미용실 예약 앱을 만들고 싶어요. 고객이 날짜 선택하고 예약할 수 있으면 좋겠어요."></textarea>
+      </div>
+      <button type="submit" class="cf-submit">무료 상담 신청하기 →</button>
+    </form>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="fl">
+    <svg width="22" height="22" viewBox="0 0 42 42" fill="none" style="opacity:.6">
+      <defs>
+        <mask id="fm">
+          <circle cx="21" cy="21" r="18" fill="white"/>
+          <circle cx="31" cy="16" r="14" fill="black"/>
+        </mask>
+      </defs>
+      <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#fm)"/>
+    </svg>
+    <span class="fl-name">Crescent Studio</span>
+  </div>
+  <span class="fr-copy">© 2025 Crescent Studio</span>
+</footer>
+
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// STARS
+const se = document.getElementById('stars');
+const sc = ['#ffe082','#ffd54f','#f0c030','#c8a030','#8898c8','#6678a8'];
+for(let i=0;i<160;i++){
+  const s=document.createElement('div'); s.className='s';
+  const z=Math.random()*1.8+.3, c=sc[Math.floor(Math.random()*sc.length)];
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;background:${c};--d:${(Math.random()*5+2).toFixed(1)}s;--dl:-${(Math.random()*9).toFixed(1)}s;--a:${(Math.random()*.07).toFixed(2)};--b:${(Math.random()*.44+.15).toFixed(2)};`;
+  se.appendChild(s);
+}
+
+// FADE IN
+const ob=new IntersectionObserver(es=>{
+  es.forEach(e=>{
+    if(!e.isIntersecting)return;
+    e.target.classList.add('on');
+    e.target.querySelectorAll('.cat-card,.ai-card,.step,.pc,.proof-item').forEach((c,i)=>{
+      c.style.opacity='1'; c.style.transform='none';
+    });
+    ob.unobserve(e.target);
+  });
+},{threshold:0.07});
+document.querySelectorAll('.fi').forEach(el=>{el.classList.add('on');});
+
+// FORM
+function onSend(e){
+  e.preventDefault();
+  const b=e.target.querySelector('.cf-submit');
+  b.textContent='접�
