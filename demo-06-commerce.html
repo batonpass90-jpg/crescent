@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopOn — 온라인 커머스 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb;
+  --gray-400:#9ca3af; --gray-500:#6b7280; --gray-700:#374151; --gray-900:#111827;
+  --blue-50:#eff6ff; --blue-100:#dbeafe; --blue-600:#2563eb;
+  --green-50:#f0fdf4; --green-600:#16a34a;
+  --red-50:#fef2f2; --red-600:#dc2626;
+  --amber-50:#fffbeb; --amber-600:#d97706;
+  --purple-50:#faf5ff; --purple-600:#9333ea;
+  --orange-50:#fff7ed; --orange-500:#f97316;
+  --sidebar-w:220px; --topbar-h:56px;
+}
+html,body { overflow-x:hidden; width:100%; }
+body { font-family:'Pretendard',-apple-system,sans-serif; background:var(--gray-100); color:var(--gray-900); font-size:14px; line-height:1.5; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+@keyframes blink  { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* LAYOUT */
+.layout { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar { width:var(--sidebar-w); background:#fff; border-right:1px solid var(--gray-200); display:flex; flex-direction:column; position:fixed; inset:0 auto 0 0; z-index:40; transition:transform .25s ease; }
+.logo { height:var(--topbar-h); display:flex; align-items:center; gap:10px; padding:0 18px; border-bottom:1px solid var(--gray-200); flex-shrink:0; }
+.logo-icon { width:28px; height:28px; background:var(--orange-500); border-radius:7px; display:grid; place-items:center; color:#fff; font-size:15px; flex-shrink:0; }
+.logo-text { font-size:15px; font-weight:700; }
+.logo-ver  { font-size:10px; color:var(--gray-400); margin-left:auto; }
+.nav { flex:1; overflow-y:auto; padding:10px 0; }
+.nav-section { margin-bottom:4px; }
+.nav-section-title { font-size:11px; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:.8px; padding:8px 18px 4px; }
+.nav-link { display:flex; align-items:center; gap:9px; padding:9px 18px; font-size:13.5px; font-weight:500; color:var(--gray-500); cursor:pointer; transition:background .12s,color .12s; position:relative; }
+.nav-link:hover { background:var(--gray-50); color:var(--gray-900); }
+.nav-link.active { color:var(--orange-500); background:var(--orange-50); }
+.nav-link.active::before { content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--orange-500); border-radius:0 2px 2px 0; }
+.nav-badge { margin-left:auto; background:var(--red-600); color:#fff; font-size:10px; font-weight:700; min-width:18px; height:18px; border-radius:9px; display:grid; place-items:center; padding:0 5px; }
+.sidebar-footer { border-top:1px solid var(--gray-200); padding:14px 18px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.s-av { width:32px; height:32px; border-radius:50%; background:var(--orange-500); color:#fff; display:grid; place-items:center; font-size:13px; font-weight:700; flex-shrink:0; }
+.s-name { font-size:13px; font-weight:600; }
+.s-role { font-size:11px; color:var(--gray-400); }
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:39; }
+.overlay.show { display:block; }
+
+/* MAIN */
+.main { margin-left:var(--sidebar-w); flex:1; min-width:0; display:flex; flex-direction:column; }
+.topbar { height:var(--topbar-h); background:#fff; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; padding:0 20px; gap:10px; position:sticky; top:0; z-index:30; flex-shrink:0; }
+.menu-btn { display:none; background:none; border:none; font-size:20px; cursor:pointer; padding:4px; color:var(--gray-700); }
+.topbar-title { font-size:15px; font-weight:700; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.live-pill { display:flex; align-items:center; gap:5px; background:var(--green-50); color:var(--green-600); font-size:12px; font-weight:600; padding:5px 10px; border-radius:20px; white-space:nowrap; }
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--green-600); animation:blink 1.5s infinite; }
+.btn { padding:7px 14px; border-radius:7px; font-size:13px; font-weight:600; border:none; cursor:pointer; font-family:inherit; transition:opacity .15s; white-space:nowrap; }
+.btn:hover { opacity:.85; }
+.btn-primary { background:var(--orange-500); color:#fff; }
+.btn-outline { background:#fff; color:var(--gray-700); border:1px solid var(--gray-200); }
+
+/* PAGE */
+.page { padding:20px; display:flex; flex-direction:column; gap:14px; min-width:0; }
+
+/* BADGE */
+.badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:5px; white-space:nowrap; }
+.badge-green  { background:var(--green-50);  color:var(--green-600); }
+.badge-red    { background:var(--red-50);    color:var(--red-600); }
+.badge-amber  { background:var(--amber-50);  color:var(--amber-600); }
+.badge-blue   { background:var(--blue-50);   color:var(--blue-600); }
+.badge-gray   { background:var(--gray-100);  color:var(--gray-500); }
+.badge-purple { background:var(--purple-50); color:var(--purple-600); }
+.badge-orange { background:var(--orange-50); color:var(--orange-500); }
+
+/* KPI */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.kpi-card { background:#fff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; animation:fadeUp .3s ease both; }
+.kpi-card:nth-child(1){animation-delay:.05s} .kpi-card:nth-child(2){animation-delay:.1s}
+.kpi-card:nth-child(3){animation-delay:.15s} .kpi-card:nth-child(4){animation-delay:.2s}
+.kpi-label { font-size:11px; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+.kpi-value { font-size:24px; font-weight:700; line-height:1; letter-spacing:-1px; margin-bottom:6px; }
+.kpi-value .unit { font-size:13px; font-weight:500; }
+.kpi-meta { font-size:12px; color:var(--gray-400); }
+.chip-up { color:var(--green-600); font-weight:700; font-size:11px; }
+.chip-dn { color:var(--red-600); font-weight:700; font-size:11px; }
+.kpi-track { height:3px; background:var(--gray-100); border-radius:2px; margin-top:10px; overflow:hidden; }
+.kpi-fill { height:100%; border-radius:2px; }
+
+/* CARD */
+.card { background:#fff; border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; min-width:0; animation:fadeUp .35s ease both; animation-delay:.2s; }
+.card-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--gray-200); gap:8px; flex-wrap:wrap; }
+.card-title { font-size:13px; font-weight:700; }
+.card-action { font-size:12px; color:var(--orange-500); font-weight:600; cursor:pointer; white-space:nowrap; }
+.card-sub { font-size:12px; color:var(--gray-400); }
+
+/* GRID */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.g3 { display:grid; grid-template-columns:1.6fr 1fr 1fr; gap:14px; }
+
+/* 채널 현황 */
+.channel-list { padding:0 16px; }
+.ch-row { display:flex; align-items:center; gap:12px; padding:11px 0; border-bottom:1px solid var(--gray-100); }
+.ch-row:last-child { border-bottom:none; }
+.ch-icon { width:32px; height:32px; border-radius:8px; display:grid; place-items:center; font-size:16px; flex-shrink:0; }
+.ch-info { flex:1; min-width:0; }
+.ch-name { font-size:13px; font-weight:700; }
+.ch-meta { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.ch-prog { width:80px; flex-shrink:0; }
+.ch-prog-bg { height:5px; background:var(--gray-100); border-radius:3px; overflow:hidden; }
+.ch-prog-fill { height:100%; border-radius:3px; }
+.ch-sales { font-size:13px; font-weight:700; color:var(--gray-900); white-space:nowrap; text-align:right; min-width:60px; }
+
+/* 주문 테이블 */
+.tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.ord-tbl { width:100%; border-collapse:collapse; font-size:13px; min-width:580px; }
+.ord-tbl th { text-align:left; padding:8px 14px; font-size:11px; font-weight:700; color:var(--gray-400); text-transform:uppercase; letter-spacing:.7px; border-bottom:1px solid var(--gray-200); background:var(--gray-50); white-space:nowrap; }
+.ord-tbl td { padding:11px 14px; border-bottom:1px solid var(--gray-100); vertical-align:middle; }
+.ord-tbl tr:last-child td { border-bottom:none; }
+.ord-tbl tr:hover td { background:var(--gray-50); cursor:pointer; }
+.ord-id { font-size:11px; font-weight:700; color:var(--gray-400); }
+.ord-product { font-weight:600; color:var(--gray-900); }
+.ord-customer { font-size:12px; color:var(--gray-500); }
+.ord-price { font-weight:700; color:var(--orange-500); }
+.ord-date { font-size:12px; color:var(--gray-500); white-space:nowrap; }
+
+/* 재고 목록 */
+.stock-list { padding:0 16px; }
+.stock-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.stock-row:last-child { border-bottom:none; }
+.stock-thumb { width:36px; height:36px; border-radius:8px; background:var(--gray-100); display:grid; place-items:center; font-size:18px; flex-shrink:0; }
+.stock-info { flex:1; min-width:0; }
+.stock-name { font-size:13px; font-weight:600; }
+.stock-sku  { font-size:11px; color:var(--gray-400); margin-top:1px; }
+.stock-qty  { font-size:13px; font-weight:700; white-space:nowrap; }
+.stock-bar-bg { height:4px; background:var(--gray-100); border-radius:2px; overflow:hidden; margin-top:4px; }
+.stock-bar-fill { height:100%; border-radius:2px; }
+
+/* 차트 */
+.chart-wrap { padding:14px 16px; }
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:88px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; }
+.bar-val { font-size:9px; font-weight:600; color:var(--gray-500); }
+.bar { width:100%; border-radius:4px 4px 0 0; cursor:pointer; transition:opacity .15s; }
+.bar:hover { opacity:.75; }
+.bar-lbl { font-size:9px; color:var(--gray-400); }
+.chart-foot { display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-100); }
+.chart-lbl { font-size:12px; color:var(--gray-400); }
+.chart-val { font-size:15px; font-weight:700; color:var(--orange-500); }
+
+/* 인기 상품 */
+.prod-rank-list { padding:0 16px; }
+.prod-rank-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--gray-100); }
+.prod-rank-row:last-child { border-bottom:none; }
+.prod-rk { font-size:12px; font-weight:700; color:var(--gray-300); width:18px; flex-shrink:0; }
+.prod-rk.top { color:var(--orange-500); }
+.prod-thumb { width:32px; height:32px; border-radius:6px; background:var(--gray-100); display:grid; place-items:center; font-size:16px; flex-shrink:0; }
+.prod-info { flex:1; min-width:0; }
+.prod-nm { font-size:13px; font-weight:600; }
+.prod-cat { font-size:11px; color:var(--gray-400); margin-top:1px; }
+.prod-sales-cnt { font-size:12px; color:var(--gray-500); white-space:nowrap; }
+.prod-bar-bg { width:60px; height:4px; background:var(--gray-100); border-radius:2px; overflow:hidden; flex-shrink:0; }
+.prod-bar-fill { height:100%; border-radius:2px; background:var(--orange-500); }
+
+/* 리뷰 */
+.review-list { padding:0 16px; }
+.review-row { display:flex; gap:10px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.review-row:last-child { border-bottom:none; }
+.review-av { width:30px; height:30px; border-radius:50%; color:#fff; font-size:12px; font-weight:700; display:grid; place-items:center; flex-shrink:0; }
+.review-body { flex:1; min-width:0; }
+.review-top { display:flex; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:4px; }
+.review-name { font-size:12px; font-weight:700; }
+.review-stars { font-size:11px; color:#f59e0b; }
+.review-product { font-size:11px; color:var(--gray-400); }
+.review-text { font-size:12px; color:var(--gray-700); line-height:1.6; }
+.review-time { font-size:11px; color:var(--gray-400); margin-top:4px; }
+
+/* 할인/쿠폰 */
+.coupon-list { padding:0 16px; }
+.coupon-row { display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.coupon-row:last-child { border-bottom:none; }
+.coupon-box { width:48px; height:48px; border-radius:10px; display:grid; place-items:center; text-align:center; flex-shrink:0; }
+.coupon-pct { font-size:14px; font-weight:700; }
+.coupon-lbl { font-size:9px; font-weight:600; }
+.coupon-info { flex:1; min-width:0; }
+.coupon-name { font-size:13px; font-weight:600; }
+.coupon-meta { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.coupon-used { font-size:12px; font-weight:700; color:var(--gray-700); white-space:nowrap; }
+.coupon-progress { margin-top:4px; }
+.coupon-bar-bg { height:4px; background:var(--gray-100); border-radius:2px; overflow:hidden; }
+.coupon-bar-fill { height:100%; border-radius:2px; }
+
+/* RESPONSIVE */
+@media (max-width:1100px) { .g3 { grid-template-columns:1fr 1fr; } }
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; }
+  .menu-btn { display:block; }
+  .topbar-time, .live-pill { display:none; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .g2, .g3 { grid-template-columns:1fr; }
+}
+@media (max-width:480px) {
+  .page { padding:12px; gap:10px; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .topbar { padding:0 12px; gap:8px; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🛒</div>
+      <span class="logo-text">ShopOn</span>
+      <span class="logo-ver">v1.0</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">
+        <div class="nav-section-title">운영</div>
+        <div class="nav-link active" onclick="navClick(this)">📊 대시보드</div>
+        <div class="nav-link" onclick="navClick(this)">📦 주문 관리 <span class="nav-badge">12</span></div>
+        <div class="nav-link" onclick="navClick(this)">🚚 배송 현황</div>
+        <div class="nav-link" onclick="navClick(this)">↩ 반품·교환 <span class="nav-badge">3</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">상품·재고</div>
+        <div class="nav-link" onclick="navClick(this)">🏷️ 상품 관리</div>
+        <div class="nav-link" onclick="navClick(this)">📋 재고 관리</div>
+        <div class="nav-link" onclick="navClick(this)">🎁 쿠폰·할인</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">분석</div>
+        <div class="nav-link" onclick="navClick(this)">💰 매출 분석</div>
+        <div class="nav-link" onclick="navClick(this)">👥 고객 분석</div>
+        <div class="nav-link" onclick="navClick(this)">⭐ 리뷰 관리</div>
+        <div class="nav-link" onclick="navClick(this)">⚙️ 설정</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="s-av">김</div>
+      <div>
+        <div class="s-name">김커머스</div>
+        <div class="s-role">대표 · 고래마켓</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <span class="topbar-title">커머스 운영 대시보드</span>
+      <div class="live-pill"><div class="live-dot"></div>실시간</div>
+      <button class="btn btn-outline">오늘 ▾</button>
+      <button class="btn btn-primary">+ 상품 등록</button>
+    </header>
+
+    <div class="page">
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">오늘 매출</div>
+          <div class="kpi-value" style="color:var(--orange-500)">4.8<span class="unit">백만원</span></div>
+          <div class="kpi-meta">목표 5백만 <span class="chip-up">▲ 96%</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:96%;background:var(--orange-500)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">신규 주문</div>
+          <div class="kpi-value" style="color:var(--blue-600)">247<span class="unit">건</span></div>
+          <div class="kpi-meta">전일 198건 <span class="chip-up">▲ +49건</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:78%;background:var(--blue-600)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">구매 전환율</div>
+          <div class="kpi-value" style="color:var(--green-600)">3.8<span class="unit">%</span></div>
+          <div class="kpi-meta">전일 3.2% <span class="chip-up">▲ +0.6%p</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:38%;background:var(--green-600)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">처리 대기</div>
+          <div class="kpi-value" style="color:var(--red-600)">12<span class="unit">건</span></div>
+          <div class="kpi-meta">반품 3건 포함 <span class="chip-dn">즉시 처리 필요</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:20%;background:var(--red-600)"></div></div>
+        </div>
+      </div>
+
+      <!-- 채널별 현황 + 주문 목록 -->
+      <div class="g2">
+
+        <!-- 채널별 매출 -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">채널별 매출 현황</span>
+            <span class="card-sub">오늘 기준</span>
+          </div>
+          <div class="channel-list">
+            <div class="ch-row">
+              <div class="ch-icon" style="background:#f0fdf4">🟢</div>
+              <div class="ch-info">
+                <div class="ch-name">네이버 스마트스토어</div>
+                <div class="ch-meta">주문 98건 · 평균 19,800원</div>
+              </div>
+              <div class="ch-prog"><div class="ch-prog-bg"><div class="ch-prog-fill" style="width:82%;background:var(--green-600)"></div></div></div>
+              <div class="ch-sales" style="color:var(--green-600)">1,940K</div>
+            </div>
+            <div class="ch-row">
+              <div class="ch-icon" style="background:#fff7ed">🟠</div>
+              <div class="ch-info">
+                <div class="ch-name">쿠팡 로켓그로스</div>
+                <div class="ch-meta">주문 72건 · 평균 23,400원</div>
+              </div>
+              <div class="ch-prog"><div class="ch-prog-bg"><div class="ch-prog-fill" style="width:65%;background:var(--orange-500)"></div></div></div>
+              <div class="ch-sales" style="color:var(--orange-500)">1,685K</div>
+            </div>
+            <div class="ch-row">
+              <div class="ch-icon" style="background:#faf5ff">🟣</div>
+              <div class="ch-info">
+                <div class="ch-name">카카오 선물하기</div>
+                <div class="ch-meta">주문 45건 · 평균 31,200원</div>
+              </div>
+              <div class="ch-prog"><div class="ch-prog-bg"><div class="ch-prog-fill" style="width:45%;background:var(--purple-600)"></div></div></div>
+              <div class="ch-sales" style="color:var(--purple-600)">1,404K</div>
+            </div>
+            <div class="ch-row">
+              <div class="ch-icon" style="background:#eff6ff">🔵</div>
+              <div class="ch-info">
+                <div class="ch-name">자사몰 (ShopOn)</div>
+                <div class="ch-meta">주문 32건 · 평균 24,100원</div>
+              </div>
+              <div class="ch-prog"><div class="ch-prog-bg"><div class="ch-prog-fill" style="width:28%;background:var(--blue-600)"></div></div></div>
+              <div class="ch-sales" style="color:var(--blue-600)">771K</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 최근 주문 -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">최근 주문</span>
+            <span class="card-action">전체 247건</span>
+          </div>
+          <div class="tbl-wrap">
+            <table class="ord-tbl">
+              <thead>
+                <tr><th>주문번호</th><th>상품</th><th>금액</th><th>시간</th><th>상태</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="ord-id">#2024-8821</td>
+                  <td><div class="ord-product">제주 한라봉 선물세트 3kg</div><div class="ord-customer">김민수 · 네이버</div></td>
+                  <td class="ord-price">34,900</td>
+                  <td class="ord-date">08:42</td>
+                  <td><span class="badge badge-blue">결제완료</span></td>
+                </tr>
+                <tr>
+                  <td class="ord-id">#2024-8820</td>
+                  <td><div class="ord-product">유기농 아보카도 6입</div><div class="ord-customer">이수진 · 쿠팡</div></td>
+                  <td class="ord-price">22,500</td>
+                  <td class="ord-date">08:39</td>
+                  <td><span class="badge badge-orange">배송중</span></td>
+                </tr>
+                <tr>
+                  <td class="ord-id">#2024-8819</td>
+                  <td><div class="ord-product">국내산 블루베리 500g × 2</div><div class="ord-customer">박지현 · 자사몰</div></td>
+                  <td class="ord-price">28,000</td>
+                  <td class="ord-date">08:35</td>
+                  <td><span class="badge badge-green">배송완료</span></td>
+                </tr>
+                <tr>
+                  <td class="ord-id">#2024-8818</td>
+                  <td><div class="ord-product">샤인머스켓 2kg</div><div class="ord-customer">최유리 · 카카오</div></td>
+                  <td class="ord-price">42,000</td>
+                  <td class="ord-date">08:28</td>
+                  <td><span class="badge badge-red">반품요청</span></td>
+                </tr>
+                <tr>
+                  <td class="ord-id">#2024-8817</td>
+                  <td><div class="ord-product">제철 딸기 1kg × 2박스</div><div class="ord-customer">정하은 · 네이버</div></td>
+                  <td class="ord-price">38,000</td>
+                  <td class="ord-date">08:21</td>
+                  <td><span class="badge badge-blue">결제완료</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- 매출 차트 + 인기 상품 + 재고 -->
+      <div class="g3">
+
+        <!-- 주간 매출 차트 -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">주간 매출</span>
+            <span class="card-sub">이번 주 · 만원</span>
+          </div>
+          <div class="chart-wrap">
+            <div class="bar-chart">
+              <div class="bar-col"><span class="bar-val">312</span><div class="bar" style="height:65%;background:#fed7aa"></div><span class="bar-lbl">월</span></div>
+              <div class="bar-col"><span class="bar-val">428</span><div class="bar" style="height:89%;background:#fed7aa"></div><span class="bar-lbl">화</span></div>
+              <div class="bar-col"><span class="bar-val">381</span><div class="bar" style="height:79%;background:#fed7aa"></div><span class="bar-lbl">수</span></div>
+              <div class="bar-col"><span class="bar-val">456</span><div class="bar" style="height:95%;background:#fed7aa"></div><span class="bar-lbl">목</span></div>
+              <div class="bar-col"><span class="bar-val">480</span><div class="bar" style="height:100%;background:var(--orange-500);box-shadow:0 0 10px rgba(249,115,22,.3)"></div><span class="bar-lbl" style="color:var(--orange-500);font-weight:700">금▲</span></div>
+              <div class="bar-col"><span class="bar-val">—</span><div class="bar" style="height:4%;background:var(--gray-100)"></div><span class="bar-lbl">토</span></div>
+              <div class="bar-col"><span class="bar-val">—</span><div class="bar" style="height:4%;background:var(--gray-100)"></div><span class="bar-lbl">일</span></div>
+            </div>
+            <div class="chart-foot">
+              <span class="chart-lbl">주간 누적 매출</span>
+              <span class="chart-val">2,057만원</span>
+            </div>
+          </div>
+
+          <!-- 채널 비중 미니 -->
+          <div style="padding:0 16px 14px">
+            <div style="font-size:11px;font-weight:600;color:var(--gray-400);margin-bottom:8px;text-transform:uppercase;letter-spacing:.8px">채널 비중</div>
+            <div style="display:flex;height:8px;border-radius:4px;overflow:hidden;gap:1px">
+              <div style="width:40%;background:var(--green-600)" title="네이버 40%"></div>
+              <div style="width:35%;background:var(--orange-500)" title="쿠팡 35%"></div>
+              <div style="width:16%;background:var(--purple-600)" title="카카오 16%"></div>
+              <div style="width:9%;background:var(--blue-600)" title="자사몰 9%"></div>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:6px;flex-wrap:wrap">
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:var(--green-600)"></div><span style="font-size:10px;color:var(--gray-500)">네이버 40%</span></div>
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:var(--orange-500)"></div><span style="font-size:10px;color:var(--gray-500)">쿠팡 35%</span></div>
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:var(--purple-600)"></div><span style="font-size:10px;color:var(--gray-500)">카카오 16%</span></div>
+              <div style="display:flex;align-items:center;gap:4px"><div style="width:8px;height:8px;border-radius:2px;background:var(--blue-600)"></div><span style="font-size:10px;color:var(--gray-500)">자사몰 9%</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 인기 상품 -->
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">인기 상품</span>
+            <span class="card-sub">오늘 판매 기준</span>
+          </div>
+          <div class="prod-rank-list">
+            <div class="prod-rank-row">
+              <span class="prod-rk top">1</span>
+              <div class="prod-thumb">🍊</div>
+              <div class="prod-info"><div class="prod-nm">제주 한라봉 3kg</div><div class="prod-cat">과일 · 제주산</div></div>
+              <span class="prod-sales-cnt">98건</span>
+              <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:100%"></div></div>
+            </div>
+            <div class="prod-rank-row">
+              <span class="prod-rk top">2</span>
+              <div class="prod-thumb">🍓</div>
+              <div class="prod-info"><div class="prod-nm">제철 딸기 1kg</div><div class="prod-cat">과일 · 논산산</div></div>
+              <span class="prod-sales-cnt">74건</span>
+              <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:76%"></div></div>
+            </div>
+            <div class="prod-rank-row">
+              <span class="prod-rk top">3</span>
+              <div class="prod-thumb">🍇</div>
+              <div class="prod-info"><div class="prod-nm">샤인머스켓 2kg</div><div class="prod-cat">과일 · 경북산</div></div>
+              <span class="prod-sales-cnt">56건</span>
+              <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:57%"></div></div>
+            </div>
+            <div class="prod-rank-row">
+              <span class="prod-rk">4</span>
+              <div class="prod-thumb">🥑</div>
+              <div class="prod-info"><div class="prod-nm">유기농 아보카도 6입</div><div class="prod-cat">수입 과일</div></div>
+              <span class="prod-sales-cnt">42건</span>
+              <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:43%"></div></div>
+            </div>
+            <div class="prod-rank-row">
+              <span class="prod-rk">5</span>
+              <div class="prod-thumb">🫐</div>
+              <div class="prod-info"><div class="prod-nm">국내산 블루베리 500g</div><div class="prod-cat">과일 · 국내산</div></div>
+              <span class="prod-sales-cnt">31건</span>
+              <div class="prod-bar-bg"><div class="prod-bar-fill" style="width:32%"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 재고 현황 + 쿠폰 -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">재고 현황</span>
+              <span class="card-action">발주하기</span>
+            </div>
+            <div class="stock-list">
+              <div class="stock-row">
+                <div class="stock-thumb">🍊</div>
+                <div class="stock-info">
+                  <div class="stock-name">제주 한라봉 3kg</div>
+                  <div class="stock-sku">SKU-001 · 냉장</div>
+                  <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:18%;background:var(--red-600)"></div></div>
+                </div>
+                <div>
+                  <div class="stock-qty" style="color:var(--red-600)">42개</div>
+                  <span class="badge badge-red" style="font-size:10px">부족</span>
+                </div>
+              </div>
+              <div class="stock-row">
+                <div class="stock-thumb">🍓</div>
+                <div class="stock-info">
+                  <div class="stock-name">제철 딸기 1kg</div>
+                  <div class="stock-sku">SKU-002 · 냉장</div>
+                  <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:45%;background:var(--amber-600)"></div></div>
+                </div>
+                <div>
+                  <div class="stock-qty" style="color:var(--amber-600)">186개</div>
+                  <span class="badge badge-amber" style="font-size:10px">주의</span>
+                </div>
+              </div>
+              <div class="stock-row">
+                <div class="stock-thumb">🍇</div>
+                <div class="stock-info">
+                  <div class="stock-name">샤인머스켓 2kg</div>
+                  <div class="stock-sku">SKU-003 · 상온</div>
+                  <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:74%;background:var(--green-600)"></div></div>
+                </div>
+                <div>
+                  <div class="stock-qty" style="color:var(--green-600)">312개</div>
+                  <span class="badge badge-green" style="font-size:10px">정상</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <span class="card-title">진행 중 쿠폰</span>
+              <span class="card-action">+ 생성</span>
+            </div>
+            <div class="coupon-list">
+              <div class="coupon-row">
+                <div class="coupon-box" style="background:var(--orange-50)">
+                  <div class="coupon-pct" style="color:var(--orange-500)">15%</div>
+                  <div class="coupon-lbl" style="color:var(--orange-500)">할인</div>
+                </div>
+                <div class="coupon-info">
+                  <div class="coupon-name">신규 가입 환영 쿠폰</div>
+                  <div class="coupon-meta">~3/31 · 3만원 이상</div>
+                  <div class="coupon-progress"><div class="coupon-bar-bg"><div class="coupon-bar-fill" style="width:68%;background:var(--orange-500)"></div></div></div>
+                </div>
+                <div class="coupon-used">342/500</div>
+              </div>
+              <div class="coupon-row">
+                <div class="coupon-box" style="background:var(--blue-50)">
+                  <div class="coupon-pct" style="color:var(--blue-600)">무료</div>
+                  <div class="coupon-lbl" style="color:var(--blue-600)">배송</div>
+                </div>
+                <div class="coupon-info">
+                  <div class="coupon-name">봄 시즌 무료배송</div>
+                  <div class="coupon-meta">~4/15 · 2만원 이상</div>
+                  <div class="coupon-progress"><div class="coupon-bar-bg"><div class="coupon-bar-fill" style="width:40%;background:var(--blue-600)"></div></div></div>
+                </div>
+                <div class="coupon-used">198/500</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 최근 리뷰 -->
+      <div class="card">
+        <div class="card-head">
+          <span class="card-title">최근 리뷰</span>
+          <span class="card-action">전체 보기</span>
+        </div>
+        <div class="review-list">
+          <div class="review-row">
+            <div class="review-av" style="background:#f97316">김</div>
+            <div class="review-body">
+              <div class="review-top">
+                <span class="review-name">김민수</span>
+                <span class="review-stars">★★★★★</span>
+                <span class="review-product">제주 한라봉 3kg</span>
+                <span class="badge badge-green" style="font-size:10px">답글 완료</span>
+              </div>
+              <div class="review-text">한라봉이 정말 달고 신선해요! 선물용으로 보냈는데 받으신 분도 너무 좋아하셨어요. 포장도 꼼꼼하게 잘 되어 있었습니다.</div>
+              <div class="review-time">오늘 08:15 · 네이버</div>
+            </div>
+          </div>
+          <div class="review-row">
+            <div class="review-av" style="background:#2563eb">이</div>
+            <div class="review-body">
+              <div class="review-top">
+                <span class="review-name">이수진</span>
+                <span class="review-stars">★★★★☆</span>
+                <span class="review-product">샤인머스켓 2kg</span>
+                <span class="badge badge-amber" style="font-size:10px">답글 필요</span>
+              </div>
+              <div class="review-text">포도가 신선하고 당도도 좋아요. 다만 배송 박스가 조금 찌그러져서 왔는데 포도 자체는 멀쩡해서 다행이었습니다.</div>
+              <div class="review-time">어제 21:43 · 쿠팡</div>
+            </div>
+          </div>
+          <div class="review-row">
+            <div class="review-av" style="background:#9333ea">최</div>
+            <div class="review-body">
+              <div class="review-top">
+                <span class="review-name">최유리</span>
+                <span class="review-stars">★★★☆☆</span>
+                <span class="review-product">유기농 아보카도 6입</span>
+                <span class="badge badge-red" style="font-size:10px">반품 연관</span>
+              </div>
+              <div class="review-text">아보카도 2개가 너무 익어서 왔어요. 나머지는 괜찮았지만 기대에 못 미쳤습니다. 반품 요청했어요.</div>
+              <div class="review-time">어제 19:22 · 카카오</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function openSidebar()  { document.getElementById('sidebar').classList.add('open');  document.getElementById('overlay').classList.add('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+function navClick(el) {
+  document.querySelectorAll('.nav-link').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  if (window.innerWidth < 768) closeSidebar();
+}
+</script>
+</body>
+</html>

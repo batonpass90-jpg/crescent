@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BeautyOn — 예약 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink: #f43f7a;
+  --pink-light: #fff0f5;
+  --pink-mid: #ffd6e7;
+  --purple: #8b5cf6;
+  --purple-light: #f5f3ff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --green: #10b981;
+  --green-light: #ecfdf5;
+  --amber: #f59e0b;
+  --amber-light: #fffbeb;
+  --red: #ef4444;
+  --red-light: #fef2f2;
+  --white: #ffffff;
+}
+
+html, body { overflow-x: hidden; width: 100%; background: var(--gray-100); }
+body { font-family: 'Pretendard', -apple-system, sans-serif; color: var(--gray-900); font-size: 14px; }
+
+/* ── 전체 레이아웃: 데스크톱에서 폰 프레임처럼 ── */
+.device-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 40px;
+}
+.device-frame {
+  width: 390px;
+  min-height: 844px;
+  background: var(--gray-100);
+  border-radius: 48px;
+  box-shadow: 0 40px 100px rgba(0,0,0,.18), 0 0 0 10px #1a1a1a, 0 0 0 12px #3a3a3a;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+/* 노치 */
+.device-frame::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 32px;
+  background: #1a1a1a;
+  border-radius: 0 0 20px 20px;
+  z-index: 100;
+}
+.device-inner { height: 100%; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+.device-inner::-webkit-scrollbar { display: none; }
+
+/* 데스크톱 오른쪽 패널 */
+.desktop-panel {
+  flex: 1;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 8px;
+}
+.panel-card {
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.panel-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--gray-100);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-title { font-size: 14px; font-weight: 700; }
+.panel-action { font-size: 12px; color: var(--pink); font-weight: 600; cursor: pointer; }
+
+/* ── 앱 내부 ── */
+.app { display: flex; flex-direction: column; min-height: 844px; }
+
+/* STATUS BAR */
+.status-bar {
+  height: 44px;
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 28px 8px;
+  background: var(--white);
+  flex-shrink: 0;
+}
+.sb-time { font-size: 15px; font-weight: 700; }
+.sb-icons { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+
+/* TOP HEADER */
+.app-header {
+  background: var(--white);
+  padding: 8px 20px 16px;
+  flex-shrink: 0;
+}
+.header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.header-shop { font-size: 11px; font-weight: 600; color: var(--pink); letter-spacing: .5px; }
+.header-title { font-size: 20px; font-weight: 700; line-height: 1.2; }
+.header-icons { display: flex; gap: 10px; }
+.hdr-icon {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--gray-100);
+  display: grid; place-items: center;
+  font-size: 16px; cursor: pointer;
+  position: relative;
+}
+.hdr-icon .dot { position: absolute; top: 4px; right: 4px; width: 8px; height: 8px; background: var(--pink); border-radius: 50%; border: 2px solid var(--white); }
+
+/* 날짜 스크롤 */
+.date-scroll { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px; }
+.date-scroll::-webkit-scrollbar { display: none; }
+.date-chip {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 8px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .15s;
+  min-width: 46px;
+}
+.date-chip.active { background: var(--pink); }
+.date-chip .day { font-size: 10px; font-weight: 600; color: var(--gray-400); }
+.date-chip.active .day { color: rgba(255,255,255,.75); }
+.date-chip .num { font-size: 16px; font-weight: 700; color: var(--gray-700); }
+.date-chip.active .num { color: #fff; }
+.date-chip .dot2 { width: 4px; height: 4px; border-radius: 50%; background: var(--pink); }
+.date-chip.active .dot2 { background: rgba(255,255,255,.6); }
+.date-chip.today .num { color: var(--pink); }
+
+/* 스크롤 콘텐츠 */
+.app-scroll { flex: 1; overflow-y: auto; padding: 0 0 80px; }
+.app-scroll::-webkit-scrollbar { display: none; }
+
+/* KPI 스트립 */
+.kpi-strip { display: flex; gap: 10px; padding: 14px 20px; }
+.kpi-mini {
+  flex: 1;
+  background: var(--white);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+.kpi-mini-val { font-size: 20px; font-weight: 700; line-height: 1; }
+.kpi-mini-lbl { font-size: 10px; color: var(--gray-400); margin-top: 4px; font-weight: 500; }
+
+/* 섹션 헤더 */
+.sec-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 20px 10px; }
+.sec-title { font-size: 14px; font-weight: 700; }
+.sec-more { font-size: 12px; color: var(--pink); font-weight: 600; }
+
+/* 타임라인 */
+.timeline { padding: 0 20px; display: flex; flex-direction: column; gap: 8px; }
+.tl-item {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  cursor: pointer;
+  transition: transform .15s;
+  position: relative;
+  overflow: hidden;
+}
+.tl-item:active { transform: scale(.98); }
+.tl-accent { position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 4px 0 0 4px; }
+.tl-time-col { text-align: center; flex-shrink: 0; width: 38px; }
+.tl-time { font-size: 12px; font-weight: 700; color: var(--gray-700); }
+.tl-dur { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+.tl-body { flex: 1; min-width: 0; }
+.tl-name { font-size: 14px; font-weight: 700; }
+.tl-service { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.tl-tags { display: flex; gap: 5px; margin-top: 7px; flex-wrap: wrap; }
+.tl-tag { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 50px; }
+.tl-tag.pink   { background: var(--pink-light); color: var(--pink); }
+.tl-tag.purple { background: var(--purple-light); color: var(--purple); }
+.tl-tag.green  { background: var(--green-light); color: var(--green); }
+.tl-tag.amber  { background: var(--amber-light); color: var(--amber); }
+.tl-tag.gray   { background: var(--gray-100); color: var(--gray-500); }
+.tl-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.tl-price { font-size: 13px; font-weight: 700; color: var(--gray-900); }
+.tl-av { width: 28px; height: 28px; border-radius: 50%; color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; }
+
+/* 빈 슬롯 */
+.tl-empty { padding: 10px 20px; display: flex; align-items: center; gap: 10px; }
+.tl-empty-line { height: 1px; background: var(--gray-200); flex: 1; }
+.tl-empty-label { font-size: 11px; color: var(--gray-300); font-weight: 500; white-space: nowrap; }
+.tl-empty-btn { font-size: 11px; font-weight: 600; color: var(--pink); background: var(--pink-light); border: none; padding: 4px 10px; border-radius: 50px; cursor: pointer; font-family: inherit; }
+
+/* 디자이너 가로 스크롤 */
+.stylist-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 4px; }
+.stylist-scroll::-webkit-scrollbar { display: none; }
+.stylist-chip {
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 12px 14px;
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  min-width: 80px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+  cursor: pointer;
+  transition: all .15s;
+}
+.stylist-chip.selected { background: var(--pink); }
+.stylist-av-lg { width: 40px; height: 40px; border-radius: 50%; color: #fff; font-size: 15px; font-weight: 700; display: grid; place-items: center; position: relative; }
+.stylist-av-status { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--white); }
+.stylist-chip-name { font-size: 11px; font-weight: 700; color: var(--gray-700); }
+.stylist-chip.selected .stylist-chip-name { color: #fff; }
+.stylist-chip-cnt { font-size: 10px; color: var(--gray-400); }
+.stylist-chip.selected .stylist-chip-cnt { color: rgba(255,255,255,.75); }
+
+/* 고객 리스트 */
+.cust-list { padding: 0 20px; display: flex; flex-direction: column; gap: 8px; }
+.cust-item {
+  background: var(--white);
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.04);
+  cursor: pointer;
+}
+.cust-av { width: 38px; height: 38px; border-radius: 50%; color: #fff; font-size: 14px; font-weight: 700; display: grid; place-items: center; flex-shrink: 0; }
+.cust-info { flex: 1; min-width: 0; }
+.cust-name { font-size: 13px; font-weight: 700; }
+.cust-detail { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.cust-right { text-align: right; }
+.cust-visit { font-size: 12px; font-weight: 700; color: var(--gray-700); }
+.cust-since { font-size: 10px; color: var(--gray-400); margin-top: 2px; }
+
+/* BOTTOM TAB BAR */
+.tab-bar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 80px;
+  background: var(--white);
+  border-top: 1px solid var(--gray-100);
+  display: flex; align-items: flex-start;
+  padding-top: 10px;
+}
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; padding-top: 4px; }
+.tab-icon { font-size: 22px; }
+.tab-label { font-size: 10px; font-weight: 600; color: var(--gray-400); }
+.tab-item.active .tab-label { color: var(--pink); }
+
+/* FAB */
+.fab {
+  position: absolute;
+  bottom: 90px; right: 20px;
+  width: 52px; height: 52px;
+  background: var(--pink);
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 24px; color: #fff;
+  box-shadow: 0 8px 24px rgba(244,63,122,.4);
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: transform .15s;
+  z-index: 10;
+}
+.fab:active { transform: scale(.92); }
+
+/* ── 데스크톱 패널 내부 ── */
+.stat-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; padding: 14px 20px; }
+.stat-box { background: var(--gray-50); border-radius: 10px; padding: 12px; text-align: center; }
+.stat-val { font-size: 20px; font-weight: 700; }
+.stat-lbl { font-size: 10px; color: var(--gray-400); margin-top: 3px; }
+
+.res-list { padding: 0 20px 14px; display: flex; flex-direction: column; gap: 8px; }
+.res-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-100); }
+.res-row:last-child { border-bottom: none; }
+.res-time { font-size: 12px; font-weight: 700; color: var(--gray-700); width: 36px; flex-shrink: 0; }
+.res-info { flex: 1; min-width: 0; }
+.res-name { font-size: 13px; font-weight: 600; }
+.res-svc { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.badge { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 50px; white-space: nowrap; }
+.badge-pink   { background: var(--pink-light);   color: var(--pink); }
+.badge-green  { background: var(--green-light);  color: var(--green); }
+.badge-amber  { background: var(--amber-light);  color: var(--amber); }
+.badge-gray   { background: var(--gray-100);     color: var(--gray-500); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+
+.svc-rank-list { padding: 0 20px 14px; display: flex; flex-direction: column; gap: 2px; }
+.svc-rank-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+.svc-rank-row:last-child { border-bottom: none; }
+.svc-rk { font-size: 12px; font-weight: 700; color: var(--gray-300); width: 16px; flex-shrink: 0; }
+.svc-rk.top { color: var(--pink); }
+.svc-nm { flex: 1; font-size: 13px; font-weight: 500; }
+.svc-ct { font-size: 12px; color: var(--gray-400); }
+.svc-bar-bg { width: 60px; height: 4px; background: var(--gray-100); border-radius: 2px; overflow: hidden; flex-shrink: 0; }
+.svc-bar-fill { height: 100%; border-radius: 2px; background: var(--pink); }
+
+/* ── 모바일 전용 (768px 이하) ── */
+@media (max-width: 768px) {
+  .device-wrap { padding: 0; align-items: stretch; }
+  .device-frame {
+    width: 100%; min-height: 100vh;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  .device-frame::before { display: none; }
+  .desktop-panel { display: none; }
+  .app { min-height: 100vh; }
+}
+</style>
+</head>
+<body>
+
+<div class="device-wrap">
+
+  <!-- 폰 프레임 -->
+  <div class="device-frame">
+    <div class="device-inner">
+      <div class="app">
+
+        <!-- STATUS BAR -->
+        <div class="status-bar">
+          <span class="sb-time" id="clock">9:41</span>
+          <div class="sb-icons">
+            <span>●●●</span>
+            <span>WiFi</span>
+            <span>🔋</span>
+          </div>
+        </div>
+
+        <!-- HEADER -->
+        <div class="app-header">
+          <div class="header-row">
+            <div>
+              <div class="header-shop">✂️ 이지은 헤어샵</div>
+              <div class="header-title">오늘의 예약</div>
+            </div>
+            <div class="header-icons">
+              <div class="hdr-icon">🔔<div class="dot"></div></div>
+              <div class="hdr-icon">⚙️</div>
+            </div>
+          </div>
+
+          <!-- 날짜 선택 -->
+          <div class="date-scroll">
+            <div class="date-chip" onclick="selectDate(this)">
+              <div class="day">월</div>
+              <div class="num">20</div>
+            </div>
+            <div class="date-chip" onclick="selectDate(this)">
+              <div class="day">화</div>
+              <div class="num">21</div>
+            </div>
+            <div class="date-chip" onclick="selectDate(this)">
+              <div class="day">수</div>
+              <div class="num">22</div>
+            </div>
+            <div class="date-chip today" onclick="selectDate(this)">
+              <div class="day">목</div>
+              <div class="num">23</div>
+              <div class="dot2"></div>
+            </div>
+            <div class="date-chip active" onclick="selectDate(this)">
+              <div class="day">금</div>
+              <div class="num">24</div>
+              <div class="dot2"></div>
+            </div>
+            <div class="date-chip" onclick="selectDate(this)">
+              <div class="day">토</div>
+              <div class="num">25</div>
+            </div>
+            <div class="date-chip" onclick="selectDate(this)">
+              <div class="day">일</div>
+              <div class="num">26</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SCROLL CONTENT -->
+        <div class="app-scroll">
+
+          <!-- KPI 미니 -->
+          <div class="kpi-strip">
+            <div class="kpi-mini">
+              <div class="kpi-mini-val" style="color:var(--pink)">14</div>
+              <div class="kpi-mini-lbl">총 예약</div>
+            </div>
+            <div class="kpi-mini">
+              <div class="kpi-mini-val" style="color:var(--green)">9</div>
+              <div class="kpi-mini-lbl">완료</div>
+            </div>
+            <div class="kpi-mini">
+              <div class="kpi-mini-val" style="color:var(--amber)">4</div>
+              <div class="kpi-mini-lbl">대기</div>
+            </div>
+            <div class="kpi-mini">
+              <div class="kpi-mini-val" style="color:var(--red)">1</div>
+              <div class="kpi-mini-lbl">노쇼</div>
+            </div>
+          </div>
+
+          <!-- 디자이너 필터 -->
+          <div class="sec-head">
+            <div class="sec-title">디자이너</div>
+            <div class="sec-more">전체 보기</div>
+          </div>
+          <div class="stylist-scroll">
+            <div class="stylist-chip selected" onclick="selectStylist(this)">
+              <div class="stylist-av-lg" style="background:var(--white)">
+                <span style="color:var(--pink);font-size:18px">👥</span>
+              </div>
+              <div class="stylist-chip-name" style="color:#fff">전체</div>
+              <div class="stylist-chip-cnt">14건</div>
+            </div>
+            <div class="stylist-chip" onclick="selectStylist(this)">
+              <div class="stylist-av-lg" style="background:#f43f7a">이
+                <div class="stylist-av-status" style="background:var(--green)"></div>
+              </div>
+              <div class="stylist-chip-name">이지은</div>
+              <div class="stylist-chip-cnt">5건</div>
+            </div>
+            <div class="stylist-chip" onclick="selectStylist(this)">
+              <div class="stylist-av-lg" style="background:#8b5cf6">김
+                <div class="stylist-av-status" style="background:var(--green)"></div>
+              </div>
+              <div class="stylist-chip-name">김소희</div>
+              <div class="stylist-chip-cnt">4건</div>
+            </div>
+            <div class="stylist-chip" onclick="selectStylist(this)">
+              <div class="stylist-av-lg" style="background:#2563eb">박
+                <div class="stylist-av-status" style="background:var(--green)"></div>
+              </div>
+              <div class="stylist-chip-name">박나연</div>
+              <div class="stylist-chip-cnt">3건</div>
+            </div>
+            <div class="stylist-chip" onclick="selectStylist(this)">
+              <div class="stylist-av-lg" style="background:#10b981">최
+                <div class="stylist-av-status" style="background:var(--amber)"></div>
+              </div>
+              <div class="stylist-chip-name">최아름</div>
+              <div class="stylist-chip-cnt">2건</div>
+            </div>
+          </div>
+
+          <!-- 타임라인 -->
+          <div class="sec-head" style="margin-top:14px">
+            <div class="sec-title">예약 일정</div>
+            <div class="sec-more">달력 보기</div>
+          </div>
+          <div class="timeline">
+
+            <div class="tl-item">
+              <div class="tl-accent" style="background:var(--gray-300)"></div>
+              <div class="tl-time-col"><div class="tl-time">10:00</div><div class="tl-dur">50분</div></div>
+              <div class="tl-body">
+                <div class="tl-name">김민지</div>
+                <div class="tl-service">커트 + 드라이</div>
+                <div class="tl-tags">
+                  <span class="tl-tag gray">완료</span>
+                  <span class="tl-tag purple">이지은</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">35,000</div>
+                <div class="tl-av" style="background:#f43f7a">이</div>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-accent" style="background:var(--gray-300)"></div>
+              <div class="tl-time-col"><div class="tl-time">11:00</div><div class="tl-dur">2시간</div></div>
+              <div class="tl-body">
+                <div class="tl-name">박수연</div>
+                <div class="tl-service">염색 (전체)</div>
+                <div class="tl-tags">
+                  <span class="tl-tag gray">완료</span>
+                  <span class="tl-tag purple">김소희</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">85,000</div>
+                <div class="tl-av" style="background:#8b5cf6">김</div>
+              </div>
+            </div>
+
+            <!-- 빈 슬롯 -->
+            <div class="tl-empty">
+              <div class="tl-empty-line"></div>
+              <span class="tl-empty-label">13:00 빈 슬롯</span>
+              <button class="tl-empty-btn">+ 예약 추가</button>
+              <div class="tl-empty-line"></div>
+            </div>
+
+            <div class="tl-item" style="border:2px solid var(--purple);background:var(--purple-light)">
+              <div class="tl-accent" style="background:var(--purple)"></div>
+              <div class="tl-time-col"><div class="tl-time">14:00</div><div class="tl-dur">2시간 30분</div></div>
+              <div class="tl-body">
+                <div class="tl-name">이하은</div>
+                <div class="tl-service">펌 (디지털)</div>
+                <div class="tl-tags">
+                  <span class="tl-tag purple">시술 중</span>
+                  <span class="tl-tag purple">이지은</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">120,000</div>
+                <div class="tl-av" style="background:#f43f7a">이</div>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-accent" style="background:var(--pink)"></div>
+              <div class="tl-time-col"><div class="tl-time">15:30</div><div class="tl-dur">1시간</div></div>
+              <div class="tl-body">
+                <div class="tl-name">최유리</div>
+                <div class="tl-service">네일 젤 (손)</div>
+                <div class="tl-tags">
+                  <span class="tl-tag pink">예약</span>
+                  <span class="tl-tag pink">박나연</span>
+                  <span class="tl-tag green">N 네이버</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">55,000</div>
+                <div class="tl-av" style="background:#2563eb">박</div>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-accent" style="background:var(--pink)"></div>
+              <div class="tl-time-col"><div class="tl-time">17:00</div><div class="tl-dur">1시간 30분</div></div>
+              <div class="tl-body">
+                <div class="tl-name">정다은</div>
+                <div class="tl-service">커트 + 염색</div>
+                <div class="tl-tags">
+                  <span class="tl-tag pink">예약</span>
+                  <span class="tl-tag pink">김소희</span>
+                  <span class="tl-tag amber">K 카카오</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">95,000</div>
+                <div class="tl-av" style="background:#8b5cf6">김</div>
+              </div>
+            </div>
+
+            <div class="tl-item">
+              <div class="tl-accent" style="background:var(--pink)"></div>
+              <div class="tl-time-col"><div class="tl-time">19:00</div><div class="tl-dur">1시간</div></div>
+              <div class="tl-body">
+                <div class="tl-name">강지현</div>
+                <div class="tl-service">클리닉 트리트먼트</div>
+                <div class="tl-tags">
+                  <span class="tl-tag pink">예약</span>
+                  <span class="tl-tag purple">이지은</span>
+                </div>
+              </div>
+              <div class="tl-right">
+                <div class="tl-price">68,000</div>
+                <div class="tl-av" style="background:#f43f7a">이</div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- 단골 고객 -->
+          <div class="sec-head" style="margin-top:20px">
+            <div class="sec-title">단골 고객</div>
+            <div class="sec-more">전체 보기</div>
+          </div>
+          <div class="cust-list">
+            <div class="cust-item">
+              <div class="cust-av" style="background:#f43f7a">김</div>
+              <div class="cust-info">
+                <div class="cust-name">김지수</div>
+                <div class="cust-detail">염색 단골 · 이지은 원장</div>
+              </div>
+              <div class="cust-right">
+                <div class="cust-visit">24회</div>
+                <div class="cust-since">3/18 방문</div>
+              </div>
+            </div>
+            <div class="cust-item">
+              <div class="cust-av" style="background:#8b5cf6">이</div>
+              <div class="cust-info">
+                <div class="cust-name">이서연</div>
+                <div class="cust-detail">펌 전문 · 김소희 담당</div>
+              </div>
+              <div class="cust-right">
+                <div class="cust-visit">18회</div>
+                <div class="cust-since">3/20 방문</div>
+              </div>
+            </div>
+            <div class="cust-item">
+              <div class="cust-av" style="background:#2563eb">박</div>
+              <div class="cust-info">
+                <div class="cust-name">박혜린</div>
+                <div class="cust-detail">네일 정기 · 박나연 담당</div>
+              </div>
+              <div class="cust-right">
+                <div class="cust-visit">15회</div>
+                <div class="cust-since">오늘 예약</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:20px"></div>
+        </div>
+
+        <!-- FAB -->
+        <button class="fab" onclick="this.style.transform='scale(.88)';setTimeout(()=>this.style.transform='',150)">+</button>
+
+        <!-- TAB BAR -->
+        <div class="tab-bar">
+          <div class="tab-item active">
+            <div class="tab-icon">📅</div>
+            <div class="tab-label" style="color:var(--pink)">예약</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">👥</div>
+            <div class="tab-label">고객</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">💰</div>
+            <div class="tab-label">매출</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⭐</div>
+            <div class="tab-label">리뷰</div>
+          </div>
+          <div class="tab-item">
+            <div class="tab-icon">⚙️</div>
+            <div class="tab-label">설정</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 데스크톱 오른쪽 패널 -->
+  <div class="desktop-panel">
+
+    <div class="panel-card">
+      <div class="panel-head">
+        <span class="panel-title">📊 오늘 현황</span>
+        <span class="panel-action">자세히</span>
+      </div>
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-val" style="color:var(--pink)">62만</div><div class="stat-lbl">오늘 매출</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--green)">68%</div><div class="stat-lbl">재방문율</div></div>
+        <div class="stat-box"><div class="stat-val" style="color:var(--red)">1건</div><div class="stat-lbl">노쇼</div></div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-head">
+        <span class="panel-title">📅 대기 예약</span>
+        <span class="panel-action">+ 등록</span>
+      </div>
+      <div class="res-list">
+        <div class="res-row">
+          <div class="res-time">15:30</div>
+          <div class="res-info"><div class="res-name">최유리</div><div class="res-svc">네일 젤 · 박나연</div></div>
+          <span class="badge badge-pink">예약</span>
+        </div>
+        <div class="res-row">
+          <div class="res-time">17:00</div>
+          <div class="res-info"><div class="res-name">정다은</div><div class="res-svc">커트+염색 · 김소희</div></div>
+          <span class="badge badge-pink">예약</span>
+        </div>
+        <div class="res-row">
+          <div class="res-time">19:00</div>
+          <div class="res-info"><div class="res-name">강지현</div><div class="res-svc">클리닉 · 이지은</div></div>
+          <span class="badge badge-pink">예약</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <div class="panel-head">
+        <span class="panel-title">✂️ 인기 서비스</span>
+        <span class="panel-action">이번 달</span>
+      </div>
+      <div class="svc-rank-list">
+        <div class="svc-rank-row"><span class="svc-rk top">1</span><span class="svc-nm">커트 + 드라이</span><span class="svc-ct">48건</span><div class="svc-bar-bg"><div class="svc-bar-fill" style="width:100%"></div></div></div>
+        <div class="svc-rank-row"><span class="svc-rk top">2</span><span class="svc-nm">염색 (전체)</span><span class="svc-ct">36건</span><div class="svc-bar-bg"><div class="svc-bar-fill" style="width:75%"></div></div></div>
+        <div class="svc-rank-row"><span class="svc-rk top">3</span><span class="svc-nm">디지털 펌</span><span class="svc-ct">29건</span><div class="svc-bar-bg"><div class="svc-bar-fill" style="width:60%"></div></div></div>
+        <div class="svc-rank-row"><span class="svc-rk">4</span><span class="svc-nm">네일 젤 (손)</span><span class="svc-ct">22건</span><div class="svc-bar-bg"><div class="svc-bar-fill" style="width:46%"></div></div></div>
+        <div class="svc-rank-row"><span class="svc-rk">5</span><span class="svc-nm">클리닉 트리트먼트</span><span class="svc-ct">17건</span><div class="svc-bar-bg"><div class="svc-bar-fill" style="width:35%"></div></div></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// 시계
+function tick() {
+  const n = new Date(), p = v => String(v).padStart(2,'0');
+  document.getElementById('clock').textContent = `${p(n.getHours())}:${p(n.getMinutes())}`;
+}
+tick(); setInterval(tick, 10000);
+
+// 날짜 선택
+function selectDate(el) {
+  document.querySelectorAll('.date-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// 디자이너 선택
+function selectStylist(el) {
+  document.querySelectorAll('.stylist-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// 탭바 클릭
+document.querySelectorAll('.tab-item').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab-item').forEach(t => {
+      t.classList.remove('active');
+      t.querySelector('.tab-label').style.color = '';
+    });
+    tab.classList.add('active');
+    tab.querySelector('.tab-label').style.color = 'var(--pink)';
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FactoryOn — 생산관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g50:#f9fafb;--g100:#f3f4f6;--g200:#e5e7eb;--g400:#9ca3af;--g500:#6b7280;--g700:#374151;--g900:#111827;
+  --b50:#eff6ff;--b100:#dbeafe;--b600:#2563eb;
+  --gr50:#f0fdf4;--gr600:#16a34a;
+  --r50:#fef2f2;--r600:#dc2626;
+  --a50:#fffbeb;--a600:#d97706;
+  --sw:220px;--th:56px;
+}
+html,body{overflow-x:hidden;width:100%}
+body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--g100);color:var(--g900);font-size:14px;line-height:1.5}
+.layout{display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:var(--sw);background:#fff;border-right:1px solid var(--g200);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;transition:transform .25s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:199}
+.logo{height:var(--th);display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1px solid var(--g200);flex-shrink:0}
+.logo-icon{width:28px;height:28px;background:var(--b600);border-radius:7px;display:grid;place-items:center;color:#fff;font-size:14px;flex-shrink:0}
+.logo-text{font-size:15px;font-weight:700}
+.logo-ver{font-size:10px;color:var(--g400);margin-left:auto}
+.nav{flex:1;overflow-y:auto;padding:10px 0}
+.nav-grp{margin-bottom:4px}
+.nav-grp-title{font-size:11px;font-weight:600;color:var(--g400);text-transform:uppercase;letter-spacing:.8px;padding:8px 16px 4px}
+.nav-link{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13.5px;font-weight:500;color:var(--g500);cursor:pointer;transition:background .12s,color .12s;position:relative}
+.nav-link:hover{background:var(--g50);color:var(--g900)}
+.nav-link.active{color:var(--b600);background:var(--b50)}
+.nav-link.active::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:3px;background:var(--b600);border-radius:0 2px 2px 0}
+.nav-badge{margin-left:auto;background:var(--r600);color:#fff;font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+.sb-foot{border-top:1px solid var(--g200);padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--b600);color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.foot-name{font-size:13px;font-weight:600}
+.foot-role{font-size:11px;color:var(--g400)}
+/* MAIN */
+.main{margin-left:var(--sw);flex:1;min-width:0;display:flex;flex-direction:column}
+/* TOPBAR */
+.topbar{height:var(--th);background:#fff;border-bottom:1px solid var(--g200);display:flex;align-items:center;gap:10px;padding:0 20px;position:sticky;top:0;z-index:100;flex-shrink:0}
+.menu-btn{display:none;width:32px;height:32px;border-radius:6px;border:1px solid var(--g200);background:#fff;cursor:pointer;font-size:16px;align-items:center;justify-content:center;flex-shrink:0}
+.tb-title{font-size:15px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-time{font-size:12px;color:var(--g400);white-space:nowrap;flex-shrink:0}
+.live{display:flex;align-items:center;gap:5px;background:var(--gr50);color:var(--gr600);font-size:12px;font-weight:600;padding:5px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--gr600);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.btn{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;flex-shrink:0;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn-p{background:var(--b600);color:#fff}
+.btn-o{background:#fff;color:var(--g700);border:1px solid var(--g200)}
+/* PAGE */
+.page{padding:20px;display:flex;flex-direction:column;gap:14px}
+/* ALERT */
+.alert{display:flex;align-items:flex-start;gap:10px;background:var(--r50);border:1px solid #fca5a5;border-radius:8px;padding:12px 14px;font-size:13px}
+.alert-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.alert-body{flex:1;min-width:0}
+.alert-body strong{color:var(--r600)}
+.alert-cta{color:var(--b600);font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap;flex-shrink:0}
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:#fff;border:1px solid var(--g200);border-radius:10px;padding:16px}
+.kpi-lbl{font-size:11px;font-weight:600;color:var(--g500);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.kpi-val{font-size:26px;font-weight:700;line-height:1;letter-spacing:-1px;margin-bottom:6px}
+.kpi-val .u{font-size:14px;font-weight:500}
+.kpi-meta{font-size:12px;color:var(--g400);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.cup{font-size:11px;font-weight:700;color:var(--gr600)}
+.cdn{font-size:11px;font-weight:700;color:var(--r600)}
+.kpi-bar{height:3px;background:var(--g100);border-radius:2px;margin-top:10px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:2px}
+/* CARD */
+.card{background:#fff;border:1px solid var(--g200);border-radius:10px;overflow:hidden}
+.c-head{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:1px solid var(--g200)}
+.c-title{font-size:13px;font-weight:700}
+.c-act{font-size:12px;color:var(--b600);font-weight:600;cursor:pointer;white-space:nowrap;margin-left:8px}
+.c-body{padding:0 16px}
+.c-body-p{padding:14px 16px}
+/* BADGE */
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;white-space:nowrap;flex-shrink:0;display:inline-block}
+.b-gr{background:var(--gr50);color:var(--gr600)}
+.b-rd{background:var(--r50);color:var(--r600)}
+.b-am{background:var(--a50);color:var(--a600)}
+.b-bl{background:var(--b50);color:var(--b600)}
+.b-gy{background:var(--g100);color:var(--g500)}
+/* ROW2 */
+.row2{display:grid;grid-template-columns:1.15fr 1fr;gap:12px}
+/* LINE */
+.line-row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--g100);font-size:13px}
+.line-row:last-child{border-bottom:none}
+.lcode{font-size:11px;font-weight:700;color:var(--g400);width:34px;flex-shrink:0}
+.lname{flex:1;font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pwrap{width:80px;flex-shrink:0}
+.pbg{height:5px;background:var(--g100);border-radius:3px;overflow:hidden}
+.pfill{height:100%;border-radius:3px}
+.ppct{font-size:12px;font-weight:700;width:30px;text-align:right;flex-shrink:0}
+/* STOCK TABLE */
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{text-align:left;padding:6px 0 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--g200)}
+.tbl td{padding:9px 0;border-bottom:1px solid var(--g100);vertical-align:middle;color:var(--g500)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl td:first-child{color:var(--g900);font-weight:500}
+.tbl .warn{color:var(--r600)!important}
+.sbar{height:3px;background:var(--g100);border-radius:2px;margin-top:4px;overflow:hidden}
+/* ROW3 */
+.row3{display:grid;grid-template-columns:1.6fr 1fr 1fr;gap:12px}
+/* ORDER TABLE */
+.otbl{width:100%;border-collapse:collapse;font-size:13px}
+.otbl th{text-align:left;padding:6px 8px 8px;font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--g200)}
+.otbl td{padding:10px 8px;border-bottom:1px solid var(--g100);vertical-align:middle}
+.otbl tr:last-child td{border-bottom:none}
+.oid{font-size:11px;font-weight:700;color:var(--g400)}
+.onm{font-weight:600;color:var(--g900)}
+.oqt,.odt{color:var(--g500);font-size:12px}
+.odt.late{color:var(--r600);font-weight:700}
+/* CHART */
+.chart{display:flex;align-items:flex-end;gap:6px;height:90px}
+.bc{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.bv{font-size:10px;font-weight:600;color:var(--g500)}
+.bar{width:100%;border-radius:4px 4px 0 0;cursor:pointer;transition:opacity .15s;min-height:4px}
+.bar:hover{opacity:.75}
+.bl{font-size:10px;color:var(--g400)}
+.gbar-bg{height:6px;background:var(--g100);border-radius:3px;overflow:hidden}
+.gbar-fill{height:100%;border-radius:3px;background:var(--b600)}
+/* WORKER */
+.wrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--g100)}
+.wrow:last-child{border-bottom:none}
+.wav{width:32px;height:32px;border-radius:50%;color:#fff;font-size:13px;font-weight:700;display:grid;place-items:center;flex-shrink:0}
+.winf{flex:1;min-width:0}
+.wnm{font-size:13px;font-weight:600}
+.wrl{font-size:11px;color:var(--g400)}
+/* ANIM */
+@keyframes fu{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.kpi{animation:fu .35s ease both}
+.kpi:nth-child(1){animation-delay:.04s}.kpi:nth-child(2){animation-delay:.08s}
+.kpi:nth-child(3){animation-delay:.12s}.kpi:nth-child(4){animation-delay:.16s}
+.card{animation:fu .35s ease both;animation-delay:.2s}
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .row3{grid-template-columns:1fr 1fr}
+  .row3>.card:first-child{grid-column:1/-1}
+}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .overlay.open{display:block}
+  .main{margin-left:0}
+  .menu-btn{display:flex}
+  .tb-time{display:none}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .row2{grid-template-columns:1fr}
+  .row3{grid-template-columns:1fr}
+  .row3>.card:first-child{grid-column:auto}
+  .btn-o{display:none}
+  .hide-sm{display:none}
+}
+@media(max-width:480px){
+  .page{padding:12px;gap:12px}
+  .kpi{padding:12px}
+  .kpi-val{font-size:22px}
+  .topbar{padding:0 12px;gap:8px}
+  .ppct{display:none}
+  .pwrap{width:60px}
+}
+</style>
+</head>
+<body>
+<div class="overlay" id="ov"></div>
+<div class="layout">
+  <aside class="sidebar" id="sb">
+    <div class="logo">
+      <div class="logo-icon">🏭</div>
+      <span class="logo-text">FactoryOn</span>
+      <span class="logo-ver">v2.5</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-grp">
+        <div class="nav-grp-title">생산</div>
+        <div class="nav-link active">📊 대시보드</div>
+        <div class="nav-link">📋 생산계획</div>
+        <div class="nav-link">📝 작업지시 <span class="nav-badge">3</span></div>
+      </div>
+      <div class="nav-grp">
+        <div class="nav-grp-title">자원관리</div>
+        <div class="nav-link">📦 재고관리</div>
+        <div class="nav-link">⚙️ 설비현황 <span class="nav-badge">1</span></div>
+        <div class="nav-link">🔍 품질검사</div>
+      </div>
+      <div class="nav-grp">
+        <div class="nav-grp-title">분석</div>
+        <div class="nav-link">📈 실적분석</div>
+        <div class="nav-link">📄 보고서</div>
+      </div>
+    </nav>
+    <div class="sb-foot">
+      <div class="avatar">김</div>
+      <div><div class="foot-name">김철수</div><div class="foot-role">생산관리팀장</div></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" id="mb">☰</button>
+      <span class="tb-title">생산 현황 대시보드</span>
+      <span class="tb-time" id="clk"></span>
+      <div class="live"><div class="live-dot"></div>실시간</div>
+      <button class="btn btn-o">공장 선택 ▾</button>
+      <button class="btn btn-p">+ 작업지시</button>
+    </header>
+
+    <div class="page">
+      <div class="alert">
+        <span class="alert-icon">⚠️</span>
+        <div class="alert-body"><strong>L-03 유압프레스 정지</strong> — 이상 감지 08:01. 설비팀 출동 요청됨.</div>
+        <span class="alert-cta">조치 보기 →</span>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-lbl">금일 생산량</div>
+          <div class="kpi-val" style="color:var(--b600)">2,847<span class="u"> 개</span></div>
+          <div class="kpi-meta">목표 3,020개 <span class="cup">▲ 94.2%</span></div>
+          <div class="kpi-bar"><div class="kpi-fill" style="width:94%;background:var(--b600)"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">설비 종합효율</div>
+          <div class="kpi-val" style="color:var(--gr600)">87.3<span class="u">%</span></div>
+          <div class="kpi-meta">전일 85.2% <span class="cup">▲ +2.1%p</span></div>
+          <div class="kpi-bar"><div class="kpi-fill" style="width:87%;background:var(--gr600)"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">불량률</div>
+          <div class="kpi-val" style="color:var(--a600)">1.4<span class="u">%</span></div>
+          <div class="kpi-meta">28개 불량 <span class="cdn">▲ +0.3%p</span></div>
+          <div class="kpi-bar"><div class="kpi-fill" style="width:14%;background:var(--a600)"></div></div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-lbl">가동 인원</div>
+          <div class="kpi-val" style="color:var(--g900)">142<span class="u"> 명</span></div>
+          <div class="kpi-meta">전체 160명 <span class="cdn">결근 18명</span></div>
+          <div class="kpi-bar"><div class="kpi-fill" style="width:89%;background:var(--g400)"></div></div>
+        </div>
+      </div>
+
+      <div class="row2">
+        <div class="card">
+          <div class="c-head"><span class="c-title">라인 가동 현황</span><span class="c-act">전체 보기</span></div>
+          <div class="c-body">
+            <div class="line-row"><span class="lcode">L-01</span><span class="lname">사출 성형 라인</span><div class="pwrap"><div class="pbg"><div class="pfill" style="width:92%;background:var(--gr600)"></div></div></div><span class="ppct" style="color:var(--gr600)">92%</span><span class="badge b-gr">가동</span></div>
+            <div class="line-row"><span class="lcode">L-02</span><span class="lname">조립 라인 A</span><div class="pwrap"><div class="pbg"><div class="pfill" style="width:88%;background:var(--gr600)"></div></div></div><span class="ppct" style="color:var(--gr600)">88%</span><span class="badge b-gr">가동</span></div>
+            <div class="line-row"><span class="lcode">L-03</span><span class="lname">유압 프레스</span><div class="pwrap"><div class="pbg"><div class="pfill" style="width:0%"></div></div></div><span class="ppct" style="color:var(--r600)">0%</span><span class="badge b-rd">정지</span></div>
+            <div class="line-row"><span class="lcode">L-04</span><span class="lname">도장 라인</span><div class="pwrap"><div class="pbg"><div class="pfill" style="width:65%;background:var(--a600)"></div></div></div><span class="ppct" style="color:var(--a600)">65%</span><span class="badge b-am">준비</span></div>
+            <div class="line-row"><span class="lcode">L-05</span><span class="lname">포장 라인</span><div class="pwrap"><div class="pbg"><div class="pfill" style="width:95%;background:var(--gr600)"></div></div></div><span class="ppct" style="color:var(--gr600)">95%</span><span class="badge b-gr">가동</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="c-head"><span class="c-title">주요 자재 재고</span><span class="c-act">발주 요청</span></div>
+          <div class="c-body">
+            <table class="tbl">
+              <thead><tr><th>자재명</th><th>재고</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td>ABS 수지 (흑)</td><td>2,400 kg<div class="sbar"><div style="width:72%;height:100%;background:var(--gr600)"></div></div></td><td><span class="badge b-gr">정상</span></td></tr>
+                <tr><td>강판 SPC-C</td><td>840 장<div class="sbar"><div style="width:42%;height:100%;background:var(--a600)"></div></div></td><td><span class="badge b-am">주의</span></td></tr>
+                <tr><td class="warn">유압유 #46</td><td class="warn">12 L<div class="sbar"><div style="width:8%;height:100%;background:var(--r600)"></div></div></td><td><span class="badge b-rd">부족</span></td></tr>
+                <tr><td>볼트 M8×30</td><td>18,400 개<div class="sbar"><div style="width:88%;height:100%;background:var(--gr600)"></div></div></td><td><span class="badge b-gr">정상</span></td></tr>
+                <tr><td>포장지 (대)</td><td>3,200 매<div class="sbar"><div style="width:60%;height:100%;background:var(--gr600)"></div></div></td><td><span class="badge b-gr">정상</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="row3">
+        <div class="card">
+          <div class="c-head"><span class="c-title">진행 중 작업지시</span><span class="c-act">전체 12건</span></div>
+          <div class="c-body" style="padding:0 16px">
+            <table class="otbl">
+              <thead><tr><th>번호</th><th>품목</th><th class="hide-sm">수량</th><th class="hide-sm">납기</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td class="oid">WO-2603</td><td class="onm">케이스 어셈블리 A형</td><td class="oqt hide-sm">1,200개</td><td class="odt hide-sm">03/25</td><td><span class="badge b-bl">진행</span></td></tr>
+                <tr><td class="oid">WO-2604</td><td class="onm">브래킷 SUS-304</td><td class="oqt hide-sm">500개</td><td class="odt late hide-sm">03/24</td><td><span class="badge b-rd">지연</span></td></tr>
+                <tr><td class="oid">WO-2605</td><td class="onm">커버 플레이트 (흑)</td><td class="oqt hide-sm">2,000개</td><td class="odt hide-sm">03/26</td><td><span class="badge b-gr">완료</span></td></tr>
+                <tr><td class="oid">WO-2606</td><td class="onm">핀 어셈블리 세트</td><td class="oqt hide-sm">3,500개</td><td class="odt hide-sm">03/28</td><td><span class="badge b-gy">대기</span></td></tr>
+                <tr><td class="oid">WO-2607</td><td class="onm">사출 성형품 B형</td><td class="oqt hide-sm">800개</td><td class="odt hide-sm">03/27</td><td><span class="badge b-bl">진행</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="c-head"><span class="c-title">주간 생산량</span><span style="font-size:12px;color:var(--g400)">이번 주</span></div>
+          <div class="c-body-p">
+            <div class="chart">
+              <div class="bc"><span class="bv">2.6K</span><div class="bar" style="height:78%;background:var(--b100)"></div><span class="bl">월</span></div>
+              <div class="bc"><span class="bv">3.0K</span><div class="bar" style="height:90%;background:var(--b100)"></div><span class="bl">화</span></div>
+              <div class="bc"><span class="bv">2.9K</span><div class="bar" style="height:87%;background:var(--b100)"></div><span class="bl">수</span></div>
+              <div class="bc"><span class="bv">3.1K</span><div class="bar" style="height:93%;background:var(--b100)"></div><span class="bl">목</span></div>
+              <div class="bc"><span class="bv" style="color:var(--b600)">2.8K</span><div class="bar" style="height:84%;background:var(--b600)"></div><span class="bl" style="color:var(--b600);font-weight:700">금</span></div>
+            </div>
+            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--g100)">
+              <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:var(--g400)">주간 목표 달성률</span><span style="font-size:13px;font-weight:700;color:var(--b600)">91%</span></div>
+              <div class="gbar-bg"><div class="gbar-fill" style="width:91%"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="c-head"><span class="c-title">당일 근무자</span><span class="c-act">142명</span></div>
+          <div class="c-body">
+            <div class="wrow"><div class="wav" style="background:#2563eb">김</div><div class="winf"><div class="wnm">김철수</div><div class="wrl">L-01 반장</div></div><span class="badge b-bl">주간</span></div>
+            <div class="wrow"><div class="wav" style="background:#16a34a">박</div><div class="winf"><div class="wnm">박영희</div><div class="wrl">품질 담당</div></div><span class="badge b-gr">주간</span></div>
+            <div class="wrow"><div class="wav" style="background:#7c3aed">이</div><div class="winf"><div class="wnm">이민준</div><div class="wrl">설비 기사</div></div><span class="badge b-gy">야간</span></div>
+            <div class="wrow"><div class="wav" style="background:#dc2626">최</div><div class="winf"><div class="wnm">최지영</div><div class="wrl">L-03 비상</div></div><span class="badge b-rd">비상</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function tick(){const n=new Date(),p=v=>String(v).padStart(2,'0');document.getElementById('clk').textContent=`${n.getFullYear()}.${p(n.getMonth()+1)}.${p(n.getDate())} ${p(n.getHours())}:${p(n.getMinutes())}`}
+tick();setInterval(tick,30000);
+const sb=document.getElementById('sb'),ov=document.getElementById('ov'),mb=document.getElementById('mb');
+function open(){sb.classList.add('open');ov.classList.add('open')}
+function close(){sb.classList.remove('open');ov.classList.remove('open')}
+mb.addEventListener('click',open);ov.addEventListener('click',close);
+document.querySelectorAll('.nav-link').forEach(el=>{el.addEventListener('click',()=>{document.querySelectorAll('.nav-link').forEach(i=>i.classList.remove('active'));el.classList.add('active');close()})});
+</script>
+</body>
+</html>

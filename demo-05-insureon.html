@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsureOn — 보험 영업 분석 툴</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gray-50:#f9fafb; --gray-100:#f3f4f6; --gray-200:#e5e7eb;
+  --gray-400:#9ca3af; --gray-500:#6b7280; --gray-700:#374151; --gray-900:#111827;
+  --blue-50:#eff6ff; --blue-100:#dbeafe; --blue-600:#2563eb; --blue-700:#1d4ed8;
+  --green-50:#f0fdf4; --green-600:#16a34a;
+  --red-50:#fef2f2; --red-600:#dc2626;
+  --amber-50:#fffbeb; --amber-600:#d97706;
+  --purple-50:#faf5ff; --purple-600:#9333ea;
+  --teal-50:#f0fdfa; --teal-600:#0d9488;
+  --sidebar-w:220px; --topbar-h:56px;
+}
+html,body { overflow-x:hidden; width:100%; }
+body { font-family:'Pretendard',-apple-system,sans-serif; background:var(--gray-100); color:var(--gray-900); font-size:14px; line-height:1.5; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes spin  { to{transform:rotate(360deg)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+
+/* LAYOUT */
+.layout { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar { width:var(--sidebar-w); background:#fff; border-right:1px solid var(--gray-200); display:flex; flex-direction:column; position:fixed; inset:0 auto 0 0; z-index:40; transition:transform .25s ease; }
+.logo { height:var(--topbar-h); display:flex; align-items:center; gap:10px; padding:0 18px; border-bottom:1px solid var(--gray-200); flex-shrink:0; }
+.logo-icon { width:28px; height:28px; background:var(--blue-600); border-radius:7px; display:grid; place-items:center; color:#fff; font-size:15px; flex-shrink:0; }
+.logo-text { font-size:15px; font-weight:700; }
+.logo-ver  { font-size:10px; color:var(--gray-400); margin-left:auto; }
+.nav { flex:1; overflow-y:auto; padding:10px 0; }
+.nav-section { margin-bottom:4px; }
+.nav-section-title { font-size:11px; font-weight:600; color:var(--gray-400); text-transform:uppercase; letter-spacing:.8px; padding:8px 18px 4px; }
+.nav-link { display:flex; align-items:center; gap:9px; padding:9px 18px; font-size:13.5px; font-weight:500; color:var(--gray-500); cursor:pointer; transition:background .12s,color .12s; position:relative; user-select:none; }
+.nav-link:hover { background:var(--gray-50); color:var(--gray-900); }
+.nav-link.active { color:var(--blue-600); background:var(--blue-50); }
+.nav-link.active::before { content:''; position:absolute; left:0; top:6px; bottom:6px; width:3px; background:var(--blue-600); border-radius:0 2px 2px 0; }
+.nav-badge { margin-left:auto; background:var(--red-600); color:#fff; font-size:10px; font-weight:700; min-width:18px; height:18px; border-radius:9px; display:grid; place-items:center; padding:0 5px; }
+.sidebar-footer { border-top:1px solid var(--gray-200); padding:14px 18px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.s-av { width:32px; height:32px; border-radius:50%; background:var(--blue-600); color:#fff; display:grid; place-items:center; font-size:13px; font-weight:700; flex-shrink:0; }
+.s-name { font-size:13px; font-weight:600; }
+.s-role { font-size:11px; color:var(--gray-400); }
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:39; }
+.overlay.show { display:block; }
+
+/* MAIN */
+.main { margin-left:var(--sidebar-w); flex:1; min-width:0; display:flex; flex-direction:column; }
+
+/* TOPBAR */
+.topbar { height:var(--topbar-h); background:#fff; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; padding:0 20px; gap:10px; position:sticky; top:0; z-index:30; flex-shrink:0; }
+.menu-btn { display:none; background:none; border:none; font-size:20px; cursor:pointer; padding:4px; color:var(--gray-700); }
+.topbar-title { font-size:15px; font-weight:700; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.btn { padding:7px 14px; border-radius:7px; font-size:13px; font-weight:600; border:none; cursor:pointer; font-family:inherit; transition:opacity .15s; white-space:nowrap; }
+.btn:hover { opacity:.85; }
+.btn-primary { background:var(--blue-600); color:#fff; }
+.btn-outline { background:#fff; color:var(--gray-700); border:1px solid var(--gray-200); }
+.sec-badge { display:flex; align-items:center; gap:6px; background:var(--green-50); border:1px solid #bbf7d0; border-radius:20px; padding:5px 12px; font-size:11px; font-weight:700; color:var(--green-600); white-space:nowrap; }
+.sec-dot { width:6px; height:6px; border-radius:50%; background:var(--green-600); animation:blink 2s infinite; flex-shrink:0; }
+
+/* PAGE */
+.page { padding:20px; display:none; flex-direction:column; gap:14px; min-width:0; }
+.page.active { display:flex; }
+
+/* BADGE */
+.badge { font-size:11px; font-weight:700; padding:3px 8px; border-radius:5px; white-space:nowrap; }
+.badge-green  { background:var(--green-50);  color:var(--green-600); }
+.badge-red    { background:var(--red-50);    color:var(--red-600); }
+.badge-amber  { background:var(--amber-50);  color:var(--amber-600); }
+.badge-blue   { background:var(--blue-50);   color:var(--blue-600); }
+.badge-gray   { background:var(--gray-100);  color:var(--gray-500); }
+.badge-purple { background:var(--purple-50); color:var(--purple-600); }
+.badge-teal   { background:var(--teal-50);   color:var(--teal-600); }
+
+/* KPI */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.kpi-card { background:#fff; border:1px solid var(--gray-200); border-radius:10px; padding:16px; animation:fadeUp .3s ease both; }
+.kpi-card:nth-child(1){animation-delay:.05s} .kpi-card:nth-child(2){animation-delay:.1s}
+.kpi-card:nth-child(3){animation-delay:.15s} .kpi-card:nth-child(4){animation-delay:.2s}
+.kpi-label { font-size:11px; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:.6px; margin-bottom:8px; }
+.kpi-value { font-size:24px; font-weight:700; line-height:1; letter-spacing:-1px; margin-bottom:6px; }
+.kpi-value .unit { font-size:13px; font-weight:500; }
+.kpi-meta { font-size:12px; color:var(--gray-400); }
+.chip-up { color:var(--green-600); font-weight:700; font-size:11px; }
+.chip-dn { color:var(--red-600); font-weight:700; font-size:11px; }
+.kpi-track { height:3px; background:var(--gray-100); border-radius:2px; margin-top:10px; overflow:hidden; }
+.kpi-fill { height:100%; border-radius:2px; }
+
+/* CARD */
+.card { background:#fff; border:1px solid var(--gray-200); border-radius:10px; overflow:hidden; min-width:0; animation:fadeUp .35s ease both; animation-delay:.2s; }
+.card-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--gray-200); gap:8px; flex-wrap:wrap; }
+.card-title { font-size:13px; font-weight:700; }
+.card-action { font-size:12px; color:var(--blue-600); font-weight:600; cursor:pointer; white-space:nowrap; }
+.card-sub { font-size:12px; color:var(--gray-400); }
+
+/* GRID */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.g3 { display:grid; grid-template-columns:1.4fr 1fr 1fr; gap:14px; }
+
+/* ── DASHBOARD 전용 ── */
+.tbl-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.ins-tbl { width:100%; border-collapse:collapse; font-size:13px; min-width:580px; }
+.ins-tbl th { text-align:left; padding:8px 14px; font-size:11px; font-weight:700; color:var(--gray-400); text-transform:uppercase; letter-spacing:.7px; border-bottom:1px solid var(--gray-200); background:var(--gray-50); white-space:nowrap; }
+.ins-tbl td { padding:11px 14px; border-bottom:1px solid var(--gray-100); vertical-align:middle; }
+.ins-tbl tr:last-child td { border-bottom:none; }
+.ins-tbl tr:hover td { background:var(--gray-50); cursor:pointer; }
+.c-name { font-weight:700; color:var(--gray-900); }
+.c-meta { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.c-premium { font-weight:700; color:var(--blue-600); }
+.c-date { font-size:12px; }
+.c-date.urgent { color:var(--red-600); font-weight:700; }
+.c-date.soon   { color:var(--amber-600); font-weight:600; }
+
+.donut-wrap { display:flex; align-items:center; gap:24px; padding:16px; flex-wrap:wrap; }
+.legend-row { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+.legend-dot { width:10px; height:10px; border-radius:3px; flex-shrink:0; }
+.legend-name { font-size:12px; color:var(--gray-700); flex:1; }
+.legend-pct  { font-size:12px; font-weight:700; }
+
+.renew-list { padding:0 16px; }
+.renew-row { display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.renew-row:last-child { border-bottom:none; }
+.renew-days { width:44px; height:44px; border-radius:10px; display:grid; place-items:center; flex-shrink:0; text-align:center; }
+.renew-days-num { font-size:16px; font-weight:700; line-height:1; }
+.renew-days-lbl { font-size:9px; font-weight:600; }
+.renew-info { flex:1; min-width:0; }
+.renew-name { font-size:13px; font-weight:700; }
+.renew-detail { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.renew-premium { font-size:13px; font-weight:700; color:var(--blue-600); white-space:nowrap; }
+.renew-btn { padding:5px 12px; border-radius:6px; font-size:11px; font-weight:700; border:none; cursor:pointer; font-family:inherit; white-space:nowrap; transition:opacity .15s; }
+.renew-btn:hover { opacity:.8; }
+
+.compare-wrap { padding:14px 16px; }
+.compare-header { display:grid; grid-template-columns:1fr repeat(3,1fr); gap:8px; margin-bottom:10px; }
+.compare-prod { background:var(--blue-50); border:1px solid var(--blue-100); border-radius:8px; padding:8px; text-align:center; }
+.compare-prod-name { font-size:12px; font-weight:700; color:var(--blue-600); }
+.compare-prod-co { font-size:10px; color:var(--gray-400); margin-top:2px; }
+.compare-row { display:grid; grid-template-columns:1fr repeat(3,1fr); gap:8px; padding:7px 0; border-bottom:1px solid var(--gray-100); align-items:center; }
+.compare-row:last-child { border-bottom:none; }
+.compare-label { font-size:12px; color:var(--gray-500); font-weight:500; }
+.compare-cell { text-align:center; font-size:12px; font-weight:600; }
+.cb { color:var(--green-600); }
+.cm { color:var(--gray-700); }
+.cw { color:var(--red-600); }
+.best-mark { font-size:9px; background:var(--green-50); color:var(--green-600); padding:1px 5px; border-radius:3px; margin-left:3px; }
+
+.calc-body { padding:14px 16px; display:flex; flex-direction:column; gap:12px; }
+.calc-row { display:flex; align-items:center; gap:10px; }
+.calc-label { font-size:12px; font-weight:600; color:var(--gray-700); width:90px; flex-shrink:0; }
+.calc-input { flex:1; padding:8px 12px; border:1px solid var(--gray-200); border-radius:7px; font-size:13px; font-family:inherit; color:var(--gray-900); outline:none; transition:border-color .15s; }
+.calc-input:focus { border-color:var(--blue-600); }
+.calc-unit { font-size:12px; color:var(--gray-400); white-space:nowrap; flex-shrink:0; }
+.calc-result { background:var(--blue-50); border:1px solid var(--blue-100); border-radius:8px; padding:14px; }
+.calc-result-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:8px; }
+.calc-result-val { font-size:18px; font-weight:700; color:var(--blue-600); }
+.calc-result-lbl { font-size:11px; color:var(--gray-400); margin-top:2px; }
+
+.sched-list { padding:0 16px; }
+.sched-row { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-bottom:1px solid var(--gray-100); }
+.sched-row:last-child { border-bottom:none; }
+.sched-time { font-size:12px; font-weight:700; color:var(--gray-700); width:40px; flex-shrink:0; padding-top:1px; }
+.sched-bar { width:3px; background:var(--gray-200); border-radius:2px; flex-shrink:0; align-self:stretch; }
+.sched-body { flex:1; min-width:0; }
+.sched-title { font-size:13px; font-weight:700; }
+.sched-detail { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.sched-tags { display:flex; gap:5px; margin-top:5px; flex-wrap:wrap; }
+
+.chart-wrap { padding:14px 16px; }
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:80px; }
+.bar-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; min-width:0; }
+.bar-val { font-size:9px; font-weight:600; color:var(--gray-500); }
+.bar { width:100%; border-radius:4px 4px 0 0; cursor:pointer; transition:opacity .15s; }
+.bar:hover { opacity:.75; }
+.bar-lbl { font-size:9px; color:var(--gray-400); }
+.chart-foot { display:flex; justify-content:space-between; align-items:center; margin-top:10px; padding-top:10px; border-top:1px solid var(--gray-100); }
+.chart-lbl { font-size:12px; color:var(--gray-400); }
+.chart-val { font-size:15px; font-weight:700; color:var(--blue-600); }
+
+/* ── 약관 분석 전용 ── */
+.upload-section { background:#fff; border:1px solid var(--gray-200); border-radius:12px; overflow:hidden; }
+.upload-head { padding:14px 18px; border-bottom:1px solid var(--gray-200); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.upload-title { font-size:14px; font-weight:700; }
+.upload-notice { display:flex; align-items:center; gap:6px; background:var(--blue-50); border:1px solid var(--blue-100); border-radius:8px; padding:6px 12px; font-size:12px; color:var(--blue-600); font-weight:600; }
+.upload-body { padding:20px; display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+
+.drop-zone { border:2px dashed var(--gray-200); border-radius:12px; padding:28px 20px; text-align:center; cursor:pointer; transition:all .15s; display:flex; flex-direction:column; align-items:center; gap:10px; }
+.drop-zone:hover { border-color:var(--blue-600); background:var(--blue-50); }
+.drop-icon { font-size:36px; }
+.drop-title { font-size:14px; font-weight:700; color:var(--gray-700); }
+.drop-title span { color:var(--blue-600); }
+.drop-sub { font-size:12px; color:var(--gray-400); }
+.drop-types { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+.drop-type { font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px; background:var(--gray-100); color:var(--gray-500); }
+
+.file-card { border:1px solid var(--gray-200); border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px; background:var(--gray-50); }
+.file-header { display:flex; align-items:center; gap:10px; }
+.file-icon-box { width:40px; height:40px; background:var(--red-50); border-radius:8px; display:grid; place-items:center; font-size:20px; flex-shrink:0; }
+.file-name { font-size:13px; font-weight:700; }
+.file-meta { font-size:11px; color:var(--gray-400); margin-top:2px; }
+.prog-label { display:flex; justify-content:space-between; font-size:11px; color:var(--gray-500); margin-bottom:5px; }
+.prog-bg { height:6px; background:var(--gray-200); border-radius:3px; overflow:hidden; }
+.prog-fill { height:100%; border-radius:3px; background:var(--blue-600); }
+.file-sec { display:flex; align-items:center; gap:5px; font-size:11px; color:var(--green-600); font-weight:600; }
+.analyze-btn { width:100%; padding:11px; background:var(--blue-600); color:#fff; border:none; border-radius:8px; font-size:14px; font-weight:700; cursor:pointer; font-family:inherit; transition:opacity .15s; display:flex; align-items:center; justify-content:center; gap:8px; }
+.analyze-btn:hover:not(:disabled) { opacity:.85; }
+.analyze-btn:disabled { background:var(--gray-400); cursor:not-allowed; }
+
+.analyzing-bar { background:var(--blue-50); border:1px solid var(--blue-100); border-radius:10px; padding:14px 18px; display:none; align-items:center; gap:14px; }
+.analyzing-bar.show { display:flex; }
+.spinner { width:24px; height:24px; border:3px solid var(--blue-100); border-top-color:var(--blue-600); border-radius:50%; animation:spin .8s linear infinite; flex-shrink:0; }
+.analyzing-steps { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+
+.result-area { display:none; flex-direction:column; gap:14px; }
+.result-area.show { display:flex; }
+.result-banner { background:#fff; border:1px solid var(--gray-200); border-radius:12px; padding:14px 18px; display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+
+.cov-row { display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:8px; background:var(--gray-50); }
+.cov-icon { font-size:15px; flex-shrink:0; }
+.cov-name { flex:1; font-size:13px; font-weight:600; }
+.cov-amt  { font-size:13px; font-weight:700; white-space:nowrap; }
+
+.exempt-row { display:flex; gap:8px; padding:8px 10px; border-radius:8px; background:var(--red-50); align-items:flex-start; }
+.exempt-icon { color:var(--red-600); flex-shrink:0; margin-top:2px; font-size:12px; }
+.exempt-text { font-size:12px; color:var(--gray-700); line-height:1.6; }
+
+.point-row { display:flex; gap:10px; padding:10px 12px; border-radius:8px; align-items:flex-start; }
+.point-row.strong { background:var(--green-50); border-left:3px solid var(--green-600); }
+.point-row.mid    { background:var(--amber-50); border-left:3px solid var(--amber-600); }
+.point-title { font-size:12px; font-weight:700; margin-bottom:3px; }
+.point-desc  { font-size:11px; color:var(--gray-500); line-height:1.6; }
+.point-script { font-size:11px; font-style:italic; color:var(--blue-600); margin-top:5px; padding:4px 8px; background:var(--blue-50); border-radius:5px; }
+
+.score-row { margin-bottom:10px; }
+.score-label-row { display:flex; justify-content:space-between; margin-bottom:5px; }
+.score-label { font-size:12px; font-weight:600; color:var(--gray-700); }
+.score-val   { font-size:12px; font-weight:700; }
+.score-bg   { height:8px; background:var(--gray-100); border-radius:4px; overflow:hidden; }
+.score-fill  { height:100%; border-radius:4px; }
+.score-total { background:var(--blue-50); border-radius:8px; padding:14px; text-align:center; margin-top:4px; }
+.score-total-val { font-size:32px; font-weight:700; color:var(--blue-600); }
+.score-total-lbl { font-size:11px; color:var(--gray-400); margin-top:4px; }
+
+.summary-card { background:linear-gradient(135deg,#1e3a8a 0%,#2563eb 100%); border-radius:10px; padding:16px; color:#fff; margin-bottom:12px; }
+.sc-logo   { font-size:10px; font-weight:700; opacity:.6; letter-spacing:1px; margin-bottom:10px; }
+.sc-title  { font-size:15px; font-weight:700; margin-bottom:3px; }
+.sc-co     { font-size:11px; opacity:.7; margin-bottom:12px; }
+.sc-item   { display:flex; justify-content:space-between; margin-bottom:5px; }
+.sc-item-name { font-size:11px; opacity:.75; }
+.sc-item-val  { font-size:12px; font-weight:700; }
+.sc-footer { margin-top:12px; padding-top:10px; border-top:1px solid rgba(255,255,255,.2); font-size:9px; opacity:.55; }
+.export-btns { display:flex; gap:6px; }
+.export-btn { flex:1; padding:8px; border-radius:7px; font-size:11px; font-weight:700; border:none; cursor:pointer; font-family:inherit; transition:opacity .15s; }
+.export-btn:hover { opacity:.8; }
+
+/* RESPONSIVE */
+@media (max-width:1100px) { .g3 { grid-template-columns:1fr 1fr; } }
+@media (max-width:768px) {
+  .sidebar { transform:translateX(-100%); }
+  .sidebar.open { transform:translateX(0); }
+  .main { margin-left:0; }
+  .menu-btn { display:block; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .g2,.g3 { grid-template-columns:1fr; }
+  .upload-body { grid-template-columns:1fr; }
+  .compare-header,.compare-row { grid-template-columns:1fr repeat(2,1fr); }
+  .compare-header>*:last-child,.compare-row>*:last-child { display:none; }
+}
+@media (max-width:480px) {
+  .page { padding:12px; gap:10px; }
+  .kpi-grid { grid-template-columns:1fr 1fr; }
+  .topbar { padding:0 12px; gap:8px; }
+  .export-btns { flex-direction:column; }
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🛡️</div>
+      <span class="logo-text">InsureOn</span>
+      <span class="logo-ver">v1.0</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">
+        <div class="nav-section-title">분석</div>
+        <div class="nav-link active" onclick="goPage('dashboard',this)">📊 대시보드</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">👥 고객 분석</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">📋 보험 비교</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">🔔 갱신 알림 <span class="nav-badge">7</span></div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">영업</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">💰 수당 계산기</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">📈 실적 관리</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">📅 활동 일정</div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-section-title">자료</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">📄 상품 DB</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">🧮 보험료 계산</div>
+        <div class="nav-link" onclick="goPage('analyzer',this)">✨ 약관 AI 분석</div>
+        <div class="nav-link" onclick="goPage('dashboard',this)">⚙️ 설정</div>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="s-av">이</div>
+      <div>
+        <div class="s-name">이보험</div>
+        <div class="s-role">GA 소속 · 수석 설계사</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <header class="topbar">
+      <button class="menu-btn" onclick="openSidebar()">☰</button>
+      <span class="topbar-title" id="topTitle">보험 영업 분석 대시보드</span>
+      <div id="tbDash" style="display:flex;gap:8px">
+        <button class="btn btn-outline">이번 달 ▾</button>
+        <button class="btn btn-primary">+ 고객 등록</button>
+      </div>
+      <div id="tbAnalyzer" style="display:none;align-items:center;gap:8px">
+        <div class="sec-badge"><div class="sec-dot"></div>서버 미저장 · 즉시 폐기</div>
+        <button class="btn btn-outline">분석 이력</button>
+      </div>
+    </header>
+
+    <!-- ══════════════════════════════════════════
+         대시보드 페이지
+    ══════════════════════════════════════════ -->
+    <div class="page active" id="pageDashboard">
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">이달 수당</div>
+          <div class="kpi-value" style="color:var(--blue-600)">820<span class="unit">만원</span></div>
+          <div class="kpi-meta">목표 1,000만 <span class="chip-up">▲ 82%</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:82%;background:var(--blue-600)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">관리 고객 수</div>
+          <div class="kpi-value" style="color:var(--green-600)">148<span class="unit">명</span></div>
+          <div class="kpi-meta">신규 이달 <span class="chip-up">▲ +12명</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:74%;background:var(--green-600)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">갱신 임박</div>
+          <div class="kpi-value" style="color:var(--red-600)">7<span class="unit">건</span></div>
+          <div class="kpi-meta">30일 이내 <span class="chip-dn">즉시 연락 필요</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:30%;background:var(--red-600)"></div></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">유지율</div>
+          <div class="kpi-value" style="color:var(--purple-600)">91<span class="unit">%</span></div>
+          <div class="kpi-meta">전월 88% <span class="chip-up">▲ +3%p</span></div>
+          <div class="kpi-track"><div class="kpi-fill" style="width:91%;background:var(--purple-600)"></div></div>
+        </div>
+      </div>
+
+      <!-- 고객 현황 + 포트폴리오/갱신 -->
+      <div class="g2">
+        <div class="card">
+          <div class="card-head"><span class="card-title">고객 보험 현황</span><span class="card-action">전체 148명</span></div>
+          <div class="tbl-wrap">
+            <table class="ins-tbl">
+              <thead><tr><th>고객</th><th>보험 종류</th><th>월 보험료</th><th>갱신일</th><th>상태</th></tr></thead>
+              <tbody>
+                <tr><td><div class="c-name">김민수 (45세)</div><div class="c-meta">남 · 직장인 · 서울</div></td><td>종신 + 실손 + 암</td><td class="c-premium">324,000</td><td class="c-date urgent">D-8 ⚠</td><td><span class="badge badge-red">긴급</span></td></tr>
+                <tr><td><div class="c-name">박지현 (38세)</div><div class="c-meta">여 · 자영업 · 경기</div></td><td>정기 + 실손</td><td class="c-premium">187,000</td><td class="c-date soon">D-21</td><td><span class="badge badge-amber">갱신 예정</span></td></tr>
+                <tr><td><div class="c-name">이준호 (52세)</div><div class="c-meta">남 · 사업가 · 부산</div></td><td>종신 + CI + 연금</td><td class="c-premium">680,000</td><td class="c-date">2027.06</td><td><span class="badge badge-green">유지</span></td></tr>
+                <tr><td><div class="c-name">최수영 (29세)</div><div class="c-meta">여 · 직장인 · 서울</div></td><td>실손 + 치아</td><td class="c-premium">94,000</td><td class="c-date soon">D-14</td><td><span class="badge badge-amber">갱신 예정</span></td></tr>
+                <tr><td><div class="c-name">한유리 (34세)</div><div class="c-meta">여 · 프리랜서 · 서울</div></td><td>실손 (추가 추천 필요)</td><td class="c-premium">62,000</td><td class="c-date">2026.09</td><td><span class="badge badge-purple">추천 대상</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <!-- 도넛 -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">보험 종류별 구성</span><span class="card-sub">148명 기준</span></div>
+            <div class="donut-wrap">
+              <svg width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0">
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#dbeafe" stroke-width="18"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#2563eb" stroke-width="18" stroke-dasharray="95.5 155.4" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#16a34a" stroke-width="18" stroke-dasharray="67.9 182.9" stroke-dashoffset="-95.5" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#9333ea" stroke-width="18" stroke-dasharray="45.2 205.6" stroke-dashoffset="-163.4" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#d97706" stroke-width="18" stroke-dasharray="25.1 225.7" stroke-dashoffset="-208.6" transform="rotate(-90 55 55)"/>
+                <circle cx="55" cy="55" r="40" fill="none" stroke="#9ca3af" stroke-width="18" stroke-dasharray="17.6 233.2" stroke-dashoffset="-233.7" transform="rotate(-90 55 55)"/>
+                <text x="55" y="51" text-anchor="middle" font-size="14" font-weight="700" fill="#111827" font-family="Pretendard">148</text>
+                <text x="55" y="63" text-anchor="middle" font-size="9" fill="#9ca3af" font-family="Pretendard">고객</text>
+              </svg>
+              <div style="flex:1">
+                <div class="legend-row"><div class="legend-dot" style="background:#2563eb"></div><div class="legend-name">종신보험</div><div class="legend-pct" style="color:#2563eb">38%</div></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#16a34a"></div><div class="legend-name">실손보험</div><div class="legend-pct" style="color:#16a34a">27%</div></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#9333ea"></div><div class="legend-name">연금보험</div><div class="legend-pct" style="color:#9333ea">18%</div></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#d97706"></div><div class="legend-name">암보험</div><div class="legend-pct" style="color:#d97706">10%</div></div>
+                <div class="legend-row"><div class="legend-dot" style="background:#9ca3af"></div><div class="legend-name">기타</div><div class="legend-pct" style="color:#9ca3af">7%</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 갱신 임박 -->
+          <div class="card">
+            <div class="card-head"><span class="card-title">🔔 갱신 임박</span><span class="card-action">전체 7건</span></div>
+            <div class="renew-list">
+              <div class="renew-row">
+                <div class="renew-days" style="background:var(--red-50)"><div class="renew-days-num" style="color:var(--red-600)">8</div><div class="renew-days-lbl" style="color:var(--red-600)">일 남음</div></div>
+                <div class="renew-info"><div class="renew-name">김민수 · 종신보험</div><div class="renew-detail">삼성생명 · 갱신형</div></div>
+                <div class="renew-premium">324,000</div>
+                <button class="renew-btn" style="background:var(--red-50);color:var(--red-600)">연락</button>
+              </div>
+              <div class="renew-row">
+                <div class="renew-days" style="background:var(--amber-50)"><div class="renew-days-num" style="color:var(--amber-600)">14</div><div class="renew-days-lbl" style="color:var(--amber-600)">일 남음</div></div>
+                <div class="renew-info"><div class="renew-name">최수영 · 실손보험</div><div class="renew-detail">DB손보 · 3년갱신</div></div>
+                <div class="renew-premium">94,000</div>
+                <button class="renew-btn" style="background:var(--amber-50);color:var(--amber-600)">연락</button>
+              </div>
+              <div class="renew-row">
+                <div class="renew-days" style="background:var(--amber-50)"><div class="renew-days-num" style="color:var(--amber-600)">21</div><div class="renew-days-lbl" style="color:var(--amber-600)">일 남음</div></div>
+                <div class="renew-info"><div class="renew-name">박지현 · 정기보험</div><div class="renew-detail">교보생명 · 10년갱신</div></div>
+                <div class="renew-premium">187,000</div>
+                <button class="renew-btn" style="background:var(--blue-50);color:var(--blue-600)">준비</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 비교 + 수당 계산기 + 일정 -->
+      <div class="g3">
+        <div class="card">
+          <div class="card-head"><span class="card-title">📋 상품 비교</span><span class="card-sub">실손 · 35세 여성</span></div>
+          <div class="compare-wrap">
+            <div class="compare-header">
+              <div></div>
+              <div class="compare-prod"><div class="compare-prod-name">A플랜</div><div class="compare-prod-co">삼성화재</div></div>
+              <div class="compare-prod"><div class="compare-prod-name">B플랜</div><div class="compare-prod-co">현대해상</div></div>
+              <div class="compare-prod"><div class="compare-prod-name">C플랜</div><div class="compare-prod-co">DB손보</div></div>
+            </div>
+            <div class="compare-row"><div class="compare-label">월 보험료</div><div class="compare-cell cb">78,000<span class="best-mark">최저</span></div><div class="compare-cell cm">89,000</div><div class="compare-cell cw">94,000</div></div>
+            <div class="compare-row"><div class="compare-label">입원 보장</div><div class="compare-cell cm">90%</div><div class="compare-cell cb">100%<span class="best-mark">최고</span></div><div class="compare-cell cm">90%</div></div>
+            <div class="compare-row"><div class="compare-label">통원 한도</div><div class="compare-cell cm">20만</div><div class="compare-cell cm">20만</div><div class="compare-cell cb">30만<span class="best-mark">최고</span></div></div>
+            <div class="compare-row"><div class="compare-label">자기부담금</div><div class="compare-cell cb">10%<span class="best-mark">최저</span></div><div class="compare-cell cw">20%</div><div class="compare-cell cm">15%</div></div>
+            <div class="compare-row"><div class="compare-label">갱신 주기</div><div class="compare-cell cb">5년<span class="best-mark">유리</span></div><div class="compare-cell cw">1년</div><div class="compare-cell cm">3년</div></div>
+            <div class="compare-row"><div class="compare-label">수당</div><div class="compare-cell cm">12%</div><div class="compare-cell cb">15%<span class="best-mark">최고</span></div><div class="compare-cell cm">13%</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">💰 수당 계산기</span></div>
+          <div class="calc-body">
+            <div class="calc-row"><div class="calc-label">월 보험료</div><input class="calc-input" type="number" value="200000" id="premium" oninput="calcComm()"><div class="calc-unit">원</div></div>
+            <div class="calc-row"><div class="calc-label">수당 요율</div><input class="calc-input" type="number" value="15" id="rate" oninput="calcComm()"><div class="calc-unit">%</div></div>
+            <div class="calc-row"><div class="calc-label">신계약 건수</div><input class="calc-input" type="number" value="8" id="count" oninput="calcComm()"><div class="calc-unit">건</div></div>
+            <div class="calc-row"><div class="calc-label">유지 고객</div><input class="calc-input" type="number" value="148" id="maintain" oninput="calcComm()"><div class="calc-unit">명</div></div>
+            <div class="calc-result">
+              <div style="font-size:12px;color:var(--blue-600);font-weight:600;margin-bottom:6px">예상 이달 수당</div>
+              <div class="calc-result-grid">
+                <div><div class="calc-result-val" id="newComm">240,000</div><div class="calc-result-lbl">신계약 수당</div></div>
+                <div><div class="calc-result-val" id="maintComm">592,000</div><div class="calc-result-lbl">유지 수당</div></div>
+                <div style="grid-column:span 2"><div class="calc-result-val" id="totalComm" style="font-size:22px">832,000원</div><div class="calc-result-lbl">합계 (세전)</div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><span class="card-title">📅 오늘 일정</span><span class="card-action">+ 추가</span></div>
+          <div class="sched-list">
+            <div class="sched-row"><div class="sched-time">10:00</div><div class="sched-bar" style="background:var(--red-600)"></div><div class="sched-body"><div class="sched-title">김민수 갱신 상담 전화</div><div class="sched-detail">D-8 갱신 · 보험료 인상 안내</div><div class="sched-tags"><span class="badge badge-red">긴급</span></div></div></div>
+            <div class="sched-row"><div class="sched-time">14:00</div><div class="sched-bar" style="background:var(--blue-600)"></div><div class="sched-body"><div class="sched-title">한유리 추가 보험 설계 미팅</div><div class="sched-detail">종신 + 암보험 추가 제안</div><div class="sched-tags"><span class="badge badge-blue">신계약</span></div></div></div>
+            <div class="sched-row"><div class="sched-time">16:30</div><div class="sched-bar" style="background:var(--purple-600)"></div><div class="sched-body"><div class="sched-title">GA 월례 실적 보고</div><div class="sched-detail">3월 실적 · 본사 회의실</div><div class="sched-tags"><span class="badge badge-purple">내부</span></div></div></div>
+            <div class="sched-row"><div class="sched-time">19:00</div><div class="sched-bar" style="background:var(--green-600)"></div><div class="sched-body"><div class="sched-title">정대호 지인 소개 미팅</div><div class="sched-detail">연금보험 관심 · 50대 남성</div><div class="sched-tags"><span class="badge badge-green">소개</span></div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 수당 차트 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">월별 수당 추이</span><span class="card-sub">2026년 · 만원 단위</span></div>
+        <div class="chart-wrap">
+          <div class="bar-chart">
+            <div class="bar-col"><span class="bar-val">620</span><div class="bar" style="height:62%;background:var(--blue-100)"></div><span class="bar-lbl">1월</span></div>
+            <div class="bar-col"><span class="bar-val">540</span><div class="bar" style="height:54%;background:var(--blue-100)"></div><span class="bar-lbl">2월</span></div>
+            <div class="bar-col"><span class="bar-val">820</span><div class="bar" style="height:82%;background:var(--blue-600)"></div><span class="bar-lbl" style="color:var(--blue-600);font-weight:700">3월</span></div>
+            <div class="bar-col"><span class="bar-val">—</span><div class="bar" style="height:4%;background:var(--gray-100)"></div><span class="bar-lbl">4월</span></div>
+            <div class="bar-col"><span class="bar-val">—</span><div class="bar" style="height:4%;background:var(--gray-100)"></div><span class="bar-lbl">5월</span></div>
+            <div class="bar-col"><span class="bar-val">—</span><div class="bar" style="height:4%;background:var(--gray-100)"></div><span class="bar-lbl">6월</span></div>
+          </div>
+          <div class="chart-foot"><span class="chart-lbl">1분기 누적 수당</span><span class="chart-val">1,980만원</span></div>
+        </div>
+      </div>
+
+    </div><!-- /pageDashboard -->
+
+    <!-- ══════════════════════════════════════════
+         약관 AI 분석 페이지
+    ══════════════════════════════════════════ -->
+    <div class="page" id="pageAnalyzer">
+
+      <!-- 업로드 -->
+      <div class="upload-section">
+        <div class="upload-head">
+          <div class="upload-title">📄 약관 파일 업로드</div>
+          <div class="upload-notice">🔒 파일은 브라우저에서만 처리 · 서버 전송 없음</div>
+        </div>
+        <div class="upload-body">
+          <div class="drop-zone"
+            ondragover="event.preventDefault();this.style.borderColor='var(--blue-600)';this.style.background='var(--blue-50)'"
+            ondragleave="this.style.borderColor='';this.style.background=''"
+            ondrop="azDrop(event)"
+            onclick="document.getElementById('azFile').click()">
+            <div class="drop-icon">📂</div>
+            <div class="drop-title"><span>클릭</span> 또는 드래그</div>
+            <div class="drop-sub">보험약관 · 계약서 · 상품설명서</div>
+            <div class="drop-types">
+              <span class="drop-type">PDF</span><span class="drop-type">DOCX</span>
+              <span class="drop-type">HWP</span><span class="drop-type">이미지</span>
+            </div>
+            <input type="file" id="azFile" accept=".pdf,.doc,.docx,.hwp,.png,.jpg" style="display:none" onchange="azSetFile(this)">
+          </div>
+
+          <div class="file-card">
+            <div class="file-header">
+              <div class="file-icon-box">📄</div>
+              <div style="flex:1;min-width:0">
+                <div class="file-name" id="azFileName">삼성생명_종신보험_약관.pdf</div>
+                <div class="file-meta">2.4MB · PDF · 업로드 완료</div>
+              </div>
+              <span class="badge badge-green">완료</span>
+            </div>
+            <div>
+              <div class="prog-label"><span>파일 파싱</span><span>100%</span></div>
+              <div class="prog-bg"><div class="prog-fill" style="width:100%"></div></div>
+            </div>
+            <div class="file-sec">🔒 파일이 안전하게 처리되었습니다</div>
+            <button class="analyze-btn" id="azBtn" onclick="azStart()">✨ AI 분석 시작하기</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 분석 중 -->
+      <div class="analyzing-bar" id="azAnalyzing">
+        <div class="spinner"></div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700;color:var(--blue-600)">AI가 약관을 분석하고 있습니다...</div>
+          <div style="font-size:11px;color:var(--gray-400);margin-top:2px">보장 항목 · 면책 조항 · 소구 포인트를 추출 중입니다</div>
+          <div class="analyzing-steps">
+            <span id="azS1" class="badge badge-green">✓ 텍스트 추출</span>
+            <span id="azS2" class="badge badge-green">✓ 조항 분류</span>
+            <span id="azS3" class="badge badge-blue">⏳ 보장 분석</span>
+            <span id="azS4" class="badge badge-gray">소구 포인트</span>
+            <span id="azS5" class="badge badge-gray">요약 카드</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 분석 결과 -->
+      <div class="result-area" id="azResult">
+
+        <!-- 배너 -->
+        <div class="result-banner">
+          <div style="font-size:20px">✅</div>
+          <div style="flex:1;min-width:160px">
+            <div style="font-size:14px;font-weight:700">분석 완료 — 삼성생명 무배당 종신보험 (2021년형)</div>
+            <div style="font-size:12px;color:var(--gray-400);margin-top:2px">87페이지 · 12개 보장항목 · 8개 면책조항 · 소구포인트 5개</div>
+          </div>
+          <button class="btn btn-outline" onclick="azReset()">↩ 새 파일</button>
+          <button class="btn btn-primary">📤 리포트 저장</button>
+        </div>
+
+        <!-- 보장항목 + 면책조항 -->
+        <div class="g2">
+          <div class="card">
+            <div class="card-head"><span style="font-size:16px">✅</span><span class="card-title">보장 항목</span><span class="badge badge-blue">12개</span></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:7px">
+              <div class="cov-row"><span class="cov-icon">💀</span><span class="cov-name">사망 보험금</span><span class="cov-amt" style="color:var(--blue-600)">2억원</span></div>
+              <div class="cov-row"><span class="cov-icon">🏥</span><span class="cov-name">암 진단금</span><span class="cov-amt" style="color:var(--purple-600)">5,000만원</span></div>
+              <div class="cov-row"><span class="cov-icon">🧠</span><span class="cov-name">뇌졸중 진단금</span><span class="cov-amt" style="color:var(--amber-600)">3,000만원</span></div>
+              <div class="cov-row"><span class="cov-icon">❤️</span><span class="cov-name">급성 심근경색</span><span class="cov-amt" style="color:var(--red-600)">3,000만원</span></div>
+              <div class="cov-row"><span class="cov-icon">🦽</span><span class="cov-name">장해 연금 (80%↑)</span><span class="cov-amt" style="color:var(--teal-600)">월 100만원</span></div>
+              <div class="cov-row"><span class="cov-icon">🏨</span><span class="cov-name">입원 일당</span><span class="cov-amt" style="color:var(--green-600)">5만원/일</span></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><span style="font-size:16px">⚠️</span><span class="card-title">면책 · 주의 조항</span><span class="badge badge-red">8개</span></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:6px">
+              <div class="exempt-row"><span class="exempt-icon">✕</span><span class="exempt-text"><strong>고의 사고</strong> — 피보험자 본인의 고의로 인한 사망 및 상해는 보장하지 않습니다.</span></div>
+              <div class="exempt-row"><span class="exempt-icon">✕</span><span class="exempt-text"><strong>고지 의무</strong> — 가입 전 5년 이내 병력 미고지 시 계약이 해지될 수 있습니다.</span></div>
+              <div class="exempt-row"><span class="exempt-icon">✕</span><span class="exempt-text"><strong>암 대기기간</strong> — 계약일로부터 90일 이내 발생한 암은 보장에서 제외됩니다.</span></div>
+              <div class="exempt-row"><span class="exempt-icon">✕</span><span class="exempt-text"><strong>음주 운전</strong> — 음주운전 중 발생한 사고는 보장에서 제외됩니다.</span></div>
+              <div class="exempt-row" style="background:var(--amber-50)"><span class="exempt-icon" style="color:var(--amber-600)">⚡</span><span class="exempt-text"><strong>주의</strong> — 보험료 2회 이상 미납 시 계약 실효, 부활 신청 필요합니다.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 소구포인트 + 점수 + 요약카드 -->
+        <div class="g3">
+          <div class="card">
+            <div class="card-head"><span style="font-size:16px">💡</span><span class="card-title">영업 소구 포인트</span><span class="badge badge-green">AI 추출</span></div>
+            <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px">
+              <div class="point-row strong">
+                <span style="font-size:14px;flex-shrink:0">🏆</span>
+                <div><div class="point-title">업계 최고 암 진단금 5,000만원</div><div class="point-desc">동일 보험료 대비 경쟁사 대비 30% 높음. 4대 암 포함 전체 적용.</div><div class="point-script">"암 진단금만으로 치료비 걱정 없이 2년은 버팁니다."</div></div>
+              </div>
+              <div class="point-row strong">
+                <span style="font-size:14px;flex-shrink:0">🔄</span>
+                <div><div class="point-title">3대 질병 통합 보장</div><div class="point-desc">암·뇌졸중·심근경색을 단일 상품으로 커버. 별도 가입 대비 절약.</div><div class="point-script">"보험 3개 따로 드실 필요 없이 하나로 됩니다."</div></div>
+              </div>
+              <div class="point-row mid">
+                <span style="font-size:14px;flex-shrink:0">👴</span>
+                <div><div class="point-title">100세 만기 · 평생 보장</div><div class="point-desc">갱신 없이 동일 보험료로 100세까지 유지.</div><div class="point-script">"지금 이 금액으로 평생 유지됩니다."</div></div>
+              </div>
+              <div class="point-row mid">
+                <span style="font-size:14px;flex-shrink:0">💰</span>
+                <div><div class="point-title">해지환급금 저축 효과</div><div class="point-desc">20년 후 납입보험료의 85% 환급.</div><div class="point-script">"해지해도 내신 돈 대부분 돌아옵니다."</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span style="font-size:16px">📊</span><span class="card-title">상품 경쟁력 평가</span><span class="badge badge-purple">AI 채점</span></div>
+            <div style="padding:14px 16px">
+              <div class="score-row"><div class="score-label-row"><span class="score-label">보장 범위</span><span class="score-val" style="color:var(--green-600)">92점</span></div><div class="score-bg"><div class="score-fill" style="width:92%;background:var(--green-600)"></div></div></div>
+              <div class="score-row"><div class="score-label-row"><span class="score-label">보험료 경쟁력</span><span class="score-val" style="color:var(--blue-600)">78점</span></div><div class="score-bg"><div class="score-fill" style="width:78%;background:var(--blue-600)"></div></div></div>
+              <div class="score-row"><div class="score-label-row"><span class="score-label">면책 조항 수준</span><span class="score-val" style="color:var(--amber-600)">71점</span></div><div class="score-bg"><div class="score-fill" style="width:71%;background:var(--amber-600)"></div></div></div>
+              <div class="score-row"><div class="score-label-row"><span class="score-label">특약 다양성</span><span class="score-val" style="color:var(--purple-600)">85점</span></div><div class="score-bg"><div class="score-fill" style="width:85%;background:var(--purple-600)"></div></div></div>
+              <div class="score-total"><div class="score-total-val">82점</div><div class="score-total-lbl">종합 경쟁력 (100점 만점)</div></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><span style="font-size:16px">🪄</span><span class="card-title">고객용 요약 카드</span><span class="badge badge-blue">자동 생성</span></div>
+            <div style="padding:14px 16px">
+              <div class="summary-card">
+                <div class="sc-logo">INSUREON · AI 분석 요약</div>
+                <div class="sc-title">무배당 종신보험 (2021년형)</div>
+                <div class="sc-co">삼성생명 · 월 324,000원</div>
+                <div class="sc-item"><span class="sc-item-name">사망 보험금</span><span class="sc-item-val">2억원</span></div>
+                <div class="sc-item"><span class="sc-item-name">암 진단금</span><span class="sc-item-val">5,000만원</span></div>
+                <div class="sc-item"><span class="sc-item-name">3대 질병</span><span class="sc-item-val">각 3,000만원</span></div>
+                <div class="sc-item"><span class="sc-item-name">만기</span><span class="sc-item-val">100세</span></div>
+                <div class="sc-footer">* AI 분석 요약 · 정확한 내용은 원본 약관 확인 요망</div>
+              </div>
+              <div class="export-btns">
+                <button class="export-btn" style="background:var(--blue-50);color:var(--blue-600)" onclick="azExport(this)">이미지</button>
+                <button class="export-btn" style="background:var(--green-50);color:var(--green-600)" onclick="azExport(this)">카카오톡</button>
+                <button class="export-btn" style="background:var(--gray-100);color:var(--gray-700)" onclick="azExport(this)">PDF</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /azResult -->
+    </div><!-- /pageAnalyzer -->
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+/* ── 사이드바 ── */
+function openSidebar()  { document.getElementById('sidebar').classList.add('open');  document.getElementById('overlay').classList.add('show'); }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show'); }
+
+/* ── 페이지 전환 ── */
+function goPage(page, navEl) {
+  document.querySelectorAll('.nav-link').forEach(i => i.classList.remove('active'));
+  navEl.classList.add('active');
+  if (window.innerWidth < 768) closeSidebar();
+
+  const isDash = page === 'dashboard';
+  document.getElementById('pageDashboard').classList.toggle('active', isDash);
+  document.getElementById('pageAnalyzer').classList.toggle('active', !isDash);
+  document.getElementById('topTitle').textContent = isDash ? '보험 영업 분석 대시보드' : '약관 AI 분석';
+  document.getElementById('tbDash').style.display     = isDash ? 'flex' : 'none';
+  document.getElementById('tbAnalyzer').style.display = isDash ? 'none' : 'flex';
+}
+
+/* ── 수당 계산기 ── */
+function calcComm() {
+  const premium  = parseInt(document.getElementById('premium').value) || 0;
+  const rate     = parseFloat(document.getElementById('rate').value) || 0;
+  const count    = parseInt(document.getElementById('count').value) || 0;
+  const maintain = parseInt(document.getElementById('maintain').value) || 0;
+  const newC  = premium * (rate / 100) * count;
+  const mainC = maintain * 4000;
+  document.getElementById('newComm').textContent   = newC.toLocaleString();
+  document.getElementById('maintComm').textContent = mainC.toLocaleString();
+  document.getElementById('totalComm').textContent = (newC + mainC).toLocaleString() + '원';
+}
+
+/* ── 갱신 연락 버튼 ── */
+document.querySelectorAll('.renew-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const orig = btn.textContent;
+    btn.textContent = '완료 ✓';
+    btn.style.background = 'var(--green-50)'; btn.style.color = 'var(--green-600)';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 2000);
+  });
+});
+
+/* ── 약관 분석 ── */
+function azSetFile(input) { if (input.files[0]) document.getElementById('azFileName').textContent = input.files[0].name; }
+function azDrop(e) { e.preventDefault(); const f = e.dataTransfer.files[0]; if (f) document.getElementById('azFileName').textContent = f.name; }
+
+function azStart() {
+  const btn = document.getElementById('azBtn');
+  btn.textContent = '분석 중...'; btn.disabled = true;
+  document.getElementById('azAnalyzing').classList.add('show');
+  document.getElementById('azResult').classList.remove('show');
+
+  const ids    = ['azS3','azS4','azS5'];
+  const labels = ['보장 분석','소구 포인트','요약 카드'];
+  let i = 0;
+  const t = setInterval(() => {
+    if (i > 0) { const p = document.getElementById(ids[i-1]); p.className='badge badge-green'; p.textContent='✓ '+labels[i-1]; }
+    if (i < ids.length) { const c = document.getElementById(ids[i]); c.className='badge badge-blue'; c.textContent='⏳ '+labels[i]; i++; }
+    else {
+      clearInterval(t);
+      setTimeout(() => {
+        document.getElementById('azAnalyzing').classList.remove('show');
+        const r = document.getElementById('azResult');
+        r.classList.add('show');
+        r.scrollIntoView({ behavior:'smooth', block:'start' });
+      }, 500);
+    }
+  }, 900);
+}
+
+function azReset() {
+  document.getElementById('azResult').classList.remove('show');
+  document.getElementById('azAnalyzing').classList.remove('show');
+  const btn = document.getElementById('azBtn');
+  btn.textContent = '✨ AI 분석 시작하기'; btn.disabled = false;
+  ['azS3','azS4','azS5'].forEach((id,i) => {
+    const el = document.getElementById(id); el.className='badge badge-gray';
+    el.textContent = ['보장 분석','소구 포인트','요약 카드'][i];
+  });
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+function azExport(btn) {
+  const orig = btn.textContent; btn.textContent = '완료 ✓';
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+</script>
+</body>
+</html>
