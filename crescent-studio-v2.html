@@ -355,7 +355,7 @@ footer {
     <a href="#contact">상담</a>
   </nav>
   <div class="top-right">
-    <button class="btn-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+    <button class="btn-cta" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">무료 상담 받기</button>
   </div>
 </header>
 
@@ -440,7 +440,7 @@ footer {
           <strong>앱, 웹, 시스템</strong>을 빠르고 합리적인 가격에 완성해드립니다.
         </p>
         <div class="hero-banner-btns">
-          <button class="hb-btn-fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+          <button class="hb-btn-fill" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">무료 상담 받기</button>
           <button class="hb-btn-line" onclick="document.getElementById('samples').scrollIntoView({behavior:'smooth'})">샘플 보기 <span>→</span></button>
         </div>
         <div class="hero-banner-badges">
@@ -583,7 +583,7 @@ footer {
           <ul class="pc-list">
             <li>서비스 구조 정리</li><li>화면 와이어프레임</li><li>기능 명세서</li><li>개발 견적 포함</li>
           </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+          <button class="pc-btn out" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">상담 신청</button>
         </div>
         <div class="pc">
           <div class="pc-tier">랜딩페이지</div>
@@ -594,7 +594,7 @@ footer {
           <ul class="pc-list">
             <li>반응형 웹 디자인</li><li>모바일 최적화</li><li>도메인 · 배포</li><li>CTA · 문의 폼</li><li>1개월 수정 지원</li>
           </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+          <button class="pc-btn out" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">상담 신청</button>
         </div>
         <div class="pc hot">
           <div class="pc-badge">가장 많이 선택</div>
@@ -606,7 +606,7 @@ footer {
           <ul class="pc-list">
             <li>핵심 기능 3~5개</li><li>로그인 · 결제 연동</li><li>DB · 서버 포함</li><li>AI 기능 연동</li><li>웹 또는 앱 선택</li><li>3개월 유지보수</li>
           </ul>
-          <button class="pc-btn fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+          <button class="pc-btn fill" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">상담 신청</button>
         </div>
         <div class="pc">
           <div class="pc-tier">풀 제품</div>
@@ -617,7 +617,7 @@ footer {
           <ul class="pc-list">
             <li>기능 범위 무제한</li><li>웹 + 앱 동시 개발</li><li>관리자 페이지</li><li>AI 고급 연동</li><li>지속 운영 지원</li>
           </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+          <button class="pc-btn out" onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank')">상담 신청</button>
         </div>
       </div>
     </div>
@@ -647,7 +647,7 @@ footer {
           </div>
         </div>
         <div class="ct-right">
-          <form class="form" onsubmit="onSend(event)">
+          <form class="form" onsubmit="event.preventDefault();window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')" action="https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform?usp=header" target="_blank">
             <div class="fr">
               <div class="fg"><label class="fl">이름</label><input class="fi" type="text" placeholder="홍길동" required></div>
               <div class="fg"><label class="fl">연락처</label><input class="fi" type="text" placeholder="010-0000-0000"></div>
@@ -664,7 +664,7 @@ footer {
               </select>
             </div>
             <div class="fg"><label class="fl">내용</label><textarea class="ft" placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다."></textarea></div>
-            <button type="submit" class="fsub">무료 상담 신청하기 →</button>
+            <button type="submit" class="fsub" onclick="window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')">무료 상담 신청하기 →</button>
           </form>
         </div>
       </div>
@@ -719,6 +719,7 @@ window.addEventListener('scroll', () => {
 
 function onSend(e) {
   e.preventDefault();
+  window.open("https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform?usp=header", "_blank");
   const b = e.target.querySelector('.fsub');
   b.textContent = '접수됐어요! 곧 연�! 곧 연락드릴게요 ✓';
   b.style.background = '#16a34a'; b.style.color = '#fff';
