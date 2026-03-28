@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CarOn — 세차·정비 예약 관리</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --orange: #ea580c; --orange2: #c2410c; --orange-light: #fff7ed;
+  --blue: #2563eb; --blue-light: #eff6ff;
+  --green: #16a34a; --green-light: #f0fdf4;
+  --amber: #d97706; --amber-light: #fffbeb;
+  --red: #dc2626; --red-light: #fef2f2;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-400: #9ca3af; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+  --line: #e5e7eb;
+}
+html, body { overflow-x: hidden; width: 100%; }
+body { font-family: 'Pretendard', -apple-system, sans-serif; background: #fff8f3; color: var(--gray-900); font-size: 14px; line-height: 1.5; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* 탭 */
+.view-tabs { background: #fff; border-bottom: 1px solid var(--line); display: flex; padding: 0 24px; position: sticky; top: 0; z-index: 50; }
+.view-tab { padding: 14px 20px; font-size: 13px; font-weight: 600; color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent; transition: all .15s; white-space: nowrap; user-select: none; }
+.view-tab.active { color: var(--orange); border-bottom-color: var(--orange); }
+.view-tab:hover:not(.active) { color: var(--gray-700); }
+.view-badge { display: inline-block; background: var(--red); color: #fff; font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 8px; margin-left: 5px; }
+
+.view { display: none; }
+.view.active { display: block; animation: fadeUp .3s ease; }
+
+/* ══ 고객 앱 ══ */
+.app-view { padding: 24px; display: flex; justify-content: center; align-items: flex-start; gap: 24px; flex-wrap: wrap; background: #fff8f3; min-height: calc(100vh - 49px); }
+.phone-frame { background: #1a1a2e; border-radius: 36px; padding: 12px; box-shadow: 0 32px 80px rgba(0,0,0,.25); flex-shrink: 0; }
+.phone-screen { background: #fff; border-radius: 26px; overflow: hidden; width: 240px; height: 520px; display: flex; flex-direction: column; }
+.phone-notch { background: #1a1a2e; height: 24px; display: flex; align-items: center; justify-content: center; }
+.phone-notch-bar { width: 70px; height: 4px; background: #333; border-radius: 2px; }
+
+.app-h { background: linear-gradient(135deg, var(--orange), #f97316); padding: 14px 14px 18px; color: #fff; }
+.app-h-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-h-name { font-size: 13px; font-weight: 800; }
+.app-h-sub { font-size: 10px; opacity: .7; margin-top: 1px; }
+.app-h-av { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.app-h-car { background: rgba(255,255,255,.15); border-radius: 8px; padding: 8px 10px; display: flex; justify-content: space-between; align-items: center; }
+.app-h-car-name { font-size: 12px; font-weight: 800; }
+.app-h-car-sub { font-size: 9px; opacity: .7; margin-top: 1px; }
+.car-badge { font-size: 9px; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 4px; }
+
+.app-b { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.app-b::-webkit-scrollbar { display: none; }
+.app-sec-t { font-size: 10px; font-weight: 700; color: var(--gray-700); margin-bottom: 5px; display: flex; justify-content: space-between; align-items: center; }
+.app-sec-t span { font-size: 9px; color: var(--orange); font-weight: 600; cursor: pointer; }
+
+/* 서비스 메뉴 */
+.svc-menu { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.svc-menu-item { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 10px 6px; text-align: center; cursor: pointer; transition: all .15s; }
+.svc-menu-item:hover { border-color: var(--orange); background: var(--orange-light); }
+.svc-menu-icon { font-size: 20px; margin-bottom: 4px; }
+.svc-menu-label { font-size: 9px; font-weight: 600; color: var(--gray-600); }
+.svc-menu-price { font-size: 9px; color: var(--orange); font-weight: 700; margin-top: 1px; }
+
+/* 예약 카드 */
+.booking-card { background: linear-gradient(135deg, var(--orange), #f97316); border-radius: 10px; padding: 12px; color: #fff; }
+.bk-shop { font-size: 12px; font-weight: 800; margin-bottom: 3px; }
+.bk-service { font-size: 10px; opacity: .8; margin-bottom: 8px; }
+.bk-info { display: flex; justify-content: space-between; }
+.bk-date { font-size: 12px; font-weight: 700; }
+.bk-status { font-size: 9px; font-weight: 700; background: rgba(255,255,255,.2); padding: 2px 8px; border-radius: 4px; }
+.bk-progress { margin-top: 8px; }
+.bk-progress-bar { height: 3px; background: rgba(255,255,255,.2); border-radius: 2px; overflow: hidden; }
+.bk-progress-fill { height: 100%; background: #fff; border-radius: 2px; width: 60%; }
+.bk-progress-label { font-size: 8px; opacity: .7; margin-top: 3px; }
+
+/* 차량 이력 */
+.history-item { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 9px 10px; display: flex; gap: 8px; align-items: flex-start; }
+.history-icon { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; font-size: 13px; flex-shrink: 0; }
+.history-info { flex: 1; }
+.history-title { font-size: 11px; font-weight: 700; }
+.history-sub { font-size: 9px; color: var(--gray-400); margin-top: 1px; }
+.history-price { font-size: 11px; font-weight: 700; color: var(--orange); white-space: nowrap; }
+
+/* 알림 */
+.alert-card { background: var(--amber-light); border: 1px solid #fde68a; border-radius: 8px; padding: 8px 10px; display: flex; gap: 7px; align-items: flex-start; }
+.alert-icon { font-size: 13px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { font-size: 10px; color: var(--amber); line-height: 1.5; font-weight: 600; }
+
+.app-tabbar { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 6px 0 3px; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+.tab-icon { font-size: 16px; }
+.tab-label { font-size: 8px; color: var(--gray-400); font-weight: 500; }
+.tab-item.active .tab-label { color: var(--orange); }
+
+/* 설명 패널 */
+.desc-panel { background: #fff; border-radius: 14px; padding: 24px; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,.06); align-self: center; }
+.desc-panel h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+.desc-panel h3 em { font-style: normal; color: var(--orange); }
+.desc-panel p { font-size: 13px; color: var(--gray-500); line-height: 1.75; margin-bottom: 16px; }
+.feature-list { display: flex; flex-direction: column; gap: 10px; }
+.feature-item { display: flex; align-items: flex-start; gap: 10px; }
+.feature-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; }
+.feature-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.feature-desc { font-size: 11px; color: var(--gray-400); line-height: 1.5; }
+
+/* ══ 사장님 대시보드 ══ */
+.dash-wrap { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.dash-top { background: #fff; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.dash-title { font-size: 15px; font-weight: 800; }
+.dash-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.live-pill { display: flex; align-items: center; gap: 5px; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 700; padding: 5px 10px; border-radius: 20px; }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); animation: blink 1.5s infinite; }
+.dbtn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.dbtn:hover { opacity: .85; }
+.dbtn.p { background: var(--orange); color: #fff; }
+.dbtn.o { background: #fff; border: 1px solid var(--line); color: var(--gray-700); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.kpi { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.kpi-lbl { font-size: 10px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-bottom: 5px; }
+.kpi-foot { font-size: 11px; color: var(--gray-400); }
+.up { color: var(--green); font-weight: 700; }
+.dn { color: var(--red); font-weight: 700; }
+
+.card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.card-head { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 700; }
+.card-action { font-size: 11px; color: var(--orange); font-weight: 600; cursor: pointer; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+.badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.badge-green  { background: var(--green-light); color: var(--green); }
+.badge-red    { background: var(--red-light); color: var(--red); }
+.badge-amber  { background: var(--amber-light); color: var(--amber); }
+.badge-blue   { background: var(--blue-light); color: var(--blue); }
+.badge-orange { background: var(--orange-light); color: var(--orange); }
+
+/* 예약 목록 */
+.reservation-list { display: flex; flex-direction: column; }
+.res-item { display: flex; align-items: center; gap: 12px; padding: 11px 16px; border-bottom: 1px solid var(--gray-50); transition: background .1s; cursor: pointer; }
+.res-item:hover { background: var(--gray-50); }
+.res-item:last-child { border-bottom: none; }
+.res-time { font-size: 12px; font-weight: 800; color: var(--gray-700); width: 40px; flex-shrink: 0; }
+.res-color { width: 3px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.res-info { flex: 1; min-width: 0; }
+.res-car { font-size: 13px; font-weight: 700; }
+.res-service { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.res-price { font-size: 13px; font-weight: 700; color: var(--orange); white-space: nowrap; }
+
+/* 차트 */
+.bar-chart-wrap { padding: 14px 16px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-bottom: 6px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-v { font-size: 9px; color: var(--gray-400); font-weight: 600; }
+.bar-b { width: 100%; border-radius: 4px 4px 0 0; transition: opacity .15s; cursor: pointer; }
+.bar-b:hover { opacity: .8; }
+.bar-l { font-size: 9px; color: var(--gray-400); }
+
+/* 차량 이력 테이블 */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 480px; }
+.tbl th { padding: 8px 14px; font-size: 10px; font-weight: 700; color: var(--gray-400); text-align: left; text-transform: uppercase; letter-spacing: .06em; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); white-space: nowrap; }
+.tbl td { padding: 10px 14px; border-bottom: 1px solid var(--gray-50); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--gray-50); }
+.car-name { font-weight: 700; }
+.car-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+/* 리뷰 */
+.review-list { padding: 0 16px; }
+.review-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+.review-item:last-child { border-bottom: none; }
+.review-av { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.review-body { flex: 1; }
+.review-top { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 4px; }
+.review-name { font-size: 12px; font-weight: 700; }
+.review-stars { font-size: 11px; color: #f59e0b; }
+.review-text { font-size: 12px; color: var(--gray-700); line-height: 1.65; }
+.review-time { font-size: 10px; color: var(--gray-400); margin-top: 3px; }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .app-view { flex-direction: column; align-items: center; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .g2 { grid-template-columns: 1fr; }
+  .view-tab { padding: 12px 12px; font-size: 12px; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="view-tabs">
+  <div class="view-tab active" onclick="switchView('app', this)">📱 고객 앱</div>
+  <div class="view-tab" onclick="switchView('dash', this)">📊 사장님 대시보드 <span class="view-badge">4</span></div>
+</div>
+
+<!-- ══ 고객 앱 ══ -->
+<div class="view active" id="view-app">
+  <div class="app-view">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+        <div class="app-h">
+          <div class="app-h-top">
+            <div>
+              <div class="app-h-name">김민수님 🚗</div>
+              <div class="app-h-sub">내 차를 더 스마트하게</div>
+            </div>
+            <div class="app-h-av">민</div>
+          </div>
+          <div class="app-h-car">
+            <div>
+              <div class="app-h-car-name">현대 아반떼 · 24가 1234</div>
+              <div class="app-h-car-sub">2022년식 · 주행 42,000km</div>
+            </div>
+            <div class="car-badge">내 차량</div>
+          </div>
+        </div>
+        <div class="app-b">
+
+          <!-- 예약 현황 -->
+          <div class="booking-card">
+            <div class="bk-shop">✨ 프리미엄 세차장 강남점</div>
+            <div class="bk-service">실내외 패키지 세차 · 내부 탈취 포함</div>
+            <div class="bk-info">
+              <div class="bk-date">3/28(금) 오후 2:00</div>
+              <div class="bk-status">진행 중</div>
+            </div>
+            <div class="bk-progress">
+              <div class="bk-progress-bar"><div class="bk-progress-fill"></div></div>
+              <div class="bk-progress-label">외부 세차 완료 → 내부 청소 중</div>
+            </div>
+          </div>
+
+          <!-- 서비스 예약 -->
+          <div class="app-sec-t">서비스 예약 <span>전체보기</span></div>
+          <div class="svc-menu">
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">🫧</div>
+              <div class="svc-menu-label">기본 세차</div>
+              <div class="svc-menu-price">9,000원~</div>
+            </div>
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">✨</div>
+              <div class="svc-menu-label">프리미엄</div>
+              <div class="svc-menu-price">35,000원~</div>
+            </div>
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">🔧</div>
+              <div class="svc-menu-label">오일 교체</div>
+              <div class="svc-menu-price">45,000원~</div>
+            </div>
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">🛞</div>
+              <div class="svc-menu-label">타이어</div>
+              <div class="svc-menu-price">견적 후</div>
+            </div>
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">❄️</div>
+              <div class="svc-menu-label">에어컨</div>
+              <div class="svc-menu-price">80,000원~</div>
+            </div>
+            <div class="svc-menu-item">
+              <div class="svc-menu-icon">🔍</div>
+              <div class="svc-menu-label">점검</div>
+              <div class="svc-menu-price">무료</div>
+            </div>
+          </div>
+
+          <!-- 정비 알림 -->
+          <div class="alert-card">
+            <div class="alert-icon">⚠️</div>
+            <div class="alert-text">엔진 오일 교체 권장 시기가 다가왔어요. (주행 42,000km / 권장 44,000km)</div>
+          </div>
+
+          <!-- 차량 이력 -->
+          <div class="app-sec-t">차량 정비 이력 <span>전체보기</span></div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--orange-light)">🫧</div>
+            <div class="history-info">
+              <div class="history-title">프리미엄 세차</div>
+              <div class="history-sub">강남점 · 3/14</div>
+            </div>
+            <div class="history-price">35,000원</div>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--blue-light)">🔧</div>
+            <div class="history-info">
+              <div class="history-title">에어컨 필터 교체</div>
+              <div class="history-sub">서초점 · 2/28</div>
+            </div>
+            <div class="history-price">18,000원</div>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--green-light)">🛞</div>
+            <div class="history-info">
+              <div class="history-title">타이어 공기압 점검</div>
+              <div class="history-sub">강남점 · 2/10</div>
+            </div>
+            <div class="history-price">무료</div>
+          </div>
+
+        </div>
+        <div class="app-tabbar">
+          <div class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+          <div class="tab-item"><span class="tab-icon">📅</span><span class="tab-label">예약</span></div>
+          <div class="tab-item"><span class="tab-icon">🚗</span><span class="tab-label">내 차량</span></div>
+          <div class="tab-item"><span class="tab-icon">🔔</span><span class="tab-label">알림</span></div>
+          <div class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">마이</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc-panel">
+      <h3>고객이 쓰는<br><em>CarOn 앱</em></h3>
+      <p>예약부터 차량 이력 관리까지. 고객이 앱 하나로 내 차의 모든 것을 관리합니다.</p>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon" style="background:var(--orange-light)">📅</div>
+          <div>
+            <div class="feature-title">간편 예약</div>
+            <div class="feature-desc">세차·정비·오일 교체를 앱에서 바로 예약. 실시간 빈 시간 확인.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon" style="background:var(--blue-light)">🔔</div>
+          <div>
+            <div class="feature-title">정비 알림</div>
+            <div class="feature-desc">오일 교체, 타이어 점검 등 정비 시기가 되면 자동으로 알림.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon" style="background:var(--green-light)">📋</div>
+          <div>
+            <div class="feature-title">차량 이력 관리</div>
+            <div class="feature-desc">모든 세차·정비 기록이 자동 저장. 중고차 매각 시 이력서 제공.</div>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon" style="background:var(--amber-light)">💰</div>
+          <div>
+            <div class="feature-title">포인트·쿠폰</div>
+            <div class="feature-desc">방문할 때마다 포인트 적립. 단골 할인 쿠폰 자동 발급.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 사장님 대시보드 ══ -->
+<div class="view" id="view-dash">
+  <div class="dash-wrap">
+    <div class="dash-top">
+      <div>
+        <div class="dash-title">CarOn 사장님 대시보드</div>
+        <div class="dash-sub">프리미엄 세차장 강남점 · 2026년 3월 28일</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+        <div class="live-pill"><div class="live-dot"></div>실시간</div>
+        <button class="dbtn o">📤 리포트</button>
+        <button class="dbtn p">+ 예약 등록</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-lbl">오늘 예약</div>
+        <div class="kpi-val" style="color:var(--orange)">28<span style="font-size:14px;font-weight:500">건</span></div>
+        <div class="kpi-foot">완료 <span class="up">17건</span> · 대기 <span>11건</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">오늘 매출</div>
+        <div class="kpi-val" style="color:var(--green)">84<span style="font-size:14px;font-weight:500">만원</span></div>
+        <div class="kpi-foot">전일 72만원 <span class="up">▲ +17%</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">이달 회원</div>
+        <div class="kpi-val" style="color:var(--blue)">1,248<span style="font-size:14px;font-weight:500">명</span></div>
+        <div class="kpi-foot">신규 이달 <span class="up">▲ +84명</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">평균 평점</div>
+        <div class="kpi-val" style="color:var(--amber)">4.8<span style="font-size:14px;font-weight:500">★</span></div>
+        <div class="kpi-foot">리뷰 <span>총 428건</span></div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <!-- 오늘 예약 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">오늘 예약 현황</span><span class="card-action">전체 28건</span></div>
+        <div class="reservation-list">
+          <div class="res-item">
+            <div class="res-time">13:00</div>
+            <div class="res-color" style="background:var(--green)"></div>
+            <div class="res-info">
+              <div class="res-car">현대 아반떼 · 24가 1234</div>
+              <div class="res-service">실내외 패키지 세차 · 김민수</div>
+            </div>
+            <div><span class="badge badge-orange">진행중</span></div>
+            <div class="res-price">35,000</div>
+          </div>
+          <div class="res-item">
+            <div class="res-time">14:00</div>
+            <div class="res-color" style="background:var(--blue)"></div>
+            <div class="res-info">
+              <div class="res-car">기아 K5 · 23나 5678</div>
+              <div class="res-service">오일 교체 · 이수진</div>
+            </div>
+            <div><span class="badge badge-blue">대기</span></div>
+            <div class="res-price">55,000</div>
+          </div>
+          <div class="res-item">
+            <div class="res-time">14:30</div>
+            <div class="res-color" style="background:var(--amber)"></div>
+            <div class="res-info">
+              <div class="res-car">BMW 3시리즈 · 22서 9012</div>
+              <div class="res-service">프리미엄 세차 + 왁싱</div>
+            </div>
+            <div><span class="badge badge-blue">대기</span></div>
+            <div class="res-price">89,000</div>
+          </div>
+          <div class="res-item">
+            <div class="res-time">15:00</div>
+            <div class="res-color" style="background:var(--red)"></div>
+            <div class="res-info">
+              <div class="res-car">쌍용 티볼리 · 21가 3456</div>
+              <div class="res-service">타이어 4개 교체</div>
+            </div>
+            <div><span class="badge badge-blue">대기</span></div>
+            <div class="res-price">320,000</div>
+          </div>
+          <div class="res-item">
+            <div class="res-time">15:30</div>
+            <div class="res-color" style="background:var(--green)"></div>
+            <div class="res-info">
+              <div class="res-car">현대 싼타페 · 20다 7890</div>
+              <div class="res-service">기본 세차 · 박지현</div>
+            </div>
+            <div><span class="badge badge-green">완료</span></div>
+            <div class="res-price">15,000</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 주간 매출 차트 -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-head"><span class="card-title">주간 매출</span><span class="card-sub">이번 주 · 만원</span></div>
+          <div class="bar-chart-wrap">
+            <div class="bar-chart">
+              <div class="bar-col"><span class="bar-v">68</span><div class="bar-b" style="height:68%;background:#fed7aa"></div><span class="bar-l">월</span></div>
+              <div class="bar-col"><span class="bar-v">74</span><div class="bar-b" style="height:74%;background:#fed7aa"></div><span class="bar-l">화</span></div>
+              <div class="bar-col"><span class="bar-v">81</span><div class="bar-b" style="height:81%;background:#fed7aa"></div><span class="bar-l">수</span></div>
+              <div class="bar-col"><span class="bar-v">72</span><div class="bar-b" style="height:72%;background:#fed7aa"></div><span class="bar-l">목</span></div>
+              <div class="bar-col"><span class="bar-v">84</span><div class="bar-b" style="height:84%;background:var(--orange)"></div><span class="bar-l" style="color:var(--orange);font-weight:700">금▲</span></div>
+              <div class="bar-col"><span class="bar-v">—</span><div class="bar-b" style="height:4%;background:var(--gray-100)"></div><span class="bar-l">토</span></div>
+              <div class="bar-col"><span class="bar-v">—</span><div class="bar-b" style="height:4%;background:var(--gray-100)"></div><span class="bar-l">일</span></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);padding-top:8px;border-top:1px solid var(--gray-100)">
+              <span>주간 누적</span><span style="font-weight:700;color:var(--orange)">379만원</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 최근 리뷰 -->
+        <div class="card">
+          <div class="card-head"><span class="card-title">최근 리뷰</span><span class="card-action">전체보기</span></div>
+          <div class="review-list">
+            <div class="review-item">
+              <div class="review-av" style="background:var(--orange)">김</div>
+              <div class="review-body">
+                <div class="review-top"><span class="review-name">김민수</span><span class="review-stars">★★★★★</span></div>
+                <div class="review-text">진짜 깨끗하게 해주세요! 차 사고 나서 처음으로 새차 느낌 났어요.</div>
+                <div class="review-time">오늘 13:42</div>
+              </div>
+            </div>
+            <div class="review-item">
+              <div class="review-av" style="background:var(--blue)">이</div>
+              <div class="review-body">
+                <div class="review-top"><span class="review-name">이수진</span><span class="review-stars">★★★★☆</span></div>
+                <div class="review-text">앱으로 예약하니 줄 안 서도 되서 편해요. 다음에도 올게요.</div>
+                <div class="review-time">어제 17:20</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 차량 이력 -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">최근 방문 차량</span><span class="card-action">전체보기</span></div>
+      <div style="overflow-x:auto">
+        <table class="tbl">
+          <thead><tr><th>차량</th><th>고객</th><th>서비스</th><th>방문일</th><th>금액</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr><td><div class="car-name">현대 아반떼</div><div class="car-sub">24가 1234</div></td><td>김민수</td><td>실내외 패키지</td><td>오늘 13:00</td><td style="font-weight:700;color:var(--orange)">35,000</td><td><span class="badge badge-orange">진행중</span></td></tr>
+            <tr><td><div class="car-name">기아 K5</div><div class="car-sub">23나 5678</div></td><td>이수진</td><td>오일 교체</td><td>오늘 11:00</td><td style="font-weight:700;color:var(--orange)">55,000</td><td><span class="badge badge-green">완료</span></td></tr>
+            <tr><td><div class="car-name">테슬라 모델3</div><div class="car-sub">22서 1111</div></td><td>박지은</td><td>프리미엄 + 왁싱</td><td>어제 15:30</td><td style="font-weight:700;color:var(--orange)">120,000</td><td><span class="badge badge-green">완료</span></td></tr>
+            <tr><td><div class="car-name">현대 싼타페</div><div class="car-sub">20다 7890</div></td><td>최재원</td><td>기본 세차</td><td>어제 10:00</td><td style="font-weight:700;color:var(--orange)">15,000</td><td><span class="badge badge-green">완료</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchView(id, tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  tab.classList.add('active');
+}
+</script>
+</body>
+</html>

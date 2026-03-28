@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduOn — 학원 관리 앱</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --blue: #3b82f6; --blue2: #2563eb; --blue-light: #eff6ff;
+  --purple: #8b5cf6; --purple-light: #f5f3ff;
+  --green: #10b981; --green-light: #ecfdf5;
+  --amber: #f59e0b; --amber-light: #fffbeb;
+  --red: #ef4444; --red-light: #fef2f2;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-400: #9ca3af; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+}
+html, body { overflow-x: hidden; width: 100%; }
+body { font-family: 'Pretendard', -apple-system, sans-serif; background: #f0f4ff; color: var(--gray-900); font-size: 14px; line-height: 1.5; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+/* 전체 레이아웃 - 앱처럼 보이게 */
+.app-wrap {
+  max-width: 1100px; margin: 0 auto; padding: 24px 16px;
+  display: grid; grid-template-columns: 260px 1fr;
+  gap: 16px; min-height: 100vh;
+}
+
+/* 폰 프레임 */
+.phone-frame {
+  background: #1a1a2e; border-radius: 36px;
+  padding: 12px; box-shadow: 0 32px 80px rgba(0,0,0,.25);
+  position: sticky; top: 24px; height: fit-content;
+  animation: fadeUp .4s ease both;
+}
+.phone-screen {
+  background: #fff; border-radius: 26px; overflow: hidden;
+  height: 580px; display: flex; flex-direction: column;
+}
+.phone-notch {
+  background: #1a1a2e; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+}
+.phone-notch-bar { width: 80px; height: 4px; background: #333; border-radius: 2px; }
+
+/* 앱 내부 */
+.app-header {
+  background: linear-gradient(135deg, var(--blue2), var(--purple));
+  padding: 14px 16px 20px;
+  color: #fff;
+}
+.app-header-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.app-header-greeting { font-size: 11px; opacity: .75; }
+.app-header-name { font-size: 15px; font-weight: 800; margin-top: 1px; }
+.app-avatar { width: 32px; height: 32px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 14px; font-weight: 700; }
+.app-date-strip {
+  background: rgba(255,255,255,.15); border-radius: 10px; padding: 8px 12px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.app-date-val { font-size: 12px; font-weight: 700; }
+.app-date-sub { font-size: 10px; opacity: .7; }
+.app-live-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: blink 1.5s infinite; }
+
+/* 앱 바디 스크롤 */
+.app-body { flex: 1; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.app-body::-webkit-scrollbar { display: none; }
+
+/* 빠른 메뉴 */
+.quick-menu { display: grid; grid-template-columns: repeat(4,1fr); gap: 6px; }
+.qm-item { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 4px; background: var(--gray-50); border-radius: 10px; cursor: pointer; transition: background .15s; }
+.qm-item:hover { background: var(--blue-light); }
+.qm-icon { font-size: 18px; }
+.qm-label { font-size: 9px; color: var(--gray-500); font-weight: 500; text-align: center; }
+
+/* 오늘 수업 */
+.section-title { font-size: 11px; font-weight: 700; color: var(--gray-700); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; }
+.section-title span { font-size: 10px; color: var(--blue); font-weight: 600; cursor: pointer; }
+.class-card { background: #fff; border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--gray-100); box-shadow: 0 1px 4px rgba(0,0,0,.05); cursor: pointer; transition: box-shadow .15s; }
+.class-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.1); }
+.class-time-bar { width: 3px; height: 36px; border-radius: 2px; flex-shrink: 0; }
+.class-info { flex: 1; min-width: 0; }
+.class-name { font-size: 12px; font-weight: 700; }
+.class-meta { font-size: 10px; color: var(--gray-400); margin-top: 1px; }
+.class-time { font-size: 10px; font-weight: 700; color: var(--gray-500); white-space: nowrap; }
+.class-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 4px; white-space: nowrap; }
+
+/* 출결 현황 */
+.attend-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+.attend-row:last-child { border-bottom: none; }
+.attend-avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.attend-name { flex: 1; font-size: 11px; font-weight: 600; }
+.attend-badge { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 4px; }
+
+/* 과제 */
+.hw-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); }
+.hw-item:last-child { border-bottom: none; }
+.hw-check { width: 16px; height: 16px; border-radius: 4px; border: 2px solid var(--gray-200); flex-shrink: 0; display: grid; place-items: center; cursor: pointer; transition: all .15s; }
+.hw-check.done { background: var(--green); border-color: var(--green); }
+.hw-check.done::after { content: '✓'; color: #fff; font-size: 9px; font-weight: 900; }
+.hw-text { flex: 1; font-size: 11px; color: var(--gray-700); }
+.hw-text.done { text-decoration: line-through; color: var(--gray-400); }
+.hw-due { font-size: 9px; color: var(--gray-400); white-space: nowrap; }
+
+/* 하단 탭바 */
+.app-tabbar {
+  background: #fff; border-top: 1px solid var(--gray-100);
+  display: flex; padding: 8px 0 4px;
+}
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; transition: opacity .15s; }
+.tab-icon { font-size: 18px; }
+.tab-label { font-size: 9px; color: var(--gray-400); font-weight: 500; }
+.tab-item.active .tab-label { color: var(--blue); }
+
+/* 우측 대시보드 */
+.dashboard { display: flex; flex-direction: column; gap: 14px; animation: fadeUp .4s ease .1s both; }
+
+/* 탑바 */
+.dash-topbar {
+  background: #fff; border-radius: 12px; padding: 14px 18px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+}
+.dash-title { font-size: 15px; font-weight: 800; color: var(--gray-900); }
+.dash-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.dash-actions { display: flex; gap: 8px; }
+.dash-btn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.dash-btn:hover { opacity: .85; }
+.dash-btn.primary { background: var(--blue2); color: #fff; }
+.dash-btn.outline { background: #fff; border: 1px solid var(--gray-200); color: var(--gray-700); }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.kpi { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.kpi-label { font-size: 10px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-bottom: 5px; }
+.kpi-change { font-size: 11px; color: var(--gray-400); }
+.kpi-up { color: var(--green); font-weight: 700; }
+.kpi-dn { color: var(--red); font-weight: 700; }
+
+/* 카드 */
+.card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.card-head { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 700; }
+.card-action { font-size: 11px; color: var(--blue); font-weight: 600; cursor: pointer; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+/* 학생 목록 */
+.student-tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.student-tbl th { padding: 8px 14px; font-size: 10px; font-weight: 700; color: var(--gray-400); text-align: left; text-transform: uppercase; letter-spacing: .06em; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); white-space: nowrap; }
+.student-tbl td { padding: 10px 14px; border-bottom: 1px solid var(--gray-50); vertical-align: middle; }
+.student-tbl tr:last-child td { border-bottom: none; }
+.student-tbl tr:hover td { background: var(--gray-50); }
+.stu-name { font-weight: 700; color: var(--gray-900); }
+.stu-class { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.prog-bg { height: 5px; background: var(--gray-100); border-radius: 3px; overflow: hidden; width: 80px; }
+.prog-fill { height: 100%; border-radius: 3px; }
+
+/* 알림 */
+.notif-list { padding: 0 16px; }
+.notif-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+.notif-item:last-child { border-bottom: none; }
+.notif-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; }
+.notif-body { flex: 1; min-width: 0; }
+.notif-title { font-size: 12px; font-weight: 700; }
+.notif-desc { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.notif-time { font-size: 10px; color: var(--gray-400); white-space: nowrap; }
+
+/* 차트 바 */
+.bar-chart-wrap { padding: 14px 16px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-bottom: 6px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 0; }
+.bar-v { font-size: 9px; color: var(--gray-400); font-weight: 600; }
+.bar-b { width: 100%; border-radius: 4px 4px 0 0; transition: opacity .15s; cursor: pointer; }
+.bar-b:hover { opacity: .8; }
+.bar-l { font-size: 9px; color: var(--gray-400); }
+
+/* 수강료 현황 */
+.fee-list { padding: 0 16px; }
+.fee-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--gray-50); }
+.fee-item:last-child { border-bottom: none; }
+.fee-avatar { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.fee-name { flex: 1; }
+.fee-name-text { font-size: 12px; font-weight: 600; }
+.fee-name-class { font-size: 10px; color: var(--gray-400); }
+.fee-amount { font-size: 12px; font-weight: 700; color: var(--gray-900); white-space: nowrap; }
+.fee-status { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+
+/* BADGE */
+.badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.badge-blue   { background: var(--blue-light);   color: var(--blue2); }
+.badge-green  { background: var(--green-light);  color: var(--green); }
+.badge-amber  { background: var(--amber-light);  color: var(--amber); }
+.badge-red    { background: var(--red-light);    color: var(--red); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .app-wrap { grid-template-columns: 1fr; padding: 14px; }
+  .phone-frame { max-width: 280px; margin: 0 auto; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .g2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-wrap">
+
+  <!-- 폰 프레임 (학생·학부모용 앱) -->
+  <div class="phone-frame">
+    <div class="phone-screen">
+      <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+
+      <!-- 앱 헤더 -->
+      <div class="app-header">
+        <div class="app-header-top">
+          <div>
+            <div class="app-header-greeting">안녕하세요 👋</div>
+            <div class="app-header-name">김수아 학생</div>
+          </div>
+          <div class="app-avatar">수</div>
+        </div>
+        <div class="app-date-strip">
+          <div>
+            <div class="app-date-val">2026년 3월 28일 금요일</div>
+            <div class="app-date-sub">오늘 수업 3개</div>
+          </div>
+          <div class="app-live-dot"></div>
+        </div>
+      </div>
+
+      <!-- 앱 바디 -->
+      <div class="app-body">
+
+        <!-- 빠른 메뉴 -->
+        <div class="quick-menu">
+          <div class="qm-item"><span class="qm-icon">📅</span><span class="qm-label">시간표</span></div>
+          <div class="qm-item"><span class="qm-icon">📝</span><span class="qm-label">과제</span></div>
+          <div class="qm-item"><span class="qm-icon">✅</span><span class="qm-label">출결</span></div>
+          <div class="qm-item"><span class="qm-icon">💬</span><span class="qm-label">상담</span></div>
+        </div>
+
+        <!-- 오늘 수업 -->
+        <div>
+          <div class="section-title">오늘 수업 <span>전체보기</span></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div class="class-card">
+              <div class="class-time-bar" style="background:var(--blue2)"></div>
+              <div class="class-info">
+                <div class="class-name">수학 — 미적분 심화</div>
+                <div class="class-meta">이준호 선생님 · 3층 302호</div>
+              </div>
+              <div>
+                <div class="class-time">14:00</div>
+                <div class="class-badge" style="background:var(--blue-light);color:var(--blue2);margin-top:3px">진행 중</div>
+              </div>
+            </div>
+            <div class="class-card">
+              <div class="class-time-bar" style="background:var(--purple)"></div>
+              <div class="class-info">
+                <div class="class-name">영어 — 수능 독해</div>
+                <div class="class-meta">박소연 선생님 · 2층 201호</div>
+              </div>
+              <div>
+                <div class="class-time">16:00</div>
+                <div class="class-badge" style="background:var(--purple-light);color:var(--purple);margin-top:3px">예정</div>
+              </div>
+            </div>
+            <div class="class-card">
+              <div class="class-time-bar" style="background:var(--green)"></div>
+              <div class="class-info">
+                <div class="class-name">과학 — 물리1</div>
+                <div class="class-meta">김태현 선생님 · 4층 401호</div>
+              </div>
+              <div>
+                <div class="class-time">18:00</div>
+                <div class="class-badge" style="background:var(--green-light);color:var(--green);margin-top:3px">예정</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 과제 -->
+        <div>
+          <div class="section-title">과제 현황 <span>전체보기</span></div>
+          <div class="card" style="border-radius:10px">
+            <div style="padding:10px 12px">
+              <div class="hw-item">
+                <div class="hw-check done"></div>
+                <div class="hw-text done">수학 연습문제 p.142~148</div>
+                <div class="hw-due">완료</div>
+              </div>
+              <div class="hw-item">
+                <div class="hw-check done"></div>
+                <div class="hw-text done">영어 단어 100개 암기</div>
+                <div class="hw-due">완료</div>
+              </div>
+              <div class="hw-item">
+                <div class="hw-check"></div>
+                <div class="hw-text">물리 실험 보고서 작성</div>
+                <div class="hw-due" style="color:var(--red)">내일까지</div>
+              </div>
+              <div class="hw-item">
+                <div class="hw-check"></div>
+                <div class="hw-text">수학 모의고사 풀기</div>
+                <div class="hw-due">3/31</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 출결 -->
+        <div>
+          <div class="section-title">이달 출결</div>
+          <div class="card" style="border-radius:10px;padding:10px 12px">
+            <div class="attend-row">
+              <div class="attend-avatar" style="background:var(--blue2)">수</div>
+              <div class="attend-name">수학반</div>
+              <div style="display:flex;gap:4px">
+                <span class="attend-badge" style="background:var(--green-light);color:var(--green)">출석 14</span>
+                <span class="attend-badge" style="background:var(--red-light);color:var(--red)">결석 1</span>
+              </div>
+            </div>
+            <div class="attend-row">
+              <div class="attend-avatar" style="background:var(--purple)">영</div>
+              <div class="attend-name">영어반</div>
+              <div style="display:flex;gap:4px">
+                <span class="attend-badge" style="background:var(--green-light);color:var(--green)">출석 15</span>
+                <span class="attend-badge" style="background:var(--amber-light);color:var(--amber)">지각 1</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 탭바 -->
+      <div class="app-tabbar">
+        <div class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+        <div class="tab-item"><span class="tab-icon">📅</span><span class="tab-label">시간표</span></div>
+        <div class="tab-item"><span class="tab-icon">📊</span><span class="tab-label">성적</span></div>
+        <div class="tab-item"><span class="tab-icon">💬</span><span class="tab-label">메시지</span></div>
+        <div class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">마이</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 원장 대시보드 -->
+  <div class="dashboard">
+
+    <div class="dash-topbar">
+      <div>
+        <div class="dash-title">EduOn 원장 대시보드</div>
+        <div class="dash-sub">2026년 3월 · 수아학원</div>
+      </div>
+      <div class="dash-actions">
+        <button class="dash-btn outline">📤 리포트</button>
+        <button class="dash-btn primary">+ 학생 등록</button>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">전체 학생</div>
+        <div class="kpi-val" style="color:var(--blue2)">186<span style="font-size:14px;font-weight:500">명</span></div>
+        <div class="kpi-change">전월 대비 <span class="kpi-up">▲ +12명</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">이달 출석률</div>
+        <div class="kpi-val" style="color:var(--green)">94<span style="font-size:14px;font-weight:500">%</span></div>
+        <div class="kpi-change">전월 91% <span class="kpi-up">▲ +3%p</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">수강료 수납</div>
+        <div class="kpi-val" style="color:var(--amber)">91<span style="font-size:14px;font-weight:500">%</span></div>
+        <div class="kpi-change">미납 <span class="kpi-dn">17명</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">이달 매출</div>
+        <div class="kpi-val" style="color:var(--purple)">2,340<span style="font-size:14px;font-weight:500">만</span></div>
+        <div class="kpi-change">전월 대비 <span class="kpi-up">▲ +8%</span></div>
+      </div>
+    </div>
+
+    <!-- 출석률 차트 + 알림 -->
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><span class="card-title">월별 출석률</span><span class="card-action">상세보기</span></div>
+        <div class="bar-chart-wrap">
+          <div class="bar-chart">
+            <div class="bar-col"><span class="bar-v">88%</span><div class="bar-b" style="height:88%;background:#bfdbfe"></div><span class="bar-l">10월</span></div>
+            <div class="bar-col"><span class="bar-v">91%</span><div class="bar-b" style="height:91%;background:#bfdbfe"></div><span class="bar-l">11월</span></div>
+            <div class="bar-col"><span class="bar-v">89%</span><div class="bar-b" style="height:89%;background:#bfdbfe"></div><span class="bar-l">12월</span></div>
+            <div class="bar-col"><span class="bar-v">92%</span><div class="bar-b" style="height:92%;background:#bfdbfe"></div><span class="bar-l">1월</span></div>
+            <div class="bar-col"><span class="bar-v">91%</span><div class="bar-b" style="height:91%;background:#bfdbfe"></div><span class="bar-l">2월</span></div>
+            <div class="bar-col"><span class="bar-v">94%</span><div class="bar-b" style="height:94%;background:var(--blue2)"></div><span class="bar-l" style="color:var(--blue2);font-weight:700">3월</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">🔔 최근 알림</span><span class="card-action">전체보기</span></div>
+        <div class="notif-list">
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--red-light)">⚠️</div>
+            <div class="notif-body">
+              <div class="notif-title">결석 알림 — 박민준</div>
+              <div class="notif-desc">수학반 오늘 결석. 학부모 알림 발송 완료.</div>
+            </div>
+            <div class="notif-time">방금</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--amber-light)">💰</div>
+            <div class="notif-body">
+              <div class="notif-title">수강료 미납 — 3명</div>
+              <div class="notif-desc">자동 납부 안내 문자 발송됨.</div>
+            </div>
+            <div class="notif-time">1시간 전</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--green-light)">✅</div>
+            <div class="notif-body">
+              <div class="notif-title">신규 등록 — 이수아</div>
+              <div class="notif-desc">영어반 수강 등록 완료.</div>
+            </div>
+            <div class="notif-time">오전 10:22</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 학생 목록 + 수강료 -->
+    <div class="g2">
+      <div class="card">
+        <div class="card-head"><span class="card-title">학생 현황</span><span class="card-action">전체 186명</span></div>
+        <div style="overflow-x:auto">
+          <table class="student-tbl">
+            <thead>
+              <tr><th>학생</th><th>수강반</th><th>출석률</th><th>상태</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><div class="stu-name">김수아</div><div class="stu-class">고3 · 수학·영어·과학</div></td>
+                <td><span class="badge badge-blue">3개반</span></td>
+                <td><div class="prog-bg"><div class="prog-fill" style="width:96%;background:var(--green)"></div></div></td>
+                <td><span class="badge badge-green">정상</span></td>
+              </tr>
+              <tr>
+                <td><div class="stu-name">박민준</div><div class="stu-class">고2 · 수학</div></td>
+                <td><span class="badge badge-purple">1개반</span></td>
+                <td><div class="prog-bg"><div class="prog-fill" style="width:72%;background:var(--amber)"></div></div></td>
+                <td><span class="badge badge-red">결석</span></td>
+              </tr>
+              <tr>
+                <td><div class="stu-name">이지우</div><div class="stu-class">고1 · 영어·국어</div></td>
+                <td><span class="badge badge-blue">2개반</span></td>
+                <td><div class="prog-bg"><div class="prog-fill" style="width:88%;background:var(--blue2)"></div></div></td>
+                <td><span class="badge badge-green">정상</span></td>
+              </tr>
+              <tr>
+                <td><div class="stu-name">최예린</div><div class="stu-class">고3 · 수학·과학</div></td>
+                <td><span class="badge badge-blue">2개반</span></td>
+                <td><div class="prog-bg"><div class="prog-fill" style="width:100%;background:var(--green)"></div></div></td>
+                <td><span class="badge badge-green">정상</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><span class="card-title">수강료 현황</span><span class="card-action">미납 17명</span></div>
+        <div class="fee-list">
+          <div class="fee-item">
+            <div class="fee-avatar" style="background:var(--blue2)">김</div>
+            <div class="fee-name"><div class="fee-name-text">김수아</div><div class="fee-name-class">수학·영어·과학</div></div>
+            <div class="fee-amount">450,000원</div>
+            <span class="fee-status" style="background:var(--green-light);color:var(--green)">납부완료</span>
+          </div>
+          <div class="fee-item">
+            <div class="fee-avatar" style="background:var(--amber)">박</div>
+            <div class="fee-name"><div class="fee-name-text">박민준</div><div class="fee-name-class">수학</div></div>
+            <div class="fee-amount">180,000원</div>
+            <span class="fee-status" style="background:var(--red-light);color:var(--red)">미납</span>
+          </div>
+          <div class="fee-item">
+            <div class="fee-avatar" style="background:var(--purple)">이</div>
+            <div class="fee-name"><div class="fee-name-text">이지우</div><div class="fee-name-class">영어·국어</div></div>
+            <div class="fee-amount">320,000원</div>
+            <span class="fee-status" style="background:var(--green-light);color:var(--green)">납부완료</span>
+          </div>
+          <div class="fee-item">
+            <div class="fee-avatar" style="background:var(--green)">최</div>
+            <div class="fee-name"><div class="fee-name-text">최예린</div><div class="fee-name-class">수학·과학</div></div>
+            <div class="fee-amount">360,000원</div>
+            <span class="fee-status" style="background:var(--amber-light);color:var(--amber)">확인중</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

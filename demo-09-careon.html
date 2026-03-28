@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareOn — 요양 통합 플랫폼</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --teal: #0d9488; --teal2: #0f766e; --teal-light: #f0fdfa;
+  --blue: #2563eb; --blue-light: #eff6ff;
+  --green: #16a34a; --green-light: #f0fdf4;
+  --amber: #d97706; --amber-light: #fffbeb;
+  --red: #dc2626; --red-light: #fef2f2;
+  --purple: #7c3aed; --purple-light: #f5f3ff;
+  --gray-50: #f9fafb; --gray-100: #f3f4f6; --gray-200: #e5e7eb;
+  --gray-400: #9ca3af; --gray-500: #6b7280; --gray-700: #374151; --gray-900: #111827;
+  --line: #e5e7eb;
+}
+html, body { overflow-x: hidden; width: 100%; }
+body { font-family: 'Pretendard', -apple-system, sans-serif; background: #f0faf9; color: var(--gray-900); font-size: 14px; line-height: 1.5; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* 탭 네비 */
+.view-tabs {
+  background: #fff; border-bottom: 1px solid var(--line);
+  display: flex; padding: 0 24px;
+  position: sticky; top: 0; z-index: 50;
+}
+.view-tab {
+  padding: 14px 20px; font-size: 13px; font-weight: 600;
+  color: var(--gray-400); cursor: pointer; border-bottom: 2px solid transparent;
+  transition: all .15s; white-space: nowrap; user-select: none;
+}
+.view-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.view-tab:hover:not(.active) { color: var(--gray-700); }
+.view-badge { display: inline-block; background: var(--red); color: #fff; font-size: 9px; font-weight: 800; padding: 1px 5px; border-radius: 8px; margin-left: 5px; }
+
+/* 뷰 컨테이너 */
+.view { display: none; }
+.view.active { display: block; animation: fadeUp .3s ease; }
+
+/* ══════════════════════
+   뷰 1: 시설 홈페이지
+══════════════════════ */
+.site-nav {
+  background: rgba(255,255,255,.96); backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 5%; height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.site-logo { display: flex; align-items: center; gap: 8px; }
+.site-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, var(--teal), #0891b2); border-radius: 8px; display: grid; place-items: center; font-size: 16px; }
+.site-logo-text { font-size: 16px; font-weight: 800; color: var(--gray-900); letter-spacing: -.02em; }
+.site-logo-text span { color: var(--teal); }
+.site-nav-links { display: flex; gap: 24px; }
+.site-nav-links a { font-size: 13px; font-weight: 500; color: var(--gray-500); text-decoration: none; transition: color .15s; }
+.site-nav-links a:hover { color: var(--gray-900); }
+.site-nav-cta { background: var(--teal); color: #fff; padding: 8px 18px; border-radius: 6px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: background .15s; }
+.site-nav-cta:hover { background: var(--teal2); }
+
+.site-hero {
+  background: linear-gradient(135deg, #0d1f2d 0%, #0d4a45 50%, #0d2f2d 100%);
+  padding: 80px 5% 64px; position: relative; overflow: hidden;
+}
+.site-hero::before {
+  content: ''; position: absolute; top: -100px; right: -100px;
+  width: 500px; height: 500px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(13,148,136,.3), transparent 70%);
+  pointer-events: none;
+}
+.site-hero-inner { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; position: relative; z-index: 1; }
+.site-hero-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(13,148,136,.2); border: 1px solid rgba(13,148,136,.35); color: #5eead4; font-size: 11px; font-weight: 700; padding: 4px 12px; border-radius: 20px; margin-bottom: 18px; letter-spacing: .08em; }
+.site-hero h1 { font-size: clamp(26px, 3.5vw, 44px); font-weight: 800; line-height: 1.2; letter-spacing: -.03em; color: #fff; margin-bottom: 14px; }
+.site-hero h1 em { font-style: normal; color: #5eead4; }
+.site-hero-sub { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.8; margin-bottom: 24px; }
+.site-hero-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.site-btn-fill { background: var(--teal); color: #fff; padding: 12px 24px; border-radius: 7px; font-size: 13px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: background .15s; }
+.site-btn-fill:hover { background: var(--teal2); }
+.site-btn-outline { background: rgba(255,255,255,.1); color: #fff; padding: 12px 24px; border-radius: 7px; font-size: 13px; font-weight: 600; border: 1px solid rgba(255,255,255,.2); cursor: pointer; font-family: inherit; transition: all .15s; }
+.site-btn-outline:hover { background: rgba(255,255,255,.18); }
+
+/* 시설 카드 */
+.site-facility-card { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); border-radius: 14px; padding: 20px; }
+.facility-photo { width: 100%; height: 140px; border-radius: 10px; background: linear-gradient(135deg, #134e4a, #0d4a45); display: flex; align-items: center; justify-content: center; font-size: 48px; margin-bottom: 14px; }
+.facility-name { font-size: 16px; font-weight: 800; color: #fff; margin-bottom: 4px; }
+.facility-addr { font-size: 11px; color: rgba(255,255,255,.5); margin-bottom: 12px; }
+.facility-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.facility-stat { background: rgba(255,255,255,.07); border-radius: 8px; padding: 8px; text-align: center; }
+.facility-stat-val { font-size: 15px; font-weight: 800; color: #5eead4; }
+.facility-stat-lbl { font-size: 9px; color: rgba(255,255,255,.45); margin-top: 2px; }
+
+/* 섹션 */
+.site-sec { padding: 56px 5%; }
+.site-sec-inner { max-width: 1000px; margin: 0 auto; }
+.site-sec-tag { display: inline-flex; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--teal); background: var(--teal-light); border: 1px solid #99f6e4; border-radius: 20px; padding: 3px 12px; margin-bottom: 12px; }
+.site-sec h2 { font-size: clamp(22px, 3vw, 36px); font-weight: 800; line-height: 1.2; letter-spacing: -.03em; margin-bottom: 10px; }
+.site-sec h2 em { font-style: normal; color: var(--teal); }
+.site-sec-desc { font-size: 14px; color: var(--gray-500); line-height: 1.8; max-width: 480px; }
+
+.services-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 36px; }
+.svc-item { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 22px 18px; transition: box-shadow .2s; }
+.svc-item:hover { box-shadow: 0 8px 24px rgba(0,0,0,.07); }
+.svc-item-icon { font-size: 28px; margin-bottom: 12px; }
+.svc-item h3 { font-size: 14px; font-weight: 700; margin-bottom: 7px; }
+.svc-item p { font-size: 12px; color: var(--gray-500); line-height: 1.7; }
+
+.inquiry-form-wrap { background: var(--teal); border-radius: 14px; padding: 32px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 36px; }
+.inquiry-left h3 { font-size: 20px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+.inquiry-left p { font-size: 13px; color: rgba(255,255,255,.65); line-height: 1.8; }
+.inquiry-form { display: flex; flex-direction: column; gap: 10px; }
+.inq-input { background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2); color: #fff; padding: 10px 14px; border-radius: 7px; font-family: inherit; font-size: 13px; outline: none; }
+.inq-input::placeholder { color: rgba(255,255,255,.5); }
+.inq-input:focus { border-color: rgba(255,255,255,.5); }
+.inq-submit { background: #fff; color: var(--teal2); border: none; padding: 12px; border-radius: 7px; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; transition: opacity .15s; }
+.inq-submit:hover { opacity: .9; }
+
+/* ══════════════════════
+   뷰 2: 보호사 앱
+══════════════════════ */
+.app-view { padding: 24px; background: #f0faf9; min-height: calc(100vh - 49px); display: flex; justify-content: center; align-items: flex-start; gap: 24px; flex-wrap: wrap; }
+.phone-frame { background: #1a1a2e; border-radius: 36px; padding: 12px; box-shadow: 0 32px 80px rgba(0,0,0,.25); flex-shrink: 0; }
+.phone-screen { background: #fff; border-radius: 26px; overflow: hidden; width: 240px; height: 520px; display: flex; flex-direction: column; }
+.phone-notch { background: #1a1a2e; height: 24px; display: flex; align-items: center; justify-content: center; }
+.phone-notch-bar { width: 70px; height: 4px; background: #333; border-radius: 2px; }
+
+.app-h { background: linear-gradient(135deg, var(--teal), #0891b2); padding: 14px 14px 18px; color: #fff; }
+.app-h-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.app-h-greeting { font-size: 10px; opacity: .7; }
+.app-h-name { font-size: 13px; font-weight: 800; margin-top: 1px; }
+.app-h-av { width: 28px; height: 28px; border-radius: 50%; background: rgba(255,255,255,.25); display: grid; place-items: center; font-size: 12px; font-weight: 700; }
+.app-h-today { background: rgba(255,255,255,.15); border-radius: 8px; padding: 8px 10px; font-size: 10px; color: rgba(255,255,255,.8); display: flex; justify-content: space-between; }
+.app-h-today b { color: #fff; font-weight: 700; }
+.live-dot { width: 5px; height: 5px; border-radius: 50%; background: #4ade80; animation: blink 1.5s infinite; }
+
+.app-b { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.app-b::-webkit-scrollbar { display: none; }
+.app-sec-t { font-size: 10px; font-weight: 700; color: var(--gray-700); margin-bottom: 5px; }
+
+/* 출퇴근 버튼 */
+.checkin-card { background: var(--teal-light); border: 1px solid #99f6e4; border-radius: 10px; padding: 12px; text-align: center; }
+.checkin-time { font-size: 22px; font-weight: 900; color: var(--teal2); letter-spacing: -.02em; }
+.checkin-label { font-size: 9px; color: var(--teal); margin-bottom: 8px; }
+.checkin-btn { background: var(--teal); color: #fff; border: none; border-radius: 7px; padding: 8px 20px; font-size: 11px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+/* 방문 일정 */
+.visit-item { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; display: flex; gap: 8px; align-items: center; }
+.visit-bar { width: 3px; height: 32px; border-radius: 2px; flex-shrink: 0; }
+.visit-info { flex: 1; min-width: 0; }
+.visit-name { font-size: 11px; font-weight: 700; }
+.visit-addr { font-size: 9px; color: var(--gray-400); margin-top: 1px; }
+.visit-time { font-size: 10px; font-weight: 700; color: var(--gray-500); white-space: nowrap; }
+.visit-badge { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-top: 2px; }
+
+/* 일지 */
+.journal-input { background: var(--gray-50); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 10px; color: var(--gray-500); line-height: 1.6; min-height: 56px; }
+
+.app-tabbar { background: #fff; border-top: 1px solid var(--line); display: flex; padding: 6px 0 3px; }
+.tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; }
+.tab-icon { font-size: 16px; }
+.tab-label { font-size: 8px; color: var(--gray-400); font-weight: 500; }
+.tab-item.active .tab-label { color: var(--teal); }
+
+/* 앱 설명 패널 */
+.app-desc-panel { background: #fff; border-radius: 14px; padding: 24px; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,.06); align-self: center; }
+.app-desc-panel h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; color: var(--gray-900); }
+.app-desc-panel p { font-size: 13px; color: var(--gray-500); line-height: 1.75; margin-bottom: 16px; }
+.app-features { display: flex; flex-direction: column; gap: 10px; }
+.app-feature { display: flex; align-items: flex-start; gap: 10px; }
+.app-feature-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; }
+.app-feature-title { font-size: 12px; font-weight: 700; margin-bottom: 2px; }
+.app-feature-desc { font-size: 11px; color: var(--gray-400); line-height: 1.5; }
+
+/* ══════════════════════
+   뷰 3: 관리자 대시보드
+══════════════════════ */
+.dash-wrap { padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.dash-top { background: #fff; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.dash-title { font-size: 15px; font-weight: 800; }
+.dash-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.dash-actions { display: flex; gap: 8px; }
+.dbtn { padding: 7px 14px; border-radius: 7px; font-size: 12px; font-weight: 700; border: none; cursor: pointer; font-family: inherit; transition: opacity .15s; }
+.dbtn:hover { opacity: .85; }
+.dbtn.p { background: var(--teal); color: #fff; }
+.dbtn.o { background: #fff; border: 1px solid var(--line); color: var(--gray-700); }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+.kpi { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.kpi-lbl { font-size: 10px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 8px; }
+.kpi-val { font-size: 22px; font-weight: 800; letter-spacing: -.02em; line-height: 1; margin-bottom: 5px; }
+.kpi-foot { font-size: 11px; color: var(--gray-400); }
+.up { color: var(--green); font-weight: 700; }
+.dn { color: var(--red); font-weight: 700; }
+
+.card { background: #fff; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+.card-head { padding: 13px 16px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 13px; font-weight: 700; }
+.card-action { font-size: 11px; color: var(--teal); font-weight: 600; cursor: pointer; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.g3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 14px; }
+
+.badge { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; white-space: nowrap; }
+.badge-green  { background: var(--green-light);  color: var(--green); }
+.badge-red    { background: var(--red-light);    color: var(--red); }
+.badge-amber  { background: var(--amber-light);  color: var(--amber); }
+.badge-blue   { background: var(--blue-light);   color: var(--blue); }
+.badge-teal   { background: var(--teal-light);   color: var(--teal); }
+.badge-purple { background: var(--purple-light); color: var(--purple); }
+
+/* 입소자 테이블 */
+.tbl { width: 100%; border-collapse: collapse; font-size: 12px; }
+.tbl th { padding: 8px 14px; font-size: 10px; font-weight: 700; color: var(--gray-400); text-align: left; text-transform: uppercase; letter-spacing: .06em; background: var(--gray-50); border-bottom: 1px solid var(--gray-100); white-space: nowrap; }
+.tbl td { padding: 10px 14px; border-bottom: 1px solid var(--gray-50); vertical-align: middle; }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl tr:hover td { background: var(--gray-50); }
+.r-name { font-weight: 700; }
+.r-sub  { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+
+/* 보호사 목록 */
+.worker-list { padding: 0 16px; }
+.worker-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+.worker-item:last-child { border-bottom: none; }
+.worker-av { width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+.worker-info { flex: 1; }
+.worker-name { font-size: 13px; font-weight: 700; }
+.worker-sub { font-size: 11px; color: var(--gray-400); margin-top: 1px; }
+.worker-status { font-size: 11px; font-weight: 700; white-space: nowrap; }
+
+/* 알림 */
+.notif-list { padding: 0 16px; }
+.notif-item { display: flex; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--gray-50); }
+.notif-item:last-child { border-bottom: none; }
+.notif-icon { width: 32px; height: 32px; border-radius: 8px; display: grid; place-items: center; font-size: 14px; flex-shrink: 0; }
+.notif-body { flex: 1; }
+.notif-title { font-size: 12px; font-weight: 700; }
+.notif-desc { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.notif-time { font-size: 10px; color: var(--gray-400); white-space: nowrap; }
+
+/* 차트 */
+.bar-chart-wrap { padding: 14px 16px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 80px; margin-bottom: 6px; }
+.bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+.bar-v { font-size: 9px; color: var(--gray-400); font-weight: 600; }
+.bar-b { width: 100%; border-radius: 4px 4px 0 0; cursor: pointer; }
+.bar-l { font-size: 9px; color: var(--gray-400); }
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .site-hero-inner { grid-template-columns: 1fr; }
+  .site-facility-card { display: none; }
+  .site-nav-links { display: none; }
+  .services-grid { grid-template-columns: 1fr 1fr; }
+  .inquiry-form-wrap { grid-template-columns: 1fr; }
+  .app-view { flex-direction: column; align-items: center; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .g2, .g3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 480px) {
+  .services-grid { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .view-tab { padding: 12px 12px; font-size: 12px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 탭 네비 -->
+<div class="view-tabs">
+  <div class="view-tab active" onclick="switchView('site', this)">🏠 시설 홈페이지</div>
+  <div class="view-tab" onclick="switchView('app', this)">📱 보호사 앱</div>
+  <div class="view-tab" onclick="switchView('dash', this)">📊 관리자 대시보드 <span class="view-badge">5</span></div>
+</div>
+
+<!-- ══ 뷰 1: 시설 홈페이지 ══ -->
+<div class="view active" id="view-site">
+  <nav class="site-nav">
+    <div class="site-logo">
+      <div class="site-logo-icon">🌿</div>
+      <span class="site-logo-text">햇살<span>요양원</span></span>
+    </div>
+    <div class="site-nav-links">
+      <a href="#">시설 소개</a>
+      <a href="#">서비스</a>
+      <a href="#">입소 안내</a>
+      <a href="#">오시는 길</a>
+    </div>
+    <button class="site-nav-cta">입소 상담</button>
+  </nav>
+
+  <div class="site-hero">
+    <div class="site-hero-inner">
+      <div>
+        <div class="site-hero-tag">🌿 경기도 1등 요양원</div>
+        <h1>어르신의 편안한<br><em>제2의 집</em></h1>
+        <p class="site-hero-sub">24시간 전문 요양보호사가 함께합니다. 의료·재활·여가 프로그램으로 건강하고 즐거운 일상을 만들어드립니다.</p>
+        <div class="site-hero-btns">
+          <button class="site-btn-fill">입소 상담 신청</button>
+          <button class="site-btn-outline">시설 둘러보기</button>
+        </div>
+      </div>
+      <div class="site-facility-card">
+        <div class="facility-photo">🏡</div>
+        <div class="facility-name">햇살요양원 성남점</div>
+        <div class="facility-addr">📍 경기도 성남시 분당구 정자동 123</div>
+        <div class="facility-stats">
+          <div class="facility-stat"><div class="facility-stat-val">98</div><div class="facility-stat-lbl">총 정원</div></div>
+          <div class="facility-stat"><div class="facility-stat-val">4.9★</div><div class="facility-stat-lbl">평균 평점</div></div>
+          <div class="facility-stat"><div class="facility-stat-val">12년</div><div class="facility-stat-lbl">운영 경력</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="site-sec" style="background:#fff">
+    <div class="site-sec-inner">
+      <div class="site-sec-tag">서비스</div>
+      <h2 class="site-sec h2">어르신의 건강을<br><em>365일 함께</em></h2>
+      <p class="site-sec-desc">전문 의료진과 요양보호사가 맞춤 케어 서비스를 제공합니다.</p>
+      <div class="services-grid">
+        <div class="svc-item"><div class="svc-item-icon">🩺</div><h3>의료 서비스</h3><p>촉탁의 정기 방문, 투약 관리, 건강 모니터링을 24시간 제공합니다.</p></div>
+        <div class="svc-item"><div class="svc-item-icon">🧘</div><h3>재활 프로그램</h3><p>물리치료사 상주. 일상 복귀를 위한 맞춤 재활 운동을 진행합니다.</p></div>
+        <div class="svc-item"><div class="svc-item-icon">🍱</div><h3>영양 식사</h3><p>영양사 설계 식단. 개인 건강 상태에 맞춘 맞춤 식사를 제공합니다.</p></div>
+        <div class="svc-item"><div class="svc-item-icon">🎨</div><h3>여가·문화 활동</h3><p>원예치료, 음악 치료, 미술 활동 등 다양한 프로그램을 운영합니다.</p></div>
+        <div class="svc-item"><div class="svc-item-icon">📱</div><h3>가족 소통 앱</h3><p>실시간 케어 일지, 사진 공유, 상담 예약을 앱으로 편리하게.</p></div>
+        <div class="svc-item"><div class="svc-item-icon">🚐</div><h3>송영 서비스</h3><p>병원 동행, 가족 면회 지원 등 이동 서비스를 제공합니다.</p></div>
+      </div>
+
+      <div class="inquiry-form-wrap">
+        <div class="inquiry-left">
+          <h3>입소 상담을<br>신청해주세요</h3>
+          <p>전문 상담사가 24시간 내에 연락드립니다. 시설 방문 투어도 신청 가능합니다.</p>
+        </div>
+        <form class="inquiry-form" onsubmit="siteSubmit(event)">
+          <input class="inq-input" type="text" placeholder="보호자 성함" required>
+          <input class="inq-input" type="tel" placeholder="연락처">
+          <input class="inq-input" type="text" placeholder="어르신 연령 및 상태 간단 설명">
+          <button type="submit" class="inq-submit">상담 신청하기 →</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 뷰 2: 보호사 앱 ══ -->
+<div class="view" id="view-app">
+  <div class="app-view">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+        <div class="app-h">
+          <div class="app-h-top">
+            <div>
+              <div class="app-h-greeting">요양보호사 👋</div>
+              <div class="app-h-name">김미영 보호사</div>
+            </div>
+            <div class="app-h-av">미</div>
+          </div>
+          <div class="app-h-today">
+            <div>오늘 방문 <b>4명</b> · 완료 <b>2명</b></div>
+            <div class="live-dot"></div>
+          </div>
+        </div>
+        <div class="app-b">
+          <!-- 출퇴근 -->
+          <div class="checkin-card">
+            <div class="checkin-time">09:14</div>
+            <div class="checkin-label">출근 완료 · 오늘 근무 중</div>
+            <button class="checkin-btn">퇴근 체크</button>
+          </div>
+          <!-- 방문 일정 -->
+          <div class="app-sec-t">오늘 방문 일정</div>
+          <div style="display:flex;flex-direction:column;gap:5px">
+            <div class="visit-item">
+              <div class="visit-bar" style="background:var(--green)"></div>
+              <div class="visit-info">
+                <div class="visit-name">이순자 어르신</div>
+                <div class="visit-addr">성남시 분당구 정자동</div>
+              </div>
+              <div style="text-align:right">
+                <div class="visit-time">09:00</div>
+                <div class="visit-badge" style="background:var(--green-light);color:var(--green)">완료</div>
+              </div>
+            </div>
+            <div class="visit-item">
+              <div class="visit-bar" style="background:var(--teal)"></div>
+              <div class="visit-info">
+                <div class="visit-name">박종철 어르신</div>
+                <div class="visit-addr">성남시 수정구 태평동</div>
+              </div>
+              <div style="text-align:right">
+                <div class="visit-time">11:00</div>
+                <div class="visit-badge" style="background:var(--teal-light);color:var(--teal)">진행중</div>
+              </div>
+            </div>
+            <div class="visit-item">
+              <div class="visit-bar" style="background:var(--gray-200)"></div>
+              <div class="visit-info">
+                <div class="visit-name">최영순 어르신</div>
+                <div class="visit-addr">성남시 중원구 금광동</div>
+              </div>
+              <div style="text-align:right">
+                <div class="visit-time">14:00</div>
+                <div class="visit-badge" style="background:var(--gray-100);color:var(--gray-500)">예정</div>
+              </div>
+            </div>
+          </div>
+          <!-- 케어 일지 -->
+          <div class="app-sec-t">박종철 어르신 일지</div>
+          <div class="journal-input">식사 3/4 섭취. 오전 산책 15분 진행. 혈압 130/80 정상. 기분 양호하심. 가족과 영상통화 10분...</div>
+          <button style="background:var(--teal);color:#fff;border:none;border-radius:7px;padding:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">일지 저장 및 가족 공유</button>
+        </div>
+        <div class="app-tabbar">
+          <div class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+          <div class="tab-item"><span class="tab-icon">📅</span><span class="tab-label">일정</span></div>
+          <div class="tab-item"><span class="tab-icon">📝</span><span class="tab-label">일지</span></div>
+          <div class="tab-item"><span class="tab-icon">💬</span><span class="tab-label">메시지</span></div>
+          <div class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">마이</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-desc-panel">
+      <h3>요양보호사 전용 앱</h3>
+      <p>출퇴근 체크부터 케어 일지 작성, 가족 공유까지. 보호사의 하루를 스마트하게 관리합니다.</p>
+      <div class="app-features">
+        <div class="app-feature">
+          <div class="app-feature-icon" style="background:var(--teal-light)">📍</div>
+          <div>
+            <div class="app-feature-title">GPS 출퇴근 체크</div>
+            <div class="app-feature-desc">방문 위치 자동 인증. 출퇴근 기록이 자동으로 관리자에게 전송됩니다.</div>
+          </div>
+        </div>
+        <div class="app-feature">
+          <div class="app-feature-icon" style="background:var(--green-light)">📝</div>
+          <div>
+            <div class="app-feature-title">케어 일지 자동 공유</div>
+            <div class="app-feature-desc">작성한 일지가 가족과 관리자에게 즉시 공유됩니다.</div>
+          </div>
+        </div>
+        <div class="app-feature">
+          <div class="app-feature-icon" style="background:var(--amber-light)">📅</div>
+          <div>
+            <div class="app-feature-title">방문 일정 관리</div>
+            <div class="app-feature-desc">오늘 방문 어르신 목록과 이동 경로를 한눈에 확인합니다.</div>
+          </div>
+        </div>
+        <div class="app-feature">
+          <div class="app-feature-icon" style="background:var(--blue-light)">💬</div>
+          <div>
+            <div class="app-feature-title">가족·관리자 소통</div>
+            <div class="app-feature-desc">어르신 상태를 실시간으로 가족과 공유하고 빠르게 소통합니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 뷰 3: 관리자 대시보드 ══ -->
+<div class="view" id="view-dash">
+  <div class="dash-wrap">
+    <div class="dash-top">
+      <div>
+        <div class="dash-title">CareOn 관리자 대시보드</div>
+        <div class="dash-sub">햇살요양원 성남점 · 2026년 3월</div>
+      </div>
+      <div class="dash-actions">
+        <button class="dbtn o">📤 리포트</button>
+        <button class="dbtn p">+ 입소자 등록</button>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-lbl">현재 입소자</div>
+        <div class="kpi-val" style="color:var(--teal)">84<span style="font-size:14px;font-weight:500">명</span></div>
+        <div class="kpi-foot">정원 98명 <span class="up">▲ 86%</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">요양보호사</div>
+        <div class="kpi-val" style="color:var(--blue)">32<span style="font-size:14px;font-weight:500">명</span></div>
+        <div class="kpi-foot">오늘 출근 <span class="up">29명</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">이달 수납률</div>
+        <div class="kpi-val" style="color:var(--green)">94<span style="font-size:14px;font-weight:500">%</span></div>
+        <div class="kpi-foot">미납 <span class="dn">5명</span></div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-lbl">이달 매출</div>
+        <div class="kpi-val" style="color:var(--purple)">4,620<span style="font-size:14px;font-weight:500">만</span></div>
+        <div class="kpi-foot">전월 대비 <span class="up">▲ +5%</span></div>
+      </div>
+    </div>
+
+    <div class="g3">
+      <!-- 입소자 현황 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">입소자 현황</span><span class="card-action">전체 84명</span></div>
+        <div style="overflow-x:auto">
+          <table class="tbl">
+            <thead><tr><th>성함</th><th>등급</th><th>담당 보호사</th><th>상태</th></tr></thead>
+            <tbody>
+              <tr><td><div class="r-name">이순자 (82세)</div><div class="r-sub">304호 · 치매 케어</div></td><td><span class="badge badge-red">1등급</span></td><td>김미영</td><td><span class="badge badge-green">안정</span></td></tr>
+              <tr><td><div class="r-name">박종철 (76세)</div><div class="r-sub">201호 · 재활 중</div></td><td><span class="badge badge-amber">2등급</span></td><td>이지현</td><td><span class="badge badge-teal">재활중</span></td></tr>
+              <tr><td><div class="r-name">최영순 (89세)</div><div class="r-sub">108호 · 일반</div></td><td><span class="badge badge-blue">3등급</span></td><td>박수진</td><td><span class="badge badge-green">안정</span></td></tr>
+              <tr><td><div class="r-name">정동호 (71세)</div><div class="r-sub">215호 · 당뇨 관리</div></td><td><span class="badge badge-amber">2등급</span></td><td>김미영</td><td><span class="badge badge-amber">주의</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 보호사 출근 현황 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">보호사 출근 현황</span><span class="card-action">오늘 29/32명</span></div>
+        <div class="worker-list">
+          <div class="worker-item">
+            <div class="worker-av" style="background:var(--teal)">김</div>
+            <div class="worker-info"><div class="worker-name">김미영</div><div class="worker-sub">오전 9:02 출근 · 방문 4명</div></div>
+            <span class="worker-status" style="color:var(--green)">근무중</span>
+          </div>
+          <div class="worker-item">
+            <div class="worker-av" style="background:var(--blue)">이</div>
+            <div class="worker-info"><div class="worker-name">이지현</div><div class="worker-sub">오전 9:15 출근 · 방문 3명</div></div>
+            <span class="worker-status" style="color:var(--green)">근무중</span>
+          </div>
+          <div class="worker-item">
+            <div class="worker-av" style="background:var(--amber)">박</div>
+            <div class="worker-info"><div class="worker-name">박수진</div><div class="worker-sub">오전 9:30 출근 예정</div></div>
+            <span class="worker-status" style="color:var(--amber)">미출근</span>
+          </div>
+          <div class="worker-item">
+            <div class="worker-av" style="background:var(--purple)">최</div>
+            <div class="worker-info"><div class="worker-name">최민정</div><div class="worker-sub">오전 8:55 출근 · 방문 5명</div></div>
+            <span class="worker-status" style="color:var(--green)">근무중</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 알림 -->
+      <div class="card">
+        <div class="card-head"><span class="card-title">🔔 긴급 알림</span><span class="card-action">5건</span></div>
+        <div class="notif-list">
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--red-light)">🚨</div>
+            <div class="notif-body"><div class="notif-title">정동호 어르신 혈당 이상</div><div class="notif-desc">혈당 240. 담당 보호사 즉시 확인 요망.</div></div>
+            <div class="notif-time">방금</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--amber-light)">⏰</div>
+            <div class="notif-body"><div class="notif-title">박수진 보호사 미출근</div><div class="notif-desc">출근 예정 시간 30분 초과.</div></div>
+            <div class="notif-time">30분 전</div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-icon" style="background:var(--blue-light)">💰</div>
+            <div class="notif-body"><div class="notif-title">수납 미완료 5명</div><div class="notif-desc">이달 요양비 미납. 자동 안내 발송됨.</div></div>
+            <div class="notif-time">오전 9:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 월별 입소 현황 차트 -->
+    <div class="card">
+      <div class="card-head"><span class="card-title">월별 입소자 현황</span><span class="card-sub">2026년</span></div>
+      <div class="bar-chart-wrap">
+        <div class="bar-chart">
+          <div class="bar-col"><span class="bar-v">78</span><div class="bar-b" style="height:78%;background:#99f6e4"></div><span class="bar-l">1월</span></div>
+          <div class="bar-col"><span class="bar-v">80</span><div class="bar-b" style="height:80%;background:#99f6e4"></div><span class="bar-l">2월</span></div>
+          <div class="bar-col"><span class="bar-v">84</span><div class="bar-b" style="height:84%;background:var(--teal)"></div><span class="bar-l" style="color:var(--teal);font-weight:700">3월</span></div>
+          <div class="bar-col"><span class="bar-v">—</span><div class="bar-b" style="height:4%;background:var(--gray-100)"></div><span class="bar-l">4월</span></div>
+          <div class="bar-col"><span class="bar-v">—</span><div class="bar-b" style="height:4%;background:var(--gray-100)"></div><span class="bar-l">5월</span></div>
+          <div class="bar-col"><span class="bar-v">—</span><div class="bar-b" style="height:4%;background:var(--gray-100)"></div><span class="bar-l">6월</span></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray-400);padding-top:8px;border-top:1px solid var(--gray-100)">
+          <span>정원 대비 평균 가동률</span><span style="font-weight:700;color:var(--teal)">82%</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function switchView(id, tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + id).classList.add('active');
+  tab.classList.add('active');
+}
+function siteSubmit(e) {
+  e.preventDefault();
+  const b = e.target.querySelector('.inq-submit');
+  b.textContent = '접수됐습니다! ✓';
+  b.style.background = '#16a34a'; b.style.color = '#fff';
+  setTimeout(() => { b.textContent = '상담 신청하기 →'; b.style.background = ''; b.style.color = ''; e.target.reset(); }, 2500);
+}
+</script>
+</body>
+</html>
