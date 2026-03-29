@@ -374,6 +374,7 @@ footer {
   <div class="nav-links">
     <a href="#what">서비스</a>
     <a href="#process">프로세스</a>
+    <a href="on-series.html">On 시리즈</a>
     <a href="#demos">샘플</a>
     <a href="#pricing">가격</a>
     <a href="#contact">상담</a>
@@ -562,17 +563,18 @@ footer {
   <div class="sec-eyebrow">샘플</div>
   <h2>직접 체험해보세요</h2>
   <p class="sec-desc">업종별로 실제 작동하는 샘플입니다. 클릭하면 바로 확인할 수 있어요.</p>
+  <a href="on-series.html" style="display:inline-flex;align-items:center;gap:8px;margin-top:16px;background:rgba(245,197,24,.1);border:1px solid rgba(245,197,24,.25);color:#f5c518;padding:9px 20px;border-radius:6px;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s" onmouseover="this.style.background='rgba(245,197,24,.18)'" onmouseout="this.style.background='rgba(245,197,24,.1)'">🌙 On 시리즈 전체 소개 보기 →</a>
 
   <div class="demo-grid fi">
 
     <a class="demo-card" href="demo-04-brand.html" target="_blank">
       <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1a1610)">
         <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 40% 60%,rgba(139,111,71,.15),transparent)"></div>
-        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Brand<span style="color:#c9a84c">Landing</span></div></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Brand<span style="color:#c9a84c">On</span></div></div>
       </div>
       <div class="demo-info">
-        <div class="demo-category">제품 · 브랜드</div>
-        <h3>브랜드 랜딩페이지</h3>
+        <div class="demo-category">브랜드 · 랜딩</div>
+        <h3>BrandOn</h3>
         <p>실제 사진이 들어간 고급스러운 제품 랜딩페이지. 스크롤 애니메이션, 리뷰, 구매 CTA 포함.</p>
         <div class="demo-tags">
           <span class="demo-tag">랜딩페이지</span>
@@ -586,11 +588,11 @@ footer {
     <a class="demo-card" href="demo-07-company.html" target="_blank">
       <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#0f1923)">
         <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 40%,rgba(30,95,212,.18),transparent)"></div>
-        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Company<span style="color:#2d7aff">Site</span></div></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Company<span style="color:#2d7aff">On</span></div></div>
       </div>
       <div class="demo-info">
         <div class="demo-category">기업 홈페이지</div>
-        <h3>기업 소개 사이트</h3>
+        <h3>CompanyOn</h3>
         <p>서비스 소개, 팀, 연혁, 문의 폼까지. 신뢰도 높은 기업 홈페이지를 빠르게 제작합니다.</p>
         <div class="demo-tags"><span class="demo-tag">회사소개</span><span class="demo-tag">다중 페이지</span><span class="demo-tag">문의 폼</span></div>
         <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
@@ -831,8 +833,8 @@ footer {
         <div class="ff"><label>이름</label><input type="text" name="이름" placeholder="홍길동" required></div>
         <div class="ff"><label>연락처</label><input type="text" name="연락처" placeholder="010-0000-0000"></div>
       </div>
-      <div class="ff"><label>이메일</label><input type="email" placeholder="batonpass90@gmail.com" required></div>
-      <div class="ff"><label>업종</label><input type="text" name="업종" placeholder="예) 미용실, 학원, 식당, 보험 등" style="width:100%;padding:10px 14px;background:rgba(221,226,240,.06);border:1px solid rgba(221,226,240,.1);color:#dde2f0;border-radius:4px;font-family:inherit;font-size:14px;outline:none"></div>
+      <div class="ff"><label>이메일</label><input type="email" placeholder="batonpass90@gmail.com" name="이메일" required></div>
+      <div class="ff"><label>업종</label><input type="text" name="업종" placeholder="예) 학원, 식당, 병원, 세차장, 기업 등" style="width:100%;padding:10px 14px;background:rgba(221,226,240,.06);border:1px solid rgba(221,226,240,.1);color:#dde2f0;border-radius:4px;font-family:inherit;font-size:14px;outline:none"></div>
       <div class="ff">
         <label>만들고 싶은 것</label>
         <select>
@@ -848,7 +850,7 @@ footer {
       </div>
       <div class="ff">
         <label>어떤 걸 만들고 싶으신가요?</label>
-        <textarea placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다.&#10;예) 미용실 예약 앱을 만들고 싶어요. 고객이 날짜 선택하고 예약할 수 있으면 좋겠어요."></textarea>
+        <textarea placeholder="예) 우리 학원 출결·수강료 관리 앱을 만들고 싶어요. 학부모 알림도 되면 좋겠어요."></textarea>
       </div>
       <button type="submit" class="cf-submit">무료 상담 신청하기 →</button>
     </form>
