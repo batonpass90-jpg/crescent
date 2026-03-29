@@ -814,8 +814,8 @@ footer {
       <h2 style="margin-bottom:18px">어떤 문제를<br><em>해결하고 싶으세요?</em></h2>
       <p>기획서 없어도 됩니다.<br>아이디어나 해결하고 싶은 문제만 알려주세요.<br>24시간 내에 답변드립니다.</p>
       <div class="cl-links">
-        <a class="cl-link" href="mailto:batonpass90@gmail.com">
-          <div class="cl-icon">✉</div>batonpass90@gmail.com
+        <a class="cl-link" href="/cdn-cgi/l/email-protection#5e3c3f2a31302e3f2d2d676e1e39333f3732703d3133">
+          <div class="cl-icon">✉</div><span class="__cf_email__" data-cfemail="5c3e3d2833322c3d2f2f656c1c3b313d3530723f3331">[email&#160;protected]</span>
         </a>
         <a class="cl-link" href="http://pf.kakao.com/_BaxbxdX" target="_blank">
           <div class="cl-icon">💬</div>카카오톡 채널 상담
@@ -826,10 +826,10 @@ footer {
       </div>
     </div>
 
-    <form class="cf fi" onsubmit="event.preventDefault();window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')" action="https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform?usp=header" target="_blank">
+    <form action="https://formspree.io/f/mlgojlzr" method="POST">
       <div class="fr">
-        <div class="ff"><label>이름</label><input type="text" placeholder="홍길동" required></div>
-        <div class="ff"><label>연락처</label><input type="text" placeholder="010-0000-0000"></div>
+        <div class="ff"><label>이름</label><input type="text" name="이름" placeholder="홍길동" required></div>
+        <div class="ff"><label>연락처</label><input type="text" name="연락처" placeholder="010-0000-0000"></div>
       </div>
       <div class="ff"><label>이메일</label><input type="email" placeholder="batonpass90@gmail.com" required></div>
       <div class="ff">
@@ -849,7 +849,7 @@ footer {
         <label>어떤 걸 만들고 싶으신가요?</label>
         <textarea placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다.&#10;예) 미용실 예약 앱을 만들고 싶어요. 고객이 날짜 선택하고 예약할 수 있으면 좋겠어요."></textarea>
       </div>
-      <button type="submit" class="cf-submit" onclick="window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')">무료 상담 신청하기 →</button>
+      <button type="submit" class="cf-submit">무료 상담 신청하기 →</button>
     </form>
   </div>
 </section>
@@ -868,7 +868,19 @@ footer {
 
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+function onFormSubmit(e) {
+  e.preventDefault();
+  window.open('https://forms.gle/dxXDqZEQGxGPLfwm9', '_blank');
+  const btn = e.target.querySelector('[type="submit"]') || e.target.querySelector('.cf-submit');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '구글 폼이 열렸어요! ✓';
+    btn.style.background = '#4ade80'; btn.style.color = '#07080f';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 3000);
+  }
+}
+</script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // STARS
 const se = document.getElementById('stars');
 const sc = ['#ffe082','#ffd54f','#f0c030','#c8a030','#8898c8','#6678a8'];
@@ -884,9 +896,9 @@ function onSend(e){
   e.preventDefault();
   window.open('https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform', '_blank');
   const b=e.target.querySelector('.cf-submit');
-  b.textContent='접수됐어요! 곧 연락드릴게요 ✓';
+  b.textContent='접수됐어요! �곧 연락드릴게요 ✓';
   b.style.background='#4ade80'; b.style.color='#07080f';
-  setTimeout(()=>{ b.textContent='무료 상담 신청하기 →'; b.style.background=''; b.style.color=''; e.target.reset(); },3000);
+  setTimeout(()=>{ b.textContent='무료 상담 신청하기 →'; b.style.background=''; b.style.color=''; },3000);
 }
 </script>
 </body>

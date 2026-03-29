@@ -118,34 +118,7 @@ body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--b
 .btn-cta:hover { background: var(--gold2); }
 
 /* LAYOUT */
-.wrap { display: flex; padding-top: var(--top-h); min-height: 100vh; }
-
-/* SIDEBAR */
-.sidebar {
-  width: var(--sidebar-w); flex-shrink: 0;
-  background: #fff; border-right: 1px solid var(--line);
-  position: sticky; top: var(--top-h); height: calc(100vh - var(--top-h));
-  overflow-y: auto;
-}
-.sb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; border-bottom: 1px solid var(--line); }
-.sb-item {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  gap: 5px; padding: 14px 4px; cursor: pointer;
-  border-right: 1px solid var(--line); border-bottom: 1px solid var(--line);
-  text-decoration: none; color: var(--dark); transition: background .12s;
-}
-.sb-item:nth-child(3n) { border-right: none; }
-.sb-item:hover { background: var(--bg); }
-.sb-item.on { background: #fffbeb; }
-.sb-item.on .sb-lbl { color: var(--gold2); font-weight: 700; }
-.sb-icon { font-size: 22px; line-height: 1; }
-.sb-lbl { font-size: 11px; color: var(--mid); font-weight: 500; text-align: center; }
-
-.sb-faq { padding: 14px 14px 20px; }
-.sb-faq-ttl { font-size: 12px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
-.sb-faq ol { padding-left: 14px; display: flex; flex-direction: column; gap: 7px; }
-.sb-faq li { font-size: 11px; color: var(--mid); line-height: 1.5; cursor: pointer; }
-.sb-faq li:hover { color: var(--blue); }
+.wrap { display: block; padding-top: var(--top-h); min-height: 100vh; }
 
 /* MAIN */
 .main { flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
@@ -332,7 +305,7 @@ footer {
 .fcopy { font-size: 11px; color: var(--light); }
 
 /* RESPONSIVE */
-@media (max-width:1024px) { .sidebar { display:none; } .g4 { grid-template-columns:1fr 1fr; } }
+@media (max-width:1024px) {  .g4 { grid-template-columns:1fr 1fr; } }
 @media (max-width:768px) { .top-nav { display:none; } .main { padding:14px; } .g3 { grid-template-columns:1fr 1fr; } .proc-row { grid-template-columns:1fr 1fr; } .ct-wrap { grid-template-columns:1fr; } }
 @media (max-width:520px) { .g2 { grid-template-columns:1fr; } .g3 { grid-template-columns:1fr 1fr; } .g4 { grid-template-columns:1fr 1fr; } .proc-row { grid-template-columns:1fr; } .fr { grid-template-columns:1fr; } }
 </style>
@@ -360,35 +333,9 @@ footer {
   </div>
 </header>
 
-<div class="wrap">
+<div class="wrap" style="display:block">
   <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sb-grid">
-      <a class="sb-item on" href="#services"><span class="sb-icon">🌐</span><span class="sb-lbl">웹 개발</span></a>
-      <a class="sb-item" href="#services"><span class="sb-icon">📱</span><span class="sb-lbl">앱 개발</span></a>
-      <a class="sb-item" href="#services"><span class="sb-icon">🤖</span><span class="sb-lbl">AI 연동</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">🌿</span><span class="sb-lbl">브랜드</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">⭐</span><span class="sb-lbl">리뷰 AI</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">💅</span><span class="sb-lbl">뷰티앱</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">🛒</span><span class="sb-lbl">커머스</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">🛡️</span><span class="sb-lbl">보험CRM</span></a>
-      <a class="sb-item" href="#samples"><span class="sb-icon">🏭</span><span class="sb-lbl">제조업</span></a>
-      <a class="sb-item" href="#pricing"><span class="sb-icon">💰</span><span class="sb-lbl">가격표</span></a>
-      <a class="sb-item" href="#process"><span class="sb-icon">📋</span><span class="sb-lbl">프로세스</span></a>
-      <a class="sb-item" href="#contact"><span class="sb-icon">💬</span><span class="sb-lbl">무료상담</span></a>
-    </div>
-    <div class="sb-faq">
-      <div class="sb-faq-ttl">🙋 자주 묻는 질문</div>
-      <ol>
-        <li>기획서 없어도 가능한가요?</li>
-        <li>개발 기간은 얼마나 걸리나요?</li>
-        <li>앱 출시까지 도와주시나요?</li>
-        <li>유지보수도 가능한가요?</li>
-        <li>AI 기능 연동은 어떻게 하나요?</li>
-        <li>금액은 협의 가능한가요?</li>
-      </ol>
-    </div>
-  </aside>
+  
 
   <!-- MAIN -->
   <main class="main">
@@ -642,21 +589,21 @@ footer {
             <p>기획서 없어도 됩니다.<br>아이디어만 있으면 시작할 수 있어요.<br>24시간 내에 답변드립니다.</p>
           </div>
           <div class="ct-links">
-            <a class="ct-link" href="mailto:batonpass90@gmail.com"><span class="ct-link-ic">✉</span>batonpass90@gmail.com</a>
+            <a class="ct-link" href="/cdn-cgi/l/email-protection#8ae8ebfee5e4faebf9f9b3bacaede7ebe3e6a4e9e5e7"><span class="ct-link-ic">✉</span><span class="__cf_email__" data-cfemail="741615001b1a041507074d44341319151d185a171b19">[email&#160;protected]</span></a>
             <a class="ct-link" href="http://pf.kakao.com/_BaxbxdX" target="_blank"><span class="ct-link-ic">💬</span>카카오톡 오픈채팅</a>
             <a class="ct-link" href="https://instagram.com/crescent_ai_studio" target="_blank"><span class="ct-link-ic">📸</span>@crescent_ai_studio</a>
           </div>
         </div>
         <div class="ct-right">
-          <form class="form" onsubmit="event.preventDefault();window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')" action="https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform?usp=header" target="_blank">
+          <form action="https://formspree.io/f/mlgojlzr" method="POST">
             <div class="fr">
-              <div class="fg"><label class="fl">이름</label><input class="fi" type="text" placeholder="홍길동" required></div>
-              <div class="fg"><label class="fl">연락처</label><input class="fi" type="text" placeholder="010-0000-0000"></div>
+              <div class="fg"><label class="fl">이름</label><input class="fi" type="text" name="이름" placeholder="홍길동" required></div>
+              <div class="fg"><label class="fl">연락처</label><input class="fi" type="text" name="연락처" placeholder="010-0000-0000"></div>
             </div>
             <div class="fg"><label class="fl">이메일</label><input class="fi" type="email" placeholder="batonpass90@gmail.com" required></div>
             <div class="fg">
               <label class="fl">만들고 싶은 것</label>
-              <select class="fs">
+              <select class="fs" name="만들고 싶은 것">
                 <option value="">선택해주세요</option>
                 <option>쇼핑몰 · 커머스</option><option>예약 · 관리 시스템</option>
                 <option>AI 챗봇 · 자동화</option><option>iOS · Android 앱</option>
@@ -664,8 +611,8 @@ footer {
                 <option>아직 잘 모르겠어요</option>
               </select>
             </div>
-            <div class="fg"><label class="fl">내용</label><textarea class="ft" placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다."></textarea></div>
-            <button type="submit" class="fsub" onclick="window.open('https://forms.gle/dxXDqZEQGxGPLfwm9','_blank')">무료 상담 신청하기 →</button>
+            <div class="fg"><label class="fl">내용</label><textarea class="ft" name="내용" placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다."></textarea></div>
+            <button type="submit" class="fsub">무료 상담 신청하기 →</button>
           </form>
         </div>
       </div>
@@ -690,7 +637,7 @@ footer {
   <span class="fcopy">© 2026 Crescent Studio</span>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // 배너 별 생성
 const bs = document.getElementById('bannerStars');
 if (bs) {
@@ -718,14 +665,6 @@ window.addEventListener('scroll', () => {
   });
 }, { passive: true });
 
-function onSend(e) {
-  e.preventDefault();
-  window.open("https://docs.google.com/forms/d/e/1FAIpQLSe9f85kImnWvp4ciN_-x9fgMhIop2QmVkc2mTdTalSFXcAgKw/viewform?usp=header", "_blank");
-  const b = e.target.querySelector('.fsub');
-  b.textContent = '접수됐어요! 곧 연�! 곧 연락드릴게요 ✓';
-  b.style.background = '#16a34a'; b.style.color = '#fff';
-  setTimeout(() => { b.textContent = '무료 상담 신청하기 →'; b.style.background = ''; b.style.color = ''; e.target.reset(); }, 3000);
-}
 </script>
 </body>
 </html>
