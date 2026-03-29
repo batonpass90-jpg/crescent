@@ -5,667 +5,902 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAzMiAzMiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIj4KICA8cmVjdCB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHJ4PSI2IiBmaWxsPSIjMDcwODBmIi8+CiAgPGRlZnM+CiAgICA8bWFzayBpZD0ibSI+CiAgICAgIDxjaXJjbGUgY3g9IjE2IiBjeT0iMTYiIHI9IjExIiBmaWxsPSJ3aGl0ZSIvPgogICAgICA8Y2lyY2xlIGN4PSIyMS41IiBjeT0iMTIuNSIgcj0iOC41IiBmaWxsPSJibGFjayIvPgogICAgPC9tYXNrPgogICAgPHJhZGlhbEdyYWRpZW50IGlkPSJnIiBjeD0iMzUlIiBjeT0iMzAlIiByPSI2MCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjZmZlMDgyIi8+CiAgICAgIDxzdG9wIG9mZnNldD0iNjAlIiBzdG9wLWNvbG9yPSIjZjVjNTE4Ii8+CiAgICAgIDxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2M4ODYwYSIvPgogICAgPC9yYWRpYWxHcmFkaWVudD4KICA8L2RlZnM+CiAgPGNpcmNsZSBjeD0iMTYiIGN5PSIxNiIgcj0iMTEiIGZpbGw9InVybCgjZykiIG1hc2s9InVybCgjbSkiLz4KPC9zdmc+">
 <title>Crescent Studio — PM · AI · DX 스튜디오</title>
+<meta name="description" content="아이디어나 문제만 주세요. 전문 PM과 개발자가 AI를 활용해 앱, 웹, 시스템을 빠르고 합리적인 가격에 완성해드립니다.">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { overflow-x:hidden; scroll-behavior:smooth; }
+body {
+  background:#07080f; color:#dde2f0;
+  font-family:'Pretendard',sans-serif;
+  font-size:16px; line-height:1.7;
+  overflow-x:hidden; overflow-y:auto;
+  -webkit-text-size-adjust:100%; margin:0; padding:0;
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
 :root {
-  --gold: #f5c518; --gold2: #e3b015;
-  --dark: #111; --mid: #555; --light: #999;
-  --line: #e8e8e8; --bg: #f7f7f7; --white: #fff;
-  --blue: #2563eb;
-  --sidebar-w: 200px; --top-h: 52px;
-}
-html, body { overflow-x: hidden; }
-body { font-family: 'Pretendard', -apple-system, sans-serif; background: var(--bg); color: var(--dark); font-size: 14px; line-height: 1.6; }
-
-
-/* ── 히어로 배너 ── */
-.hero-banner {
-  background: #07080f;
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
-  min-height: 360px;
-  display: flex; align-items: center;
-  padding: 52px 52px 52px 48px;
-}
-.hero-banner-moon {
-  position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
-  width: 420px; height: 420px; pointer-events: none;
-  animation: mfloat2 14s ease-in-out infinite;
-}
-@keyframes mfloat2 {
-  0%,100%{ transform:translateY(-50%) rotate(-2deg); }
-  50%    { transform:translateY(calc(-50% - 16px)) rotate(2deg); }
-}
-.hero-banner-stars {
-  position: absolute; inset: 0; pointer-events: none; overflow: hidden;
-}
-.hbs { position: absolute; border-radius: 50%; animation: hbtw var(--d,4s) ease-in-out infinite var(--dl,0s); }
-@keyframes hbtw { 0%,100%{opacity:var(--a,.05)} 50%{opacity:var(--b,.4)} }
-.hero-banner-body { position: relative; z-index: 1; max-width: 560px; }
-.hero-banner-tag {
-  font-size: 11px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
-  color: #f5c518; margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
-}
-.hero-banner-tag::before { content:''; width:24px; height:1px; background:#f5c518; }
-.hero-banner-title {
-  font-size: clamp(28px, 3.5vw, 52px);
-  font-weight: 700; line-height: 1.1; letter-spacing: -.03em;
-  color: #fff; margin-bottom: 16px;
-}
-.hero-banner-title b { font-weight: 800; color: #f5c518; font-style: normal; }
-.hero-banner-sub {
-  font-size: 15px; color: rgba(221,226,240,.55); font-weight: 300;
-  line-height: 1.8; margin-bottom: 28px;
-}
-.hero-banner-sub strong { color: #dde2f0; font-weight: 500; }
-.hero-banner-btns { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 28px; }
-.hb-btn-fill {
-  background: #f5c518; color: #07080f; border: none; cursor: pointer;
-  font-family: inherit; font-size: 14px; font-weight: 700;
-  padding: 13px 32px; border-radius: 6px; transition: background .2s;
-}
-.hb-btn-fill:hover { background: #ffd94a; }
-.hb-btn-line {
-  background: none; border: none; cursor: pointer;
-  font-family: inherit; font-size: 14px; font-weight: 500;
-  color: rgba(221,226,240,.55); display: flex; align-items: center; gap: 6px; transition: color .2s;
-}
-.hb-btn-line:hover { color: #dde2f0; }
-.hb-btn-line span { transition: transform .2s; display: inline-block; }
-.hb-btn-line:hover span { transform: translateX(4px); }
-.hero-banner-badges { display: flex; gap: 8px; flex-wrap: wrap; }
-.hb-badge {
-  font-size: 12px; color: rgba(221,226,240,.45);
-  border: 1px solid rgba(221,226,240,.08); padding: 5px 12px; border-radius: 4px;
-}
-.hb-badge b { color: #f5c518; font-weight: 600; }
-@media (max-width: 768px) {
-  .hero-banner { padding: 36px 20px; min-height: 300px; }
-  .hero-banner-moon { width: 260px; height: 260px; right: -30px; opacity: .6; }
-  .hero-banner-title { font-size: 26px; }
+  --y:#f5c518; --y2:#ffd94a;
+  --yg:rgba(245,197,24,.11); --yb:rgba(245,197,24,.22);
+  --n1:#07080f; --n2:#0b0d1c; --n3:#0f1220; --n4:#141728;
+  --bd:rgba(221,226,240,.07);
+  --td:rgba(221,226,240,.52); --tf:rgba(221,226,240,.24);
 }
 
+/* STARS */
+#stars { position:fixed; inset:0; z-index:0; background:#07080f; pointer-events:none; overflow:hidden; }
+.s { position:absolute; border-radius:50%; animation:tw var(--d,4s) ease-in-out infinite var(--dl,0s); }
+@keyframes tw { 0%,100%{ opacity:var(--a,.06); } 50%{ opacity:var(--b,.4); } }
 
+.pg { position:relative; z-index:1; overflow:visible; }
 
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:100;
+  padding:18px 52px;
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(7,8,15,.93); backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--bd);
+}
+.nav-logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.nav-logo-name { font-size:20px; font-weight:700; letter-spacing:-.01em; color:#dde2f0; line-height:1; }
+.nav-links { display:flex; gap:28px; align-items:center; }
+.nav-links a { font-size:13px; font-weight:400; color:var(--td); text-decoration:none; letter-spacing:.02em; transition:color .2s; }
+.nav-links a:hover { color:#dde2f0; }
+.nav-cta {
+  background:var(--y); border:none; cursor:pointer;
+  padding:10px 26px;
+  font-family:'Pretendard',sans-serif; font-size:13px; font-weight:600; letter-spacing:.07em;
+  color:#07080f; transition:background .2s,transform .2s;
+}
+.nav-cta:hover { background:var(--y2); transform:translateY(-1px); }
 
-/* TOPBAR */
-.topbar {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  height: var(--top-h); background: #fff; border-bottom: 1px solid var(--line);
-  display: flex; align-items: center; padding: 0 24px; gap: 0;
+/* HERO */
+.hero {
+  min-height:100vh; background:#07080f;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:140px 52px 90px; position:relative; overflow:visible;
 }
-.logo { display: flex; align-items: center; gap: 8px; text-decoration: none; margin-right: 36px; flex-shrink: 0; }
-.logo-text { font-size: 17px; font-weight: 800; color: var(--dark); letter-spacing: -.03em; }
-.logo-text span { color: var(--gold2); }
-.top-nav { display: flex; align-items: stretch; height: var(--top-h); }
-.top-nav a {
-  display: flex; align-items: center; padding: 0 16px;
-  font-size: 14px; font-weight: 600; color: var(--mid);
-  text-decoration: none; position: relative; transition: color .15s; white-space: nowrap;
+.hero-moon {
+  position:absolute; right:-80px; top:50%; transform:translateY(-50%);
+  width:560px; height:560px; pointer-events:none;
+  animation:mfloat 15s ease-in-out infinite;
 }
-.top-nav a:hover { color: var(--dark); }
-.top-nav a.on { color: var(--blue); }
-.top-nav a.on::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--blue); }
-.top-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
-.btn-cta {
-  background: var(--gold); color: var(--dark); border: none; cursor: pointer;
-  font-family: inherit; font-size: 13px; font-weight: 700;
-  padding: 8px 20px; border-radius: 4px; transition: background .15s;
+@keyframes mfloat {
+  0%,100%{ transform:translateY(-50%) rotate(-3deg); }
+  50%    { transform:translateY(calc(-50% - 20px)) rotate(2deg); }
 }
-.btn-cta:hover { background: var(--gold2); }
+.hero-tag {
+  font-size:11px; font-weight:600; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--y); margin-bottom:22px;
+  display:flex; align-items:center; gap:10px;
+}
+.hero-tag::before { content:''; width:26px; height:1px; background:var(--y); }
+.hero h1 {
+  font-size:clamp(38px,5vw,72px);
+  font-weight:700; line-height:1.08; letter-spacing:-.03em;
+  margin-bottom:28px; max-width:780px;
+}
+.hero h1 b { font-weight:800; font-style:normal; color:var(--y); }
+.hero-sub {
+  font-size:17px; color:var(--td); font-weight:300;
+  max-width:500px; line-height:1.85; margin-bottom:50px;
+}
+.hero-sub strong { color:#dde2f0; font-weight:500; }
+.hero-actions { display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+.btn-fill {
+  background:var(--y); border:none; cursor:pointer;
+  padding:16px 40px;
+  font-family:'Pretendard',sans-serif; font-size:15px; font-weight:600; letter-spacing:.06em;
+  color:#07080f; transition:all .25s;
+}
+.btn-fill:hover { background:var(--y2); transform:translateY(-2px); box-shadow:0 10px 30px rgba(245,197,24,.2); }
+.btn-line {
+  background:none; border:none; cursor:pointer;
+  font-family:'Pretendard',sans-serif; font-size:15px; font-weight:400; letter-spacing:.02em;
+  color:var(--td); display:flex; align-items:center; gap:8px; transition:color .2s;
+}
+.btn-line:hover { color:#dde2f0; }
+.ar { transition:transform .2s; display:inline-block; }
+.btn-line:hover .ar { transform:translateX(5px); }
+.hero-badges { margin-top:52px; display:flex; gap:10px; flex-wrap:wrap; }
+.badge {
+  display:flex; align-items:center; gap:7px;
+  border:1px solid var(--bd); padding:7px 14px;
+  font-size:12px; font-weight:400; color:var(--td); letter-spacing:.03em;
+}
+.badge span { color:var(--y); font-weight:600; }
 
-/* LAYOUT */
-.wrap { display: block; padding-top: var(--top-h); min-height: 100vh; }
+/* SHARED SECTION */
+.sec { padding:100px 52px; position:relative; z-index:1; }
+.sec-n1 { background:#07080f; }
+.sec-n2 { background:#0b0d1c; }
+.sec-n3 { background:#0f1220; }
+.sec-eyebrow {
+  font-size:11px; font-weight:700; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--y); margin-bottom:20px;
+  display:inline-flex; align-items:center;
+  background:rgba(245,197,24,.08);
+  border:1px solid rgba(245,197,24,.2);
+  border-radius:20px;
+  padding:5px 14px;
+}
+.sec h2 {
+  font-size:clamp(34px,4vw,56px);
+  font-weight:700; line-height:1.12; letter-spacing:-.02em; margin-bottom:16px;
+}
+.sec h2 em { font-style:normal; font-weight:800; color:var(--y); }
+.sec h2 em { font-style:normal; font-weight:800; color:var(--y); }
+.sec-desc { color:var(--td); font-size:16px; line-height:1.85; max-width:520px; font-weight:300; }
 
-/* MAIN */
-.main { flex: 1; min-width: 0; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-
-/* 헤더 공통 */
-.sh { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 12px; gap: 8px; flex-wrap: wrap; }
-.sh-left { }
-.eyebrow {
-  display: inline-flex; font-size: 10px; font-weight: 700; letter-spacing: .18em; text-transform: uppercase;
-  color: var(--gold2); background: #fffbeb; border: 1px solid #fde68a;
-  border-radius: 20px; padding: 3px 10px; margin-bottom: 5px;
+/* WHAT WE MAKE */
+.cats-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; background:var(--bd); border:1px solid var(--bd);
 }
-.sh-title { font-size: 19px; font-weight: 800; letter-spacing: -.02em; }
-.sh-title em { font-style: normal; color: var(--gold2); }
-.sh-desc { font-size: 12px; color: var(--mid); margin-top: 3px; }
-.sh-more { font-size: 12px; font-weight: 600; color: var(--blue); text-decoration: none; white-space: nowrap; }
-.sh-more:hover { text-decoration: underline; }
-
-/* 그리드 */
-.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.g3 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
-.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
-
-/* 히어로 카드 */
-.hcard {
-  border-radius: 12px; overflow: hidden; position: relative;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  min-height: 200px; text-decoration: none; cursor: pointer;
-  transition: transform .2s, box-shadow .2s;
+.cat-card {
+  background:#07080f; padding:38px 32px;
+  position:relative; overflow:hidden; transition:background .25s; cursor:default;
 }
-.hcard:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(0,0,0,.14); }
-.hcard-bg { position: absolute; inset: 0; }
-.hcard-ov { position: absolute; inset: 0; background: linear-gradient(180deg,transparent 25%,rgba(0,0,0,.65) 100%); }
-.hcard-plus {
-  position: absolute; top: 14px; right: 14px;
-  width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.95);
-  display: grid; place-items: center; font-size: 22px; color: var(--blue);
-  box-shadow: 0 3px 10px rgba(0,0,0,.15);
+.cat-card:hover { background:#0b0d1c; }
+.cat-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--y),transparent);
+  opacity:0; transition:opacity .3s;
 }
-.hcard-body { position: relative; z-index: 1; padding: 18px; }
-.hcard-tag { font-size: 11px; color: rgba(255,255,255,.7); margin-bottom: 4px; font-weight: 500; }
-.hcard-title { font-size: 18px; font-weight: 800; color: #fff; line-height: 1.3; letter-spacing: -.02em; }
-.hcard-title em { font-style: normal; color: var(--gold); }
-
-/* 서비스 카드 */
-.sc {
-  background: #fff; border-radius: 10px; border: 1px solid var(--line);
-  padding: 22px 18px; transition: transform .2s, box-shadow .2s;
-}
-.sc:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.07); }
-.sc-icon { font-size: 26px; margin-bottom: 11px; display: block; }
-.sc-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; letter-spacing: -.01em; }
-.sc-desc { font-size: 12px; color: var(--mid); line-height: 1.7; }
-.sc-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px; }
-.sc-tag { font-size: 10px; padding: 2px 7px; background: var(--bg); border: 1px solid var(--line); color: var(--light); border-radius: 3px; }
-
-/* 프로세스 */
-.proc-row {
-  background: #fff; border-radius: 10px; border: 1px solid var(--line);
-  display: grid; grid-template-columns: repeat(4,1fr); overflow: hidden;
-}
-.proc-step {
-  padding: 22px 18px; border-right: 1px solid var(--line); position: relative; overflow: hidden;
-}
-.proc-step:last-child { border-right: none; }
-.proc-step::before {
-  content: attr(data-n); position: absolute; top: -6px; right: 12px;
-  font-size: 44px; font-weight: 900; color: rgba(0,0,0,.04); line-height: 1;
-}
-.proc-num { font-size: 10px; font-weight: 700; color: var(--gold2); letter-spacing: .14em; margin-bottom: 10px; }
-.proc-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; letter-spacing: -.01em; }
-.proc-desc { font-size: 12px; color: var(--mid); line-height: 1.65; }
-.proc-time {
-  display: inline-block; margin-top: 10px;
-  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
-  background: #fffbeb; color: var(--gold2); border: 1px solid #fde68a;
-  padding: 2px 8px; border-radius: 3px;
+.cat-card:hover::before { opacity:1; }
+.cat-emoji { font-size:32px; display:block; margin-bottom:16px; }
+.cat-card h3 { font-size:21px; font-weight:700; margin-bottom:10px; letter-spacing:-.02em; }
+.cat-card p { font-size:13px; color:var(--td); line-height:1.8; font-weight:300; margin-bottom:16px; }
+.cat-examples { display:flex; gap:6px; flex-wrap:wrap; margin-top:4px; }
+.ex-chip {
+  font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tf); background:rgba(245,197,24,.05);
+  border:1px solid rgba(245,197,24,.1); padding:3px 9px;
 }
 
-/* 샘플 카드 */
-.smc {
-  background: #fff; border-radius: 10px; border: 1px solid var(--line);
-  overflow: hidden; text-decoration: none; color: var(--dark);
-  display: flex; flex-direction: column; transition: transform .2s, box-shadow .2s;
+/* DEMOS */
+.demo-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:2px; background:var(--bd); border:1px solid var(--bd);
 }
-.smc:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.09); }
-.smc-thumb { height: 110px; display: flex; align-items: center; justify-content: center; font-size: 44px; flex-shrink: 0; }
-.smc-body { padding: 14px; flex: 1; display: flex; flex-direction: column; }
-.smc-cat { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--light); margin-bottom: 4px; }
-.smc-title { font-size: 13px; font-weight: 700; margin-bottom: 5px; letter-spacing: -.01em; line-height: 1.4; }
-.smc-desc { font-size: 12px; color: var(--mid); line-height: 1.65; flex: 1; }
-.smc-foot {
-  display: flex; justify-content: space-between;
-  margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line);
-  font-size: 11px; font-weight: 700; color: var(--blue);
+.demo-card {
+  background:#0b0d1c; text-decoration:none; color:inherit;
+  position:relative; overflow:hidden; transition:background .25s;
+  display:flex; flex-direction:column;
+}
+.demo-card:hover { background:#0f1220; }
+.demo-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+  background:linear-gradient(90deg,var(--y),transparent);
+  opacity:0; transition:opacity .3s;
+}
+.demo-card:hover::before { opacity:1; }
+.demo-preview {
+  height:160px; display:flex; align-items:center; justify-content:center;
+  font-size:56px; position:relative; overflow:hidden; flex-shrink:0;
+}
+.demo-preview-glow {
+  position:absolute; inset:0; pointer-events:none;
+}
+.demo-info { padding:28px 32px 32px; flex:1; display:flex; flex-direction:column; }
+.demo-category {
+  font-size:10px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
+  color:var(--y); margin-bottom:10px;
+}
+.demo-card h3 { font-size:19px; font-weight:700; margin-bottom:10px; letter-spacing:-.02em; }
+.demo-card p { font-size:13px; color:var(--td); line-height:1.8; font-weight:300; flex:1; }
+.demo-tags { display:flex; gap:6px; flex-wrap:wrap; margin-top:16px; }
+.demo-tag {
+  font-size:10px; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--tf); background:rgba(245,197,24,.05);
+  border:1px solid rgba(245,197,24,.1); padding:3px 9px;
+}
+.demo-link-row {
+  display:flex; align-items:center; justify-content:space-between;
+  margin-top:20px; padding-top:16px; border-top:1px solid var(--bd);
+  font-size:12px; font-weight:600; color:var(--y); letter-spacing:.06em;
 }
 
-/* 가격 */
-.pc {
-  background: #fff; border-radius: 10px; border: 1px solid var(--line);
-  padding: 22px 18px; position: relative; transition: box-shadow .2s;
+/* AI SECTION */
+.ai-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:1fr 1fr; gap:2px;
+  background:var(--bd); border:1px solid var(--bd);
 }
-.pc:hover { box-shadow: 0 6px 20px rgba(0,0,0,.07); }
-.pc.hot { border: 2px solid var(--gold); background: #fffdf5; }
-.pc-badge {
-  position: absolute; top: -1px; left: 50%; transform: translateX(-50%);
-  background: var(--gold); color: var(--dark);
-  font-size: 9px; font-weight: 800; padding: 3px 12px;
-  border-radius: 0 0 6px 6px; letter-spacing: .06em; white-space: nowrap;
+.ai-card { background:#0b0d1c; padding:44px 40px; position:relative; overflow:hidden; transition:background .25s; }
+.ai-card:hover { background:#0f1220; }
+.ai-card.wide { grid-column:1/-1; }
+.ai-icon { font-size:30px; margin-bottom:18px; display:block; filter:drop-shadow(0 0 10px rgba(245,197,24,.25)); }
+.ai-card h3 { font-size:22px; font-weight:700; margin-bottom:10px; }
+.ai-card p { font-size:14px; color:var(--td); line-height:1.85; font-weight:300; }
+.ai-live { display:inline-flex; align-items:center; gap:8px; font-size:11px; color:var(--y); letter-spacing:.1em; text-transform:uppercase; margin-top:16px; }
+.ai-live-dot { width:7px; height:7px; border-radius:50%; background:var(--y); box-shadow:0 0 10px var(--y); animation:pulse 1.8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{ transform:scale(1); opacity:1; } 50%{ transform:scale(1.3); opacity:.7; } }
+.ai-models { display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.model-tag { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:#07080f; background:var(--y); padding:4px 12px; }
+.model-tag.dim { color:var(--td); background:none; border:1px solid var(--bd); }
+
+/* PROCESS */
+.process-steps { margin-top:60px; display:flex; flex-direction:column; gap:2px; }
+.step {
+  background:#0b0d1c; padding:34px 44px;
+  display:grid; grid-template-columns:44px 1fr auto;
+  align-items:start; gap:28px;
+  border:1px solid var(--bd); border-bottom:none; transition:background .25s;
 }
-.pc-tier { font-size: 10px; font-weight: 700; color: var(--light); letter-spacing: .15em; text-transform: uppercase; margin-bottom: 12px; margin-top: 4px; }
-.pc-price { font-size: 32px; font-weight: 800; letter-spacing: -.03em; line-height: 1; margin-bottom: 3px; }
-.pc-price sup { font-size: 14px; vertical-align: super; font-weight: 500; }
-.pc-sub { font-size: 11px; color: var(--light); margin-bottom: 6px; }
-.pc-dur {
-  display: inline-flex; font-size: 10px; font-weight: 700; color: var(--gold2);
-  background: #fffbeb; border: 1px solid #fde68a;
-  padding: 2px 8px; margin-bottom: 16px; border-radius: 3px; letter-spacing: .06em;
+.step:last-child { border-bottom:1px solid var(--bd); }
+.step:hover { background:#0f1220; }
+.step-n { font-size:36px; font-weight:800; color:rgba(245,197,24,.1); line-height:1; padding-top:6px; }
+.step-body h3 { font-size:17px; font-weight:700; margin-bottom:8px; white-space:nowrap; }
+.step-body p { font-size:13px; color:var(--td); font-weight:300; line-height:1.75; }
+.step-time {
+  font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--y); border:1px solid var(--yb); padding:6px 14px;
+  background:var(--yg); white-space:nowrap;
 }
-.pc-hr { border: none; border-top: 1px solid var(--line); margin-bottom: 12px; }
-.pc-list { list-style: none; margin-bottom: 16px; display: flex; flex-direction: column; }
+
+/* PRICING */
+.price-grid {
+  margin-top:60px;
+  display:grid; grid-template-columns:repeat(4,1fr);
+  gap:2px; background:var(--bd); border:1px solid var(--bd);
+}
+.pc { background:#0b0d1c; padding:46px 36px; position:relative; overflow:hidden; transition:background .25s; }
+.pc:hover { background:#0f1220; }
+.pc.hot { background:#0f1220; box-shadow:inset 0 0 0 1px rgba(245,197,24,.28); }
+.pc-hot-badge {
+  position:absolute; top:0; right:0;
+  background:var(--y); color:#07080f;
+  font-size:10px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  padding:5px 16px;
+}
+.pc-name { font-size:10px; font-weight:600; letter-spacing:.22em; text-transform:uppercase; color:var(--y); margin-bottom:20px; }
+.pc-price { font-size:50px; font-weight:700; line-height:1; margin-bottom:6px; }
+.pc-price sup { font-size:22px; vertical-align:super; font-weight:400; }
+.pc-period { font-size:12px; color:var(--tf); letter-spacing:.04em; margin-bottom:10px; }
+.pc-duration {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--yg); border:1px solid var(--yb);
+  padding:4px 12px; margin-bottom:30px;
+  font-size:12px; font-weight:500; color:var(--y); letter-spacing:.05em;
+}
+.pc-hr { border:none; border-top:1px solid var(--bd); margin-bottom:26px; }
+.pc-list { list-style:none; margin-bottom:34px; }
 .pc-list li {
-  font-size: 12px; color: var(--mid); padding: 5px 0;
-  border-bottom: 1px solid #f5f5f5; display: flex; align-items: flex-start; gap: 6px;
+  font-size:13px; color:var(--td); padding:7px 0;
+  border-bottom:1px solid var(--bd);
+  display:flex; align-items:flex-start; gap:10px; font-weight:300;
 }
-.pc-list li::before { content:'✓'; color:var(--gold2); font-weight:700; flex-shrink:0; font-size:11px; margin-top:1px; }
+.pc-list li svg { flex-shrink:0; margin-top:4px; }
 .pc-btn {
-  width: 100%; padding: 10px; cursor: pointer; border-radius: 5px;
-  font-family: inherit; font-size: 12px; font-weight: 700;
-  letter-spacing: .06em; border: none; transition: all .15s;
+  width:100%; padding:13px; cursor:pointer;
+  font-family:'Pretendard',sans-serif; font-size:12px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; transition:all .25s;
 }
-.pc-btn.out { background:#fff; border:1px solid var(--line); color:var(--mid); }
-.pc-btn.out:hover { border-color:var(--dark); color:var(--dark); }
-.pc-btn.fill { background:var(--gold); color:var(--dark); }
-.pc-btn.fill:hover { background:var(--gold2); }
+.pc-btn.ghost { background:none; border:1px solid rgba(245,197,24,.25); color:var(--td); }
+.pc-btn.ghost:hover { border-color:var(--y); color:#dde2f0; background:var(--yg); }
+.pc-btn.solid { background:var(--y); border:none; color:#07080f; }
+.pc-btn.solid:hover { background:var(--y2); box-shadow:0 4px 20px rgba(245,197,24,.2); }
 
-/* 문의 */
-.ct-wrap {
-  background: #fff; border-radius: 10px; border: 1px solid var(--line);
-  overflow: hidden; display: grid; grid-template-columns: 280px 1fr;
+/* CONTACT */
+.contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start; }
+.cl-left p { color:var(--td); font-size:15px; line-height:1.9; font-weight:300; margin-bottom:40px; }
+.cl-links { display:flex; flex-direction:column; }
+.cl-link {
+  display:flex; align-items:center; gap:18px; padding:17px 0;
+  border-bottom:1px solid var(--bd); text-decoration:none;
+  color:var(--td); font-size:14px; transition:color .2s;
 }
-.ct-left { background: var(--dark); padding: 32px 26px; display: flex; flex-direction: column; justify-content: space-between; }
-.ct-left h2 { font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.02em; margin: 12px 0 10px; line-height: 1.3; }
-.ct-left h2 em { font-style: normal; color: var(--gold); }
-.ct-left p { font-size: 12px; color: rgba(255,255,255,.5); line-height: 1.8; margin-bottom: 24px; }
-.ct-links { display: flex; flex-direction: column; }
-.ct-link {
-  display: flex; align-items: center; gap: 10px; padding: 11px 0;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-  text-decoration: none; color: rgba(255,255,255,.6); font-size: 12px; transition: color .15s;
+.cl-link:hover { color:#dde2f0; }
+.cl-link:hover .cl-icon { border-color:var(--y); background:var(--yg); }
+.cl-icon {
+  width:40px; height:40px; border:1px solid rgba(245,197,24,.2);
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0; transition:all .2s;
 }
-.ct-link:hover { color: #fff; }
-.ct-link-ic { font-size: 14px; flex-shrink: 0; }
-.ct-right { padding: 28px 28px; }
-.form { display: flex; flex-direction: column; gap: 11px; }
-.fr { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
-.fg { display: flex; flex-direction: column; gap: 5px; }
-.fl { font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--light); }
-.fi, .fs, .ft {
-  background: var(--bg); border: 1px solid var(--line); color: var(--dark);
-  padding: 9px 12px; font-family: inherit; font-size: 13px;
-  outline: none; transition: border-color .15s; border-radius: 5px; -webkit-appearance: none;
+.cf { display:flex; flex-direction:column; gap:16px; }
+.fr { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.ff { display:flex; flex-direction:column; gap:6px; }
+.ff label { font-size:10px; letter-spacing:.18em; text-transform:uppercase; color:var(--tf); font-weight:500; }
+.ff input,.ff textarea,.ff select {
+  background:#0b0d1c; border:1px solid var(--bd);
+  color:#dde2f0; padding:13px 15px;
+  font-family:'Pretendard',sans-serif; font-size:14px; font-weight:300;
+  outline:none; transition:border-color .2s;
+  border-radius:0; -webkit-appearance:none; appearance:none;
 }
-.fi:focus, .fs:focus, .ft:focus { border-color: var(--gold); background: #fff; }
-.ft { resize: vertical; min-height: 90px; line-height: 1.6; }
-.fsub {
-  background: var(--gold); color: var(--dark); border: none; padding: 11px;
-  cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 800;
-  letter-spacing: .06em; border-radius: 5px; transition: background .15s;
+.ff input:focus,.ff textarea:focus,.ff select:focus { border-color:var(--y); }
+.ff textarea { resize:vertical; min-height:120px; }
+.ff select option { background:#0b0d1c; }
+.cf-submit {
+  background:var(--y); border:none; cursor:pointer; padding:16px;
+  font-family:'Pretendard',sans-serif; font-size:13px; font-weight:600;
+  letter-spacing:.09em; text-transform:uppercase; color:#07080f; transition:all .25s;
 }
-.fsub:hover { background: var(--gold2); }
+.cf-submit:hover { background:var(--y2); box-shadow:0 6px 22px rgba(245,197,24,.18); }
 
 /* FOOTER */
 footer {
-  background: #fff; border-top: 1px solid var(--line);
-  padding: 18px 24px;
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+  background:#07080f; border-top:1px solid var(--bd);
+  padding:32px 52px; position:relative; z-index:1;
+  display:flex; align-items:center; justify-content:space-between;
 }
-.fl2 { display: flex; align-items: center; gap: 7px; text-decoration: none; }
-.fl2 span { font-size: 14px; font-weight: 800; color: var(--dark); letter-spacing: -.02em; }
-.flinks { display: flex; gap: 14px; }
-.flinks a { font-size: 11px; color: var(--light); text-decoration: none; }
-.flinks a:hover { color: var(--mid); }
-.fcopy { font-size: 11px; color: var(--light); }
+.fl { display:flex; align-items:center; gap:10px; }
+.fl-name { font-size:15px; font-weight:600; letter-spacing:.06em; color:var(--td); }
+.fl-copy,.fr-copy { font-size:12px; color:var(--tf); }
+
+.div { height:1px; background:linear-gradient(90deg,transparent,var(--bd),transparent); position:relative; z-index:1; }
+.fi { opacity:1; transform:none; transition:opacity .75s ease,transform .75s ease; }
 
 /* RESPONSIVE */
-@media (max-width:1024px) {  .g4 { grid-template-columns:1fr 1fr; } }
-@media (max-width:768px) { .top-nav { display:none; } .main { padding:14px; } .g3 { grid-template-columns:1fr 1fr; } .proc-row { grid-template-columns:1fr 1fr; } .ct-wrap { grid-template-columns:1fr; } }
-@media (max-width:520px) { .g2 { grid-template-columns:1fr; } .g3 { grid-template-columns:1fr 1fr; } .g4 { grid-template-columns:1fr 1fr; } .proc-row { grid-template-columns:1fr; } .fr { grid-template-columns:1fr; } }
+@media(max-width:900px){
+  nav { padding:16px 20px; }
+  .nav-links { display:none; }
+  .hero { padding:110px 20px 60px; }
+  .hero-moon { display:none; }
+  .sec { padding:70px 20px; }
+  .cats-grid,.demo-grid,.ai-grid { grid-template-columns:1fr; }
+  .price-grid { grid-template-columns:repeat(2,1fr); }
+  .ai-card.wide { grid-column:auto; }
+  .step { grid-template-columns:36px 1fr; padding:24px 20px; gap:16px; }
+  .step-body h3 { font-size:15px; white-space:normal; }
+  .step-n { font-size:28px; }
+  .step-time { display:none; }
+  .contact-grid { grid-template-columns:1fr; gap:48px; }
+  .fr { grid-template-columns:1fr; }
+  footer { flex-direction:column; gap:8px; text-align:center; padding:24px 20px; }
+  .hero-badges { gap:8px; }
+}
+@media(max-width:600px){
+  .demo-grid { grid-template-columns:1fr; }
+  .price-grid { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
+<div id="stars"></div>
+<div class="pg">
 
-<!-- TOPBAR -->
-<header class="topbar">
-  <a class="logo" href="#">
-    <svg width="26" height="26" viewBox="0 0 42 42" fill="none">
-      <defs><mask id="tm"><circle cx="21" cy="21" r="18" fill="white"/><circle cx="30" cy="16" r="14" fill="black"/></mask></defs>
-      <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#tm)"/>
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg width="42" height="42" viewBox="0 0 42 42" fill="none">
+      <defs><mask id="cm"><circle cx="21" cy="21" r="18" fill="white"/><circle cx="31" cy="16" r="14" fill="black"/></mask></defs>
+      <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#cm)"/>
     </svg>
-    <span class="logo-text">CRESCENT<span>✦</span></span>
+    <span class="nav-logo-name">Crescent <span style="font-weight:300">Studio</span></span>
   </a>
-  <nav class="top-nav">
-    <a href="#services" class="on">서비스</a>
+  <div class="nav-links">
+    <a href="#what">서비스</a>
     <a href="#process">프로세스</a>
-    <a href="#samples">샘플</a>
+    <a href="#demos">샘플</a>
     <a href="#pricing">가격</a>
     <a href="#contact">상담</a>
-  </nav>
-  <div class="top-right">
-    <button class="btn-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
   </div>
-</header>
+  <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+</nav>
 
-<div class="wrap" style="display:block">
-  <!-- SIDEBAR -->
-  
+<!-- HERO -->
+<section class="hero">
+  <svg class="hero-moon" viewBox="0 0 560 560" fill="none">
+    <defs>
+      <radialGradient id="hf" cx="36%" cy="33%" r="60%" gradientUnits="userSpaceOnUse">
+        <stop offset="0%"   stop-color="#ffe082" stop-opacity=".85"/>
+        <stop offset="35%"  stop-color="#f5c518" stop-opacity=".48"/>
+        <stop offset="75%"  stop-color="#c8860a" stop-opacity=".16"/>
+        <stop offset="100%" stop-color="#7a4a00" stop-opacity=".03"/>
+      </radialGradient>
+      <radialGradient id="hs" cx="50%" cy="50%" r="50%">
+        <stop offset="0%"   stop-color="#060810"/>
+        <stop offset="100%" stop-color="#07080f"/>
+      </radialGradient>
+      <filter id="mg"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <circle cx="280" cy="280" r="260" stroke="rgba(245,197,24,.03)" stroke-width="1" fill="none"/>
+    <circle cx="280" cy="280" r="218" fill="url(#hf)" filter="url(#mg)"/>
+    <circle cx="370" cy="254" r="194" fill="url(#hs)"/>
+    <circle cx="176" cy="240" r="6"   fill="rgba(245,197,24,.1)"/>
+    <circle cx="194" cy="318" r="4"   fill="rgba(245,197,24,.07)"/>
+    <circle cx="138" cy="294" r="9"   fill="rgba(245,197,24,.055)"/>
+    <circle cx="430" cy="112" r="2"   fill="rgba(245,197,24,.65)"/>
+    <circle cx="468" cy="174" r="1.4" fill="rgba(245,197,24,.45)"/>
+    <circle cx="406" cy="90"  r="2.6" fill="rgba(245,197,24,.55)"/>
+    <circle cx="460" cy="246" r="1.2" fill="rgba(245,197,24,.35)"/>
+    <circle cx="414" cy="162" r="1.3" fill="rgba(245,197,24,.3)"/>
+  </svg>
 
-  <!-- MAIN -->
-  <main class="main">
+  <div class="hero-tag">PM · AI · DX 스튜디오</div>
+  <h1>아이디어나 문제만 주세요.<br><b>기획부터 제품까지</b><br>완성합니다.</h1>
+  <p class="hero-sub">
+    전문 PM과 개발자가 AI를 활용해<br>
+    <strong>앱, 웹, 시스템</strong>을 빠르고 합리적인 가격에 완성해드립니다.
+  </p>
+  <div class="hero-actions">
+    <button class="btn-fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
+    <button class="btn-line" onclick="document.getElementById('demos').scrollIntoView({behavior:'smooth'})">
+      샘플 보기 <span class="ar">→</span>
+    </button>
+  </div>
+  <div class="hero-badges">
+    <div class="badge">🌐 웹 · 쇼핑몰</div>
+    <div class="badge">📱 iOS · Android 앱</div>
+    <div class="badge">🤖 <span>AI</span> 시스템</div>
+    <div class="badge">⚡ 2~4주 완성</div>
+    <div class="badge">✅ 기획 포함</div>
+  </div>
+</section>
 
-    <!-- 히어로 배너 (V1 초승달 스타일) -->
-    <div class="hero-banner">
-      <!-- 초승달 SVG -->
-      <svg class="hero-banner-moon" viewBox="0 0 560 560" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <radialGradient id="hf2" cx="36%" cy="33%" r="60%" gradientUnits="userSpaceOnUse">
-            <stop offset="0%"   stop-color="#ffe082" stop-opacity=".9"/>
-            <stop offset="35%"  stop-color="#f5c518" stop-opacity=".55"/>
-            <stop offset="75%"  stop-color="#c8860a" stop-opacity=".18"/>
-            <stop offset="100%" stop-color="#7a4a00" stop-opacity=".03"/>
-          </radialGradient>
-          <radialGradient id="hs2" cx="50%" cy="50%" r="50%">
-            <stop offset="0%"   stop-color="#060810"/>
-            <stop offset="100%" stop-color="#07080f"/>
-          </radialGradient>
-          <filter id="mg2"><feGaussianBlur stdDeviation="14" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
-        </defs>
-        <circle cx="280" cy="280" r="260" stroke="rgba(245,197,24,.04)" stroke-width="1" fill="none"/>
-        <circle cx="280" cy="280" r="218" fill="url(#hf2)" filter="url(#mg2)"/>
-        <circle cx="370" cy="254" r="194" fill="url(#hs2)"/>
-        <circle cx="176" cy="240" r="6"   fill="rgba(245,197,24,.12)"/>
-        <circle cx="194" cy="318" r="4"   fill="rgba(245,197,24,.08)"/>
-        <circle cx="138" cy="294" r="9"   fill="rgba(245,197,24,.06)"/>
-        <circle cx="430" cy="112" r="2.5" fill="rgba(245,197,24,.7)"/>
-        <circle cx="468" cy="174" r="1.6" fill="rgba(245,197,24,.5)"/>
-        <circle cx="406" cy="90"  r="3"   fill="rgba(245,197,24,.6)"/>
-        <circle cx="460" cy="246" r="1.4" fill="rgba(245,197,24,.4)"/>
-        <circle cx="414" cy="162" r="1.5" fill="rgba(245,197,24,.35)"/>
-        <circle cx="488" cy="310" r="1.2" fill="rgba(245,197,24,.3)"/>
-        <circle cx="380" cy="60"  r="1.8" fill="rgba(245,197,24,.45)"/>
-      </svg>
+<div class="div"></div>
 
-      <!-- 별 -->
-      <div class="hero-banner-stars" id="bannerStars"></div>
+<!-- WHAT WE MAKE -->
+<section class="sec sec-n1 fi" id="what">
+  <div class="sec-eyebrow">서비스</div>
+  <h2>이런 서비스를<br><em>만들어드립니다</em></h2>
+  <p class="sec-desc">랜딩페이지부터 AI 시스템까지. 필요한 서비스를 기획 단계부터 함께 설계합니다.</p>
 
-      <!-- 콘텐츠 -->
-      <div class="hero-banner-body">
-        <div class="hero-banner-tag">PM · AI · DX 스튜디오</div>
-        <h1 class="hero-banner-title">
-          아이디어나 문제만 주세요.<br>
-          <b>기획부터 제품까지</b><br>
-          완성합니다.
-        </h1>
-        <p class="hero-banner-sub">
-          전문 PM과 개발자가 AI를 활용해<br>
-          <strong>앱, 웹, 시스템</strong>을 빠르고 합리적인 가격에 완성해드립니다.
-        </p>
-        <div class="hero-banner-btns">
-          <button class="hb-btn-fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">무료 상담 받기</button>
-          <button class="hb-btn-line" onclick="document.getElementById('samples').scrollIntoView({behavior:'smooth'})">샘플 보기 <span>→</span></button>
+  <div class="cats-grid fi">
+    <div class="cat-card">
+      <span class="cat-emoji">🛍️</span>
+      <h3>쇼핑몰 · 커머스</h3>
+      <p>상품 관리, 장바구니, 결제 연동까지. 내 브랜드에 딱 맞는 쇼핑몰을 만들어드립니다.</p>
+      <div class="cat-examples"><span class="ex-chip">브랜드 쇼핑몰</span><span class="ex-chip">예약 판매</span><span class="ex-chip">구독 서비스</span></div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-emoji">📅</span>
+      <h3>예약 · 관리 시스템</h3>
+      <p>미용실, 네일샵, 병원, 학원 등 예약부터 고객 관리까지 한 곳에서 해결하는 시스템.</p>
+      <div class="cat-examples"><span class="ex-chip">예약 플랫폼</span><span class="ex-chip">고객 관리</span><span class="ex-chip">스케줄 관리</span></div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-emoji">🤖</span>
+      <h3>AI 챗봇 · 자동화</h3>
+      <p>Claude, GPT를 연동한 맞춤형 AI 서비스. 고객 응대, 콘텐츠 생성, 데이터 분석 자동화.</p>
+      <div class="cat-examples"><span class="ex-chip">AI 고객 응대</span><span class="ex-chip">문서 자동화</span><span class="ex-chip">AI 분석 도구</span></div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-emoji">📱</span>
+      <h3>iOS · Android 앱</h3>
+      <p>App Store에 실제로 출시되는 모바일 앱. 알림, GPS, 카메라 등 네이티브 기능도 모두 지원.</p>
+      <div class="cat-examples"><span class="ex-chip">생활 편의</span><span class="ex-chip">헬스 · 운동</span><span class="ex-chip">소셜 · 커뮤니티</span></div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-emoji">🏢</span>
+      <h3>기업 · 브랜드 사이트</h3>
+      <p>회사 소개, 포트폴리오, 랜딩 페이지. 브랜드 이미지에 맞는 세련된 웹사이트를 빠르게.</p>
+      <div class="cat-examples"><span class="ex-chip">기업 소개</span><span class="ex-chip">랜딩 페이지</span><span class="ex-chip">포트폴리오</span></div>
+    </div>
+    <div class="cat-card">
+      <span class="cat-emoji">💬</span>
+      <h3>커뮤니티 · 플랫폼</h3>
+      <p>회원 가입, 게시판, 실시간 채팅, 매칭 기능이 있는 플랫폼 서비스. B2B, B2C 모두 가능.</p>
+      <div class="cat-examples"><span class="ex-chip">매칭 서비스</span><span class="ex-chip">커뮤니티</span><span class="ex-chip">SaaS 도구</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- AI SECTION -->
+<section class="sec sec-n2 fi" id="ai">
+  <div class="sec-eyebrow">AI · DX</div>
+  <h2>AI로 만들면<br><em>무엇이 다른가요?</em></h2>
+  <p class="sec-desc">최신 AI를 적극 활용합니다. 개발 속도, 비용, 품질 모두 달라집니다.</p>
+
+  <div class="ai-grid fi">
+    <div class="ai-card">
+      <span class="ai-icon">⚡</span>
+      <h3>2~4배 빠른 개발</h3>
+      <p>AI가 반복적인 코드 작업을 처리합니다. 개발자는 핵심 로직과 UX에만 집중하기 때문에 같은 품질을 훨씬 짧은 시간에 완성합니다.</p>
+    </div>
+    <div class="ai-card">
+      <span class="ai-icon">💰</span>
+      <h3>절반 이하의 비용</h3>
+      <p>개발 시간이 줄면 비용도 줄어듭니다. 대형 에이전시 대비 절반 이하의 비용으로 같은 수준의 결과물을 받을 수 있습니다.</p>
+    </div>
+    <div class="ai-card">
+      <span class="ai-icon">🧠</span>
+      <h3>AI 기능을 바로 탑재</h3>
+      <p>챗봇, 이미지 분석, 자동 요약, 맞춤 추천 등 AI 기능을 처음부터 제품에 녹여 만들 수 있습니다. 나중에 붙이는 게 아닙니다.</p>
+    </div>
+    <div class="ai-card">
+      <span class="ai-icon">🔄</span>
+      <h3>빠른 수정과 반영</h3>
+      <p>방향이 바뀌어도 빠르게 반영합니다. AI 도구 덕분에 수정 사이클이 짧아져 원하는 결과에 더 빠르게 도달합니다.</p>
+    </div>
+    <div class="ai-card wide">
+      <div class="ai-live"><div class="ai-live-dot"></div>활용 중인 AI</div>
+      <div class="ai-models" style="margin-top:18px">
+        <span class="model-tag">Claude</span>
+        <span class="model-tag">GPT-4o</span>
+        <span class="model-tag">Gemini</span>
+        <span class="model-tag dim">Cursor</span>
+        <span class="model-tag dim">Supabase AI</span>
+        <span class="model-tag dim">Vercel AI SDK</span>
+      </div>
+      <p style="margin-top:18px;font-size:13px;color:var(--tf);font-weight:300">프로젝트 목적에 맞는 AI를 선택해 개발합니다. 특정 AI를 원하시면 말씀해주세요.</p>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- PROCESS -->
+<section class="sec sec-n1 fi" id="process">
+  <div class="sec-eyebrow">프로세스</div>
+  <h2>이렇게<br><em>진행됩니다</em></h2>
+  <p class="sec-desc">아이디어만 있으면 시작할 수 있어요. 기획부터 출시까지 함께합니다.</p>
+
+  <div class="process-steps fi">
+    <div class="step">
+      <div class="step-n">01</div>
+      <div class="step-body"><h3>무료 상담</h3><p>어떤 걸 만들고 싶은지 편하게 말씀해주세요. 기획서 없어도 됩니다. 아이디어 수준이어도 충분합니다.</p></div>
+      <div class="step-time">1~2일</div>
+    </div>
+    <div class="step">
+      <div class="step-n">02</div>
+      <div class="step-body"><h3>범위 확정 · 견적</h3><p>핵심 기능을 함께 정리하고 명확한 견적을 드립니다. 중간에 추가 비용이 생기지 않습니다.</p></div>
+      <div class="step-time">2~3일</div>
+    </div>
+    <div class="step">
+      <div class="step-n">03</div>
+      <div class="step-body"><h3>개발 · 중간 공유</h3><p>진행하면서 중간 결과물을 주기적으로 보여드립니다. 피드백을 바로 반영합니다.</p></div>
+      <div class="step-time">2~4주</div>
+    </div>
+    <div class="step">
+      <div class="step-n">04</div>
+      <div class="step-body"><h3>출시 · 배포</h3><p>웹은 도메인 연결 · 배포까지, 앱은 App Store 심사 제출까지 전부 처리합니다.</p></div>
+      <div class="step-time">출시 완료</div>
+    </div>
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- SAMPLES -->
+<section class="sec sec-n2 fi" id="demos" style="order:3">
+  <div class="sec-eyebrow">샘플</div>
+  <h2>직접 체험해보세요</h2>
+  <p class="sec-desc">업종별로 실제 작동하는 샘플입니다. 클릭하면 바로 확인할 수 있어요.</p>
+
+  <div class="demo-grid fi">
+
+    <a class="demo-card" href="demo-04-brand.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1a1610)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 40% 60%,rgba(139,111,71,.15),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Brand<span style="color:#c9a84c">Landing</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">제품 · 브랜드</div>
+        <h3>브랜드 랜딩페이지</h3>
+        <p>실제 사진이 들어간 고급스러운 제품 랜딩페이지. 스크롤 애니메이션, 리뷰, 구매 CTA 포함.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">랜딩페이지</span>
+          <span class="demo-tag">제품 쇼케이스</span>
+          <span class="demo-tag">반응형</span>
         </div>
-        <div class="hero-banner-badges">
-          <span class="hb-badge">🌐 웹 · 쇼핑몰</span>
-          <span class="hb-badge">📱 iOS · 앱</span>
-          <span class="hb-badge">🤖 <b>AI</b> 시스템</span>
-          <span class="hb-badge">⚡ 2~4주 완성</span>
-          <span class="hb-badge">✅ 기획 포함</span>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-07-company.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#0f1923)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 40%,rgba(30,95,212,.18),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Company<span style="color:#2d7aff">Site</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">기업 홈페이지</div>
+        <h3>기업 소개 사이트</h3>
+        <p>서비스 소개, 팀, 연혁, 문의 폼까지. 신뢰도 높은 기업 홈페이지를 빠르게 제작합니다.</p>
+        <div class="demo-tags"><span class="demo-tag">회사소개</span><span class="demo-tag">다중 페이지</span><span class="demo-tag">문의 폼</span></div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-03-beauty-app.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1a0a18)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 50%,rgba(236,72,153,.12),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Beauty<span style="color:#ec4899">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">뷰티 · 헤어샵</div>
+        <h3>예약 관리 앱 UI</h3>
+        <p>네이버·카카오 예약 통합, 디자이너별 타임라인, 단골 고객 관리까지. 실제 앱처럼 작동합니다.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">모바일 앱 UI</span>
+          <span class="demo-tag">예약 통합</span>
+          <span class="demo-tag">고객 관리</span>
         </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-10-caron.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1f1208)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 50%,rgba(234,88,12,.2),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Car<span style="color:#ea580c">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">세차 · 정비</div>
+        <h3>세차·정비 예약 앱</h3>
+        <p>고객 예약 앱 + 사장님 대시보드. 차량 이력 관리, 정비 알림, 포인트까지.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">고객 앱</span>
+          <span class="demo-tag">예약 관리</span>
+          <span class="demo-tag">차량 이력</span>
+        </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-08-eduon.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1a1535)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 50%,rgba(139,92,246,.18),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Edu<span style="color:#8b5cf6">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">교육 · 학원</div>
+        <h3>학원 관리 앱 UI</h3>
+        <p>학생·학부모용 앱 + 원장 대시보드. 출결, 과제, 수강료, 성적 관리까지 한 곳에서.</p>
+        <div class="demo-tags"><span class="demo-tag">앱 UI</span><span class="demo-tag">출결 관리</span><span class="demo-tag">수강료</span></div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-02-reviewon.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1a1a2e)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 70% 30%,rgba(245,197,24,.12),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Review<span style="color:#f5c518">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">식당 · F&B</div>
+        <h3>리뷰 AI 분석 · 매출 연계</h3>
+        <p>네이버·카카오·구글 리뷰를 AI가 자동 분석. 키워드·감성 분석부터 매출 상관관계, 자동 답글까지.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">AI 분석</span>
+          <span class="demo-tag">자동 답글</span>
+          <span class="demo-tag">매출 연계</span>
+        </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-09-careon.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#0d2420)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 50% 50%,rgba(13,148,136,.2),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Care<span style="color:#0d9488">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">요양 · 복지</div>
+        <h3>요양 통합 플랫폼</h3>
+        <p>시설 홈페이지 + 보호사 앱 + 관리자 대시보드. 요양원 운영의 모든 것을 하나로.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">홈페이지</span>
+          <span class="demo-tag">보호사 앱</span>
+          <span class="demo-tag">관리 대시보드</span>
+        </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-05-insureon.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#0f1923)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 60% 40%,rgba(37,99,235,.12),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Insure<span style="color:#58a6ff">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">보험 영업인</div>
+        <h3>영업 CRM + 약관 AI 분석</h3>
+        <p>고객 보험 현황, 갱신 알림, 수당 계산기. 약관 PDF 업로드하면 AI가 소구 포인트를 자동 추출합니다.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">AI 약관 분석</span>
+          <span class="demo-tag">CRM</span>
+          <span class="demo-tag">수당 계산</span>
+        </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+    <a class="demo-card" href="demo-01-manufacturing.html" target="_blank">
+      <div class="demo-preview" style="background:linear-gradient(135deg,#0d1117,#1c2333)">
+        <div class="demo-preview-glow" style="background:radial-gradient(ellipse at 30% 70%,rgba(37,99,235,.15),transparent)"></div>
+        <div style="position:relative;z-index:1;text-align:center"><div style="font-size:clamp(22px,2.8vw,36px);font-weight:900;color:#fff;letter-spacing:-.03em;line-height:1">Factory<span style="color:#8b949e">On</span></div></div>
+      </div>
+      <div class="demo-info">
+        <div class="demo-category">제조업</div>
+        <h3>생산관리 대시보드</h3>
+        <p>라인별 가동 현황, 재고, 작업지시, 불량률을 실시간으로. 엑셀에서 벗어나 스마트하게 관리하세요.</p>
+        <div class="demo-tags">
+          <span class="demo-tag">실시간 모니터링</span>
+          <span class="demo-tag">재고 관리</span>
+          <span class="demo-tag">KPI</span>
+        </div>
+        <div class="demo-link-row"><span>샘플 보기</span><span>→</span></div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- PRICING -->
+<section class="sec sec-n2 fi" id="pricing">
+  <div class="sec-eyebrow">가격</div>
+  <h2>합리적이고<br><em>투명한 가격</em></h2>
+  <p class="sec-desc">단계별로 선택할 수 있습니다. 숨겨진 비용 없이 견적 그대로 진행합니다.</p>
+
+  <div class="price-grid fi">
+
+    <!-- 구성 초안 -->
+    <div class="pc">
+      <div class="pc-name">구성 초안</div>
+      <div class="pc-price"><sup>₩</sup>30만~</div>
+      <div class="pc-period">화면 설계 · 기능 명세</div>
+      <div class="pc-duration">⏱ 3~5일</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>서비스 목적 · 구조 정리</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>주요 화면 와이어프레임</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>기능 명세서 제공</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>개발 견적 포함</li>
+      </ul>
+      <button class="pc-btn ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+    <!-- 랜딩페이지 -->
+    <div class="pc">
+      <div class="pc-name">랜딩페이지</div>
+      <div class="pc-price"><sup>₩</sup>100만~</div>
+      <div class="pc-period">브랜드 · 소개 · 제품 사이트</div>
+      <div class="pc-duration">⏱ 1~2주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>반응형 웹 디자인</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>모바일 완전 최적화</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>도메인 · 배포 포함</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>문의 폼 · CTA 구성</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>1개월 수정 지원</li>
+      </ul>
+      <button class="pc-btn ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+    <!-- 스탠다드 -->
+    <div class="pc hot">
+      <div class="pc-hot-badge">가장 많이 선택</div>
+      <div class="pc-name">MVP · 스탠다드</div>
+      <div class="pc-price"><sup>₩</sup>300만~</div>
+      <div class="pc-period">쇼핑몰 · 예약 시스템 · 앱</div>
+      <div class="pc-duration">⏱ 3~4주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>핵심 기능 3~5개 구현</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>로그인 · 결제 연동</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>DB · 서버 포함</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>AI 기능 연동 가능</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>웹 또는 앱 선택</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>3개월 유지보수</li>
+      </ul>
+      <button class="pc-btn solid" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+    <!-- 풀 제품 -->
+    <div class="pc">
+      <div class="pc-name">풀 제품</div>
+      <div class="pc-price"><sup>₩</sup>500만~</div>
+      <div class="pc-period">플랫폼 · 복잡한 시스템</div>
+      <div class="pc-duration">⏱ 4~8주</div>
+      <hr class="pc-hr">
+      <ul class="pc-list">
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>기능 범위 무제한</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>웹 + 앱 동시 개발</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>관리자 페이지</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>AI 고급 연동</li>
+        <li><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3 3 6-6" stroke="#f5c518" stroke-width="1.4" stroke-linecap="round"/></svg>지속 운영 지원</li>
+      </ul>
+      <button class="pc-btn ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
+    </div>
+
+  </div>
+</section>
+
+<div class="div"></div>
+
+<!-- CONTACT -->
+<section class="sec sec-n1 fi" id="contact">
+  <div class="contact-grid">
+    <div class="cl-left fi">
+      <div class="sec-eyebrow">상담</div>
+      <h2 style="margin-bottom:18px">어떤 문제를<br><em>해결하고 싶으세요?</em></h2>
+      <p>기획서 없어도 됩니다.<br>아이디어나 해결하고 싶은 문제만 알려주세요.<br>24시간 내에 답변드립니다.</p>
+      <div class="cl-links">
+        <a class="cl-link" href="/cdn-cgi/l/email-protection#5e3c3f2a31302e3f2d2d676e1e39333f3732703d3133">
+          <div class="cl-icon">✉</div><span class="__cf_email__" data-cfemail="5c3e3d2833322c3d2f2f656c1c3b313d3530723f3331">[email&#160;protected]</span>
+        </a>
+        <a class="cl-link" href="http://pf.kakao.com/_BaxbxdX" target="_blank">
+          <div class="cl-icon">💬</div>카카오톡 채널 상담
+        </a>
+        <a class="cl-link" href="https://instagram.com/crescent_ai_studio" target="_blank">
+          <div class="cl-icon">📸</div>인스타그램
+        </a>
       </div>
     </div>
 
-    <!-- 서비스 -->
-    <div id="services">
-      <div class="sh">
-        <div class="sh-left">
-          <div class="eyebrow">서비스</div>
-          <div class="sh-title">이런 서비스를 <em>만들어드립니다</em></div>
-          <div class="sh-desc">랜딩페이지부터 AI 시스템까지. 기획 단계부터 함께 설계합니다.</div>
-        </div>
+    <form action="https://formspree.io/f/mlgojlzr" method="POST">
+      <div class="fr">
+        <div class="ff"><label>이름</label><input type="text" name="이름" placeholder="홍길동" required></div>
+        <div class="ff"><label>연락처</label><input type="text" name="연락처" placeholder="010-0000-0000"></div>
       </div>
-      <div class="g3">
-        <div class="sc"><span class="sc-icon">🛍️</span><div class="sc-title">쇼핑몰 · 커머스</div><div class="sc-desc">상품 관리, 장바구니, 결제 연동. 브랜드에 맞는 쇼핑몰을 만들어드립니다.</div><div class="sc-tags"><span class="sc-tag">브랜드몰</span><span class="sc-tag">결제</span><span class="sc-tag">구독</span></div></div>
-        <div class="sc"><span class="sc-icon">📅</span><div class="sc-title">예약 · 관리 시스템</div><div class="sc-desc">미용실, 병원, 학원 등 예약부터 고객 관리까지 한 곳에서.</div><div class="sc-tags"><span class="sc-tag">예약</span><span class="sc-tag">고객관리</span><span class="sc-tag">스케줄</span></div></div>
-        <div class="sc"><span class="sc-icon">🤖</span><div class="sc-title">AI 챗봇 · 자동화</div><div class="sc-desc">Claude, GPT 연동 맞춤형 AI. 고객 응대, 문서 분석, 자동화.</div><div class="sc-tags"><span class="sc-tag">AI응대</span><span class="sc-tag">자동화</span></div></div>
-        <div class="sc"><span class="sc-icon">📱</span><div class="sc-title">iOS · Android 앱</div><div class="sc-desc">App Store에 실제 출시되는 모바일 앱. 알림, GPS, 카메라 지원.</div><div class="sc-tags"><span class="sc-tag">iOS</span><span class="sc-tag">Android</span><span class="sc-tag">앱스토어</span></div></div>
-        <div class="sc"><span class="sc-icon">🏢</span><div class="sc-title">기업 · 브랜드 사이트</div><div class="sc-desc">회사 소개, 포트폴리오, 랜딩 페이지. 브랜드에 맞게 빠르게.</div><div class="sc-tags"><span class="sc-tag">기업소개</span><span class="sc-tag">랜딩</span></div></div>
-        <div class="sc"><span class="sc-icon">💬</span><div class="sc-title">커뮤니티 · 플랫폼</div><div class="sc-desc">회원, 게시판, 채팅, 매칭 기능. B2B·B2C 플랫폼 모두 가능.</div><div class="sc-tags"><span class="sc-tag">매칭</span><span class="sc-tag">커뮤니티</span><span class="sc-tag">SaaS</span></div></div>
+      <div class="ff"><label>이메일</label><input type="email" placeholder="batonpass90@gmail.com" required></div>
+      <div class="ff"><label>업종</label><input type="text" name="업종" placeholder="예) 미용실, 학원, 식당, 보험 등" style="width:100%;padding:10px 14px;background:rgba(221,226,240,.06);border:1px solid rgba(221,226,240,.1);color:#dde2f0;border-radius:4px;font-family:inherit;font-size:14px;outline:none"></div>
+      <div class="ff">
+        <label>만들고 싶은 것</label>
+        <select>
+          <option value="">선택해주세요</option>
+          <option>쇼핑몰 · 커머스</option>
+          <option>예약 · 관리 시스템</option>
+          <option>AI 챗봇 · 자동화</option>
+          <option>iOS · Android 앱</option>
+          <option>기업 · 브랜드 사이트</option>
+          <option>커뮤니티 · 플랫폼</option>
+          <option>아직 잘 모르겠어요</option>
+        </select>
       </div>
-    </div>
-
-    <!-- 프로세스 -->
-    <div id="process">
-      <div class="sh">
-        <div class="sh-left">
-          <div class="eyebrow">프로세스</div>
-          <div class="sh-title">이렇게 <em>진행됩니다</em></div>
-        </div>
+      <div class="ff">
+        <label>어떤 걸 만들고 싶으신가요?</label>
+        <textarea placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다.&#10;예) 미용실 예약 앱을 만들고 싶어요. 고객이 날짜 선택하고 예약할 수 있으면 좋겠어요."></textarea>
       </div>
-      <div class="proc-row">
-        <div class="proc-step" data-n="01"><div class="proc-num">01</div><div class="proc-title">무료 상담</div><div class="proc-desc">기획서 없어도 됩니다. 아이디어 수준으로 충분해요.</div><span class="proc-time">1~2일</span></div>
-        <div class="proc-step" data-n="02"><div class="proc-num">02</div><div class="proc-title">범위 확정 · 견적</div><div class="proc-desc">핵심 기능 정리 후 명확한 견적을 드립니다. </div><span class="proc-time">2~3일</span></div>
-        <div class="proc-step" data-n="03"><div class="proc-num">03</div><div class="proc-title">개발 · 중간 공유</div><div class="proc-desc">중간 결과물을 주기적으로 공유합니다. 피드백 즉시 반영.</div><span class="proc-time">2~4주</span></div>
-        <div class="proc-step" data-n="04"><div class="proc-num">04</div><div class="proc-title">출시 · 배포</div><div class="proc-desc">웹은 도메인·배포까지, 앱은 App Store 제출까지 처리합니다.</div><span class="proc-time">출시 완료</span></div>
-      </div>
-    </div>
-
-    <!-- 샘플 -->
-    <div id="samples">
-      <div class="sh">
-        <div class="sh-left">
-          <div class="eyebrow">샘플</div>
-          <div class="sh-title">직접 <em>체험해보세요</em></div>
-          <div class="sh-desc">업종별 실제 작동하는 샘플입니다.</div>
-        </div>
-        <a class="sh-more" href="#samples" style="cursor:pointer">전체 보기 →</a>
-      </div>
-      <div class="g3">
-        <a class="smc" href="demo-04-brand.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#e8e0d0,#d4c9b0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Brand<span style="color:#8b6f47">Landing</span></span></div>
-          <div class="smc-body"><div class="smc-cat">제품 · 브랜드</div><div class="smc-title">브랜드 랜딩페이지</div><div class="smc-desc">스크롤 애니메이션, 리뷰, 구매 CTA 포함.</div><div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">50만원~</span><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-        <a class="smc" href="demo-02-reviewon.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#dde8e0,#c8ddd0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Review<span style="color:#16a34a">On</span></span></div>
-          <div class="smc-body"><div class="smc-cat">식당 · F&B</div><div class="smc-title">리뷰 AI 분석 · 매출 연계</div><div class="smc-desc">네이버·카카오·구글 리뷰 AI 분석, 자동 답글.</div><div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 99만 + 월 9.9만~</span><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-        <a class="smc" href="demo-03-beauty-app.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#e8d8e8,#d8c8d8)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Beauty<span style="color:#9333ea">On</span></span></div>
-          <div class="smc-body"><div class="smc-cat">뷰티 · 헤어샵</div><div class="smc-title">예약 관리 앱 UI</div><div class="smc-desc">예약 통합, 디자이너별 타임라인, 고객 관리.</div><div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 39만 + 월 3.3만~</span><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-        <a class="smc" href="demo-06-commerce.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#e8dfd0,#ddd0c0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Shop<span style="color:#d97706">On</span></span></div>
-          <div class="smc-body"><div class="smc-cat">온라인 커머스</div><div class="smc-title">멀티채널 운영 관리</div><div class="smc-desc">네이버·쿠팡·카카오·자사몰 통합 관리.</div><div class="smc-foot"><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-        <a class="smc" href="demo-05-insureon.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#d8e0e8,#c8d4e0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Insure<span style="color:#2563eb">On</span></span></div>
-          <div class="smc-body"><div class="smc-cat">보험 영업인</div><div class="smc-title">영업 CRM + 약관 AI 분석</div><div class="smc-desc">고객 현황, 갱신 알림, AI 소구 포인트.</div><div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 149만 + 월 14.9만~</span><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-        <a class="smc" href="demo-01-manufacturing.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#d8dce8,#c8cce0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Factory<span style="color:#6b7280">On</span></span></div>
-          <div class="smc-body"><div class="smc-cat">제조업</div><div class="smc-title">생산관리 대시보드</div><div class="smc-desc">가동 현황, 재고, 작업지시 실시간 모니터링.</div><div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 199만 + 월 19.9만~</span><span>샘플 보기</span><span>→</span></div></div>
-        </a>
-
-        <a class="smc" href="demo-07-company.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#d8dce8,#c8d4e0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Company<span style="color:#2563eb">Site</span></span></div>
-          <div class="smc-body">
-            <div class="smc-cat">기업 홈페이지</div>
-            <div class="smc-title">기업 소개 사이트</div>
-            <div class="smc-desc">서비스·팀·연혁·문의 폼. 신뢰도 높은 기업 홈페이지.</div>
-            <div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">100만원~</span><span>샘플 보기</span><span>→</span></div>
-          </div>
-        </a>
-        <a class="smc" href="demo-08-eduon.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#e8e0f8,#d8d0f0)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Edu<span style="color:#8b5cf6">On</span></span></div>
-          <div class="smc-body">
-            <div class="smc-cat">교육 · 학원</div>
-            <div class="smc-title">학원 관리 앱 UI</div>
-            <div class="smc-desc">학생·학부모 앱 + 원장 대시보드. 출결·과제·수강료 통합.</div>
-            <div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 39만 + 월 3.3만~</span><span>샘플 보기</span><span>→</span></div>
-          </div>
-        </a>
-
-        <a class="smc" href="demo-09-careon.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#d0ede8,#b8ddd8)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Care<span style="color:#0d9488">On</span></span></div>
-          <div class="smc-body">
-            <div class="smc-cat">요양 · 복지</div>
-            <div class="smc-title">요양 통합 플랫폼</div>
-            <div class="smc-desc">시설 홈페이지 + 보호사 앱 + 관리자 대시보드.</div>
-            <div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 99만 + 월 9.9만~</span><span>샘플 보기</span><span>→</span></div>
-          </div>
-        </a>
-        <a class="smc" href="demo-10-caron.html" target="_blank">
-          <div class="smc-thumb" style="background:linear-gradient(135deg,#fde8d8,#fdd0b8)"><span style="font-size:26px;font-weight:900;color:#222;letter-spacing:-.03em;line-height:1">Car<span style="color:#ea580c">On</span></span></div>
-          <div class="smc-body">
-            <div class="smc-cat">세차 · 정비</div>
-            <div class="smc-title">세차·정비 예약 앱</div>
-            <div class="smc-desc">고객 예약 앱 + 사장님 대시보드. 차량 이력 관리.</div>
-            <div class="smc-foot"><span style="font-size:10px;font-weight:700;color:#d97706;background:#fffbeb;border:1px solid #fde68a;padding:3px 9px;border-radius:4px;white-space:nowrap">초기 39만 + 월 3.3만~</span><span>샘플 보기</span><span>→</span></div>
-          </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- 가격 -->
-    <div id="pricing">
-      <div class="sh">
-        <div class="sh-left">
-          <div class="eyebrow">가격</div>
-          <div class="sh-title">합리적이고 <em>투명한 가격</em></div>
-          <div class="sh-desc">단계별로 선택할 수 있습니다. 숨겨진 비용 없습니다.</div>
-        </div>
-      </div>
-      <div class="g4">
-        <div class="pc">
-          <div class="pc-tier">구성 초안</div>
-          <div class="pc-price"><sup>₩</sup>30만~</div>
-          <div class="pc-sub">화면 설계 · 기능 명세</div>
-          <div class="pc-dur">⏱ 3~5일</div>
-          <hr class="pc-hr">
-          <ul class="pc-list">
-            <li>서비스 구조 정리</li><li>화면 와이어프레임</li><li>기능 명세서</li><li>개발 견적 포함</li>
-          </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
-        </div>
-        <div class="pc">
-          <div class="pc-tier">랜딩페이지</div>
-          <div class="pc-price"><sup>₩</sup>100만~</div>
-          <div class="pc-sub">브랜드 · 소개 · 제품</div>
-          <div class="pc-dur">⏱ 1~2주</div>
-          <hr class="pc-hr">
-          <ul class="pc-list">
-            <li>반응형 웹 디자인</li><li>모바일 최적화</li><li>도메인 · 배포</li><li>CTA · 문의 폼</li><li>1개월 수정 지원</li>
-          </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
-        </div>
-        <div class="pc hot">
-          <div class="pc-badge">가장 많이 선택</div>
-          <div class="pc-tier">MVP · 스탠다드</div>
-          <div class="pc-price"><sup>₩</sup>300만~</div>
-          <div class="pc-sub">쇼핑몰 · 예약 · 앱</div>
-          <div class="pc-dur">⏱ 3~4주</div>
-          <hr class="pc-hr">
-          <ul class="pc-list">
-            <li>핵심 기능 3~5개</li><li>로그인 · 결제 연동</li><li>DB · 서버 포함</li><li>AI 기능 연동</li><li>웹 또는 앱 선택</li><li>3개월 유지보수</li>
-          </ul>
-          <button class="pc-btn fill" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
-        </div>
-        <div class="pc">
-          <div class="pc-tier">풀 제품</div>
-          <div class="pc-price"><sup>₩</sup>500만~</div>
-          <div class="pc-sub">플랫폼 · 복잡한 시스템</div>
-          <div class="pc-dur">⏱ 4~8주</div>
-          <hr class="pc-hr">
-          <ul class="pc-list">
-            <li>기능 범위 무제한</li><li>웹 + 앱 동시 개발</li><li>관리자 페이지</li><li>AI 고급 연동</li><li>지속 운영 지원</li>
-          </ul>
-          <button class="pc-btn out" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">상담 신청</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- 문의 -->
-    <div id="contact">
-      <div class="sh">
-        <div class="sh-left">
-          <div class="eyebrow">상담</div>
-          <div class="sh-title">프로젝트를 <em>알려주세요</em></div>
-        </div>
-      </div>
-      <div class="ct-wrap">
-        <div class="ct-left">
-          <div>
-            <svg width="28" height="28" viewBox="0 0 42 42" fill="none">
-              <defs><mask id="cm"><circle cx="21" cy="21" r="18" fill="white"/><circle cx="30" cy="16" r="14" fill="black"/></mask></defs>
-              <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#cm)"/>
-            </svg>
-            <h2>어떤 문제를<br><em>해결하고 싶으세요?</em></h2>
-            <p>기획서 없어도 됩니다.<br>아이디어만 있으면 시작할 수 있어요.<br>24시간 내에 답변드립니다.</p>
-          </div>
-          <div class="ct-links">
-            <a class="ct-link" href="/cdn-cgi/l/email-protection#8ae8ebfee5e4faebf9f9b3bacaede7ebe3e6a4e9e5e7"><span class="ct-link-ic">✉</span><span class="__cf_email__" data-cfemail="741615001b1a041507074d44341319151d185a171b19">[email&#160;protected]</span></a>
-            <a class="ct-link" href="http://pf.kakao.com/_BaxbxdX" target="_blank"><span class="ct-link-ic">💬</span>카카오톡 오픈채팅</a>
-            <a class="ct-link" href="https://instagram.com/crescent_ai_studio" target="_blank"><span class="ct-link-ic">📸</span>@crescent_ai_studio</a>
-          </div>
-        </div>
-        <div class="ct-right">
-          <form action="https://formspree.io/f/mlgojlzr" method="POST">
-            <div class="fr">
-              <div class="fg"><label class="fl">이름</label><input class="fi" type="text" name="이름" placeholder="홍길동" required></div>
-              <div class="fg"><label class="fl">연락처</label><input class="fi" type="text" name="연락처" placeholder="010-0000-0000"></div>
-            </div>
-            <div class="fg"><label class="fl">이메일</label><input class="fi" type="email" placeholder="batonpass90@gmail.com" required></div>
-            <div class="fg"><label class="fl">업종</label><input class="fi" type="text" name="업종" placeholder="예) 미용실, 학원, 식당, 보험 등"></div>
-            <div class="fg">
-              <label class="fl">만들고 싶은 것</label>
-              <select class="fs" name="만들고 싶은 것">
-                <option value="">선택해주세요</option>
-                <option>쇼핑몰 · 커머스</option><option>예약 · 관리 시스템</option>
-                <option>AI 챗봇 · 자동화</option><option>iOS · Android 앱</option>
-                <option>기업 · 브랜드 사이트</option><option>커뮤니티 · 플랫폼</option>
-                <option>아직 잘 모르겠어요</option>
-              </select>
-            </div>
-            <div class="fg"><label class="fl">내용</label><textarea class="ft" name="내용" placeholder="간단하게 설명해주세요. 기획서 없어도 됩니다."></textarea></div>
-            <button type="submit" class="fsub">무료 상담 신청하기 →</button>
-          </form>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div>
+      <button type="submit" class="cf-submit">무료 상담 신청하기 →</button>
+    </form>
+  </div>
+</section>
 
 <!-- FOOTER -->
 <footer>
-  <a class="fl2" href="#">
-    <svg width="18" height="18" viewBox="0 0 42 42" fill="none">
-      <defs><mask id="fm"><circle cx="21" cy="21" r="18" fill="white"/><circle cx="30" cy="16" r="14" fill="black"/></mask></defs>
+  <div class="fl">
+    <svg width="22" height="22" viewBox="0 0 42 42" fill="none" style="opacity:.6">
+      <defs><mask id="fm"><circle cx="21" cy="21" r="18" fill="white"/><circle cx="31" cy="16" r="14" fill="black"/></mask></defs>
       <circle cx="21" cy="21" r="18" fill="#f5c518" mask="url(#fm)"/>
     </svg>
-    <span>Crescent Studio</span>
-  </a>
-  <div class="flinks">
-    <a href="#services">서비스</a><a href="#process">프로세스</a>
-    <a href="#samples">샘플</a><a href="#pricing">가격</a><a href="#contact">상담</a>
+    <span class="fl-name">Crescent Studio</span>
   </div>
-  <span class="fcopy">© 2026 Crescent Studio</span>
+  <span class="fr-copy">© 2026 Crescent Studio</span>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// 배너 별 생성
-const bs = document.getElementById('bannerStars');
-if (bs) {
-  const sc = ['#ffe082','#ffd54f','#f0c030','#c8a030','#8898c8','#6678a8'];
-  for(let i=0;i<80;i++){
-    const s=document.createElement('div'); s.className='hbs';
-    const z=Math.random()*1.6+.3, col=sc[Math.floor(Math.random()*sc.length)];
-    s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;background:${col};--d:${(Math.random()*5+2).toFixed(1)}s;--dl:-${(Math.random()*8).toFixed(1)}s;--a:${(Math.random()*.06).toFixed(2)};--b:${(Math.random()*.4+.1).toFixed(2)};`;
-    bs.appendChild(s);
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js">
+function onFormSubmit(e) {
+  e.preventDefault();
+  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+  const btn = e.target.querySelector('[type="submit"]') || e.target.querySelector('.cf-submit');
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '구글 폼이 열렸어요! ✓';
+    btn.style.background = '#4ade80'; btn.style.color = '#07080f';
+    setTimeout(() => { btn.textContent = orig; btn.style.background = ''; btn.style.color = ''; }, 3000);
   }
 }
+</script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// STARS
+const se = document.getElementById('stars');
+const sc = ['#ffe082','#ffd54f','#f0c030','#c8a030','#8898c8','#6678a8'];
+for(let i=0;i<160;i++){
+  const s=document.createElement('div'); s.className='s';
+  const z=Math.random()*1.8+.3, c=sc[Math.floor(Math.random()*sc.length)];
+  s.style.cssText=`left:${Math.random()*100}%;top:${Math.random()*100}%;width:${z}px;height:${z}px;background:${c};--d:${(Math.random()*5+2).toFixed(1)}s;--dl:-${(Math.random()*9).toFixed(1)}s;--a:${(Math.random()*.07).toFixed(2)};--b:${(Math.random()*.44+.15).toFixed(2)};`;
+  se.appendChild(s);
+}
 
-const secs = ['services','process','samples','pricing','contact'];
-window.addEventListener('scroll', () => {
-  const y = window.scrollY + 70;
-  secs.forEach(id => {
-    const el = document.getElementById(id);
-    const a = document.querySelector(`.top-nav a[href="#${id}"]`);
-    if (!el || !a) return;
-    const t = el.getBoundingClientRect().top + window.scrollY;
-    if (y >= t && y < t + el.offsetHeight) {
-      document.querySelectorAll('.top-nav a').forEach(x => x.classList.remove('on'));
-      a.classList.add('on');
-    }
-  });
-}, { passive: true });
-
+// FORM
+function onSend(e){
+  e.preventDefault();
+  document.getElementById('contact').scrollIntoView({behavior:'smooth'});
+  const b=e.target.querySelector('.cf-submit');
+  b.textContent='접수됐어요! �곧 연락드릴게요 ✓';
+  b.style.background='#4ade80'; b.style.color='#07080f';
+  setTimeout(()=>{ b.textContent='무료 상담 신청하기 →'; b.style.background=''; b.style.color=''; },3000);
+}
 </script>
 </body>
 </html>
