@@ -314,8 +314,14 @@
       gap: 14px;
       padding: 6px 20px 14px;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scroll-snap-type: x mandatory;
+      cursor: grab;
+      user-select: none;
     }
+    .designers-scroll.grabbing { cursor: grabbing; }
     .designers-scroll::-webkit-scrollbar { display: none; }
+    .designer-card { scroll-snap-align: start; }
 
     .designer-card {
       background: var(--white);
@@ -353,21 +359,23 @@
       overflow: hidden;
     }
     /* CSS-generated avatars */
-    .avatar-1 {
-      background: linear-gradient(135deg, #ffb7c5 0%, #c9184a 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px;
+    .avatar-img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+    .avatar-1 { background: linear-gradient(135deg, #ffb7c5 0%, #c9184a 100%); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    .avatar-2 { background: linear-gradient(135deg, #ffd6a5 0%, #c9a84c 100%); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    .avatar-3 { background: linear-gradient(135deg, #b5c9ff 0%, #5a72d6 100%); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    .avatar-4 { background: linear-gradient(135deg, #b5f5d4 0%, #27ae60 100%); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    .avatar-5 { background: linear-gradient(135deg, #f5d5ff 0%, #9b59b6 100%); display:flex; align-items:center; justify-content:center; font-size:28px; }
+    /* 사진 교체 오버레이 */
+    .designer-avatar { cursor:pointer; }
+    .designer-avatar .photo-overlay {
+      position:absolute; inset:0; border-radius:50%;
+      background:rgba(0,0,0,.45); color:#fff;
+      font-size:11px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+      opacity:0; transition:opacity .2s;
     }
-    .avatar-2 {
-      background: linear-gradient(135deg, #ffd6a5 0%, #c9a84c 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px;
-    }
-    .avatar-3 {
-      background: linear-gradient(135deg, #b5c9ff 0%, #5a72d6 100%);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px;
-    }
+    .designer-avatar:hover .photo-overlay { opacity:1; }
+    .photo-input { display:none; }
     .designer-badge {
       position: absolute;
       bottom: -1px; right: -1px;
@@ -865,6 +873,248 @@
     .history-pts.earn  { color: #2e7d32; }
     .history-pts.spend { color: var(--rose); }
 
+    /* ── Points use modal ────────────────────────── */
+    .points-use-modal { padding:4px 0 8px; }
+    .points-input-wrap { position:relative; margin:16px 0 8px; }
+    .points-input {
+      width:100%; padding:14px 60px 14px 16px;
+      border:2px solid #f0e0e8; border-radius:12px;
+      font-size:18px; font-weight:700; color:var(--text);
+      font-family:'Pretendard',sans-serif;
+      outline:none; transition:border .2s;
+    }
+    .points-input:focus { border-color:var(--rose); }
+    .points-input-unit {
+      position:absolute; right:16px; top:50%; transform:translateY(-50%);
+      font-size:14px; font-weight:700; color:var(--muted);
+    }
+    .points-max-btn {
+      background:var(--rose); color:#fff; border:none;
+      border-radius:8px; padding:6px 12px; font-size:12px; font-weight:700;
+      cursor:pointer; margin-bottom:12px; transition:opacity .2s;
+    }
+    .points-max-btn:hover { opacity:.85; }
+    .points-avail { font-size:12px; color:var(--muted); margin-bottom:4px; }
+
+    /* ── Review modal ────────────────────────────── */
+    .review-stars { display:flex; gap:8px; justify-content:center; margin:16px 0 8px; }
+    .review-star-btn { font-size:32px; cursor:pointer; transition:transform .1s; color:#e0d0d8; }
+    .review-star-btn.on { color:var(--gold); }
+    .review-star-btn:hover { transform:scale(1.2); }
+    .review-textarea {
+      width:100%; height:90px; padding:12px 14px;
+      border:2px solid #f0e0e8; border-radius:12px;
+      font-size:13px; font-family:'Pretendard',sans-serif;
+      resize:none; outline:none; transition:border .2s;
+    }
+    .review-textarea:focus { border-color:var(--rose); }
+
+    /* ── My Info tab ─────────────────────────────── */
+    .myinfo-profile-card {
+      background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 55%, #ff758c 100%);
+      margin:16px 20px;
+      border-radius:var(--radius);
+      padding:24px 20px;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .myinfo-profile-card::before {
+      content:''; position:absolute;
+      width:160px; height:160px;
+      background:rgba(255,255,255,.07); border-radius:50%;
+      top:-50px; right:-30px;
+    }
+    .myinfo-avatar-wrap {
+      position:relative; flex-shrink:0;
+      cursor:pointer;
+    }
+    .myinfo-avatar {
+      width:72px; height:72px; border-radius:50%;
+      background:rgba(255,255,255,.25);
+      display:flex; align-items:center; justify-content:center;
+      font-size:36px;
+      border:3px solid rgba(255,255,255,.5);
+      overflow:hidden;
+    }
+    .myinfo-avatar-edit {
+      position:absolute; bottom:0; right:0;
+      width:22px; height:22px;
+      background:var(--gold); border-radius:50%;
+      border:2px solid #fff;
+      display:flex; align-items:center; justify-content:center;
+      font-size:10px;
+    }
+    .myinfo-name {
+      font-family:'Noto Serif KR',serif;
+      font-size:20px; font-weight:700;
+    }
+    .myinfo-grade {
+      font-size:11px; opacity:.85; margin-top:2px;
+    }
+    .myinfo-edit-btn {
+      position:absolute; top:16px; right:16px;
+      background:rgba(255,255,255,.2); border:none;
+      border-radius:20px; padding:5px 12px;
+      color:#fff; font-size:11px; font-weight:700;
+      cursor:pointer; z-index:1; transition:background .2s;
+    }
+    .myinfo-edit-btn:hover { background:rgba(255,255,255,.35); }
+
+    .myinfo-stats-row {
+      display:flex; gap:10px;
+      padding:0 20px 16px;
+    }
+    .myinfo-stat {
+      flex:1; background:var(--white);
+      border-radius:14px; padding:14px 10px;
+      text-align:center;
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+    }
+    .myinfo-stat-num {
+      font-size:18px; font-weight:700; color:var(--rose);
+    }
+    .myinfo-stat-label {
+      font-size:10px; color:var(--muted); margin-top:2px;
+    }
+
+    .myinfo-section-card {
+      background:var(--white);
+      margin:0 20px 12px;
+      border-radius:var(--radius);
+      overflow:hidden;
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+    }
+    .myinfo-row {
+      display:flex; align-items:center; gap:14px;
+      padding:15px 16px;
+      border-bottom:1px solid #f5eff0;
+      cursor:pointer;
+      transition:background .15s;
+    }
+    .myinfo-row:last-child { border-bottom:none; }
+    .myinfo-row:hover { background:#fdf5f7; }
+    .myinfo-row-icon {
+      width:38px; height:38px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:18px; flex-shrink:0;
+    }
+    .myinfo-row-info { flex:1; }
+    .myinfo-row-title { font-size:14px; font-weight:600; color:var(--text); }
+    .myinfo-row-desc  { font-size:11px; color:var(--muted); margin-top:1px; }
+    .myinfo-row-arrow { color:#ccc; font-size:14px; }
+    .myinfo-row-badge {
+      background:var(--rose); color:#fff;
+      font-size:10px; font-weight:700;
+      padding:2px 7px; border-radius:10px;
+    }
+
+    /* 쿠폰 목록 */
+    .coupon-list { padding:0 20px; display:flex; flex-direction:column; gap:10px; }
+    .coupon-card {
+      background:var(--white); border-radius:14px;
+      padding:16px; display:flex; align-items:center; gap:14px;
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+      border-left:4px solid var(--rose);
+      position:relative; overflow:hidden;
+    }
+    .coupon-card::after {
+      content:''; position:absolute;
+      right:-1px; top:50%; transform:translateY(-50%);
+      width:18px; height:18px; border-radius:50%;
+      background:#fff8f0;
+      box-shadow:0 0 0 1px #f0e8e0;
+    }
+    .coupon-icon { font-size:26px; }
+    .coupon-info { flex:1; }
+    .coupon-name { font-size:14px; font-weight:700; color:var(--text); }
+    .coupon-desc { font-size:11px; color:var(--muted); margin-top:2px; }
+    .coupon-expiry { font-size:10px; color:var(--rose); margin-top:4px; font-weight:600; }
+    .coupon-discount {
+      font-family:'Noto Serif KR',serif;
+      font-size:20px; font-weight:700; color:var(--rose);
+      white-space:nowrap;
+    }
+
+    /* 친구 초대 */
+    .invite-card {
+      background:var(--white); margin:0 20px 12px;
+      border-radius:var(--radius); padding:20px;
+      box-shadow:0 2px 12px rgba(0,0,0,.06);
+    }
+    .invite-title { font-family:'Noto Serif KR',serif; font-size:16px; font-weight:700; margin-bottom:6px; }
+    .invite-desc { font-size:12px; color:var(--muted); margin-bottom:14px; line-height:1.5; }
+    .invite-bonus { display:flex; gap:8px; margin-bottom:14px; }
+    .invite-bonus-item {
+      flex:1; background:#fdf5f7; border-radius:10px;
+      padding:10px; text-align:center;
+    }
+    .invite-bonus-num { font-size:16px; font-weight:700; color:var(--rose); }
+    .invite-bonus-label { font-size:10px; color:var(--muted); margin-top:2px; }
+    .invite-link-wrap {
+      display:flex; gap:8px; align-items:center;
+    }
+    .invite-link-input {
+      flex:1; background:#f5f0f2; border:none; border-radius:10px;
+      padding:10px 12px; font-size:12px; color:var(--muted);
+      font-family:'Pretendard',sans-serif; outline:none;
+    }
+    .invite-copy-btn {
+      background:var(--rose); color:#fff; border:none;
+      border-radius:10px; padding:10px 14px;
+      font-size:12px; font-weight:700; cursor:pointer;
+      transition:opacity .2s; white-space:nowrap;
+    }
+    .invite-copy-btn:hover { opacity:.85; }
+
+    /* 멤버십 */
+    .membership-card {
+      background:linear-gradient(135deg,#1a1a2e 0%,#2d1b4e 100%);
+      margin:0 20px 12px; border-radius:var(--radius);
+      padding:20px; color:#fff; position:relative; overflow:hidden;
+    }
+    .membership-card::before {
+      content:''; position:absolute;
+      width:120px; height:120px;
+      background:rgba(255,255,255,.05); border-radius:50%;
+      top:-30px; right:-20px;
+    }
+    .membership-tier-badge {
+      display:inline-flex; align-items:center; gap:5px;
+      background:var(--gold); color:#3d2b00;
+      font-size:11px; font-weight:700;
+      padding:4px 12px; border-radius:20px; margin-bottom:10px;
+    }
+    .membership-name { font-family:'Noto Serif KR',serif; font-size:18px; font-weight:700; margin-bottom:4px; }
+    .membership-desc { font-size:12px; opacity:.75; margin-bottom:16px; }
+    .membership-progress-wrap { margin-bottom:6px; }
+    .membership-progress-label { display:flex; justify-content:space-between; font-size:11px; opacity:.75; margin-bottom:6px; }
+    .membership-progress-bar {
+      height:6px; background:rgba(255,255,255,.2); border-radius:3px; overflow:hidden;
+    }
+    .membership-progress-fill {
+      height:100%; background:linear-gradient(90deg,var(--gold-lt),var(--gold));
+      border-radius:3px; width:72%; transition:width .8s ease;
+    }
+    .membership-benefits { display:flex; flex-wrap:wrap; gap:6px; margin-top:14px; }
+    .membership-benefit-tag {
+      background:rgba(255,255,255,.15); font-size:11px;
+      padding:4px 10px; border-radius:20px;
+    }
+
+    /* 프로필 편집 모달 */
+    .edit-field { margin-bottom:14px; }
+    .edit-label { font-size:12px; color:var(--muted); margin-bottom:5px; font-weight:600; }
+    .edit-input {
+      width:100%; padding:12px 14px; border:2px solid #f0e0e8;
+      border-radius:12px; font-size:14px;
+      font-family:'Pretendard',sans-serif; outline:none; transition:border .2s;
+    }
+    .edit-input:focus { border-color:var(--rose); }
+
     /* ── Bottom tab bar ──────────────────────────── */
     .bottom-bar {
       position: fixed;
@@ -1071,6 +1321,68 @@
 <canvas id="confetti-canvas"></canvas>
 <div id="toast"></div>
 
+<!-- ── Points Use Modal ───────────────────────────── -->
+<div class="modal-overlay" id="points-use-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">포인트 사용</div>
+    <div class="modal-subtitle">사용할 포인트를 입력하세요</div>
+    <div class="points-use-modal">
+      <div class="points-avail">보유 포인트: <strong id="modal-avail-pts" style="color:var(--rose)">3,200 P</strong></div>
+      <div class="points-input-wrap">
+        <input type="number" class="points-input" id="points-use-input" placeholder="0" min="0">
+        <span class="points-input-unit">P</span>
+      </div>
+      <button class="points-max-btn" onclick="setMaxPoints()">전액 사용</button>
+      <div style="font-size:12px;color:var(--muted);line-height:1.6;">
+        · 최소 사용 단위: 100P<br>
+        · 현금 1원 = 1P
+      </div>
+    </div>
+    <button class="confirm-btn" onclick="usePoints()">포인트 사용하기</button>
+  </div>
+</div>
+
+<!-- ── Review Modal ────────────────────────────────── -->
+<div class="modal-overlay" id="review-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">리뷰 작성</div>
+    <div class="modal-subtitle" id="review-modal-subtitle">시술은 만족스러우셨나요?</div>
+    <div class="review-stars" id="review-stars">
+      <span class="review-star-btn" onclick="setReviewStar(1)">★</span>
+      <span class="review-star-btn" onclick="setReviewStar(2)">★</span>
+      <span class="review-star-btn" onclick="setReviewStar(3)">★</span>
+      <span class="review-star-btn" onclick="setReviewStar(4)">★</span>
+      <span class="review-star-btn" onclick="setReviewStar(5)">★</span>
+    </div>
+    <textarea class="review-textarea" id="review-textarea" placeholder="시술 후기를 자유롭게 남겨주세요 😊"></textarea>
+    <button class="confirm-btn" onclick="submitReview()">리뷰 등록하기</button>
+  </div>
+</div>
+
+<!-- ── Edit Profile Modal ─────────────────────────── -->
+<div class="modal-overlay" id="edit-profile-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">내 정보 수정</div>
+    <div class="modal-subtitle">변경할 정보를 입력해주세요</div>
+    <div class="edit-field">
+      <div class="edit-label">이름</div>
+      <input class="edit-input" id="edit-name" value="김예린" placeholder="이름">
+    </div>
+    <div class="edit-field">
+      <div class="edit-label">전화번호</div>
+      <input class="edit-input" id="edit-phone" value="010-1234-5678" placeholder="010-0000-0000">
+    </div>
+    <div class="edit-field">
+      <div class="edit-label">생년월일</div>
+      <input class="edit-input" id="edit-birth" value="1995.04.02" placeholder="YYYY.MM.DD">
+    </div>
+    <button class="confirm-btn" onclick="saveProfile()">저장하기</button>
+  </div>
+</div>
+
 <!-- ── Booking Confirmation Modal ────────────────── -->
 <div class="modal-overlay" id="confirm-modal">
   <div class="modal-sheet">
@@ -1094,7 +1406,7 @@
     <div class="brand-sub">BeautyOn · Hongdae · Since 2018</div>
     <div class="top-bar-actions">
       <button class="icon-btn" title="알림" onclick="showToast('새 알림이 없습니다')">🔔</button>
-      <button class="icon-btn" title="검색" onclick="showToast('검색 기능 준비 중')">🔍</button>
+      <button class="icon-btn" title="내 정보" onclick="switchTab('myinfo')">👤</button>
     </div>
   </div>
 
@@ -1109,7 +1421,7 @@
       <div class="stat-label">오늘 예약가능</div>
     </div>
     <div class="stat-cell">
-      <div class="stat-num">3</div>
+      <div class="stat-num">5</div>
       <div class="stat-label">디자이너</div>
     </div>
     <div class="stat-cell">
@@ -1189,66 +1501,78 @@
 
       <!-- Designers -->
       <div class="section-heading fade-in-d1"><div class="dot"></div>디자이너 선택</div>
-      <div class="designers-scroll fade-in-d1">
+      <!-- 숨긴 file inputs (디자이너별 사진 교체용) -->
+      <input type="file" accept="image/*" class="photo-input" id="photo-수연" onchange="changeDesignerPhoto(this,'수연')">
+      <input type="file" accept="image/*" class="photo-input" id="photo-지훈" onchange="changeDesignerPhoto(this,'지훈')">
+      <input type="file" accept="image/*" class="photo-input" id="photo-민지" onchange="changeDesignerPhoto(this,'민지')">
+      <input type="file" accept="image/*" class="photo-input" id="photo-유라" onchange="changeDesignerPhoto(this,'유라')">
+      <input type="file" accept="image/*" class="photo-input" id="photo-민호" onchange="changeDesignerPhoto(this,'민호')">
+
+      <div class="designers-scroll fade-in-d1" id="designers-scroll">
 
         <div class="designer-card" data-designer="수연" onclick="selectDesigner(this,'수연')">
-          <div class="designer-avatar">
-            <div class="avatar-1" style="width:100%;height:100%;">👩</div>
+          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-수연').click()">
+            <div class="avatar-1" id="avatar-수연" style="width:100%;height:100%;">👩</div>
             <div class="designer-badge">👑</div>
+            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">김수연</div>
           <div class="designer-role">수석 디자이너</div>
-          <div class="stars">
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star filled">★</span>
-          </div>
+          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
           <div class="designer-rating-num">5.0 (1,204)</div>
-          <div class="specialties">
-            <span class="spec-tag">커트</span>
-            <span class="spec-tag">웨이브</span>
-            <span class="spec-tag">발레아쥬</span>
-          </div>
+          <div class="specialties"><span class="spec-tag">커트</span><span class="spec-tag">웨이브</span><span class="spec-tag">발레아쥬</span></div>
         </div>
 
         <div class="designer-card" data-designer="지훈" onclick="selectDesigner(this,'지훈')">
-          <div class="designer-avatar">
-            <div class="avatar-2" style="width:100%;height:100%;">👨</div>
+          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-지훈').click()">
+            <div class="avatar-2" id="avatar-지훈" style="width:100%;height:100%;">👨</div>
             <div class="designer-badge">✂️</div>
+            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">박지훈</div>
           <div class="designer-role">컬러 스페셜리스트</div>
-          <div class="stars">
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star" style="color:#e8c060;font-size:11px;">★</span>
-          </div>
+          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star" style="color:#e8c060">★</span></div>
           <div class="designer-rating-num">4.8 (987)</div>
-          <div class="specialties">
-            <span class="spec-tag">염색</span>
-            <span class="spec-tag">탈색</span>
-            <span class="spec-tag">인생컷</span>
-          </div>
+          <div class="specialties"><span class="spec-tag">염색</span><span class="spec-tag">탈색</span><span class="spec-tag">인생컷</span></div>
         </div>
 
         <div class="designer-card" data-designer="민지" onclick="selectDesigner(this,'민지')">
-          <div class="designer-avatar">
-            <div class="avatar-3" style="width:100%;height:100%;">🧑</div>
+          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-민지').click()">
+            <div class="avatar-3" id="avatar-민지" style="width:100%;height:100%;">🧑</div>
             <div class="designer-badge">💎</div>
+            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">이민지</div>
           <div class="designer-role">트리트먼트 전문가</div>
-          <div class="stars">
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star filled">★</span><span class="star filled">★</span>
-            <span class="star filled">★</span>
-          </div>
+          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
           <div class="designer-rating-num">4.9 (656)</div>
-          <div class="specialties">
-            <span class="spec-tag">케라틴</span>
-            <span class="spec-tag">두피케어</span>
-            <span class="spec-tag">펌</span>
+          <div class="specialties"><span class="spec-tag">케라틴</span><span class="spec-tag">두피케어</span><span class="spec-tag">펌</span></div>
+        </div>
+
+        <div class="designer-card" data-designer="유라" onclick="selectDesigner(this,'유라')">
+          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-유라').click()">
+            <div class="avatar-4" id="avatar-유라" style="width:100%;height:100%;">👩‍🦱</div>
+            <div class="designer-badge">🌀</div>
+            <div class="photo-overlay">📷 교체</div>
           </div>
+          <div class="designer-name">정유라</div>
+          <div class="designer-role">펌 전문 디자이너</div>
+          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star" style="color:#e8c060">★</span></div>
+          <div class="designer-rating-num">4.7 (523)</div>
+          <div class="specialties"><span class="spec-tag">웨이브펌</span><span class="spec-tag">디지털펌</span><span class="spec-tag">볼륨매직</span></div>
+        </div>
+
+        <div class="designer-card" data-designer="민호" onclick="selectDesigner(this,'민호')">
+          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-민호').click()">
+            <div class="avatar-5" id="avatar-민호" style="width:100%;height:100%;">👨‍🦲</div>
+            <div class="designer-badge">⚡</div>
+            <div class="photo-overlay">📷 교체</div>
+          </div>
+          <div class="designer-name">최민호</div>
+          <div class="designer-role">남성 커트 전문</div>
+          <div class="stars"><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span><span class="star filled">★</span></div>
+          <div class="designer-rating-num">4.9 (341)</div>
+          <div class="specialties"><span class="spec-tag">남성커트</span><span class="spec-tag">투블럭</span><span class="spec-tag">쉐이딩</span></div>
         </div>
 
       </div>
@@ -1351,26 +1675,33 @@
       <div class="points-hero fade-in">
         <div class="points-tier">🥇 골드 등급</div>
         <div class="points-label">내 포인트 잔액</div>
-        <div class="points-value">3,200<span class="points-unit">P</span></div>
+        <div class="points-value" id="points-value-display">3,200<span class="points-unit">P</span></div>
         <div class="points-expiry">⚠ 500P 2026.06.30 소멸 예정</div>
       </div>
 
-      <div class="points-actions fade-in-d1">
-        <div class="points-action-btn" onclick="showToast('포인트 사용 화면으로 이동합니다')">
+      <!-- 포인트 사용 + 적립 안내 -->
+      <div class="points-actions fade-in-d1" style="grid-template-columns:1fr 1fr;">
+        <div class="points-action-btn" onclick="openPointsUseModal()">
           <span class="pab-icon">🎁</span>
           <div class="pab-label">포인트 사용</div>
         </div>
-        <div class="points-action-btn" onclick="showToast('친구 초대 링크가 복사되었습니다!')">
-          <span class="pab-icon">👯</span>
-          <div class="pab-label">친구 초대</div>
+        <div class="points-action-btn" onclick="showToast('시술 금액의 5% 자동 적립')">
+          <span class="pab-icon">💰</span>
+          <div class="pab-label">적립 안내</div>
         </div>
-        <div class="points-action-btn" onclick="showToast('쿠폰함으로 이동합니다')">
-          <span class="pab-icon">🎟️</span>
-          <div class="pab-label">쿠폰함</div>
+      </div>
+
+      <!-- 다음 등급까지 -->
+      <div style="margin:0 20px 16px;background:var(--white);border-radius:14px;padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);" class="fade-in-d1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <span style="font-size:13px;font-weight:700;color:var(--text);">🏆 다음 등급까지</span>
+          <span style="font-size:11px;color:var(--muted);">골드 → 다이아 · 1,800P 남음</span>
         </div>
-        <div class="points-action-btn" onclick="showToast('혜택 안내 페이지로 이동합니다')">
-          <span class="pab-icon">💎</span>
-          <div class="pab-label">멤버십 혜택</div>
+        <div style="height:8px;background:#f0e8e0;border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:64%;background:linear-gradient(90deg,var(--rose-dk),var(--rose-lt));border-radius:4px;transition:width .8s;"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--muted);">
+          <span>3,200P 보유</span><span>5,000P 달성 시 다이아 🔷</span>
         </div>
       </div>
 
@@ -1378,6 +1709,144 @@
       <div class="history-list fade-in-d2" id="points-history"></div>
       <div style="height:20px;"></div>
     </div>
+
+    <!-- ══ TAB 4: 내 정보 ═══════════════════════ -->
+    <div class="tab-panel" id="panel-myinfo">
+
+      <!-- 프로필 카드 -->
+      <input type="file" accept="image/*" class="photo-input" id="photo-myprofile" onchange="changeMyPhoto(this)">
+      <div class="myinfo-profile-card fade-in">
+        <div class="myinfo-avatar-wrap" onclick="document.getElementById('photo-myprofile').click()">
+          <div class="myinfo-avatar" id="my-avatar">👤</div>
+          <div class="myinfo-avatar-edit">📷</div>
+        </div>
+        <div>
+          <div class="myinfo-name" id="myinfo-name-display">김예린 님</div>
+          <div class="myinfo-grade">🥇 골드 등급 · 방문 8회</div>
+        </div>
+        <button class="myinfo-edit-btn" onclick="openEditProfileModal()">정보 수정</button>
+      </div>
+
+      <!-- 통계 -->
+      <div class="myinfo-stats-row fade-in-d1">
+        <div class="myinfo-stat">
+          <div class="myinfo-stat-num">8</div>
+          <div class="myinfo-stat-label">총 방문</div>
+        </div>
+        <div class="myinfo-stat">
+          <div class="myinfo-stat-num" id="myinfo-points-display">3,200</div>
+          <div class="myinfo-stat-label">포인트</div>
+        </div>
+        <div class="myinfo-stat">
+          <div class="myinfo-stat-num">3</div>
+          <div class="myinfo-stat-label">보유 쿠폰</div>
+        </div>
+      </div>
+
+      <!-- 멤버십 카드 -->
+      <div class="membership-card fade-in-d1">
+        <div class="membership-tier-badge">🥇 GOLD</div>
+        <div class="membership-name">골드 멤버십</div>
+        <div class="membership-desc">다이아 등급까지 1,800P 남았어요!</div>
+        <div class="membership-progress-wrap">
+          <div class="membership-progress-label"><span>3,200 / 5,000 P</span><span>64%</span></div>
+          <div class="membership-progress-bar"><div class="membership-progress-fill"></div></div>
+        </div>
+        <div class="membership-benefits">
+          <span class="membership-benefit-tag">5% 적립</span>
+          <span class="membership-benefit-tag">생일 쿠폰</span>
+          <span class="membership-benefit-tag">우선 예약</span>
+          <span class="membership-benefit-tag">무료 드링크</span>
+        </div>
+      </div>
+
+      <!-- 쿠폰함 -->
+      <div class="section-heading fade-in-d2"><div class="dot"></div>내 쿠폰함 <span style="font-size:12px;color:var(--rose);font-family:'Pretendard',sans-serif;font-weight:700;">3장</span></div>
+      <div class="coupon-list fade-in-d2">
+        <div class="coupon-card">
+          <div class="coupon-icon">🌸</div>
+          <div class="coupon-info">
+            <div class="coupon-name">봄맞이 트리트먼트 쿠폰</div>
+            <div class="coupon-desc">케라틴 트리트먼트 시술 시 사용</div>
+            <div class="coupon-expiry">~2026.05.31 까지</div>
+          </div>
+          <div class="coupon-discount">20%</div>
+        </div>
+        <div class="coupon-card">
+          <div class="coupon-icon">🎂</div>
+          <div class="coupon-info">
+            <div class="coupon-name">생일 축하 쿠폰 🎉</div>
+            <div class="coupon-desc">모든 시술 전체 적용</div>
+            <div class="coupon-expiry">~2026.04.30 까지 (D-28)</div>
+          </div>
+          <div class="coupon-discount">10%</div>
+        </div>
+        <div class="coupon-card">
+          <div class="coupon-icon">👯</div>
+          <div class="coupon-info">
+            <div class="coupon-name">친구 초대 보상 쿠폰</div>
+            <div class="coupon-desc">커트 시술 시 사용</div>
+            <div class="coupon-expiry">~2026.06.15 까지</div>
+          </div>
+          <div class="coupon-discount">₩5,000</div>
+        </div>
+      </div>
+
+      <!-- 친구 초대 -->
+      <div class="section-heading fade-in-d2" style="margin-top:4px;"><div class="dot"></div>친구 초대</div>
+      <div class="invite-card fade-in-d2">
+        <div class="invite-title">친구를 초대하고 포인트 받기 🎁</div>
+        <div class="invite-desc">친구가 처음 예약하면 <strong style="color:var(--rose)">나 2,000P + 친구 1,000P</strong> 함께 적립!</div>
+        <div class="invite-bonus">
+          <div class="invite-bonus-item">
+            <div class="invite-bonus-num">2,000P</div>
+            <div class="invite-bonus-label">내 적립</div>
+          </div>
+          <div class="invite-bonus-item">
+            <div class="invite-bonus-num">1,000P</div>
+            <div class="invite-bonus-label">친구 적립</div>
+          </div>
+          <div class="invite-bonus-item">
+            <div class="invite-bonus-num">무제한</div>
+            <div class="invite-bonus-label">초대 횟수</div>
+          </div>
+        </div>
+        <div class="invite-link-wrap">
+          <input class="invite-link-input" id="invite-link-input" value="https://beautyon.kr/invite/KYR28" readonly>
+          <button class="invite-copy-btn" onclick="copyInviteLink()">링크 복사</button>
+        </div>
+      </div>
+
+      <!-- 메뉴 목록 -->
+      <div class="section-heading fade-in-d2"><div class="dot"></div>설정</div>
+      <div class="myinfo-section-card fade-in-d2">
+        <div class="myinfo-row" onclick="showToast('알림 설정 화면')">
+          <div class="myinfo-row-icon" style="background:#fde8ef;">🔔</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">알림 설정</div>
+            <div class="myinfo-row-desc">예약 알림, 이벤트 알림</div>
+          </div>
+          <div class="myinfo-row-arrow">›</div>
+        </div>
+        <div class="myinfo-row" onclick="showToast('문의 화면으로 이동')">
+          <div class="myinfo-row-icon" style="background:#e8f5e9;">💬</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">1:1 문의</div>
+            <div class="myinfo-row-desc">평일 10:00~18:00</div>
+          </div>
+          <div class="myinfo-row-arrow">›</div>
+        </div>
+        <div class="myinfo-row" onclick="showToast('앱 버전: 1.4.2')">
+          <div class="myinfo-row-icon" style="background:#f3e8ff;">ℹ️</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">앱 정보</div>
+            <div class="myinfo-row-desc">버전 1.4.2</div>
+          </div>
+          <div class="myinfo-row-arrow">›</div>
+        </div>
+      </div>
+      <div style="height:20px;"></div>
+    </div><!-- /panel-myinfo -->
 
   </div><!-- /content-area -->
 
@@ -1395,6 +1864,10 @@
     <button class="tab-btn" id="tab-points" onclick="switchTab('points')">
       <span class="tab-icon">⭐</span>
       <span class="tab-label">포인트</span>
+    </button>
+    <button class="tab-btn" id="tab-myinfo" onclick="switchTab('myinfo')">
+      <span class="tab-icon">👤</span>
+      <span class="tab-label">내 정보</span>
     </button>
   </div>
 
@@ -1707,46 +2180,8 @@ const pastBookings = [
   { service:'커트',            designer:'지훈', date:'2026.02.10', time:'10:00', price:'45000',  status:'완료' },
 ];
 
-const DESIGNER_COLORS = { 수연:'avatar-1', 지훈:'avatar-2', 민지:'avatar-3', default:'avatar-1' };
-const DESIGNER_EMOJI  = { 수연:'👩', 지훈:'👨', 민지:'🧑' };
-
-function renderBookings() {
-  const uEl = document.getElementById('bookings-upcoming');
-  const pEl = document.getElementById('bookings-past');
-
-  uEl.innerHTML = upcomingBookings.map((b, i) => `
-    <div class="booking-card fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
-      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
-      <div class="booking-service-name">${b.service}</div>
-      <div class="booking-designer-row">
-        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
-        ${b.designer} 디자이너
-      </div>
-      <div class="booking-price-row">
-        <div class="booking-price">₩${Number(b.price).toLocaleString()}</div>
-        <button class="cancel-btn" onclick="cancelBooking(${i})">취소</button>
-      </div>
-    </div>
-  `).join('') || `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">예정된 예약이 없습니다</div>`;
-
-  pEl.innerHTML = pastBookings.map((b, i) => `
-    <div class="booking-card past fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
-      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
-      <div class="booking-service-name">${b.service}</div>
-      <div class="booking-designer-row">
-        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
-        ${b.designer} 디자이너
-      </div>
-      <div class="booking-price-row">
-        <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
-        <button class="review-btn" onclick="showToast('리뷰 작성 감사합니다! ⭐')">리뷰 작성</button>
-      </div>
-    </div>
-  `).join('');
-
-  // Dot on tab
-  document.getElementById('mybooking-dot').style.display = upcomingBookings.length ? '' : 'none';
-}
+const DESIGNER_COLORS = { 수연:'avatar-1', 지훈:'avatar-2', 민지:'avatar-3', 유라:'avatar-4', 민호:'avatar-5', default:'avatar-1' };
+const DESIGNER_EMOJI  = { 수연:'👩', 지훈:'👨', 민지:'🧑', 유라:'👩‍🦱', 민호:'👨‍🦲' };
 
 function cancelBooking(idx) {
   if (!confirm('예약을 취소하시겠습니까?')) return;
@@ -1846,10 +2281,214 @@ function launchConfetti() {
 }
 
 /* ═══════════════════════════════════════════════
+   REVIEW MODAL
+═══════════════════════════════════════════════ */
+let reviewStar = 0;
+let reviewBookingIdx = -1;
+
+function openReviewModal(idx) {
+  reviewBookingIdx = idx;
+  reviewStar = 0;
+  document.getElementById('review-textarea').value = '';
+  document.querySelectorAll('.review-star-btn').forEach(s => s.classList.remove('on'));
+  document.getElementById('review-modal').classList.add('open');
+}
+
+function setReviewStar(n) {
+  reviewStar = n;
+  document.querySelectorAll('.review-star-btn').forEach((s, i) => {
+    s.classList.toggle('on', i < n);
+  });
+}
+
+function submitReview() {
+  if (!reviewStar) { showToast('별점을 선택해주세요 ⭐'); return; }
+  const text = document.getElementById('review-textarea').value.trim();
+  if (!text) { showToast('리뷰 내용을 입력해주세요'); return; }
+  document.getElementById('review-modal').classList.remove('open');
+  showToast(`리뷰가 등록되었습니다! 감사합니다 ${'⭐'.repeat(reviewStar)}`);
+}
+
+document.getElementById('review-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+/* ═══════════════════════════════════════════════
+   POINTS USE MODAL
+═══════════════════════════════════════════════ */
+function openPointsUseModal() {
+  document.getElementById('modal-avail-pts').textContent = myPoints.toLocaleString() + ' P';
+  document.getElementById('points-use-input').value = '';
+  document.getElementById('points-use-input').max = myPoints;
+  document.getElementById('points-use-modal').classList.add('open');
+}
+
+function setMaxPoints() {
+  document.getElementById('points-use-input').value = myPoints;
+}
+
+function usePoints() {
+  const amount = parseInt(document.getElementById('points-use-input').value) || 0;
+  if (amount < 100)  { showToast('최소 100P 이상 사용 가능합니다'); return; }
+  if (amount > myPoints) { showToast('보유 포인트가 부족합니다'); return; }
+  if (amount % 100 !== 0) { showToast('100P 단위로 사용 가능합니다'); return; }
+  myPoints -= amount;
+  pointsHistory.unshift({ type:'spend', title:'포인트 직접 사용', date:'2026.04.02', pts:'-' + amount.toLocaleString() });
+  document.getElementById('my-points-strip').textContent = myPoints.toLocaleString();
+  document.getElementById('points-value-display').innerHTML = myPoints.toLocaleString() + '<span class="points-unit">P</span>';
+  document.getElementById('myinfo-points-display').textContent = myPoints.toLocaleString();
+  renderPointsHistory();
+  document.getElementById('points-use-modal').classList.remove('open');
+  showToast(`${amount.toLocaleString()}P 사용 완료! 잔여 ${myPoints.toLocaleString()}P`);
+}
+
+document.getElementById('points-use-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+/* ═══════════════════════════════════════════════
+   EDIT PROFILE MODAL
+═══════════════════════════════════════════════ */
+function openEditProfileModal() {
+  document.getElementById('edit-profile-modal').classList.add('open');
+}
+
+function saveProfile() {
+  const name = document.getElementById('edit-name').value.trim() || '김예린';
+  document.getElementById('myinfo-name-display').textContent = name + ' 님';
+  document.getElementById('edit-profile-modal').classList.remove('open');
+  showToast('정보가 수정되었습니다 ✅');
+}
+
+document.getElementById('edit-profile-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+/* ═══════════════════════════════════════════════
+   DESIGNER PHOTO CHANGE
+═══════════════════════════════════════════════ */
+function changeDesignerPhoto(input, name) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const avatarEl = document.getElementById('avatar-' + name);
+    if (!avatarEl) return;
+    avatarEl.innerHTML = '';
+    avatarEl.style.background = 'none';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.className = 'avatar-img';
+    avatarEl.appendChild(img);
+    showToast(name + ' 디자이너 사진이 변경되었습니다 📷');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ═══════════════════════════════════════════════
+   MY PROFILE PHOTO CHANGE
+═══════════════════════════════════════════════ */
+function changeMyPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const el = document.getElementById('my-avatar');
+    el.innerHTML = '';
+    el.style.background = 'none';
+    const img = document.createElement('img');
+    img.src = e.target.result;
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
+    el.appendChild(img);
+    showToast('프로필 사진이 변경되었습니다 📷');
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ═══════════════════════════════════════════════
+   INVITE LINK COPY
+═══════════════════════════════════════════════ */
+function copyInviteLink() {
+  const link = document.getElementById('invite-link-input').value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('초대 링크가 복사되었습니다! 🎉'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('초대 링크가 복사되었습니다! 🎉');
+  }
+}
+
+/* ═══════════════════════════════════════════════
+   DESIGNER SCROLL DRAG (DESKTOP)
+═══════════════════════════════════════════════ */
+(function() {
+  const el = document.getElementById('designers-scroll');
+  if (!el) return;
+  let isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown', e => {
+    isDown = true;
+    el.classList.add('grabbing');
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  document.addEventListener('mouseup',   () => { isDown = false; el.classList.remove('grabbing'); });
+  document.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    el.scrollLeft = scrollLeft - (x - startX) * 1.2;
+  });
+})();
+
+/* ═══════════════════════════════════════════════
+   BOOKINGS RENDER (updated with review modal)
+═══════════════════════════════════════════════ */
+function renderBookings() {
+  const uEl = document.getElementById('bookings-upcoming');
+  const pEl = document.getElementById('bookings-past');
+
+  uEl.innerHTML = upcomingBookings.map((b, i) => `
+    <div class="booking-card fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price">₩${Number(b.price).toLocaleString()}</div>
+        <button class="cancel-btn" onclick="cancelBooking(${i})">예약 취소</button>
+      </div>
+    </div>
+  `).join('') || `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">예정된 예약이 없습니다</div>`;
+
+  pEl.innerHTML = pastBookings.map((b, i) => `
+    <div class="booking-card past fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
+        <button class="review-btn" onclick="openReviewModal(${i})">리뷰 작성 ⭐</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('mybooking-dot').style.display = upcomingBookings.length ? '' : 'none';
+}
+
+/* ═══════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════ */
 (function init() {
-  // Set current month to April 2026
   state.calYear  = 2026;
   state.calMonth = 3;
   renderCalendar();
@@ -1857,10 +2496,6 @@ function launchConfetti() {
   renderBookings();
   renderPointsHistory();
   updateSummary();
-
-  // Position app-shell toast relative to the viewport bottom
-  const appShell = document.getElementById('app-shell');
-  const rect = appShell.getBoundingClientRect();
 })();
 </script>
 </body>
