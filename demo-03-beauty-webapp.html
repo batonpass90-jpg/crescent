@@ -940,6 +940,28 @@
     .db-status.demo { background: #fff3cd; color: #856404; }
     .db-status-dot  { width:6px; height:6px; border-radius:50%; background:currentColor; }
 
+    /* -- Payment modal -- */
+    .pay-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      border: 1.5px solid #e8d8c8;
+      background: var(--white);
+      font-family: 'Pretendard', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .pay-btn:hover, .pay-btn.selected { border-color: var(--rose); background: #fff5f7; }
+    .pay-logo { width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0; }
+    .pay-confirm-btn { width:100%;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--rose-dk),var(--rose-lt));color:var(--white);font-size:16px;font-weight:700;font-family:'Pretendard',sans-serif;cursor:pointer;margin-top:4px;transition:opacity .15s; }
+    .pay-confirm-btn:disabled { opacity:.45;cursor:not-allowed; }
+    .pay-confirm-btn:not(:disabled):hover { opacity:.92; }
+
     /* ── Points use modal ────────────────────────── */
     .points-use-modal { padding:4px 0 8px; }
     .points-input-wrap { position:relative; margin:16px 0 8px; }
@@ -1559,18 +1581,17 @@
   <div class="modal-sheet">
     <div class="modal-handle"></div>
     <div class="modal-title">리뷰 작성</div>
-    <div class="modal-subtitle" id="review-modal-subtitle">시술은 만족스러우셨나요?</div>
-    <div class="review-stars" id="review-stars">
-      <span class="review-star-btn" onclick="setReviewStar(1)">★</span>
-      <span class="review-star-btn" onclick="setReviewStar(2)">★</span>
-      <span class="review-star-btn" onclick="setReviewStar(3)">★</span>
-      <span class="review-star-btn" onclick="setReviewStar(4)">★</span>
-      <span class="review-star-btn" onclick="setReviewStar(5)">★</span>
+    <div class="modal-subtitle">방문해 주셔서 감사해요 💝</div>
+    <div style="text-align:center;padding:10px 0 20px;">
+      <div style="font-size:52px;margin-bottom:12px;">⭐</div>
+      <div style="font-size:15px;font-weight:700;color:var(--text);margin-bottom:8px;" id="review-modal-subtitle2">이번 시술은 어떠셨나요?</div>
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;">네이버 리뷰를 남겨주시면<br>다음 방문 시 <strong style="color:var(--rose)">500P</strong>를 드립니다!</div>
     </div>
-    <textarea class="review-textarea" id="review-textarea" placeholder="시술 후기를 자유롭게 남겨주세요 😊"></textarea>
-    <button class="confirm-btn" onclick="submitReview()" style="margin-top:14px;">BeautyOn에 리뷰 등록</button>
-    <button onclick="openNaverReview()" style="width:100%;padding:14px;border:2px solid #03C75A;border-radius:14px;background:#fff;color:#03C75A;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;font-family:'Pretendard',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
-      <span style="font-weight:900;">N</span> 네이버 지도에도 리뷰 쓰기
+    <button onclick="openNaverReview()" style="width:100%;padding:16px;border:none;border-radius:14px;background:#03C75A;color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;font-family:'Pretendard',sans-serif;">
+      <span style="font-size:18px;font-weight:900;">N</span> 네이버 지도에 리뷰 쓰기
+    </button>
+    <button onclick="document.getElementById('review-modal').classList.remove('open')" style="width:100%;padding:13px;border:none;border-radius:14px;background:#f5ede0;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;font-family:'Pretendard',sans-serif;">
+      나중에 하기
     </button>
   </div>
 </div>
@@ -1604,7 +1625,23 @@
     <div class="modal-title">예약 확인</div>
     <div class="modal-subtitle">아래 내용으로 예약을 확정할까요?</div>
     <div id="confirm-details"></div>
-    <button class="confirm-btn" id="final-confirm-btn">✨ 예약 확정하기</button>
+    <button class="confirm-btn" id="final-confirm-btn" onclick="openPaymentModal()">💳 결제하기</button>
+  </div>
+</div>
+
+<!-- ── Payment Modal ───────────────────────────────── -->
+<div class="modal-overlay" id="payment-modal">
+  <div class="modal-sheet" style="padding-bottom:20px;">
+    <div class="modal-handle"></div>
+    <div class="modal-title">결제 수단 선택</div>
+    <div class="modal-subtitle" id="payment-amount-label">총 결제 금액: ₩0</div>
+    <div id="payment-methods" style="display:flex;flex-direction:column;gap:10px;margin:16px 0;">
+      <button class="pay-btn" onclick="selectPayment(this,'kakaopay')"><span class="pay-logo" style="background:#FEE500;color:#3C1E1E;">K</span>카카오페이</button>
+      <button class="pay-btn" onclick="selectPayment(this,'naverpay')"><span class="pay-logo" style="background:#03C75A;color:#fff;">N</span>네이버페이</button>
+      <button class="pay-btn" onclick="selectPayment(this,'tosspay')"><span class="pay-logo" style="background:#0064FF;color:#fff;">T</span>토스페이</button>
+      <button class="pay-btn" onclick="selectPayment(this,'card')"><span class="pay-logo" style="background:#e8e8f0;color:#333;">💳</span>신용카드</button>
+      <button class="pay-btn" onclick="selectPayment(this,'onsite')"><span class="pay-logo" style="background:#f0e8e0;color:#a4133c;">🏠</span>현장 결제</button>
+    </div>
   </div>
 </div>
 
@@ -2060,14 +2097,6 @@
           <div class="myinfo-row-info">
             <div class="myinfo-row-title">알림 설정</div>
             <div class="myinfo-row-desc">예약 알림, 이벤트 알림</div>
-          </div>
-          <div class="myinfo-row-arrow">›</div>
-        </div>
-        <div class="myinfo-row" onclick="openKakaoChannel()">
-          <div class="myinfo-row-icon" style="background:#e8f5e9;">💬</div>
-          <div class="myinfo-row-info">
-            <div class="myinfo-row-title">카카오톡 1:1 문의</div>
-            <div class="myinfo-row-desc">평일 10:00~20:00</div>
           </div>
           <div class="myinfo-row-arrow">›</div>
         </div>
@@ -2545,12 +2574,73 @@ document.getElementById('confirm-modal').addEventListener('click', function(e) {
   if (e.target === this) this.classList.remove('open');
 });
 
-document.getElementById('final-confirm-btn').addEventListener('click', function() {
+
+/* ═════════════════════════════════════════════/* ═════════════════════════════════════════════
+   PAYMENT MODAL
+═════════════════════════════════════════════ */
+let selectedPayMethod = '';
+
+function openPaymentModal() {
+  const s = state;
+  if (!s.selectedService) return;
+  const price = Number(s.selectedService.price);
+  const label = document.getElementById('payment-amount-label');
+  if (label) label.textContent = '총 결제 금액: ₩' + price.toLocaleString();
+  // reset selection
+  selectedPayMethod = '';
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+  // inject confirm button if not present
+  const methods = document.getElementById('payment-methods');
+  let confirmBtn = document.getElementById('pay-confirm-btn');
+  if (!confirmBtn) {
+    confirmBtn = document.createElement('button');
+    confirmBtn.id = 'pay-confirm-btn';
+    confirmBtn.className = 'pay-confirm-btn';
+    confirmBtn.textContent = '결제 완료 → 예약 확정';
+    confirmBtn.disabled = true;
+    confirmBtn.onclick = finishPayment;
+    methods.parentNode.appendChild(confirmBtn);
+  } else {
+    confirmBtn.disabled = true;
+  }
+  // close confirm modal, open payment modal
   document.getElementById('confirm-modal').classList.remove('open');
-  confirmBooking();
+  document.getElementById('payment-modal').classList.add('open');
+}
+
+function selectPayment(btn, method) {
+  selectedPayMethod = method;
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  const confirmBtn = document.getElementById('pay-confirm-btn');
+  if (confirmBtn) confirmBtn.disabled = false;
+}
+
+function finishPayment() {
+  if (!selectedPayMethod) return;
+  const methodNames = { kakaopay:'카카오페이', naverpay:'네이버페이', tosspay:'토스페이', card:'신용카드', onsite:'현장 결제' };
+  const name = methodNames[selectedPayMethod] || selectedPayMethod;
+  document.getElementById('payment-modal').classList.remove('open');
+  // onsite = pay later (no processing)
+  if (selectedPayMethod === 'onsite') {
+    showToast('현장에서 결제 예정으로 예약 확정!');
+    confirmBooking();
+    return;
+  }
+  // simulate payment processing
+  showToast(name + ' 결제 처리 중...');
+  setTimeout(() => {
+    confirmBooking();
+    setTimeout(() => showToast(name + ' 결제 완료! 💳'), 400);
+  }, 800);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const pm = document.getElementById('payment-modal');
+  if (pm) pm.addEventListener('click', e => { if (e.target === pm) pm.classList.remove('open'); });
 });
 
-/* ═══════════════════════════════════════════════
+══
    BOOKING CONFIRMED
 ═══════════════════════════════════════════════ */
 async function confirmBooking() {
@@ -2955,7 +3045,7 @@ function renderBookings() {
       </div>
       <div class="booking-price-row">
         <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
-        <button class="review-btn" onclick="openReviewModal(${i})">리뷰 작성 ⭐</button>
+        <button class="review-btn" onclick="openReviewModal(${i})">N 네이버 리뷰</button>
       </div>
     </div>
   `).join('');
