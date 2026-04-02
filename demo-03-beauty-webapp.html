@@ -1292,6 +1292,110 @@
       border-radius: 20px;
     }
 
+    /* ── Login Screen ────────────────────────────── */
+    #login-screen {
+      position: fixed; inset: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      background: #f0e8e0;
+    }
+    .login-shell {
+      width: 390px; min-height: 100dvh;
+      background: var(--cream);
+      display: flex; flex-direction: column;
+      box-shadow: 0 0 60px rgba(0,0,0,.18);
+      overflow: hidden;
+    }
+    .login-hero {
+      background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 60%, var(--rose-lt) 100%);
+      padding: 72px 32px 48px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .login-hero::before {
+      content: ''; position: absolute;
+      width: 240px; height: 240px;
+      background: rgba(255,255,255,.06); border-radius: 50%;
+      top: -80px; right: -60px;
+    }
+    .login-logo {
+      width: 72px; height: 72px;
+      background: rgba(255,255,255,.2);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 36px; margin: 0 auto 16px;
+      backdrop-filter: blur(8px);
+      border: 2px solid rgba(255,255,255,.3);
+    }
+    .login-brand { font-family:'Noto Serif KR',serif; font-size:22px; font-weight:700; color:#fff; }
+    .login-store { font-size:13px; color:rgba(255,255,255,.8); margin-top:4px; }
+    .login-body { padding: 32px 24px; flex:1; display:flex; flex-direction:column; gap:12px; }
+    .login-section-label {
+      font-size:11px; color:var(--muted); text-align:center;
+      margin: 4px 0; letter-spacing:.5px; text-transform:uppercase;
+    }
+    /* 카카오 로그인 */
+    .btn-kakao {
+      width:100%; padding:15px; border:none; border-radius:14px;
+      background:#FEE500; color:#191919;
+      font-size:15px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      transition:opacity .2s, transform .1s;
+      font-family:'Pretendard',sans-serif;
+    }
+    .btn-kakao:hover { opacity:.92; }
+    .btn-kakao:active { transform:scale(.98); }
+    /* 네이버 로그인 */
+    .btn-naver {
+      width:100%; padding:15px; border:none; border-radius:14px;
+      background:#03C75A; color:#fff;
+      font-size:15px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      transition:opacity .2s, transform .1s;
+      font-family:'Pretendard',sans-serif;
+    }
+    .btn-naver:hover { opacity:.92; }
+    .btn-naver:active { transform:scale(.98); }
+    /* 전화번호 로그인 */
+    .btn-phone {
+      width:100%; padding:15px; border:2px solid #e8ddd8; border-radius:14px;
+      background:#fff; color:var(--text);
+      font-size:15px; font-weight:700; cursor:pointer;
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      transition:all .2s; font-family:'Pretendard',sans-serif;
+    }
+    .btn-phone:hover { border-color:var(--rose); color:var(--rose); }
+    /* 전화번호 입력 폼 */
+    #phone-login-form {
+      display:none; flex-direction:column; gap:10px;
+    }
+    #phone-login-form.show { display:flex; }
+    .login-input {
+      width:100%; padding:14px 16px; border:2px solid #f0e0e8;
+      border-radius:12px; font-size:15px;
+      font-family:'Pretendard',sans-serif; outline:none; transition:border .2s;
+    }
+    .login-input:focus { border-color:var(--rose); }
+    .btn-login-submit {
+      width:100%; padding:15px; border:none; border-radius:14px;
+      background:linear-gradient(90deg,var(--rose-dk),var(--rose-lt));
+      color:#fff; font-size:15px; font-weight:700; cursor:pointer;
+      font-family:'Pretendard',sans-serif;
+      box-shadow:0 6px 20px rgba(201,24,74,.35);
+      transition:opacity .2s;
+    }
+    .btn-login-submit:hover { opacity:.9; }
+    .login-divider {
+      display:flex; align-items:center; gap:12px; margin:4px 0;
+    }
+    .login-divider::before, .login-divider::after {
+      content:''; flex:1; height:1px; background:#f0e0e8;
+    }
+    .login-divider span { font-size:11px; color:var(--muted); white-space:nowrap; }
+    .login-terms {
+      font-size:11px; color:var(--muted); text-align:center;
+      line-height:1.6; margin-top:4px;
+    }
+    .login-terms a { color:var(--rose); text-decoration:none; }
+
     /* ── Animations ──────────────────────────────── */
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(16px); }
@@ -1317,6 +1421,46 @@
   </style>
 </head>
 <body>
+
+<!-- ── Login Screen ──────────────────────────────── -->
+<div id="login-screen">
+  <div class="login-shell">
+    <div class="login-hero">
+      <div class="login-logo">💇</div>
+      <div class="login-brand">BeautyOn</div>
+      <div class="login-store">러브헤어 홍대점</div>
+    </div>
+    <div class="login-body">
+      <div class="login-section-label">간편 로그인</div>
+
+      <button class="btn-kakao" onclick="loginWith('kakao')">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 4.92 2 8.5c0 2.28 1.44 4.28 3.6 5.46l-.92 3.4 3.96-2.6c.43.06.87.1 1.36.1 4.42 0 8-2.92 8-6.5S14.42 2 10 2z" fill="#191919"/></svg>
+        카카오로 시작하기
+      </button>
+
+      <button class="btn-naver" onclick="loginWith('naver')">
+        <span style="font-size:18px;font-weight:900;letter-spacing:-1px;">N</span>
+        네이버로 시작하기
+      </button>
+
+      <div class="login-divider"><span>또는 전화번호로</span></div>
+
+      <button class="btn-phone" onclick="togglePhoneLogin()">
+        📱 전화번호로 시작하기
+      </button>
+
+      <div id="phone-login-form">
+        <input class="login-input" id="phone-input" type="tel" placeholder="전화번호 입력 (010-0000-0000)">
+        <input class="login-input" id="verify-input" type="number" placeholder="인증번호 6자리" style="display:none;">
+        <button class="btn-login-submit" id="phone-btn" onclick="handlePhoneLogin()">인증번호 받기</button>
+      </div>
+
+      <p class="login-terms">
+        로그인 시 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에<br>동의하는 것으로 간주합니다.
+      </p>
+    </div>
+  </div>
+</div>
 
 <canvas id="confetti-canvas"></canvas>
 <div id="toast"></div>
@@ -1357,7 +1501,10 @@
       <span class="review-star-btn" onclick="setReviewStar(5)">★</span>
     </div>
     <textarea class="review-textarea" id="review-textarea" placeholder="시술 후기를 자유롭게 남겨주세요 😊"></textarea>
-    <button class="confirm-btn" onclick="submitReview()">리뷰 등록하기</button>
+    <button class="confirm-btn" onclick="submitReview()" style="margin-top:14px;">BeautyOn에 리뷰 등록</button>
+    <button onclick="openNaverReview()" style="width:100%;padding:14px;border:2px solid #03C75A;border-radius:14px;background:#fff;color:#03C75A;font-size:14px;font-weight:700;cursor:pointer;margin-top:10px;font-family:'Pretendard',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;">
+      <span style="font-weight:900;">N</span> 네이버 지도에도 리뷰 쓰기
+    </button>
   </div>
 </div>
 
@@ -1413,12 +1560,15 @@
   <!-- Stats Strip -->
   <div class="stats-strip">
     <div class="stat-cell">
-      <div class="stat-num" style="font-size:13px;">11:00~20:00</div>
-      <div class="stat-label">영업시간</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:4px;">
+        <span style="width:7px;height:7px;border-radius:50%;background:#2ecc71;display:inline-block;flex-shrink:0;"></span>
+        <span class="stat-num" style="font-size:13px;color:#2ecc71;">영업중</span>
+      </div>
+      <div class="stat-label">11:00 ~ 20:00</div>
     </div>
     <div class="stat-cell">
-      <div class="stat-num" style="color:#2ecc71;">5</div>
-      <div class="stat-label">오늘 예약가능</div>
+      <div class="stat-num">8</div>
+      <div class="stat-label">내 방문 횟수</div>
     </div>
     <div class="stat-cell">
       <div class="stat-num">5</div>
@@ -1501,20 +1651,12 @@
 
       <!-- Designers -->
       <div class="section-heading fade-in-d1"><div class="dot"></div>디자이너 선택</div>
-      <!-- 숨긴 file inputs (디자이너별 사진 교체용) -->
-      <input type="file" accept="image/*" class="photo-input" id="photo-수연" onchange="changeDesignerPhoto(this,'수연')">
-      <input type="file" accept="image/*" class="photo-input" id="photo-지훈" onchange="changeDesignerPhoto(this,'지훈')">
-      <input type="file" accept="image/*" class="photo-input" id="photo-민지" onchange="changeDesignerPhoto(this,'민지')">
-      <input type="file" accept="image/*" class="photo-input" id="photo-유라" onchange="changeDesignerPhoto(this,'유라')">
-      <input type="file" accept="image/*" class="photo-input" id="photo-민호" onchange="changeDesignerPhoto(this,'민호')">
-
       <div class="designers-scroll fade-in-d1" id="designers-scroll">
 
         <div class="designer-card" data-designer="수연" onclick="selectDesigner(this,'수연')">
-          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-수연').click()">
+          <div class="designer-avatar">
             <div class="avatar-1" id="avatar-수연" style="width:100%;height:100%;">👩</div>
             <div class="designer-badge">👑</div>
-            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">김수연</div>
           <div class="designer-role">수석 디자이너</div>
@@ -1524,10 +1666,9 @@
         </div>
 
         <div class="designer-card" data-designer="지훈" onclick="selectDesigner(this,'지훈')">
-          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-지훈').click()">
+          <div class="designer-avatar">
             <div class="avatar-2" id="avatar-지훈" style="width:100%;height:100%;">👨</div>
             <div class="designer-badge">✂️</div>
-            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">박지훈</div>
           <div class="designer-role">컬러 스페셜리스트</div>
@@ -1537,10 +1678,9 @@
         </div>
 
         <div class="designer-card" data-designer="민지" onclick="selectDesigner(this,'민지')">
-          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-민지').click()">
+          <div class="designer-avatar">
             <div class="avatar-3" id="avatar-민지" style="width:100%;height:100%;">🧑</div>
             <div class="designer-badge">💎</div>
-            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">이민지</div>
           <div class="designer-role">트리트먼트 전문가</div>
@@ -1550,10 +1690,9 @@
         </div>
 
         <div class="designer-card" data-designer="유라" onclick="selectDesigner(this,'유라')">
-          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-유라').click()">
+          <div class="designer-avatar">
             <div class="avatar-4" id="avatar-유라" style="width:100%;height:100%;">👩‍🦱</div>
             <div class="designer-badge">🌀</div>
-            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">정유라</div>
           <div class="designer-role">펌 전문 디자이너</div>
@@ -1563,10 +1702,9 @@
         </div>
 
         <div class="designer-card" data-designer="민호" onclick="selectDesigner(this,'민호')">
-          <div class="designer-avatar" onclick="event.stopPropagation();document.getElementById('photo-민호').click()">
+          <div class="designer-avatar">
             <div class="avatar-5" id="avatar-민호" style="width:100%;height:100%;">👨‍🦲</div>
             <div class="designer-badge">⚡</div>
-            <div class="photo-overlay">📷 교체</div>
           </div>
           <div class="designer-name">최민호</div>
           <div class="designer-role">남성 커트 전문</div>
@@ -1714,11 +1852,9 @@
     <div class="tab-panel" id="panel-myinfo">
 
       <!-- 프로필 카드 -->
-      <input type="file" accept="image/*" class="photo-input" id="photo-myprofile" onchange="changeMyPhoto(this)">
       <div class="myinfo-profile-card fade-in">
-        <div class="myinfo-avatar-wrap" onclick="document.getElementById('photo-myprofile').click()">
+        <div class="myinfo-avatar-wrap">
           <div class="myinfo-avatar" id="my-avatar">👤</div>
-          <div class="myinfo-avatar-edit">📷</div>
         </div>
         <div>
           <div class="myinfo-name" id="myinfo-name-display">김예린 님</div>
@@ -1818,6 +1954,27 @@
       </div>
 
       <!-- 메뉴 목록 -->
+      <!-- 채널 연결 -->
+      <div class="section-heading fade-in-d2"><div class="dot"></div>채널 연결</div>
+      <div class="myinfo-section-card fade-in-d2">
+        <div class="myinfo-row" onclick="openKakaoChannel()">
+          <div class="myinfo-row-icon" style="background:#FEE500;">💬</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">카카오톡 상담</div>
+            <div class="myinfo-row-desc">채널 추가 후 실시간 상담 가능</div>
+          </div>
+          <div style="background:#FEE500;color:#191919;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;">채널추가</div>
+        </div>
+        <div class="myinfo-row" onclick="openNaverReview()">
+          <div class="myinfo-row-icon" style="background:#e8f5e9;">⭐</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">네이버 리뷰 작성</div>
+            <div class="myinfo-row-desc">방문 후기를 네이버에 남겨주세요</div>
+          </div>
+          <div style="background:#03C75A;color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;">리뷰쓰기</div>
+        </div>
+      </div>
+
       <div class="section-heading fade-in-d2"><div class="dot"></div>설정</div>
       <div class="myinfo-section-card fade-in-d2">
         <div class="myinfo-row" onclick="showToast('알림 설정 화면')">
@@ -1828,11 +1985,11 @@
           </div>
           <div class="myinfo-row-arrow">›</div>
         </div>
-        <div class="myinfo-row" onclick="showToast('문의 화면으로 이동')">
+        <div class="myinfo-row" onclick="openKakaoChannel()">
           <div class="myinfo-row-icon" style="background:#e8f5e9;">💬</div>
           <div class="myinfo-row-info">
-            <div class="myinfo-row-title">1:1 문의</div>
-            <div class="myinfo-row-desc">평일 10:00~18:00</div>
+            <div class="myinfo-row-title">카카오톡 1:1 문의</div>
+            <div class="myinfo-row-desc">평일 10:00~20:00</div>
           </div>
           <div class="myinfo-row-arrow">›</div>
         </div>
@@ -1841,6 +1998,14 @@
           <div class="myinfo-row-info">
             <div class="myinfo-row-title">앱 정보</div>
             <div class="myinfo-row-desc">버전 1.4.2</div>
+          </div>
+          <div class="myinfo-row-arrow">›</div>
+        </div>
+        <div class="myinfo-row" onclick="logout()">
+          <div class="myinfo-row-icon" style="background:#fde8ef;">🚪</div>
+          <div class="myinfo-row-info">
+            <div class="myinfo-row-title">로그아웃</div>
+            <div class="myinfo-row-desc" id="login-method-desc">카카오 계정으로 로그인됨</div>
           </div>
           <div class="myinfo-row-arrow">›</div>
         </div>
@@ -2365,44 +2530,80 @@ document.getElementById('edit-profile-modal').addEventListener('click', function
 });
 
 /* ═══════════════════════════════════════════════
-   DESIGNER PHOTO CHANGE
+   LOGIN / LOGOUT
 ═══════════════════════════════════════════════ */
-function changeDesignerPhoto(input, name) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const avatarEl = document.getElementById('avatar-' + name);
-    if (!avatarEl) return;
-    avatarEl.innerHTML = '';
-    avatarEl.style.background = 'none';
-    const img = document.createElement('img');
-    img.src = e.target.result;
-    img.className = 'avatar-img';
-    avatarEl.appendChild(img);
-    showToast(name + ' 디자이너 사진이 변경되었습니다 📷');
-  };
-  reader.readAsDataURL(file);
+let loginMethod = '';
+let phoneStep = 1;
+
+function loginWith(method) {
+  loginMethod = method;
+  const names = { kakao:'카카오', naver:'네이버' };
+  document.getElementById('myinfo-name-display').textContent = (method === 'kakao' ? '김예린' : '이지현') + ' 님';
+  document.getElementById('login-method-desc').textContent = names[method] + ' 계정으로 로그인됨';
+  doLogin();
+}
+
+function togglePhoneLogin() {
+  const form = document.getElementById('phone-login-form');
+  form.classList.toggle('show');
+}
+
+function handlePhoneLogin() {
+  const phone = document.getElementById('phone-input').value.trim();
+  const verify = document.getElementById('verify-input');
+  const btn = document.getElementById('phone-btn');
+  if (phoneStep === 1) {
+    if (!phone) { showToast('전화번호를 입력해주세요'); return; }
+    verify.style.display = '';
+    btn.textContent = '확인';
+    phoneStep = 2;
+    showToast('인증번호가 발송되었습니다 (데모: 123456)');
+  } else {
+    const code = document.getElementById('verify-input').value;
+    if (code !== '123456') { showToast('인증번호가 올바르지 않습니다'); return; }
+    loginMethod = 'phone';
+    document.getElementById('login-method-desc').textContent = '전화번호로 로그인됨';
+    doLogin();
+  }
+}
+
+function doLogin() {
+  const screen = document.getElementById('login-screen');
+  screen.style.opacity = '1';
+  screen.style.transition = 'opacity .4s';
+  setTimeout(() => { screen.style.opacity = '0'; }, 100);
+  setTimeout(() => { screen.style.display = 'none'; }, 500);
+}
+
+function logout() {
+  if (!confirm('로그아웃 하시겠습니까?')) return;
+  phoneStep = 1;
+  document.getElementById('phone-input').value = '';
+  document.getElementById('verify-input').value = '';
+  document.getElementById('verify-input').style.display = 'none';
+  document.getElementById('phone-btn').textContent = '인증번호 받기';
+  document.getElementById('phone-login-form').classList.remove('show');
+  const screen = document.getElementById('login-screen');
+  screen.style.display = 'flex';
+  screen.style.opacity = '0';
+  setTimeout(() => { screen.style.opacity = '1'; }, 10);
+  switchTab('reserve');
+  showToast('로그아웃 되었습니다');
 }
 
 /* ═══════════════════════════════════════════════
-   MY PROFILE PHOTO CHANGE
+   KAKAO / NAVER CHANNEL
 ═══════════════════════════════════════════════ */
-function changeMyPhoto(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const el = document.getElementById('my-avatar');
-    el.innerHTML = '';
-    el.style.background = 'none';
-    const img = document.createElement('img');
-    img.src = e.target.result;
-    img.style.cssText = 'width:100%;height:100%;object-fit:cover;border-radius:50%;';
-    el.appendChild(img);
-    showToast('프로필 사진이 변경되었습니다 📷');
-  };
-  reader.readAsDataURL(file);
+function openKakaoChannel() {
+  // 실제 서비스에서는 카카오톡 채널 URL로 연결
+  // window.open('https://pf.kakao.com/_채널ID', '_blank');
+  showToast('카카오톡 채널로 연결 중... 💬');
+}
+
+function openNaverReview() {
+  // 실제 서비스에서는 네이버 지도 리뷰 URL로 연결
+  // window.open('https://map.naver.com/v5/entry/place/네이버플레이스ID?c=...', '_blank');
+  showToast('네이버 지도 리뷰 페이지로 이동 중... ⭐');
 }
 
 /* ═══════════════════════════════════════════════
