@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloom — Beauty Salon App</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --pink: #ff6b9d;
+  --pink-light: #fff0f6;
+  --pink-mid: #ffd6e9;
+  --pink-dark: #e8568a;
+  --navy: #0d1b3e;
+  --navy-mid: #1a2d5a;
+  --navy-light: #eef0f6;
+  --white: #ffffff;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-700: #374151;
+  --gray-900: #111827;
+  --green: #34c759;
+  --yellow: #ffcc00;
+  --red: #ff3b30;
+  --ios-bg: #f2f2f7;
+}
+
+html, body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5e6ef 0%, #e8eaf6 50%, #e3f0fb 100%);
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── iPhone Frame ── */
+.iphone-wrap {
+  position: relative;
+  width: 430px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.iphone-frame {
+  width: 390px;
+  height: 844px;
+  background: #1a1a1a;
+  border-radius: 54px;
+  box-shadow:
+    0 0 0 1px #4a4a4a,
+    0 0 0 3px #2a2a2a,
+    0 50px 120px rgba(0,0,0,0.4),
+    0 20px 60px rgba(0,0,0,0.3),
+    inset 0 0 0 1px #555;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Side buttons */
+.iphone-frame::before {
+  content: '';
+  position: absolute;
+  left: -4px;
+  top: 120px;
+  width: 3px;
+  height: 36px;
+  background: #2a2a2a;
+  border-radius: 2px 0 0 2px;
+  box-shadow: 0 50px 0 #2a2a2a, 0 96px 0 #2a2a2a;
+}
+.iphone-frame::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 160px;
+  width: 3px;
+  height: 64px;
+  background: #2a2a2a;
+  border-radius: 0 2px 2px 0;
+}
+
+/* Inner screen */
+.iphone-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--ios-bg);
+  border-radius: 47px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Notch */
+.notch {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 126px;
+  height: 37px;
+  background: #1a1a1a;
+  border-radius: 0 0 22px 22px;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.notch-camera {
+  width: 10px;
+  height: 10px;
+  background: #2d2d2d;
+  border-radius: 50%;
+  border: 1px solid #3a3a3a;
+}
+.notch-speaker {
+  width: 40px;
+  height: 5px;
+  background: #2a2a2a;
+  border-radius: 3px;
+}
+
+/* Status bar */
+.status-bar {
+  height: 50px;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 28px 8px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 100;
+}
+.status-time {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--navy);
+  letter-spacing: -0.3px;
+}
+.status-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--navy);
+}
+.status-icons svg {
+  width: 16px;
+  height: 12px;
+  fill: var(--navy);
+}
+.battery-icon {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 500;
+}
+.battery-body {
+  width: 25px;
+  height: 13px;
+  border: 1.5px solid var(--navy);
+  border-radius: 3px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+.battery-body::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2px;
+  height: 5px;
+  background: var(--navy);
+  border-radius: 0 1px 1px 0;
+}
+.battery-fill {
+  height: 100%;
+  width: 75%;
+  background: var(--navy);
+  border-radius: 1px;
+}
+
+/* App container */
+.app-container {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Push Notification Banner ── */
+.push-notification {
+  position: absolute;
+  top: -100px;
+  left: 12px;
+  right: 12px;
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 18px;
+  padding: 14px 16px;
+  z-index: 500;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: top 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.push-notification.show { top: 8px; }
+.push-notification.hide {
+  top: -100px;
+  transition: top 0.4s ease-in;
+}
+.push-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+.push-content { flex: 1; min-width: 0; }
+.push-app { font-size: 11px; font-weight: 600; color: var(--gray-500); margin-bottom: 2px; }
+.push-title { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.push-body { font-size: 12px; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.push-time { font-size: 11px; color: var(--gray-400); flex-shrink: 0; }
+
+/* ── Tab screens ── */
+.tab-screen {
+  display: none;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.tab-screen.active { display: flex; }
+
+/* ── Shared scroll area ── */
+.screen-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+.screen-scroll::-webkit-scrollbar { display: none; }
+
+/* ── HOME TAB ── */
+.home-header {
+  padding: 20px 20px 0;
+  background: var(--white);
+}
+.home-greeting {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.greeting-text h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: -0.5px;
+}
+.greeting-text p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+.header-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Search bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--ios-bg);
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.search-bar span { font-size: 13px; color: var(--gray-400); }
+
+/* Promo banner */
+.promo-banner {
+  margin: 0 20px 8px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #2d4080 100%);
+  padding: 20px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.promo-banner::before {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 120px;
+  height: 120px;
+  background: rgba(255,107,157,0.2);
+  border-radius: 50%;
+}
+.promo-banner::after {
+  content: '🌸';
+  position: absolute;
+  right: 16px;
+  bottom: 10px;
+  font-size: 50px;
+  opacity: 0.6;
+}
+.promo-tag {
+  display: inline-block;
+  background: var(--pink);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.promo-banner h2 { font-size: 18px; font-weight: 700; line-height: 1.3; margin-bottom: 4px; }
+.promo-banner p { font-size: 12px; opacity: 0.75; margin-bottom: 14px; }
+.promo-btn {
+  display: inline-block;
+  background: var(--pink);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: none;
+}
+
+/* Section headers */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  margin: 20px 0 12px;
+}
+.section-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--navy);
+}
+.section-more {
+  font-size: 13px;
+  color: var(--pink);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Category pills */
+.category-scroll {
+  display: flex;
+  gap: 8px;
+  padding: 0 20px 4px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+.category-scroll::-webkit-scrollbar { display: none; }
+.cat-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.cat-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: transform 0.15s;
+}
+.cat-pill:active .cat-icon { transform: scale(0.92); }
+.cat-pill.active .cat-icon {
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+}
+.cat-label { font-size: 11px; font-weight: 500; color: var(--gray-600); }
+
+/* Designer cards horizontal */
+.designers-scroll {
+  display: flex;
+  gap: 12px;
+  padding: 0 20px 4px;
+  overflow-x: auto;
+}
+.designers-scroll::-webkit-scrollbar { display: none; }
+.designer-card {
+  width: 140px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  transition: transform 0.15s;
+  position: relative;
+}
+.designer-card:active { transform: scale(0.97); }
+.designer-img {
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  position: relative;
+}
+.designer-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--pink);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.designer-info { padding: 10px 10px 12px; }
+.designer-name { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.designer-spec { font-size: 11px; color: var(--gray-500); margin-bottom: 6px; }
+.designer-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.stars { color: var(--yellow); font-size: 11px; }
+.rating-num { font-size: 11px; font-weight: 600; color: var(--gray-700); }
+.review-count { font-size: 11px; color: var(--gray-400); }
+
+/* Recent booking */
+.booking-card-mini {
+  margin: 0 20px 8px;
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.booking-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.booking-info { flex: 1; }
+.booking-name { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.booking-sub { font-size: 12px; color: var(--gray-500); }
+.booking-status {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.status-confirmed { background: #e6f9f0; color: #1a8c52; }
+.status-pending { background: #fff8e6; color: #b07d00; }
+.status-done { background: var(--ios-bg); color: var(--gray-500); }
+
+/* Notice banner */
+.notice-strip {
+  margin: 0 20px 20px;
+  background: var(--pink-light);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.notice-strip span { font-size: 12px; color: var(--pink-dark); }
+.notice-strip strong { font-weight: 700; }
+
+/* ── BOOKING TAB ── */
+.book-header {
+  background: var(--white);
+  padding: 20px 20px 0;
+}
+.book-header h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.book-header p {
+  font-size: 13px;
+  color: var(--gray-500);
+  margin-bottom: 16px;
+}
+
+/* Date picker strip */
+.date-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 16px;
+}
+.date-strip::-webkit-scrollbar { display: none; }
+.date-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  padding: 10px 6px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.date-cell .day-name { font-size: 11px; color: var(--gray-400); font-weight: 500; }
+.date-cell .day-num { font-size: 18px; font-weight: 700; color: var(--navy); margin: 3px 0; }
+.date-cell .dot { width: 5px; height: 5px; border-radius: 50%; background: transparent; }
+.date-cell.active { background: var(--navy); }
+.date-cell.active .day-name { color: rgba(255,255,255,0.7); }
+.date-cell.active .day-num { color: var(--white); }
+.date-cell.active .dot { background: var(--pink); }
+.date-cell.has-slot .dot { background: var(--pink); }
+.date-cell:hover:not(.active) { background: var(--ios-bg); }
+
+/* Designer list for booking */
+.designer-list { padding: 0 20px; }
+.designer-row {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.12s;
+}
+.designer-row:active { transform: scale(0.98); }
+.designer-row-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  flex-shrink: 0;
+}
+.designer-row-info { flex: 1; }
+.designer-row-name { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 2px; }
+.designer-row-spec { font-size: 12px; color: var(--gray-500); margin-bottom: 5px; }
+.designer-row-meta {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.tag-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: var(--pink-light);
+  color: var(--pink-dark);
+}
+.tag-chip.navy {
+  background: var(--navy-light);
+  color: var(--navy);
+}
+.designer-row-cta {
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.1s;
+  flex-shrink: 0;
+}
+.designer-row-cta:active { transform: scale(0.94); }
+
+/* Time slots */
+.time-section { padding: 0 20px 20px; }
+.time-section h3 { font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.time-slot {
+  padding: 10px 6px;
+  border-radius: 12px;
+  border: 1.5px solid var(--gray-200);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--navy);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--white);
+}
+.time-slot.active {
+  background: var(--navy);
+  color: var(--white);
+  border-color: var(--navy);
+}
+.time-slot.booked {
+  background: var(--ios-bg);
+  color: var(--gray-400);
+  cursor: not-allowed;
+  border-color: transparent;
+  text-decoration: line-through;
+}
+.time-slot:not(.booked):not(.active):hover { border-color: var(--pink); color: var(--pink); }
+
+/* Book CTA */
+.book-cta-wrap { padding: 0 20px 20px; }
+.book-cta {
+  width: 100%;
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(255,107,157,0.4);
+  transition: transform 0.12s;
+}
+.book-cta:active { transform: scale(0.98); }
+
+/* ── POINT TAB ── */
+.point-header {
+  background: linear-gradient(135deg, var(--navy), var(--navy-mid));
+  padding: 20px 20px 28px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.point-header::before {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 160px;
+  height: 160px;
+  background: rgba(255,107,157,0.15);
+  border-radius: 50%;
+}
+.point-header h1 { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+.point-balance-card {
+  background: rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 16px 18px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.balance-label { font-size: 12px; opacity: 0.75; margin-bottom: 6px; }
+.balance-amount { font-size: 32px; font-weight: 800; letter-spacing: -1px; }
+.balance-amount span { font-size: 16px; font-weight: 500; opacity: 0.8; margin-right: 4px; }
+.balance-sub { font-size: 12px; opacity: 0.7; margin-top: 6px; }
+.point-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 14px;
+}
+.point-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 12px;
+  padding: 10px 8px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  font-family: inherit;
+  transition: background 0.15s;
+}
+.point-btn:hover { background: rgba(255,255,255,0.22); }
+
+/* Point cards */
+.benefit-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 20px;
+}
+.benefit-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 14px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.benefit-icon { font-size: 24px; margin-bottom: 8px; }
+.benefit-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+.benefit-desc { font-size: 11px; color: var(--gray-500); line-height: 1.4; }
+.benefit-pts { font-size: 14px; font-weight: 800; color: var(--pink); margin-top: 8px; }
+
+/* Transaction list */
+.tx-list { padding: 0 20px 20px; }
+.tx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+.tx-item:last-child { border-bottom: none; }
+.tx-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.tx-info { flex: 1; }
+.tx-title { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+.tx-date { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+.tx-amount {
+  font-size: 14px;
+  font-weight: 700;
+}
+.tx-plus { color: var(--pink); }
+.tx-minus { color: var(--gray-700); }
+
+/* ── MY TAB ── */
+.my-header {
+  background: var(--white);
+  padding: 20px 20px 16px;
+}
+.my-profile {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.my-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.my-name { font-size: 18px; font-weight: 700; color: var(--navy); }
+.my-email { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.my-grade {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: linear-gradient(135deg, var(--pink-light), #fff);
+  border: 1px solid var(--pink-mid);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--pink-dark);
+  margin-top: 6px;
+}
+.my-stats {
+  display: flex;
+  background: var(--ios-bg);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.my-stat {
+  flex: 1;
+  padding: 12px 8px;
+  text-align: center;
+  border-right: 1px solid var(--gray-200);
+}
+.my-stat:last-child { border-right: none; }
+.stat-num { font-size: 18px; font-weight: 800; color: var(--navy); }
+.stat-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+
+/* iOS settings list */
+.settings-group {
+  margin: 16px 20px 0;
+  background: var(--white);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row:active { background: var(--ios-bg); }
+.settings-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.settings-label { flex: 1; font-size: 15px; font-weight: 500; color: var(--gray-900); }
+.settings-value { font-size: 13px; color: var(--gray-400); }
+.chevron { font-size: 14px; color: var(--gray-300); margin-left: 4px; }
+
+/* iOS Toggle Switch */
+.ios-switch {
+  position: relative;
+  width: 51px;
+  height: 31px;
+  flex-shrink: 0;
+}
+.ios-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+.ios-switch-track {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-300);
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.ios-switch input:checked + .ios-switch-track {
+  background: var(--green);
+}
+.ios-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 27px;
+  height: 27px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  pointer-events: none;
+}
+.ios-switch input:checked ~ .ios-switch-thumb {
+  transform: translateX(20px);
+}
+
+/* My appointments full list */
+.appt-list { padding: 0 20px; }
+.appt-card {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  cursor: pointer;
+}
+.appt-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.appt-date-tag { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+.appt-divider { height: 1px; background: var(--gray-100); margin: 10px 0; }
+.appt-service-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.appt-service-icon {
+  font-size: 20px;
+}
+.appt-service-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+.appt-service-price { font-size: 13px; color: var(--gray-500); margin-top: 1px; }
+.appt-designer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.appt-designer-em { font-size: 18px; }
+.appt-designer-name { font-size: 13px; font-weight: 600; color: var(--gray-700); }
+.appt-designer-role { font-size: 11px; color: var(--gray-400); }
+.appt-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.appt-action-btn {
+  flex: 1;
+  padding: 9px;
+  border-radius: 10px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: transform 0.1s;
+}
+.appt-action-btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--navy); color: var(--white); }
+.btn-outline { background: var(--ios-bg); color: var(--gray-700); }
+
+/* ── Bottom Tab Bar ── */
+.tab-bar {
+  height: 84px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.tab-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  padding: 4px 0;
+  transition: transform 0.1s;
+}
+.tab-item:active { transform: scale(0.9); }
+.tab-icon {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  transition: transform 0.15s;
+}
+.tab-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--gray-400);
+  letter-spacing: -0.2px;
+}
+.tab-item.active .tab-label { color: var(--pink); }
+.tab-item.active .tab-icon { transform: scale(1.1); }
+
+/* Tab icon SVGs */
+.tab-svg { width: 24px; height: 24px; }
+.tab-item.active .tab-svg-stroke { stroke: var(--pink); }
+.tab-item.active .tab-svg-fill { fill: var(--pink); }
+.tab-svg-stroke { stroke: var(--gray-400); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: stroke 0.2s; }
+.tab-svg-fill { fill: var(--gray-400); transition: fill 0.2s; }
+
+/* Home indicator */
+.home-indicator {
+  height: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0 2px;
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.home-indicator-bar {
+  width: 134px;
+  height: 5px;
+  background: var(--navy);
+  border-radius: 3px;
+  opacity: 0.2;
+}
+
+/* Badge */
+.tab-badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  background: var(--red);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px solid white;
+}
+.tab-icon-wrap { position: relative; }
+
+/* ── Slide-in booking modal ── */
+.booking-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 300;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  cursor: pointer;
+}
+.modal-sheet {
+  background: var(--white);
+  border-radius: 24px 24px 0 0;
+  padding: 12px 0 0;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.34, 1.12, 0.64, 1);
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+  max-height: 90%;
+  overflow-y: auto;
+}
+.modal-sheet::-webkit-scrollbar { display: none; }
+.booking-modal.open .modal-backdrop {
+  opacity: 1;
+  pointer-events: all;
+}
+.booking-modal.open .modal-sheet {
+  transform: translateY(0);
+  pointer-events: all;
+}
+.booking-modal.open { pointer-events: all; }
+.modal-handle {
+  width: 40px;
+  height: 4px;
+  background: var(--gray-300);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+.modal-header { padding: 0 20px 16px; border-bottom: 1px solid var(--gray-100); }
+.modal-title { font-size: 18px; font-weight: 700; color: var(--navy); margin-bottom: 4px; }
+.modal-subtitle { font-size: 13px; color: var(--gray-500); }
+.modal-body { padding: 16px 20px; }
+.service-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 2px solid var(--gray-200);
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+.service-option.selected { border-color: var(--pink); background: var(--pink-light); }
+.service-emoji { font-size: 24px; }
+.service-info { flex: 1; }
+.service-name { font-size: 14px; font-weight: 700; color: var(--navy); }
+.service-duration { font-size: 12px; color: var(--gray-500); }
+.service-price { font-size: 15px; font-weight: 800; color: var(--pink); }
+.modal-confirm {
+  margin: 8px 20px 30px;
+  background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+  color: white;
+  border: none;
+  border-radius: 16px;
+  padding: 16px;
+  width: calc(100% - 40px);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 20px rgba(255,107,157,0.4);
+  transition: transform 0.1s;
+}
+.modal-confirm:active { transform: scale(0.98); }
+
+/* Fade animation for tab switch */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.tab-screen.active {
+  animation: fadeSlideUp 0.25s ease-out;
+}
+
+/* Toast */
+.toast {
+  position: absolute;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: rgba(13,27,62,0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 600;
+  opacity: 0;
+  transition: all 0.3s;
+  pointer-events: none;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Color helpers */
+.bg-pink { background: var(--pink-light); }
+.bg-blue { background: #e6f0ff; }
+.bg-mint { background: #e6f9f4; }
+.bg-amber { background: #fff8e6; }
+.bg-purple { background: #f3f0ff; }
+.bg-navy { background: var(--navy-light); }
+</style>
+</head>
+<body>
+
+<div class="iphone-wrap">
+  <div class="iphone-frame">
+    <div class="iphone-screen">
+
+      <!-- Notch -->
+      <div class="notch">
+        <div class="notch-camera"></div>
+        <div class="notch-speaker"></div>
+        <div class="notch-camera"></div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar" id="statusBar">
+        <div class="status-time" id="statusTime">9:41</div>
+        <div class="status-icons">
+          <!-- Signal bars -->
+          <svg viewBox="0 0 17 12" width="17" height="12">
+            <rect x="0" y="7" width="3" height="5" rx="0.7" fill="currentColor"/>
+            <rect x="4.5" y="5" width="3" height="7" rx="0.7" fill="currentColor"/>
+            <rect x="9" y="2.5" width="3" height="9.5" rx="0.7" fill="currentColor"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="0.7" fill="currentColor" opacity="0.3"/>
+          </svg>
+          <!-- Wifi -->
+          <svg viewBox="0 0 16 12" width="16" height="12">
+            <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="currentColor"/>
+            <path d="M2.5 5.5C4 3.8 5.9 2.8 8 2.8s4 1 5.5 2.7" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <path d="M0 3C2.1 1.1 4.9 0 8 0s5.9 1.1 8 3" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" style="opacity:0.4"/>
+            <path d="M5 7.5C5.8 6.5 6.8 6 8 6s2.2.5 3 1.5" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          </svg>
+          <!-- Battery -->
+          <div class="battery-icon">
+            <div class="battery-body">
+              <div class="battery-fill"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Push Notification -->
+      <div class="push-notification" id="pushNotif">
+        <div class="push-icon">🌸</div>
+        <div class="push-content">
+          <div class="push-app">Bloom · 지금</div>
+          <div class="push-title">예약 확정됐어요! ✅</div>
+          <div class="push-body">내일 오후 2:00 · 이지은 디자이너 · 컬러 트리트먼트</div>
+        </div>
+        <div class="push-time">방금</div>
+      </div>
+
+      <!-- App Container -->
+      <div class="app-container" id="appContainer">
+
+        <!-- Toast -->
+        <div class="toast" id="toast">예약이 완료됐어요! 🎉</div>
+
+        <!-- ═══ HOME TAB ═══ -->
+        <div class="tab-screen active" id="tab-home">
+          <div class="home-header">
+            <div class="home-greeting">
+              <div class="greeting-text">
+                <h1>안녕하세요, 지수님 👋</h1>
+                <p>오늘도 아름다운 하루 되세요</p>
+              </div>
+              <div class="header-avatar" onclick="switchTab('my')">지</div>
+            </div>
+            <div class="search-bar" onclick="showToast('검색 기능 준비 중이에요')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+              <span>원하는 스타일 또는 디자이너 검색</span>
+            </div>
+          </div>
+
+          <div class="screen-scroll">
+            <!-- Promo banner -->
+            <div class="promo-banner" onclick="showToast('이벤트 페이지로 이동합니다')">
+              <div class="promo-tag">🎁 4월 특가</div>
+              <h2>봄 맞이 컬러<br>30% 할인!</h2>
+              <p>4월 한 달간, 모든 컬러 시술 특별 할인</p>
+              <button class="promo-btn">지금 예약하기</button>
+            </div>
+
+            <!-- Categories -->
+            <div class="section-header">
+              <div class="section-title">시술 종류</div>
+              <div class="section-more">전체 보기</div>
+            </div>
+            <div class="category-scroll" id="catScroll">
+              <div class="cat-pill active" onclick="selectCat(this)">
+                <div class="cat-icon">✂️</div>
+                <div class="cat-label">커트</div>
+              </div>
+              <div class="cat-pill" onclick="selectCat(this)">
+                <div class="cat-icon">🎨</div>
+                <div class="cat-label">컬러</div>
+              </div>
+              <div class="cat-pill" onclick="selectCat(this)">
+                <div class="cat-icon">💆</div>
+                <div class="cat-label">트리트먼트</div>
+              </div>
+              <div class="cat-pill" onclick="selectCat(this)">
+                <div class="cat-icon">🌀</div>
+                <div class="cat-label">펌</div>
+              </div>
+              <div class="cat-pill" onclick="selectCat(this)">
+                <div class="cat-icon">💄</div>
+                <div class="cat-label">메이크업</div>
+              </div>
+              <div class="cat-pill" onclick="selectCat(this)">
+                <div class="cat-icon">💅</div>
+                <div class="cat-label">네일</div>
+              </div>
+            </div>
+
+            <!-- Recommended designers -->
+            <div class="section-header">
+              <div class="section-title">추천 디자이너</div>
+              <div class="section-more" onclick="switchTab('book')">전체 보기</div>
+            </div>
+            <div class="designers-scroll">
+              <div class="designer-card" onclick="openBookingModal('이지은', '컬러 전문')">
+                <div class="designer-img" style="background: linear-gradient(135deg,#ffd6e9,#ffb3d1)">
+                  👩‍🦱
+                  <div class="designer-badge">인기</div>
+                </div>
+                <div class="designer-info">
+                  <div class="designer-name">이지은</div>
+                  <div class="designer-spec">컬러 · 트리트먼트</div>
+                  <div class="designer-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-num">4.9</span>
+                    <span class="review-count">(287)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="designer-card" onclick="openBookingModal('김민준', '펌 전문')">
+                <div class="designer-img" style="background: linear-gradient(135deg,#d6e9ff,#b3d1ff)">
+                  👨‍🦱
+                  <div class="designer-badge" style="background:#0d1b3e">신규</div>
+                </div>
+                <div class="designer-info">
+                  <div class="designer-name">김민준</div>
+                  <div class="designer-spec">펌 · 커트</div>
+                  <div class="designer-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-num">4.8</span>
+                    <span class="review-count">(142)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="designer-card" onclick="openBookingModal('박소연', '커트 전문')">
+                <div class="designer-img" style="background: linear-gradient(135deg,#d6ffe9,#b3ffd1)">
+                  👩‍🦰
+                </div>
+                <div class="designer-info">
+                  <div class="designer-name">박소연</div>
+                  <div class="designer-spec">커트 · 드라이</div>
+                  <div class="designer-rating">
+                    <span class="stars">★★★★☆</span>
+                    <span class="rating-num">4.7</span>
+                    <span class="review-count">(198)</span>
+                  </div>
+                </div>
+              </div>
+              <div class="designer-card" onclick="openBookingModal('최현우', '염색 전문')">
+                <div class="designer-img" style="background: linear-gradient(135deg,#f3f0ff,#d6ceff)">
+                  👨‍🦳
+                </div>
+                <div class="designer-info">
+                  <div class="designer-name">최현우</div>
+                  <div class="designer-spec">염색 · 탈색</div>
+                  <div class="designer-rating">
+                    <span class="stars">★★★★★</span>
+                    <span class="rating-num">5.0</span>
+                    <span class="review-count">(94)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Upcoming booking -->
+            <div class="section-header">
+              <div class="section-title">다가오는 예약</div>
+              <div class="section-more" onclick="switchTab('book')">전체 보기</div>
+            </div>
+            <div class="booking-card-mini" onclick="switchTab('book')">
+              <div class="booking-avatar bg-pink">👩‍🦱</div>
+              <div class="booking-info">
+                <div class="booking-name">이지은 디자이너 · 컬러 트리트먼트</div>
+                <div class="booking-sub">내일 · 오후 2:00 · 강남점</div>
+              </div>
+              <div class="booking-status status-confirmed">확정</div>
+            </div>
+            <div class="booking-card-mini" onclick="switchTab('book')">
+              <div class="booking-avatar bg-blue">👨‍🦱</div>
+              <div class="booking-info">
+                <div class="booking-name">김민준 디자이너 · 레이어드 커트</div>
+                <div class="booking-sub">4월 10일 · 오전 11:00 · 홍대점</div>
+              </div>
+              <div class="booking-status status-pending">대기</div>
+            </div>
+
+            <!-- Notice -->
+            <div class="notice-strip">
+              <span>📢</span>
+              <span><strong>4월 공휴일 안내:</strong> 4월 5일(토) 정상 영업, 4월 6일(일) 휴무예요.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ BOOK TAB ═══ -->
+        <div class="tab-screen" id="tab-book">
+          <div class="book-header">
+            <h1>예약하기</h1>
+            <p>원하는 날짜와 디자이너를 선택해 주세요</p>
+            <div class="date-strip" id="dateStrip"></div>
+          </div>
+
+          <div class="screen-scroll">
+            <div class="section-header">
+              <div class="section-title">디자이너 선택</div>
+              <div class="section-more">필터</div>
+            </div>
+            <div class="designer-list">
+              <div class="designer-row" onclick="openBookingModal('이지은', '컬러 트리트먼트')">
+                <div class="designer-row-avatar" style="background:linear-gradient(135deg,#ffd6e9,#ffb3d1)">👩‍🦱</div>
+                <div class="designer-row-info">
+                  <div class="designer-row-name">이지은 <span style="font-size:11px;font-weight:500;color:#6b7280;">· 수석</span></div>
+                  <div class="designer-row-spec">컬러 · 트리트먼트 · 볼륨펌</div>
+                  <div class="designer-row-meta">
+                    <span class="tag-chip">⭐ 4.9</span>
+                    <span class="tag-chip">💬 287 리뷰</span>
+                    <span class="tag-chip navy">오늘 가능</span>
+                  </div>
+                </div>
+                <button class="designer-row-cta">선택</button>
+              </div>
+              <div class="designer-row" onclick="openBookingModal('김민준', '레이어드 커트')">
+                <div class="designer-row-avatar" style="background:linear-gradient(135deg,#d6e9ff,#b3d1ff)">👨‍🦱</div>
+                <div class="designer-row-info">
+                  <div class="designer-row-name">김민준 <span style="font-size:11px;font-weight:500;color:#6b7280;">· 디렉터</span></div>
+                  <div class="designer-row-spec">펌 · 커트 · 남성 전문</div>
+                  <div class="designer-row-meta">
+                    <span class="tag-chip">⭐ 4.8</span>
+                    <span class="tag-chip">💬 142 리뷰</span>
+                  </div>
+                </div>
+                <button class="designer-row-cta">선택</button>
+              </div>
+              <div class="designer-row" onclick="openBookingModal('박소연', '시그니처 커트')">
+                <div class="designer-row-avatar" style="background:linear-gradient(135deg,#d6ffe9,#b3ffd1)">👩‍🦰</div>
+                <div class="designer-row-info">
+                  <div class="designer-row-name">박소연 <span style="font-size:11px;font-weight:500;color:#6b7280;">· 팀장</span></div>
+                  <div class="designer-row-spec">커트 · 드라이 · 스타일링</div>
+                  <div class="designer-row-meta">
+                    <span class="tag-chip">⭐ 4.7</span>
+                    <span class="tag-chip">💬 198 리뷰</span>
+                    <span class="tag-chip navy">오늘 가능</span>
+                  </div>
+                </div>
+                <button class="designer-row-cta">선택</button>
+              </div>
+              <div class="designer-row" onclick="openBookingModal('최현우', '탈색 & 염색')">
+                <div class="designer-row-avatar" style="background:linear-gradient(135deg,#f3f0ff,#d6ceff)">👨‍🦳</div>
+                <div class="designer-row-info">
+                  <div class="designer-row-name">최현우 <span style="font-size:11px;font-weight:500;color:#6b7280;">· 수석</span></div>
+                  <div class="designer-row-spec">탈색 · 염색 · 매직</div>
+                  <div class="designer-row-meta">
+                    <span class="tag-chip">⭐ 5.0</span>
+                    <span class="tag-chip">💬 94 리뷰</span>
+                  </div>
+                </div>
+                <button class="designer-row-cta">선택</button>
+              </div>
+              <div class="designer-row" onclick="openBookingModal('한예린', '네일 아트')">
+                <div class="designer-row-avatar" style="background:linear-gradient(135deg,#fff0d6,#ffd6a3)">💅</div>
+                <div class="designer-row-info">
+                  <div class="designer-row-name">한예린 <span style="font-size:11px;font-weight:500;color:#6b7280;">· 네일 전문</span></div>
+                  <div class="designer-row-spec">젤 네일 · 아트 · 페디큐어</div>
+                  <div class="designer-row-meta">
+                    <span class="tag-chip">⭐ 4.9</span>
+                    <span class="tag-chip">💬 321 리뷰</span>
+                    <span class="tag-chip navy">오늘 가능</span>
+                  </div>
+                </div>
+                <button class="designer-row-cta">선택</button>
+              </div>
+            </div>
+
+            <div class="time-section">
+              <h3>시간대 선택</h3>
+              <div class="time-grid" id="timeGrid"></div>
+            </div>
+
+            <div class="book-cta-wrap">
+              <button class="book-cta" onclick="handleBookNow()">
+                <span>✨</span> 지금 예약하기
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ POINT TAB ═══ -->
+        <div class="tab-screen" id="tab-point">
+          <div class="point-header">
+            <h1>나의 포인트</h1>
+            <div class="point-balance-card">
+              <div class="balance-label">보유 포인트</div>
+              <div class="balance-amount"><span>B</span>12,400</div>
+              <div class="balance-sub">다음 등급까지 5,600P 남았어요</div>
+              <!-- Progress bar -->
+              <div style="margin-top:10px;background:rgba(255,255,255,0.15);border-radius:6px;height:6px;overflow:hidden;">
+                <div style="width:69%;height:100%;background:var(--pink);border-radius:6px;"></div>
+              </div>
+            </div>
+            <div class="point-actions">
+              <button class="point-btn" onclick="showToast('포인트 사용 페이지')">사용하기</button>
+              <button class="point-btn" onclick="showToast('포인트 전환 안내')">전환하기</button>
+              <button class="point-btn" onclick="showToast('친구 초대 이벤트')">친구 초대</button>
+            </div>
+          </div>
+
+          <div class="screen-scroll">
+            <div class="section-header">
+              <div class="section-title">혜택 & 적립</div>
+            </div>
+            <div class="benefit-cards">
+              <div class="benefit-card" onclick="showToast('리뷰 작성으로 포인트 적립!')">
+                <div class="benefit-icon">⭐</div>
+                <div class="benefit-title">리뷰 작성</div>
+                <div class="benefit-desc">시술 후기를 남기고 포인트를 받아요</div>
+                <div class="benefit-pts">+500P</div>
+              </div>
+              <div class="benefit-card" onclick="showToast('친구 추천으로 포인트 적립!')">
+                <div class="benefit-icon">👯‍♀️</div>
+                <div class="benefit-title">친구 추천</div>
+                <div class="benefit-desc">친구가 첫 예약하면 함께 적립해요</div>
+                <div class="benefit-pts">+1,000P</div>
+              </div>
+              <div class="benefit-card" onclick="showToast('생일 쿠폰이 발급됐어요!')">
+                <div class="benefit-icon">🎂</div>
+                <div class="benefit-title">생일 축하</div>
+                <div class="benefit-desc">생일 달에 특별 포인트를 드려요</div>
+                <div class="benefit-pts">+2,000P</div>
+              </div>
+              <div class="benefit-card" onclick="showToast('앱 출석 체크!')">
+                <div class="benefit-icon">📅</div>
+                <div class="benefit-title">출석 체크</div>
+                <div class="benefit-desc">매일 앱을 열면 포인트 적립</div>
+                <div class="benefit-pts">+100P</div>
+              </div>
+            </div>
+
+            <div class="section-header">
+              <div class="section-title">포인트 내역</div>
+            </div>
+            <div class="tx-list">
+              <div class="tx-item">
+                <div class="tx-icon bg-pink">✂️</div>
+                <div class="tx-info">
+                  <div class="tx-title">시술 적립 — 컬러 트리트먼트</div>
+                  <div class="tx-date">2026.03.28 · 이지은 디자이너</div>
+                </div>
+                <div class="tx-amount tx-plus">+1,200P</div>
+              </div>
+              <div class="tx-item">
+                <div class="tx-icon bg-purple" style="background:#f3f0ff">🎁</div>
+                <div class="tx-info">
+                  <div class="tx-title">봄맞이 이벤트 적립</div>
+                  <div class="tx-date">2026.03.25 · 이벤트 보너스</div>
+                </div>
+                <div class="tx-amount tx-plus">+500P</div>
+              </div>
+              <div class="tx-item">
+                <div class="tx-icon" style="background:#fff8e6">🛍️</div>
+                <div class="tx-info">
+                  <div class="tx-title">포인트 사용 — 레이어드 커트</div>
+                  <div class="tx-date">2026.03.20 · 김민준 디자이너</div>
+                </div>
+                <div class="tx-amount tx-minus">-2,000P</div>
+              </div>
+              <div class="tx-item">
+                <div class="tx-icon bg-mint" style="background:#e6f9f4">⭐</div>
+                <div class="tx-info">
+                  <div class="tx-title">리뷰 작성 보너스</div>
+                  <div class="tx-date">2026.03.20 · 블룸 앱</div>
+                </div>
+                <div class="tx-amount tx-plus">+500P</div>
+              </div>
+              <div class="tx-item">
+                <div class="tx-icon bg-pink">✂️</div>
+                <div class="tx-info">
+                  <div class="tx-title">시술 적립 — 볼륨 매직</div>
+                  <div class="tx-date">2026.03.12 · 박소연 디자이너</div>
+                </div>
+                <div class="tx-amount tx-plus">+900P</div>
+              </div>
+              <div class="tx-item">
+                <div class="tx-icon" style="background:#e6f0ff">📅</div>
+                <div class="tx-info">
+                  <div class="tx-title">출석 체크 누적 (7일)</div>
+                  <div class="tx-date">2026.03.07 · 연속 출석 보너스</div>
+                </div>
+                <div class="tx-amount tx-plus">+300P</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══ MY TAB ═══ -->
+        <div class="tab-screen" id="tab-my">
+          <div class="my-header">
+            <div class="my-profile">
+              <div class="my-avatar">지</div>
+              <div>
+                <div class="my-name">김지수</div>
+                <div class="my-email">jisoo.kim@gmail.com</div>
+                <div class="my-grade">🌸 블룸 로즈 회원</div>
+              </div>
+            </div>
+            <div class="my-stats">
+              <div class="my-stat">
+                <div class="stat-num">23</div>
+                <div class="stat-label">총 예약</div>
+              </div>
+              <div class="my-stat">
+                <div class="stat-num">12,400</div>
+                <div class="stat-label">포인트</div>
+              </div>
+              <div class="my-stat">
+                <div class="stat-num">18</div>
+                <div class="stat-label">리뷰</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="screen-scroll">
+            <!-- Past appointments -->
+            <div class="section-header">
+              <div class="section-title">나의 예약</div>
+              <div class="section-more">전체</div>
+            </div>
+            <div class="appt-list">
+              <div class="appt-card">
+                <div class="appt-top">
+                  <div class="appt-date-tag">📅 내일 · 오후 2:00</div>
+                  <div class="booking-status status-confirmed">확정</div>
+                </div>
+                <div class="appt-service-row">
+                  <div class="appt-service-icon">🎨</div>
+                  <div>
+                    <div class="appt-service-name">컬러 트리트먼트</div>
+                    <div class="appt-service-price">₩ 85,000 · 강남점</div>
+                  </div>
+                </div>
+                <div class="appt-divider"></div>
+                <div class="appt-designer-row">
+                  <div class="appt-designer-em">👩‍🦱</div>
+                  <div>
+                    <div class="appt-designer-name">이지은 디자이너</div>
+                    <div class="appt-designer-role">수석 · ⭐ 4.9</div>
+                  </div>
+                </div>
+                <div class="appt-actions">
+                  <button class="appt-action-btn btn-outline" onclick="showToast('예약이 취소됐어요')">예약 취소</button>
+                  <button class="appt-action-btn btn-primary" onclick="showToast('예약 정보를 복사했어요')">일정 저장</button>
+                </div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-top">
+                  <div class="appt-date-tag">📅 4월 10일 · 오전 11:00</div>
+                  <div class="booking-status status-pending">대기</div>
+                </div>
+                <div class="appt-service-row">
+                  <div class="appt-service-icon">✂️</div>
+                  <div>
+                    <div class="appt-service-name">레이어드 커트</div>
+                    <div class="appt-service-price">₩ 38,000 · 홍대점</div>
+                  </div>
+                </div>
+                <div class="appt-divider"></div>
+                <div class="appt-designer-row">
+                  <div class="appt-designer-em">👨‍🦱</div>
+                  <div>
+                    <div class="appt-designer-name">김민준 디자이너</div>
+                    <div class="appt-designer-role">디렉터 · ⭐ 4.8</div>
+                  </div>
+                </div>
+                <div class="appt-actions">
+                  <button class="appt-action-btn btn-outline" onclick="showToast('예약을 변경했어요')">날짜 변경</button>
+                  <button class="appt-action-btn btn-primary" onclick="showToast('디자이너에게 요청했어요')">요청 사항</button>
+                </div>
+              </div>
+              <div class="appt-card">
+                <div class="appt-top">
+                  <div class="appt-date-tag">📅 3월 28일 · 오후 3:30</div>
+                  <div class="booking-status status-done">완료</div>
+                </div>
+                <div class="appt-service-row">
+                  <div class="appt-service-icon">💆</div>
+                  <div>
+                    <div class="appt-service-name">두피 트리트먼트</div>
+                    <div class="appt-service-price">₩ 55,000 · 강남점</div>
+                  </div>
+                </div>
+                <div class="appt-divider"></div>
+                <div class="appt-designer-row">
+                  <div class="appt-designer-em">👩‍🦱</div>
+                  <div>
+                    <div class="appt-designer-name">이지은 디자이너</div>
+                    <div class="appt-designer-role">수석 · ⭐ 4.9</div>
+                  </div>
+                </div>
+                <div class="appt-actions">
+                  <button class="appt-action-btn btn-outline" onclick="showToast('리뷰를 작성해 주세요')">리뷰 작성</button>
+                  <button class="appt-action-btn btn-primary" onclick="openBookingModal('이지은','두피 트리트먼트')">재예약</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Settings -->
+            <div class="section-header" style="margin-top:8px;">
+              <div class="section-title">설정</div>
+            </div>
+
+            <div class="settings-group">
+              <div class="settings-row">
+                <div class="settings-icon" style="background:#fff0f6">🔔</div>
+                <div class="settings-label">예약 알림</div>
+                <label class="ios-switch">
+                  <input type="checkbox" checked onchange="handleSwitch(this,'예약 알림')">
+                  <div class="ios-switch-track"></div>
+                  <div class="ios-switch-thumb"></div>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-icon" style="background:#f0fff4">📢</div>
+                <div class="settings-label">이벤트 · 혜택 알림</div>
+                <label class="ios-switch">
+                  <input type="checkbox" checked onchange="handleSwitch(this,'이벤트 알림')">
+                  <div class="ios-switch-track"></div>
+                  <div class="ios-switch-thumb"></div>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-icon" style="background:#f0f4ff">🌙</div>
+                <div class="settings-label">야간 알림 방해 금지</div>
+                <label class="ios-switch">
+                  <input type="checkbox" onchange="handleSwitch(this,'방해 금지')">
+                  <div class="ios-switch-track"></div>
+                  <div class="ios-switch-thumb"></div>
+                </label>
+              </div>
+              <div class="settings-row">
+                <div class="settings-icon" style="background:#fffbf0">💬</div>
+                <div class="settings-label">리뷰 답변 알림</div>
+                <label class="ios-switch">
+                  <input type="checkbox" checked onchange="handleSwitch(this,'리뷰 알림')">
+                  <div class="ios-switch-track"></div>
+                  <div class="ios-switch-thumb"></div>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-group" style="margin-bottom:0">
+              <div class="settings-row" onclick="showToast('즐겨찾기 디자이너')">
+                <div class="settings-icon" style="background:#fff0f6">❤️</div>
+                <div class="settings-label">즐겨찾기 디자이너</div>
+                <div class="settings-value">3명</div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="settings-row" onclick="showToast('쿠폰함 열기')">
+                <div class="settings-icon" style="background:#f3f0ff">🎫</div>
+                <div class="settings-label">쿠폰함</div>
+                <div class="settings-value">2장</div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="settings-row" onclick="showToast('이용 내역')">
+                <div class="settings-icon" style="background:#f0fff4">📋</div>
+                <div class="settings-label">이용 내역</div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="settings-row" onclick="showToast('고객센터 연결 중...')">
+                <div class="settings-icon" style="background:#f0f4ff">🎧</div>
+                <div class="settings-label">고객센터</div>
+                <div class="settings-value">1:1 채팅</div>
+                <div class="chevron">›</div>
+              </div>
+              <div class="settings-row" onclick="showToast('로그아웃 하시겠어요?')">
+                <div class="settings-icon" style="background:var(--ios-bg)">🔒</div>
+                <div class="settings-label" style="color:#ff3b30">로그아웃</div>
+              </div>
+            </div>
+            <div style="height:24px;"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Bottom Tab Bar ── -->
+      <div class="tab-bar">
+        <div class="tab-item active" id="tabBtn-home" onclick="switchTab('home')">
+          <div class="tab-icon-wrap">
+            <div class="tab-icon">
+              <svg class="tab-svg" viewBox="0 0 24 24">
+                <path class="tab-svg-stroke" d="M3 12L12 3l9 9"/>
+                <path class="tab-svg-stroke" d="M5 10v10a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1V10"/>
+              </svg>
+            </div>
+          </div>
+          <div class="tab-label">홈</div>
+        </div>
+        <div class="tab-item" id="tabBtn-book" onclick="switchTab('book')">
+          <div class="tab-icon-wrap">
+            <div class="tab-icon">
+              <svg class="tab-svg" viewBox="0 0 24 24">
+                <rect class="tab-svg-stroke" x="3" y="4" width="18" height="18" rx="3"/>
+                <path class="tab-svg-stroke" d="M16 2v4M8 2v4M3 10h18"/>
+                <path class="tab-svg-stroke" d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01"/>
+              </svg>
+            </div>
+          </div>
+          <div class="tab-label">예약</div>
+        </div>
+        <div class="tab-item" id="tabBtn-point" onclick="switchTab('point')">
+          <div class="tab-icon-wrap">
+            <div class="tab-icon">
+              <svg class="tab-svg" viewBox="0 0 24 24">
+                <circle class="tab-svg-stroke" cx="12" cy="12" r="9"/>
+                <path class="tab-svg-stroke" d="M12 7v10M9.5 9.5C9.5 8.1 10.6 7 12 7c1.4 0 2.5 1.1 2.5 2.5 0 2.5-5 2.5-5 5 0 1.4 1.1 2.5 2.5 2.5s2.5-1.1 2.5-2.5"/>
+              </svg>
+            </div>
+            <div class="tab-badge">2</div>
+          </div>
+          <div class="tab-label">포인트</div>
+        </div>
+        <div class="tab-item" id="tabBtn-my" onclick="switchTab('my')">
+          <div class="tab-icon-wrap">
+            <div class="tab-icon">
+              <svg class="tab-svg" viewBox="0 0 24 24">
+                <circle class="tab-svg-stroke" cx="12" cy="8" r="4"/>
+                <path class="tab-svg-stroke" d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+              </svg>
+            </div>
+          </div>
+          <div class="tab-label">마이</div>
+        </div>
+        <div class="home-indicator">
+          <div class="home-indicator-bar"></div>
+        </div>
+      </div>
+
+    </div><!-- /iphone-screen -->
+  </div><!-- /iphone-frame -->
+
+  <!-- Booking Modal (inside screen) -->
+  <div class="booking-modal" id="bookingModal">
+    <div class="modal-backdrop" onclick="closeBookingModal()"></div>
+    <div class="modal-sheet">
+      <div class="modal-handle"></div>
+      <div class="modal-header">
+        <div class="modal-title" id="modalDesignerName">이지은 디자이너</div>
+        <div class="modal-subtitle">시술 종류를 선택해 주세요</div>
+      </div>
+      <div class="modal-body">
+        <div class="service-option selected" onclick="selectService(this)">
+          <div class="service-emoji">✂️</div>
+          <div class="service-info">
+            <div class="service-name">시그니처 커트</div>
+            <div class="service-duration">45분 소요</div>
+          </div>
+          <div class="service-price">₩38,000</div>
+        </div>
+        <div class="service-option" onclick="selectService(this)">
+          <div class="service-emoji">🎨</div>
+          <div class="service-info">
+            <div class="service-name">컬러 트리트먼트</div>
+            <div class="service-duration">120분 소요</div>
+          </div>
+          <div class="service-price">₩85,000</div>
+        </div>
+        <div class="service-option" onclick="selectService(this)">
+          <div class="service-emoji">🌀</div>
+          <div class="service-info">
+            <div class="service-name">볼륨 매직 펌</div>
+            <div class="service-duration">150분 소요</div>
+          </div>
+          <div class="service-price">₩120,000</div>
+        </div>
+        <div class="service-option" onclick="selectService(this)">
+          <div class="service-emoji">💆</div>
+          <div class="service-info">
+            <div class="service-name">두피 트리트먼트</div>
+            <div class="service-duration">60분 소요</div>
+          </div>
+          <div class="service-price">₩55,000</div>
+        </div>
+      </div>
+      <button class="modal-confirm" onclick="confirmBooking()">예약 확정하기</button>
+    </div>
+  </div>
+
+</div><!-- /iphone-wrap -->
+
+<script>
+// ── Status time ──
+function updateTime() {
+  const now = new Date();
+  const h = now.getHours().toString().padStart(2,'0');
+  const m = now.getMinutes().toString().padStart(2,'0');
+  document.getElementById('statusTime').textContent = h + ':' + m;
+}
+updateTime();
+setInterval(updateTime, 10000);
+
+// ── Push notification ──
+setTimeout(() => {
+  const n = document.getElementById('pushNotif');
+  n.classList.add('show');
+  setTimeout(() => {
+    n.classList.remove('show');
+    n.classList.add('hide');
+  }, 4000);
+}, 1200);
+
+// Swipe down to dismiss push
+document.getElementById('pushNotif').addEventListener('click', () => {
+  document.getElementById('pushNotif').classList.remove('show');
+  document.getElementById('pushNotif').classList.add('hide');
+});
+
+// ── Tab switching ──
+const tabs = ['home','book','point','my'];
+function switchTab(name) {
+  tabs.forEach(t => {
+    document.getElementById('tab-' + t).classList.remove('active');
+    document.getElementById('tabBtn-' + t).classList.remove('active');
+  });
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tabBtn-' + name).classList.add('active');
+  // Scroll to top
+  const scroller = document.getElementById('tab-' + name).querySelector('.screen-scroll');
+  if (scroller) scroller.scrollTop = 0;
+}
+
+// ── Category selector ──
+function selectCat(el) {
+  document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ── Date strip for booking ──
+function buildDateStrip() {
+  const strip = document.getElementById('dateStrip');
+  const days = ['일','월','화','수','목','금','토'];
+  const today = new Date();
+  const hasSlot = [0,2,3,5,6,8,10];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const cell = document.createElement('div');
+    cell.className = 'date-cell' + (i === 0 ? ' active' : '') + (hasSlot.includes(i) ? ' has-slot' : '');
+    cell.innerHTML = `
+      <div class="day-name">${days[d.getDay()]}</div>
+      <div class="day-num">${d.getDate()}</div>
+      <div class="dot"></div>
+    `;
+    cell.onclick = function() {
+      document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('active'));
+      this.classList.add('active');
+      buildTimeGrid();
+    };
+    strip.appendChild(cell);
+  }
+}
+
+// ── Time grid ──
+const allSlots = ['10:00','10:30','11:00','11:30','12:00','12:30','13:00','13:30','14:00','14:30','15:00','15:30','16:00','16:30','17:00','17:30','18:00','18:30','19:00','19:30'];
+const bookedSlots = ['11:00','13:00','14:00','16:30'];
+
+function buildTimeGrid() {
+  const grid = document.getElementById('timeGrid');
+  grid.innerHTML = '';
+  allSlots.forEach((t, i) => {
+    const div = document.createElement('div');
+    const isBooked = bookedSlots.includes(t);
+    div.className = 'time-slot' + (isBooked ? ' booked' : '') + (i === 2 ? ' active' : '');
+    div.textContent = t;
+    if (!isBooked) {
+      div.onclick = function() {
+        document.querySelectorAll('.time-slot:not(.booked)').forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+      };
+    }
+    grid.appendChild(div);
+  });
+}
+
+buildDateStrip();
+buildTimeGrid();
+
+// ── Booking Modal ──
+let currentDesigner = '';
+function openBookingModal(name, spec) {
+  currentDesigner = name;
+  document.getElementById('modalDesignerName').textContent = name + ' 디자이너 · ' + spec;
+  document.getElementById('bookingModal').classList.add('open');
+}
+function closeBookingModal() {
+  document.getElementById('bookingModal').classList.remove('open');
+}
+function selectService(el) {
+  document.querySelectorAll('.service-option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+function confirmBooking() {
+  closeBookingModal();
+  showToast('예약이 완료됐어요! 🎉');
+  // Trigger push after short delay
+  setTimeout(() => {
+    const n = document.getElementById('pushNotif');
+    n.classList.remove('hide');
+    n.querySelector('.push-title').textContent = '예약 확정됐어요! ✅';
+    n.querySelector('.push-body').textContent = currentDesigner + ' 디자이너 예약이 완료됐어요';
+    n.classList.add('show');
+    setTimeout(() => {
+      n.classList.remove('show');
+      n.classList.add('hide');
+    }, 3500);
+  }, 600);
+}
+
+// ── Book now ──
+function handleBookNow() {
+  const selected = document.querySelector('.time-slot.active');
+  if (selected) {
+    showToast('예약 시간: ' + selected.textContent + ' 선택됨');
+    setTimeout(() => openBookingModal('디자이너', '선택한 서비스'), 800);
+  } else {
+    showToast('시간대를 먼저 선택해 주세요');
+  }
+}
+
+// ── Toast ──
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── iOS Switch handler ──
+function handleSwitch(input, label) {
+  const state = input.checked ? '켜짐' : '꺼짐';
+  showToast(label + ' ' + state);
+}
+</script>
+</body>
+</html>

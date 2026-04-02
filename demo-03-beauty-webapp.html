@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>러브헤어 홍대점 — BeautyOn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --rose:    #c9184a;
+      --rose-lt: #ff4d6d;
+      --rose-dk: #a4133c;
+      --cream:   #fff8f0;
+      --cream-2: #fef0e4;
+      --gold:    #c9a84c;
+      --gold-lt: #f0d080;
+      --text:    #1a1a2e;
+      --muted:   #7b6f72;
+      --white:   #ffffff;
+      --shadow:  0 4px 24px rgba(201,24,74,.10);
+      --radius:  18px;
+    }
+
+    html, body {
+      height: 100%;
+      background: #f0e8e0;
+      font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Outer shell ─────────────────────────────── */
+    #app-shell {
+      max-width: 390px;
+      min-height: 100dvh;
+      margin: 0 auto;
+      background: var(--cream);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 60px rgba(0,0,0,.18);
+    }
+
+    /* ── Top bar ─────────────────────────────────── */
+    .top-bar {
+      background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 60%, var(--rose-lt) 100%);
+      padding: 52px 20px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .top-bar::before {
+      content: '';
+      position: absolute;
+      width: 200px; height: 200px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+      top: -60px; right: -40px;
+    }
+    .top-bar::after {
+      content: '';
+      position: absolute;
+      width: 120px; height: 120px;
+      background: rgba(255,255,255,.04);
+      border-radius: 50%;
+      bottom: -30px; left: 20px;
+    }
+    .brand-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+    .brand-logo {
+      width: 36px; height: 36px;
+      background: var(--white);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .brand-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: -.3px;
+    }
+    .brand-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,.75);
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      margin-left: 46px;
+    }
+    .top-bar-actions {
+      position: absolute;
+      top: 52px; right: 20px;
+      display: flex; gap: 8px;
+    }
+    .icon-btn {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.15);
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      backdrop-filter: blur(6px);
+      transition: background .2s;
+    }
+    .icon-btn:hover { background: rgba(255,255,255,.28); }
+
+    /* ── Quick stats strip ───────────────────────── */
+    .stats-strip {
+      background: var(--white);
+      display: flex;
+      border-bottom: 1px solid #f0e8e0;
+    }
+    .stat-cell {
+      flex: 1;
+      padding: 12px 8px;
+      text-align: center;
+      border-right: 1px solid #f0e8e0;
+      cursor: default;
+    }
+    .stat-cell:last-child { border-right: none; }
+    .stat-num {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--rose);
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    /* ── Scrollable content area ─────────────────── */
+    .content-area {
+      flex: 1;
+      overflow-y: auto;
+      padding-bottom: 80px;
+      scroll-behavior: smooth;
+    }
+    .content-area::-webkit-scrollbar { display: none; }
+
+    /* ── Tab panels ──────────────────────────────── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Section headings ────────────────────────── */
+    .section-heading {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+      padding: 20px 20px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-heading .dot {
+      width: 6px; height: 6px;
+      background: var(--rose);
+      border-radius: 50%;
+    }
+
+    /* ── Banner carousel ─────────────────────────── */
+    .banner-wrap {
+      padding: 16px 20px 4px;
+    }
+    .banner {
+      background: linear-gradient(120deg, #fde8ef 0%, #fff0f5 100%);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 1px solid #fbc8d8;
+      position: relative;
+      overflow: hidden;
+    }
+    .banner::before {
+      content: '🌸';
+      position: absolute;
+      font-size: 60px;
+      right: -8px; top: -8px;
+      opacity: .15;
+    }
+    .banner-tag {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--rose);
+      background: #fde8ef;
+      border: 1px solid #f9b4c8;
+      border-radius: 20px;
+      padding: 2px 8px;
+      display: inline-block;
+      margin-bottom: 6px;
+      letter-spacing: .3px;
+    }
+    .banner-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--rose-dk);
+      line-height: 1.3;
+    }
+    .banner-desc {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    .banner-cta {
+      background: var(--rose);
+      color: var(--white);
+      border: none;
+      border-radius: 20px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: background .2s, transform .1s;
+    }
+    .banner-cta:active { transform: scale(.96); }
+    .banner-cta:hover { background: var(--rose-dk); }
+
+    /* ── Designer cards ──────────────────────────── */
+    .designers-scroll {
+      display: flex;
+      gap: 14px;
+      padding: 6px 20px 14px;
+      overflow-x: auto;
+    }
+    .designers-scroll::-webkit-scrollbar { display: none; }
+
+    .designer-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 18px 16px;
+      min-width: 148px;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .designer-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(201,24,74,.18); }
+    .designer-card.selected { border-color: var(--rose); }
+    .designer-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 10px; right: 10px;
+      width: 20px; height: 20px;
+      background: var(--rose);
+      color: white;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      line-height: 20px;
+      text-align: center;
+    }
+    .designer-avatar {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      margin: 0 auto 10px;
+      position: relative;
+      overflow: hidden;
+    }
+    /* CSS-generated avatars */
+    .avatar-1 {
+      background: linear-gradient(135deg, #ffb7c5 0%, #c9184a 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .avatar-2 {
+      background: linear-gradient(135deg, #ffd6a5 0%, #c9a84c 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .avatar-3 {
+      background: linear-gradient(135deg, #b5c9ff 0%, #5a72d6 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .designer-badge {
+      position: absolute;
+      bottom: -1px; right: -1px;
+      width: 20px; height: 20px;
+      background: var(--gold);
+      border-radius: 50%;
+      border: 2px solid white;
+      font-size: 9px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .designer-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      text-align: center;
+    }
+    .designer-role {
+      font-size: 10px;
+      color: var(--muted);
+      text-align: center;
+      margin-top: 1px;
+    }
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 1px;
+      margin: 6px 0 4px;
+    }
+    .star { font-size: 11px; }
+    .star.filled { color: var(--gold); }
+    .star.empty  { color: #e0d8d0; }
+    .designer-rating-num {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .specialties {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      justify-content: center;
+      margin-top: 8px;
+    }
+    .spec-tag {
+      font-size: 9px;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 20px;
+      background: #fde8ef;
+      color: var(--rose);
+    }
+
+    /* ── Service list ────────────────────────────── */
+    .service-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .service-item {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.05);
+      cursor: pointer;
+      transition: border .15s, transform .15s;
+      border: 2px solid transparent;
+    }
+    .service-item:hover { transform: translateX(3px); }
+    .service-item.selected { border-color: var(--rose); background: #fff5f7; }
+    .service-icon {
+      width: 42px; height: 42px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .service-info { flex: 1; }
+    .service-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .service-duration {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+    .service-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--rose);
+    }
+
+    /* ── Calendar ────────────────────────────────── */
+    .calendar-wrap {
+      margin: 0 20px;
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .cal-header {
+      background: linear-gradient(90deg, var(--rose-dk), var(--rose));
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+    }
+    .cal-month {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .cal-nav {
+      background: rgba(255,255,255,.2);
+      border: none;
+      color: white;
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .cal-nav:hover { background: rgba(255,255,255,.35); }
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: #fde8ef;
+      padding: 6px 0;
+    }
+    .cal-wd {
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--rose);
+      padding: 2px 0;
+    }
+    .cal-wd:first-child { color: #e63946; }
+    .cal-wd:last-child  { color: var(--muted); }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      padding: 8px 6px 12px;
+      gap: 3px;
+    }
+    .cal-day {
+      aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 50%;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background .15s, color .15s, transform .1s;
+      color: var(--text);
+      position: relative;
+    }
+    .cal-day:hover:not(.disabled):not(.empty) {
+      background: #fde8ef;
+      transform: scale(1.1);
+    }
+    .cal-day.today {
+      font-weight: 700;
+      color: var(--rose);
+    }
+    .cal-day.today::after {
+      content: '';
+      position: absolute;
+      bottom: 3px;
+      width: 4px; height: 4px;
+      background: var(--rose);
+      border-radius: 50%;
+    }
+    .cal-day.selected {
+      background: var(--rose);
+      color: white;
+      font-weight: 700;
+    }
+    .cal-day.selected::after { display: none; }
+    .cal-day.disabled { color: #ddd; cursor: default; }
+    .cal-day.empty { cursor: default; }
+    .cal-day.has-slot::before {
+      content: '';
+      position: absolute;
+      top: 3px; right: 3px;
+      width: 5px; height: 5px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+    .cal-day.selected.has-slot::before { background: white; }
+
+    /* ── Time slots ──────────────────────────────── */
+    .time-slots-wrap {
+      padding: 0 20px;
+    }
+    .time-slots-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .time-slot {
+      background: var(--white);
+      border: 1.5px solid #f0e0e8;
+      border-radius: 10px;
+      padding: 10px 4px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .time-slot:hover { border-color: var(--rose); color: var(--rose); }
+    .time-slot.selected {
+      background: var(--rose);
+      border-color: var(--rose);
+      color: white;
+    }
+    .time-slot.full {
+      background: #f8f4f2;
+      border-color: #e8ddd8;
+      color: #ccc;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+    .time-sub {
+      font-size: 9px;
+      font-weight: 400;
+      opacity: .7;
+      display: block;
+      margin-top: 1px;
+    }
+
+    /* ── Book button ─────────────────────────────── */
+    .book-btn-wrap {
+      padding: 16px 20px;
+    }
+    .book-btn {
+      width: 100%;
+      background: linear-gradient(90deg, var(--rose-dk), var(--rose-lt));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(201,24,74,.35);
+      transition: opacity .2s, transform .15s;
+      letter-spacing: -.2px;
+    }
+    .book-btn:hover  { opacity: .92; }
+    .book-btn:active { transform: scale(.98); }
+    .book-btn:disabled {
+      background: #ddd;
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 1;
+    }
+
+    /* ── Summary pill ────────────────────────────── */
+    .booking-summary {
+      margin: 0 20px 12px;
+      background: linear-gradient(90deg, #fdf0f5, #fff5eb);
+      border: 1px solid #f5c8d8;
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .summary-item {
+      font-size: 12px;
+      color: var(--rose-dk);
+      font-weight: 600;
+    }
+    .summary-item span {
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    /* ── My Bookings tab ─────────────────────────── */
+    .bookings-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .booking-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      border-left: 4px solid var(--rose);
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-card.past { border-left-color: #c8bfb8; }
+    .booking-card::after {
+      content: attr(data-status);
+      position: absolute;
+      top: 12px; right: 14px;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      background: #fde8ef;
+      color: var(--rose);
+    }
+    .booking-card.past::after {
+      background: #f0ece8;
+      color: var(--muted);
+    }
+    .booking-date-row {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .booking-service-name {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .booking-designer-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .mini-avatar {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+    }
+    .booking-price-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px dashed #f0e8e0;
+    }
+    .booking-price {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--rose);
+    }
+    .cancel-btn {
+      font-size: 11px;
+      color: var(--muted);
+      background: none;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .cancel-btn:hover { border-color: var(--rose); color: var(--rose); }
+    .review-btn {
+      font-size: 11px;
+      color: var(--white);
+      background: var(--gold);
+      border: none;
+      border-radius: 20px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: opacity .2s;
+    }
+    .review-btn:hover { opacity: .85; }
+
+    /* ── Points tab ──────────────────────────────── */
+    .points-hero {
+      background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 50%, #ff758c 100%);
+      margin: 16px 20px;
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .points-hero::before {
+      content: '';
+      position: absolute;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,.07);
+      border-radius: 50%;
+      top: -50px; right: -30px;
+    }
+    .points-hero::after {
+      content: '';
+      position: absolute;
+      width: 80px; height: 80px;
+      background: rgba(255,255,255,.05);
+      border-radius: 50%;
+      bottom: -20px; left: 20px;
+    }
+    .points-label {
+      font-size: 12px;
+      opacity: .8;
+      margin-bottom: 4px;
+    }
+    .points-value {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 40px;
+      font-weight: 700;
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .points-unit {
+      font-size: 16px;
+      font-weight: 400;
+      opacity: .9;
+      margin-left: 4px;
+    }
+    .points-expiry {
+      font-size: 11px;
+      opacity: .7;
+      margin-top: 8px;
+    }
+    .points-tier {
+      position: absolute;
+      top: 20px; right: 20px;
+      background: var(--gold-lt);
+      color: #7a5e00;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 1;
+    }
+
+    .points-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 20px 16px;
+    }
+    .points-action-btn {
+      background: var(--white);
+      border: 1.5px solid #f0e0e8;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .points-action-btn:hover { border-color: var(--rose); background: #fff5f7; }
+    .pab-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+    .pab-label { font-size: 12px; font-weight: 600; color: var(--text); }
+
+    .history-list {
+      padding: 0 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .history-item {
+      background: var(--white);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .history-item:first-child { border-radius: 14px 14px 0 0; }
+    .history-item:last-child  { border-radius: 0 0 14px 14px; }
+    .history-icon {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .history-icon.earn  { background: #e8f5e9; }
+    .history-icon.spend { background: #fde8ef; }
+    .history-info { flex: 1; }
+    .history-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .history-date  { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .history-pts {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .history-pts.earn  { color: #2e7d32; }
+    .history-pts.spend { color: var(--rose); }
+
+    /* ── Bottom tab bar ──────────────────────────── */
+    .bottom-bar {
+      position: sticky;
+      bottom: 0;
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-top: 1px solid #f0e0e8;
+      display: flex;
+      z-index: 100;
+    }
+    .tab-btn {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      padding: 10px 0 14px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      transition: color .2s;
+      color: #b0a0a8;
+      font-family: 'Pretendard', sans-serif;
+    }
+    .tab-btn.active { color: var(--rose); }
+    .tab-icon {
+      font-size: 22px;
+      transition: transform .2s;
+    }
+    .tab-btn.active .tab-icon { transform: scale(1.15); }
+    .tab-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: -.2px;
+    }
+    .tab-dot {
+      position: absolute;
+      top: 6px; right: calc(50% - 18px);
+      width: 8px; height: 8px;
+      background: var(--rose);
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    .tab-btn { position: relative; }
+
+    /* ── Toast ───────────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #1a1a2e;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 30px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+      white-space: nowrap;
+      z-index: 9999;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Confetti canvas ─────────────────────────── */
+    #confetti-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 9998;
+    }
+
+    /* ── Modal ───────────────────────────────────── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.5);
+      z-index: 500;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-sheet {
+      background: var(--cream);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 390px;
+      padding: 20px 20px 40px;
+      transform: translateY(100%);
+      transition: transform .35s cubic-bezier(.32,.72,0,1);
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle {
+      width: 36px; height: 4px;
+      background: #e0d8d0;
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+    .modal-title {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .modal-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+    .confirm-detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid #f0e8e0;
+      font-size: 14px;
+    }
+    .confirm-detail-row:last-of-type { border-bottom: none; }
+    .confirm-detail-row .key { color: var(--muted); }
+    .confirm-detail-row .val { font-weight: 700; color: var(--text); }
+    .confirm-btn {
+      width: 100%;
+      background: linear-gradient(90deg, var(--rose-dk), var(--rose-lt));
+      color: white;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 20px;
+      box-shadow: 0 6px 20px rgba(201,24,74,.35);
+      transition: opacity .2s;
+    }
+    .confirm-btn:hover { opacity: .92; }
+
+    /* ── Promo badge ─────────────────────────────── */
+    .promo-row {
+      display: flex;
+      gap: 8px;
+      padding: 0 20px 14px;
+    }
+    .promo-chip {
+      background: linear-gradient(90deg, var(--gold), #e8c060);
+      color: #3d2b00;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .promo-chip-outline {
+      background: transparent;
+      border: 1.5px solid var(--gold);
+      color: var(--gold);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* ── Animations ──────────────────────────────── */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeInUp .4s ease both; }
+    .fade-in-d1 { animation: fadeInUp .4s .08s ease both; }
+    .fade-in-d2 { animation: fadeInUp .4s .16s ease both; }
+    .fade-in-d3 { animation: fadeInUp .4s .24s ease both; }
+
+    @keyframes pulse-ring {
+      0%   { box-shadow: 0 0 0 0 rgba(201,24,74,.4); }
+      70%  { box-shadow: 0 0 0 10px rgba(201,24,74,0); }
+      100% { box-shadow: 0 0 0 0 rgba(201,24,74,0); }
+    }
+    .pulse { animation: pulse-ring 2s infinite; }
+
+    /* ── Skeleton shimmer ────────────────────────── */
+    @keyframes shimmer {
+      0%   { background-position: -200% 0; }
+      100% { background-position:  200% 0; }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div id="toast"></div>
+
+<!-- ── Booking Confirmation Modal ────────────────── -->
+<div class="modal-overlay" id="confirm-modal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">예약 확인</div>
+    <div class="modal-subtitle">아래 내용으로 예약을 확정할까요?</div>
+    <div id="confirm-details"></div>
+    <button class="confirm-btn" id="final-confirm-btn">✨ 예약 확정하기</button>
+  </div>
+</div>
+
+<!-- ── App Shell ───────────────────────────────── -->
+<div id="app-shell">
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <div class="brand-row">
+      <div class="brand-logo">💇</div>
+      <div class="brand-name">러브헤어 홍대점</div>
+    </div>
+    <div class="brand-sub">BeautyOn · Hongdae · Since 2018</div>
+    <div class="top-bar-actions">
+      <button class="icon-btn" title="알림" onclick="showToast('새 알림이 없습니다')">🔔</button>
+      <button class="icon-btn" title="검색" onclick="showToast('검색 기능 준비 중')">🔍</button>
+    </div>
+  </div>
+
+  <!-- Stats Strip -->
+  <div class="stats-strip">
+    <div class="stat-cell">
+      <div class="stat-num">4.9</div>
+      <div class="stat-label">평점</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">2,847</div>
+      <div class="stat-label">리뷰</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">3</div>
+      <div class="stat-label">디자이너</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num" id="my-points-strip">3,200</div>
+      <div class="stat-label">내 포인트</div>
+    </div>
+  </div>
+
+  <!-- Scrollable Content -->
+  <div class="content-area" id="content-area">
+
+    <!-- ══ TAB 1: 예약하기 ══════════════════════ -->
+    <div class="tab-panel active" id="panel-reserve">
+
+      <!-- Banner -->
+      <div class="banner-wrap fade-in">
+        <div class="banner">
+          <div>
+            <div class="banner-tag">🎉 4월 이벤트</div>
+            <div class="banner-title">봄맞이 케어<br>20% 할인 중!</div>
+            <div class="banner-desc">4월 한 달 모든 트리트먼트</div>
+          </div>
+          <button class="banner-cta" onclick="selectService('트리트먼트')">지금 예약</button>
+        </div>
+      </div>
+
+      <!-- Promo chips -->
+      <div class="promo-row fade-in-d1">
+        <div class="promo-chip">⭐ 신규 15% OFF</div>
+        <div class="promo-chip-outline">포인트 2배</div>
+      </div>
+
+      <!-- Designers -->
+      <div class="section-heading fade-in-d1"><div class="dot"></div>디자이너 선택</div>
+      <div class="designers-scroll fade-in-d1">
+
+        <div class="designer-card" data-designer="수연" onclick="selectDesigner(this,'수연')">
+          <div class="designer-avatar">
+            <div class="avatar-1" style="width:100%;height:100%;">👩</div>
+            <div class="designer-badge">👑</div>
+          </div>
+          <div class="designer-name">김수연</div>
+          <div class="designer-role">수석 디자이너</div>
+          <div class="stars">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span>
+          </div>
+          <div class="designer-rating-num">5.0 (1,204)</div>
+          <div class="specialties">
+            <span class="spec-tag">커트</span>
+            <span class="spec-tag">웨이브</span>
+            <span class="spec-tag">발레아쥬</span>
+          </div>
+        </div>
+
+        <div class="designer-card" data-designer="지훈" onclick="selectDesigner(this,'지훈')">
+          <div class="designer-avatar">
+            <div class="avatar-2" style="width:100%;height:100%;">👨</div>
+            <div class="designer-badge">✂️</div>
+          </div>
+          <div class="designer-name">박지훈</div>
+          <div class="designer-role">컬러 스페셜리스트</div>
+          <div class="stars">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star" style="color:#e8c060;font-size:11px;">★</span>
+          </div>
+          <div class="designer-rating-num">4.8 (987)</div>
+          <div class="specialties">
+            <span class="spec-tag">염색</span>
+            <span class="spec-tag">탈색</span>
+            <span class="spec-tag">인생컷</span>
+          </div>
+        </div>
+
+        <div class="designer-card" data-designer="민지" onclick="selectDesigner(this,'민지')">
+          <div class="designer-avatar">
+            <div class="avatar-3" style="width:100%;height:100%;">🧑</div>
+            <div class="designer-badge">💎</div>
+          </div>
+          <div class="designer-name">이민지</div>
+          <div class="designer-role">트리트먼트 전문가</div>
+          <div class="stars">
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span><span class="star filled">★</span>
+            <span class="star filled">★</span>
+          </div>
+          <div class="designer-rating-num">4.9 (656)</div>
+          <div class="specialties">
+            <span class="spec-tag">케라틴</span>
+            <span class="spec-tag">두피케어</span>
+            <span class="spec-tag">펌</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Services -->
+      <div class="section-heading fade-in-d2"><div class="dot"></div>시술 선택</div>
+      <div class="service-list fade-in-d2">
+        <div class="service-item" data-svc="커트" data-price="45000" data-dur="50분" onclick="selectServiceItem(this)">
+          <div class="service-icon" style="background:#fde8ef;">✂️</div>
+          <div class="service-info">
+            <div class="service-name">커트</div>
+            <div class="service-duration">⏱ 50분 · 샴푸 포함</div>
+          </div>
+          <div class="service-price">₩45,000</div>
+        </div>
+        <div class="service-item" data-svc="염색" data-price="120000" data-dur="120분" onclick="selectServiceItem(this)">
+          <div class="service-icon" style="background:#fff3e0;">🎨</div>
+          <div class="service-info">
+            <div class="service-name">염색</div>
+            <div class="service-duration">⏱ 120분 · 뿌리~전체</div>
+          </div>
+          <div class="service-price">₩120,000</div>
+        </div>
+        <div class="service-item" data-svc="매직펌" data-price="160000" data-dur="150분" onclick="selectServiceItem(this)">
+          <div class="service-icon" style="background:#f3e8ff;">🌀</div>
+          <div class="service-info">
+            <div class="service-name">매직 스트레이트펌</div>
+            <div class="service-duration">⏱ 150분 · 전처리 포함</div>
+          </div>
+          <div class="service-price">₩160,000</div>
+        </div>
+        <div class="service-item" data-svc="트리트먼트" data-price="60000" data-dur="60분" onclick="selectServiceItem(this)">
+          <div class="service-icon" style="background:#e8f5e9;">💆</div>
+          <div class="service-info">
+            <div class="service-name">케라틴 트리트먼트</div>
+            <div class="service-duration">⏱ 60분 · 두피 마사지 포함</div>
+          </div>
+          <div class="service-price">₩60,000</div>
+        </div>
+        <div class="service-item" data-svc="발레아쥬" data-price="200000" data-dur="180분" onclick="selectServiceItem(this)">
+          <div class="service-icon" style="background:#fce4ec;">✨</div>
+          <div class="service-info">
+            <div class="service-name">발레아쥬 / 옴브레</div>
+            <div class="service-duration">⏱ 180분 · 탈색 포함</div>
+          </div>
+          <div class="service-price">₩200,000</div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="section-heading fade-in-d2" style="margin-top:8px;"><div class="dot"></div>날짜 선택</div>
+      <div class="calendar-wrap fade-in-d2" style="margin-bottom:4px;">
+        <div class="cal-header">
+          <button class="cal-nav" onclick="changeMonth(-1)">‹</button>
+          <div class="cal-month" id="cal-month-label"></div>
+          <button class="cal-nav" onclick="changeMonth(1)">›</button>
+        </div>
+        <div class="cal-weekdays">
+          <div class="cal-wd">일</div><div class="cal-wd">월</div><div class="cal-wd">화</div>
+          <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div>
+          <div class="cal-wd">토</div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+      </div>
+
+      <!-- Time Slots -->
+      <div class="section-heading fade-in-d3"><div class="dot"></div>시간 선택</div>
+      <div class="time-slots-wrap fade-in-d3">
+        <div class="time-slots-grid" id="time-slots"></div>
+      </div>
+
+      <!-- Booking Summary -->
+      <div class="booking-summary fade-in-d3" id="booking-summary" style="display:none;">
+        <div class="summary-item">디자이너<br><span id="sum-designer">—</span></div>
+        <div class="summary-item">시술<br><span id="sum-service">—</span></div>
+        <div class="summary-item">날짜<br><span id="sum-date">—</span></div>
+        <div class="summary-item">시간<br><span id="sum-time">—</span></div>
+      </div>
+
+      <!-- Book Button -->
+      <div class="book-btn-wrap fade-in-d3">
+        <button class="book-btn" id="book-btn" onclick="openConfirmModal()">
+          📅 예약하기
+        </button>
+      </div>
+
+    </div><!-- /panel-reserve -->
+
+    <!-- ══ TAB 2: 내 예약 ═══════════════════════ -->
+    <div class="tab-panel" id="panel-mybooking">
+      <div class="section-heading fade-in"><div class="dot"></div>예정된 예약</div>
+      <div class="bookings-list" id="bookings-upcoming"></div>
+      <div class="section-heading fade-in-d1" style="margin-top:16px;"><div class="dot"></div>지난 예약</div>
+      <div class="bookings-list" id="bookings-past"></div>
+      <div style="height:20px;"></div>
+    </div>
+
+    <!-- ══ TAB 3: 포인트 ═══════════════════════ -->
+    <div class="tab-panel" id="panel-points">
+      <div class="points-hero fade-in">
+        <div class="points-tier">🥇 골드 등급</div>
+        <div class="points-label">내 포인트 잔액</div>
+        <div class="points-value">3,200<span class="points-unit">P</span></div>
+        <div class="points-expiry">⚠ 500P 2026.06.30 소멸 예정</div>
+      </div>
+
+      <div class="points-actions fade-in-d1">
+        <div class="points-action-btn" onclick="showToast('포인트 사용 화면으로 이동합니다')">
+          <span class="pab-icon">🎁</span>
+          <div class="pab-label">포인트 사용</div>
+        </div>
+        <div class="points-action-btn" onclick="showToast('친구 초대 링크가 복사되었습니다!')">
+          <span class="pab-icon">👯</span>
+          <div class="pab-label">친구 초대</div>
+        </div>
+        <div class="points-action-btn" onclick="showToast('쿠폰함으로 이동합니다')">
+          <span class="pab-icon">🎟️</span>
+          <div class="pab-label">쿠폰함</div>
+        </div>
+        <div class="points-action-btn" onclick="showToast('혜택 안내 페이지로 이동합니다')">
+          <span class="pab-icon">💎</span>
+          <div class="pab-label">멤버십 혜택</div>
+        </div>
+      </div>
+
+      <div class="section-heading fade-in-d2"><div class="dot"></div>포인트 내역</div>
+      <div class="history-list fade-in-d2" id="points-history"></div>
+      <div style="height:20px;"></div>
+    </div>
+
+  </div><!-- /content-area -->
+
+  <!-- Bottom Tab Bar -->
+  <div class="bottom-bar">
+    <button class="tab-btn active" id="tab-reserve" onclick="switchTab('reserve')">
+      <span class="tab-icon">📅</span>
+      <span class="tab-label">예약하기</span>
+    </button>
+    <button class="tab-btn" id="tab-mybooking" onclick="switchTab('mybooking')">
+      <span class="tab-icon">🗓️</span>
+      <span class="tab-label">내 예약</span>
+      <span class="tab-dot" id="mybooking-dot"></span>
+    </button>
+    <button class="tab-btn" id="tab-points" onclick="switchTab('points')">
+      <span class="tab-icon">⭐</span>
+      <span class="tab-label">포인트</span>
+    </button>
+  </div>
+
+</div><!-- /app-shell -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+const state = {
+  selectedDesigner: null,
+  selectedService:  null,
+  selectedDate:     null,
+  selectedTime:     null,
+  calYear:  2026,
+  calMonth: 3,        // 0-indexed → April 2026
+};
+
+/* ═══════════════════════════════════════════════
+   TAB SWITCHING
+═══════════════════════════════════════════════ */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('content-area').scrollTop = 0;
+}
+
+/* ═══════════════════════════════════════════════
+   DESIGNER SELECT
+═══════════════════════════════════════════════ */
+function selectDesigner(el, name) {
+  document.querySelectorAll('.designer-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedDesigner = name;
+  updateSummary();
+  showToast(name + ' 디자이너를 선택했습니다 ✨');
+  renderTimeSlots();
+}
+
+/* ═══════════════════════════════════════════════
+   SERVICE SELECT
+═══════════════════════════════════════════════ */
+function selectServiceItem(el) {
+  document.querySelectorAll('.service-item').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selectedService = {
+    name:  el.dataset.svc,
+    price: el.dataset.price,
+    dur:   el.dataset.dur,
+  };
+  updateSummary();
+}
+
+function selectService(name) {
+  const el = document.querySelector(`.service-item[data-svc="${name}"]`);
+  if (el) { el.click(); el.scrollIntoView({ behavior:'smooth', block:'center' }); }
+}
+
+/* ═══════════════════════════════════════════════
+   CALENDAR
+═══════════════════════════════════════════════ */
+const MONTH_KO = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const availableDays = [2,3,5,7,8,10,11,12,14,15,17,19,20,21,22,24,26,28,29];
+const fullDays      = [6, 9, 16, 23];
+
+function renderCalendar() {
+  const { calYear: y, calMonth: m } = state;
+  document.getElementById('cal-month-label').textContent = `${y}년 ${MONTH_KO[m]}`;
+
+  const firstDow = new Date(y, m, 1).getDay();
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  const today = new Date();
+  const isThisMonth = today.getFullYear() === y && today.getMonth() === m;
+
+  let html = '';
+  for (let i = 0; i < firstDow; i++) html += `<div class="cal-day empty"></div>`;
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const isToday    = isThisMonth && d === today.getDate();
+    const isPast     = new Date(y, m, d) < new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const isAvail    = availableDays.includes(d);
+    const isFull     = fullDays.includes(d);
+    const isSelected = state.selectedDate &&
+                       state.selectedDate.d === d &&
+                       state.selectedDate.m === m &&
+                       state.selectedDate.y === y;
+
+    let cls = 'cal-day';
+    if (isPast || isFull) cls += ' disabled';
+    if (isToday)    cls += ' today';
+    if (isSelected) cls += ' selected';
+    if (isAvail && !isPast && !isFull) cls += ' has-slot';
+
+    const click = (!isPast && !isFull) ? `onclick="pickDate(${d})"` : '';
+    html += `<div class="${cls}" ${click}>${d}</div>`;
+  }
+
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+function changeMonth(dir) {
+  state.calMonth += dir;
+  if (state.calMonth > 11) { state.calMonth = 0; state.calYear++; }
+  if (state.calMonth < 0)  { state.calMonth = 11; state.calYear--; }
+  state.selectedDate = null;
+  state.selectedTime = null;
+  renderCalendar();
+  renderTimeSlots();
+  updateSummary();
+}
+
+function pickDate(d) {
+  state.selectedDate = { d, m: state.calMonth, y: state.calYear };
+  state.selectedTime = null;
+  renderCalendar();
+  renderTimeSlots();
+  updateSummary();
+}
+
+/* ═══════════════════════════════════════════════
+   TIME SLOTS
+═══════════════════════════════════════════════ */
+const ALL_SLOTS = [
+  '10:00','10:30','11:00','11:30','12:00','13:00',
+  '13:30','14:00','14:30','15:00','15:30','16:00',
+  '16:30','17:00','17:30','18:00','18:30','19:00'
+];
+const FULL_SLOTS_SET = ['11:30','12:00','13:00','15:00','17:00'];
+
+function renderTimeSlots() {
+  const wrap = document.getElementById('time-slots');
+  if (!state.selectedDate) {
+    wrap.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px;">날짜를 먼저 선택해주세요 📅</div>`;
+    return;
+  }
+  // Pseudo-random availability based on date
+  const seed = state.selectedDate.d;
+  const fullSet = new Set(FULL_SLOTS_SET);
+  if (seed % 3 === 0) { fullSet.add('14:00'); fullSet.add('16:00'); }
+  if (seed % 5 === 0) { fullSet.add('10:30'); }
+
+  wrap.innerHTML = ALL_SLOTS.map(t => {
+    const isFull = fullSet.has(t);
+    const isSel  = state.selectedTime === t;
+    let cls = 'time-slot';
+    if (isFull) cls += ' full';
+    if (isSel)  cls += ' selected';
+    const click = isFull ? '' : `onclick="pickTime('${t}')"`;
+    return `<div class="${cls}" ${click}>${t}<span class="time-sub">${isFull ? '마감' : '예약가능'}</span></div>`;
+  }).join('');
+}
+
+function pickTime(t) {
+  state.selectedTime = t;
+  renderTimeSlots();
+  updateSummary();
+}
+
+/* ═══════════════════════════════════════════════
+   SUMMARY
+═══════════════════════════════════════════════ */
+function updateSummary() {
+  const s = state;
+  const show = s.selectedDesigner || s.selectedService || s.selectedDate || s.selectedTime;
+  const summaryEl = document.getElementById('booking-summary');
+  summaryEl.style.display = show ? 'flex' : 'none';
+
+  document.getElementById('sum-designer').textContent = s.selectedDesigner ? s.selectedDesigner + ' 디자이너' : '—';
+  document.getElementById('sum-service').textContent  = s.selectedService  ? s.selectedService.name  : '—';
+  document.getElementById('sum-date').textContent     = s.selectedDate
+    ? `${s.selectedDate.m + 1}/${s.selectedDate.d}`
+    : '—';
+  document.getElementById('sum-time').textContent = s.selectedTime || '—';
+
+  const ready = s.selectedDesigner && s.selectedService && s.selectedDate && s.selectedTime;
+  const btn = document.getElementById('book-btn');
+  btn.disabled = !ready;
+  btn.textContent = ready
+    ? `📅 예약하기 — ₩${Number(s.selectedService.price).toLocaleString()}`
+    : '📅 예약하기';
+}
+
+/* ═══════════════════════════════════════════════
+   CONFIRM MODAL
+═══════════════════════════════════════════════ */
+function openConfirmModal() {
+  const s = state;
+  if (!s.selectedDesigner || !s.selectedService || !s.selectedDate || !s.selectedTime) return;
+  const dateStr = `2026.${String(s.selectedDate.m+1).padStart(2,'0')}.${String(s.selectedDate.d).padStart(2,'0')}`;
+  document.getElementById('confirm-details').innerHTML = `
+    <div class="confirm-detail-row"><span class="key">디자이너</span><span class="val">${s.selectedDesigner} 디자이너</span></div>
+    <div class="confirm-detail-row"><span class="key">시술</span><span class="val">${s.selectedService.name}</span></div>
+    <div class="confirm-detail-row"><span class="key">날짜</span><span class="val">${dateStr} (${s.selectedTime})</span></div>
+    <div class="confirm-detail-row"><span class="key">소요시간</span><span class="val">${s.selectedService.dur}</span></div>
+    <div class="confirm-detail-row"><span class="key">결제금액</span><span class="val" style="color:var(--rose)">₩${Number(s.selectedService.price).toLocaleString()}</span></div>
+    <div class="confirm-detail-row"><span class="key">적립예정</span><span class="val" style="color:var(--gold)">+${Math.round(Number(s.selectedService.price)*0.05).toLocaleString()} P</span></div>
+  `;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+
+document.getElementById('confirm-modal').addEventListener('click', function(e) {
+  if (e.target === this) this.classList.remove('open');
+});
+
+document.getElementById('final-confirm-btn').addEventListener('click', function() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  confirmBooking();
+});
+
+/* ═══════════════════════════════════════════════
+   BOOKING CONFIRMED
+═══════════════════════════════════════════════ */
+function confirmBooking() {
+  const s = state;
+  const dateStr = `2026.${String(s.selectedDate.m+1).padStart(2,'0')}.${String(s.selectedDate.d).padStart(2,'0')}`;
+
+  // Add to bookings list
+  upcomingBookings.unshift({
+    service:  s.selectedService.name,
+    designer: s.selectedDesigner,
+    date:     dateStr,
+    time:     s.selectedTime,
+    price:    s.selectedService.price,
+    status:   '예약완료',
+  });
+
+  // Add points
+  const pts = Math.round(Number(s.selectedService.price) * 0.05);
+  myPoints += pts;
+  pointsHistory.unshift({
+    type:  'earn',
+    title: `${s.selectedService.name} 예약 적립`,
+    date:  dateStr,
+    pts:   '+' + pts.toLocaleString(),
+  });
+  document.getElementById('my-points-strip').textContent = myPoints.toLocaleString();
+
+  // Reset state
+  state.selectedDesigner = null;
+  state.selectedService  = null;
+  state.selectedDate     = null;
+  state.selectedTime     = null;
+  document.querySelectorAll('.designer-card').forEach(c => c.classList.remove('selected'));
+  document.querySelectorAll('.service-item').forEach(s => s.classList.remove('selected'));
+  renderCalendar();
+  renderTimeSlots();
+  updateSummary();
+
+  // Confetti + switch tab
+  launchConfetti();
+  setTimeout(() => {
+    showToast('🎉 예약이 완료되었습니다!');
+    renderBookings();
+    renderPointsHistory();
+    switchTab('mybooking');
+  }, 300);
+}
+
+/* ═══════════════════════════════════════════════
+   MY BOOKINGS DATA
+═══════════════════════════════════════════════ */
+let upcomingBookings = [
+  { service:'발레아쥬 / 옴브레', designer:'수연', date:'2026.04.12', time:'14:00', price:'200000', status:'예약완료' },
+  { service:'커트',            designer:'지훈', date:'2026.04.20', time:'11:00', price:'45000',  status:'예약대기' },
+];
+const pastBookings = [
+  { service:'매직 스트레이트펌', designer:'민지', date:'2026.03.15', time:'13:00', price:'160000', status:'완료' },
+  { service:'케라틴 트리트먼트', designer:'수연', date:'2026.02.28', time:'15:30', price:'60000',  status:'완료' },
+  { service:'커트',            designer:'지훈', date:'2026.02.10', time:'10:00', price:'45000',  status:'완료' },
+];
+
+const DESIGNER_COLORS = { 수연:'avatar-1', 지훈:'avatar-2', 민지:'avatar-3', default:'avatar-1' };
+const DESIGNER_EMOJI  = { 수연:'👩', 지훈:'👨', 민지:'🧑' };
+
+function renderBookings() {
+  const uEl = document.getElementById('bookings-upcoming');
+  const pEl = document.getElementById('bookings-past');
+
+  uEl.innerHTML = upcomingBookings.map((b, i) => `
+    <div class="booking-card fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price">₩${Number(b.price).toLocaleString()}</div>
+        <button class="cancel-btn" onclick="cancelBooking(${i})">취소</button>
+      </div>
+    </div>
+  `).join('') || `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">예정된 예약이 없습니다</div>`;
+
+  pEl.innerHTML = pastBookings.map((b, i) => `
+    <div class="booking-card past fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
+        <button class="review-btn" onclick="showToast('리뷰 작성 감사합니다! ⭐')">리뷰 작성</button>
+      </div>
+    </div>
+  `).join('');
+
+  // Dot on tab
+  document.getElementById('mybooking-dot').style.display = upcomingBookings.length ? '' : 'none';
+}
+
+function cancelBooking(idx) {
+  if (!confirm('예약을 취소하시겠습니까?')) return;
+  upcomingBookings.splice(idx, 1);
+  renderBookings();
+  showToast('예약이 취소되었습니다');
+}
+
+/* ═══════════════════════════════════════════════
+   POINTS HISTORY
+═══════════════════════════════════════════════ */
+let myPoints = 3200;
+let pointsHistory = [
+  { type:'earn',  title:'발레아쥬 예약 적립',       date:'2026.03.15', pts:'+10,000' },
+  { type:'spend', title:'커트 포인트 사용',          date:'2026.03.08', pts:'-5,000'  },
+  { type:'earn',  title:'친구 초대 보너스',          date:'2026.02.20', pts:'+2,000'  },
+  { type:'earn',  title:'생일 축하 포인트',          date:'2026.02.14', pts:'+3,000'  },
+  { type:'spend', title:'트리트먼트 포인트 사용',    date:'2026.01.30', pts:'-1,500'  },
+  { type:'earn',  title:'케라틴 예약 적립',          date:'2026.01.10', pts:'+3,000'  },
+];
+
+function renderPointsHistory() {
+  document.getElementById('points-history').innerHTML = pointsHistory.map((h, i) => `
+    <div class="history-item" style="animation:fadeInUp .3s ${i*0.05}s both">
+      <div class="history-icon ${h.type}">${h.type === 'earn' ? '💰' : '🛍️'}</div>
+      <div class="history-info">
+        <div class="history-title">${h.title}</div>
+        <div class="history-date">${h.date}</div>
+      </div>
+      <div class="history-pts ${h.type}">${h.pts} P</div>
+    </div>
+  `).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST
+═══════════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2400);
+}
+
+/* ═══════════════════════════════════════════════
+   CONFETTI
+═══════════════════════════════════════════════ */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const COLORS = ['#c9184a','#ff4d6d','#c9a84c','#f0d080','#fff8f0','#ff758c','#ffd6a5'];
+  const pieces = Array.from({length: 160}, () => ({
+    x:    Math.random() * canvas.width,
+    y:    Math.random() * canvas.height - canvas.height,
+    w:    Math.random() * 10 + 4,
+    h:    Math.random() * 6  + 3,
+    r:    Math.random() * Math.PI * 2,
+    rv:   (Math.random() - 0.5) * 0.2,
+    vy:   Math.random() * 4 + 2,
+    vx:   (Math.random() - 0.5) * 2,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    alpha: 1,
+  }));
+
+  let frame;
+  let startTime = performance.now();
+
+  function draw(now) {
+    const elapsed = now - startTime;
+    if (elapsed > 3500) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return;
+    }
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y  += p.vy;
+      p.x  += p.vx;
+      p.r  += p.rv;
+      p.vy += 0.05;
+      if (elapsed > 2000) p.alpha = Math.max(0, p.alpha - 0.015);
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.r);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame = requestAnimationFrame(draw);
+  }
+  frame = requestAnimationFrame(draw);
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+(function init() {
+  // Set current month to April 2026
+  state.calYear  = 2026;
+  state.calMonth = 3;
+  renderCalendar();
+  renderTimeSlots();
+  renderBookings();
+  renderPointsHistory();
+  updateSummary();
+
+  // Position app-shell toast relative to the viewport bottom
+  const appShell = document.getElementById('app-shell');
+  const rect = appShell.getBoundingClientRect();
+})();
+</script>
+</body>
+</html>

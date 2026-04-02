@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>탑수학학원 - 학생 앱</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1e0a3c 0%, #3b0764 40%, #4c1d95 70%, #1e0a3c 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Animated background stars */
+  .bg-stars {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+  .bg-star {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(251, 191, 36, 0.6);
+    animation: twinkle var(--dur, 3s) ease-in-out infinite var(--delay, 0s);
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.4); }
+  }
+
+  /* iPhone Frame */
+  .phone-wrapper {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .phone-label {
+    color: rgba(251, 191, 36, 0.85);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.9;
+  }
+
+  .iphone-frame {
+    width: 375px;
+    height: 812px;
+    background: #1a1a2e;
+    border-radius: 55px;
+    position: relative;
+    box-shadow:
+      0 0 0 2px #4a4a5a,
+      0 0 0 4px #2a2a3a,
+      0 0 0 6px #1a1a2e,
+      0 0 60px rgba(124, 58, 237, 0.5),
+      0 40px 80px rgba(0,0,0,0.7),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    overflow: hidden;
+    transform-style: preserve-3d;
+  }
+
+  /* Side buttons */
+  .iphone-frame::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 120px;
+    width: 4px;
+    height: 32px;
+    background: linear-gradient(to right, #3a3a4a, #5a5a6a);
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 44px 0 #3a3a4a, 0 88px 0 #3a3a4a;
+  }
+  .iphone-frame::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 155px;
+    width: 4px;
+    height: 64px;
+    background: linear-gradient(to left, #3a3a4a, #5a5a6a);
+    border-radius: 0 2px 2px 0;
+  }
+
+  /* Screen */
+  .phone-screen {
+    position: absolute;
+    inset: 0;
+    border-radius: 55px;
+    overflow: hidden;
+    background: #f0f0f5;
+  }
+
+  /* Notch */
+  .notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 150px;
+    height: 30px;
+    background: #1a1a2e;
+    border-radius: 0 0 22px 22px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .notch-camera {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #0d0d1a;
+    border: 2px solid #2a2a3a;
+    box-shadow: inset 0 0 0 2px rgba(124, 58, 237, 0.3);
+  }
+  .notch-speaker {
+    width: 48px;
+    height: 5px;
+    background: #0d0d1a;
+    border-radius: 3px;
+  }
+
+  /* Status Bar */
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 44px;
+    padding: 14px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 50;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .status-time { font-size: 15px; font-weight: 700; }
+  .status-icons { display: flex; align-items: center; gap: 5px; }
+  .status-icon {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+  }
+  .signal-bar {
+    width: 3px;
+    background: #fff;
+    border-radius: 1px;
+  }
+  .battery-icon {
+    width: 22px;
+    height: 11px;
+    border: 1.5px solid #fff;
+    border-radius: 3px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 1.5px;
+    gap: 1px;
+  }
+  .battery-icon::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 5px;
+    background: #fff;
+    border-radius: 0 1px 1px 0;
+  }
+  .battery-fill {
+    height: 100%;
+    width: 70%;
+    background: #4ade80;
+    border-radius: 1px;
+  }
+  .wifi-icon {
+    font-size: 10px;
+  }
+
+  /* App Content */
+  .app-content {
+    position: absolute;
+    top: 44px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: #f0f0f5;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    scroll-behavior: smooth;
+  }
+  .app-content::-webkit-scrollbar { display: none; }
+
+  /* App Header */
+  .app-header {
+    background: linear-gradient(160deg, #7c3aed 0%, #5b21b6 60%, #4c1d95 100%);
+    padding: 16px 20px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .app-header::before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    background: rgba(251, 191, 36, 0.12);
+    border-radius: 50%;
+  }
+  .app-header::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: -20px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 50%;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .header-greeting {
+    color: rgba(255,255,255,0.8);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .header-name {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 800;
+    margin-top: 2px;
+  }
+  .header-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    box-shadow: 0 4px 12px rgba(251,191,36,0.4);
+    position: relative;
+    z-index: 1;
+  }
+  .header-level {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 6px;
+  }
+  .level-badge {
+    background: rgba(251, 191, 36, 0.2);
+    border: 1px solid rgba(251, 191, 36, 0.5);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    backdrop-filter: blur(4px);
+  }
+  .xp-text {
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .xp-bar-wrap {
+    background: rgba(255,255,255,0.15);
+    height: 6px;
+    border-radius: 3px;
+    margin-top: 10px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+  }
+  .xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #fbbf24, #f59e0b);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 1.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .xp-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 30px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5));
+    animation: shimmer-bar 2s infinite;
+  }
+  @keyframes shimmer-bar {
+    0% { transform: translateX(30px); opacity: 0; }
+    50% { opacity: 1; }
+    100% { transform: translateX(-100px); opacity: 0; }
+  }
+
+  /* Section */
+  .section {
+    padding: 16px 16px 0;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .section-title-icon {
+    font-size: 16px;
+  }
+
+  /* Today's Class Card */
+  .today-card {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    border-radius: 20px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(124, 58, 237, 0.35);
+    margin-bottom: 14px;
+  }
+  .today-card::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 120px;
+    height: 120px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+  .today-label {
+    color: rgba(255,255,255,0.75);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .today-class-name {
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .today-time {
+    color: #fbbf24;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .today-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 14px;
+  }
+  .today-room {
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .checkin-btn {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #1a1a2e;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 800;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(251,191,36,0.4);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .checkin-btn:active { transform: scale(0.95); }
+  .checkin-btn.checked {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    box-shadow: 0 4px 12px rgba(74,222,128,0.4);
+  }
+  .checkin-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    transform: scale(0);
+    animation: ripple-anim 0.6s linear;
+    pointer-events: none;
+  }
+  @keyframes ripple-anim {
+    to { transform: scale(4); opacity: 0; }
+  }
+
+  /* Stats Row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 16px 16px 0 0;
+  }
+  .stat-card.purple::before { background: linear-gradient(90deg, #7c3aed, #a855f7); }
+  .stat-card.yellow::before { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+  .stat-card.green::before { background: linear-gradient(90deg, #4ade80, #22c55e); }
+  .stat-icon { font-size: 20px; margin-bottom: 4px; }
+  .stat-value {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1a1a2e;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: #9ca3af;
+    font-weight: 600;
+    margin-top: 3px;
+    letter-spacing: 0.03em;
+  }
+
+  /* Achievement Badges */
+  .badges-scroll {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    margin-bottom: 14px;
+  }
+  .badges-scroll::-webkit-scrollbar { display: none; }
+  .badge-item {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .badge-icon-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .badge-icon-wrap:hover { transform: scale(1.08); }
+  .badge-icon-wrap.earned {
+    animation: badge-glow 2.5s ease-in-out infinite;
+  }
+  .badge-icon-wrap.locked {
+    filter: grayscale(100%);
+    opacity: 0.45;
+  }
+  @keyframes badge-glow {
+    0%, 100% { box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+    50% { box-shadow: 0 4px 24px rgba(251,191,36,0.5), 0 0 0 2px rgba(251,191,36,0.3); }
+  }
+  .badge-shimmer {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255,255,255,0.5) 50%,
+      transparent 70%
+    );
+    animation: shimmer 3s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    60%, 100% { transform: translateX(100%); }
+  }
+  .badge-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: #4b5563;
+    text-align: center;
+    max-width: 64px;
+    line-height: 1.2;
+  }
+  .badge-new {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 8px;
+    font-weight: 800;
+    padding: 2px 5px;
+    border-radius: 8px;
+    border: 1.5px solid #fff;
+    animation: pulse-badge 1s ease-in-out infinite;
+  }
+  @keyframes pulse-badge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  /* Score Cards */
+  .score-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .score-card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    position: relative;
+    overflow: hidden;
+  }
+  .score-card-subject {
+    font-size: 11px;
+    font-weight: 700;
+    color: #9ca3af;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .score-card-value {
+    font-size: 28px;
+    font-weight: 900;
+    color: #1a1a2e;
+    line-height: 1;
+  }
+  .score-card-value span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #9ca3af;
+  }
+  .score-card-change {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+  .score-card-change.up { color: #22c55e; }
+  .score-card-change.down { color: #ef4444; }
+  .score-mini-bar {
+    margin-top: 10px;
+    background: #f3f4f6;
+    height: 4px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .score-mini-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    transition: width 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Weekly Schedule */
+  .weekly-schedule {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 14px;
+  }
+  .week-days {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .week-day-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex: 1;
+  }
+  .week-day-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #9ca3af;
+  }
+  .week-day-circle {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .week-day-circle.today {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(124,58,237,0.35);
+  }
+  .week-day-circle.attended {
+    background: #f0fdf4;
+    color: #22c55e;
+    border: 2px solid #bbf7d0;
+  }
+  .week-day-circle.absent {
+    background: #fef2f2;
+    color: #ef4444;
+    border: 2px solid #fecaca;
+  }
+  .week-day-circle.no-class {
+    background: #f9fafb;
+    color: #d1d5db;
+  }
+  .week-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+  }
+  .week-dot.has-class { background: #7c3aed; }
+  .week-dot.no-class { background: transparent; }
+
+  /* Schedule List */
+  .schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .schedule-item {
+    background: #fff;
+    border-radius: 16px;
+    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    position: relative;
+    overflow: hidden;
+  }
+  .schedule-item::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    border-radius: 4px 0 0 4px;
+  }
+  .schedule-item.math::before { background: linear-gradient(to bottom, #7c3aed, #5b21b6); }
+  .schedule-item.english::before { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
+  .schedule-item.science::before { background: linear-gradient(to bottom, #22c55e, #16a34a); }
+  .schedule-time-col {
+    min-width: 50px;
+  }
+  .schedule-time {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .schedule-ampm {
+    font-size: 10px;
+    color: #9ca3af;
+    font-weight: 500;
+  }
+  .schedule-info { flex: 1; }
+  .schedule-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .schedule-teacher {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 1px;
+  }
+  .schedule-room {
+    font-size: 11px;
+    color: #7c3aed;
+    font-weight: 600;
+    background: #f3f0ff;
+    padding: 3px 8px;
+    border-radius: 8px;
+  }
+
+  /* Teacher Message */
+  .message-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .message-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #7c3aed, #fbbf24);
+  }
+  .message-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .message-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+  .message-from {
+    font-size: 13px;
+    font-weight: 700;
+    color: #1a1a2e;
+  }
+  .message-time-label {
+    font-size: 10px;
+    color: #9ca3af;
+    margin-top: 1px;
+  }
+  .message-body {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.55;
+    background: #f9f9ff;
+    border-radius: 12px;
+    padding: 12px;
+    border-left: 3px solid #7c3aed;
+  }
+  .message-highlight {
+    color: #7c3aed;
+    font-weight: 700;
+  }
+
+  /* Recent Achievement */
+  .achievement-card {
+    background: linear-gradient(135deg, #fffbeb, #fef3c7);
+    border-radius: 18px;
+    padding: 14px 16px;
+    border: 1.5px solid #fde68a;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 4px 12px rgba(251,191,36,0.2);
+    animation: achievement-appear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes achievement-appear {
+    from { opacity: 0; transform: translateY(20px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .achievement-badge-icon {
+    font-size: 36px;
+    animation: badge-bounce 1s ease-in-out infinite;
+  }
+  @keyframes badge-bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+  .achievement-info { flex: 1; }
+  .achievement-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #d97706;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+  }
+  .achievement-name {
+    font-size: 15px;
+    font-weight: 800;
+    color: #1a1a2e;
+  }
+  .achievement-desc {
+    font-size: 11px;
+    color: #6b7280;
+    margin-top: 2px;
+  }
+  .achievement-xp {
+    background: #fbbf24;
+    color: #1a1a2e;
+    font-size: 12px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+
+  /* Bottom Nav */
+  .bottom-nav {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(0,0,0,0.08);
+    padding: 8px 0 16px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-end;
+    z-index: 99;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    flex: 1;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: transform 0.15s ease;
+  }
+  .nav-item:active { transform: scale(0.9); }
+  .nav-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 18px;
+    transition: all 0.2s ease;
+  }
+  .nav-item.active .nav-icon {
+    background: linear-gradient(135deg, #7c3aed, #5b21b6);
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(124,58,237,0.35);
+  }
+  .nav-label {
+    font-size: 9px;
+    font-weight: 600;
+    color: #9ca3af;
+  }
+  .nav-item.active .nav-label { color: #7c3aed; font-weight: 800; }
+  .nav-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #7c3aed;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+  }
+
+  /* Confetti Canvas */
+  #confetti-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 200;
+    border-radius: 55px;
+  }
+
+  /* Toast */
+  .toast {
+    position: absolute;
+    top: 56px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(30, 10, 60, 0.92);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    z-index: 300;
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(251,191,36,0.3);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Floating sparkles */
+  .sparkle {
+    position: absolute;
+    pointer-events: none;
+    animation: sparkle-float 1s ease-out forwards;
+    z-index: 150;
+    font-size: 16px;
+  }
+  @keyframes sparkle-float {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0.5); }
+  }
+
+  /* Progress ring */
+  .progress-ring-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 14px;
+  }
+  .progress-ring-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+  }
+  .progress-ring-svg {
+    transform: rotate(-90deg);
+  }
+  .progress-ring-bg {
+    fill: none;
+    stroke: #f3f4f6;
+    stroke-width: 7;
+  }
+  .progress-ring-fill {
+    fill: none;
+    stroke: url(#ring-gradient);
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-dasharray: 220;
+    stroke-dashoffset: 220;
+    transition: stroke-dashoffset 2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .progress-ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .ring-level {
+    font-size: 20px;
+    font-weight: 900;
+    color: #1a1a2e;
+    line-height: 1;
+  }
+  .ring-lv-label {
+    font-size: 9px;
+    font-weight: 700;
+    color: #9ca3af;
+    text-transform: uppercase;
+  }
+  .ring-info { flex: 1; }
+  .ring-info-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+  .ring-info-desc {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.45;
+  }
+  .ring-xp-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .ring-xp-current { font-size: 13px; font-weight: 800; color: #7c3aed; }
+  .ring-xp-max { font-size: 11px; color: #9ca3af; }
+
+</style>
+</head>
+<body>
+
+<!-- Background Stars -->
+<div class="bg-stars" id="bgStars"></div>
+
+<!-- Phone Wrapper -->
+<div class="phone-wrapper">
+  <div class="phone-label">탑수학학원 · Student App</div>
+
+  <div class="iphone-frame" id="iphoneFrame">
+    <div class="phone-screen">
+
+      <!-- Confetti Canvas -->
+      <canvas id="confetti-canvas"></canvas>
+
+      <!-- Toast -->
+      <div class="toast" id="toast">
+        <span id="toast-icon">✅</span>
+        <span id="toast-text">출석 완료!</span>
+      </div>
+
+      <!-- Notch -->
+      <div class="notch">
+        <div class="notch-speaker"></div>
+        <div class="notch-camera"></div>
+      </div>
+
+      <!-- Status Bar -->
+      <div class="status-bar">
+        <span class="status-time" id="statusTime">9:41</span>
+        <div class="status-icons">
+          <!-- Signal bars -->
+          <div class="status-icon">
+            <div class="signal-bar" style="height:4px;"></div>
+            <div class="signal-bar" style="height:7px;"></div>
+            <div class="signal-bar" style="height:10px;"></div>
+            <div class="signal-bar" style="height:13px;"></div>
+          </div>
+          <!-- WiFi -->
+          <span class="wifi-icon">📶</span>
+          <!-- Battery -->
+          <div class="battery-icon"><div class="battery-fill"></div></div>
+        </div>
+      </div>
+
+      <!-- App Content -->
+      <div class="app-content" id="appContent">
+
+        <!-- App Header -->
+        <div class="app-header">
+          <div class="header-top">
+            <div>
+              <div class="header-greeting">안녕하세요 👋</div>
+              <div class="header-name">김민준 학생</div>
+            </div>
+            <div class="header-avatar">🦁</div>
+          </div>
+          <div class="header-level">
+            <div class="level-badge">⚡ Lv. 7</div>
+            <div class="xp-text">2,340 / 3,000 XP</div>
+          </div>
+          <div class="xp-bar-wrap">
+            <div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div style="padding: 0 0 8px 0;">
+
+          <!-- Today's Class -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">📚</span> 오늘 수업
+            </div>
+            <div class="today-card">
+              <div class="today-label">오늘의 수업</div>
+              <div class="today-class-name">수학 심화반</div>
+              <div class="today-time">🕓 오후 4:00 · 90분</div>
+              <div class="today-footer">
+                <div class="today-room">📍 3번 강의실</div>
+                <button class="checkin-btn" id="checkinBtn" onclick="handleCheckin(event)">
+                  <span id="checkinIcon">✋</span>
+                  <span id="checkinText">체크인</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats -->
+          <div class="section">
+            <div class="stats-row">
+              <div class="stat-card purple">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-value" id="streakVal">0</div>
+                <div class="stat-label">연속 출석</div>
+              </div>
+              <div class="stat-card yellow">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-value" id="pointsVal">0</div>
+                <div class="stat-label">포인트</div>
+              </div>
+              <div class="stat-card green">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value" id="rankVal">2</div>
+                <div class="stat-label">반 순위</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Level Progress Ring -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">⚡</span> 레벨 현황
+            </div>
+            <div class="progress-ring-wrap">
+              <div class="progress-ring-container">
+                <svg class="progress-ring-svg" width="80" height="80" viewBox="0 0 80 80">
+                  <defs>
+                    <linearGradient id="ring-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#7c3aed"/>
+                      <stop offset="100%" stop-color="#fbbf24"/>
+                    </linearGradient>
+                  </defs>
+                  <circle class="progress-ring-bg" cx="40" cy="40" r="35"/>
+                  <circle class="progress-ring-fill" id="ringFill" cx="40" cy="40" r="35"/>
+                </svg>
+                <div class="progress-ring-center">
+                  <div class="ring-level">7</div>
+                  <div class="ring-lv-label">LV</div>
+                </div>
+              </div>
+              <div class="ring-info">
+                <div class="ring-info-title">수학 마스터 🧙</div>
+                <div class="ring-info-desc">다음 레벨까지<br><strong style="color:#7c3aed">660 XP</strong> 남았어요!</div>
+                <div class="ring-xp-row">
+                  <span class="ring-xp-current">2,340 XP</span>
+                  <span class="ring-xp-max">/ 3,000 XP</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Achievements -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">🏅</span> 획득 뱃지
+            </div>
+            <div class="badges-scroll" id="badgesScroll">
+              <!-- Badges rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Recent Achievement Unlocked -->
+          <div class="section">
+            <div class="achievement-card" id="recentAchievement">
+              <div class="achievement-badge-icon">🌟</div>
+              <div class="achievement-info">
+                <div class="achievement-label">🎉 새 뱃지 획득!</div>
+                <div class="achievement-name">수학왕 달성!</div>
+                <div class="achievement-desc">이번 달 100점 3회 달성</div>
+              </div>
+              <div class="achievement-xp">+500 XP</div>
+            </div>
+          </div>
+
+          <!-- Score Cards -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">📊</span> 최근 성적
+            </div>
+            <div class="score-cards">
+              <div class="score-card">
+                <div class="score-card-subject">수학 심화</div>
+                <div class="score-card-value"><span id="scoreA">0</span><span>/100</span></div>
+                <div class="score-card-change up">▲ +8점 향상</div>
+                <div class="score-mini-bar">
+                  <div class="score-mini-bar-fill" id="barA" style="background:linear-gradient(90deg,#7c3aed,#a855f7)"></div>
+                </div>
+              </div>
+              <div class="score-card">
+                <div class="score-card-subject">수학 기본</div>
+                <div class="score-card-value"><span id="scoreB">0</span><span>/100</span></div>
+                <div class="score-card-change up">▲ +5점 향상</div>
+                <div class="score-mini-bar">
+                  <div class="score-mini-bar-fill" id="barB" style="background:linear-gradient(90deg,#fbbf24,#f59e0b)"></div>
+                </div>
+              </div>
+              <div class="score-card">
+                <div class="score-card-subject">모의고사</div>
+                <div class="score-card-value"><span id="scoreC">0</span><span>/100</span></div>
+                <div class="score-card-change down">▼ -2점</div>
+                <div class="score-mini-bar">
+                  <div class="score-mini-bar-fill" id="barC" style="background:linear-gradient(90deg,#22c55e,#16a34a)"></div>
+                </div>
+              </div>
+              <div class="score-card">
+                <div class="score-card-subject">수학 올림피아드</div>
+                <div class="score-card-value"><span id="scoreD">0</span><span>/100</span></div>
+                <div class="score-card-change up">▲ +12점</div>
+                <div class="score-mini-bar">
+                  <div class="score-mini-bar-fill" id="barD" style="background:linear-gradient(90deg,#f43f5e,#e11d48)"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weekly Schedule -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">📅</span> 이번 주 출석
+            </div>
+            <div class="weekly-schedule">
+              <div class="week-days">
+                <div class="week-day-item">
+                  <span class="week-day-label">월</span>
+                  <div class="week-day-circle attended">✓</div>
+                  <div class="week-dot has-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">화</span>
+                  <div class="week-day-circle no-class">—</div>
+                  <div class="week-dot no-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">수</span>
+                  <div class="week-day-circle attended">✓</div>
+                  <div class="week-dot has-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">목</span>
+                  <div class="week-day-circle attended">✓</div>
+                  <div class="week-dot has-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">금</span>
+                  <div class="week-day-circle today">4</div>
+                  <div class="week-dot has-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">토</span>
+                  <div class="week-day-circle no-class">—</div>
+                  <div class="week-dot no-class"></div>
+                </div>
+                <div class="week-day-item">
+                  <span class="week-day-label">일</span>
+                  <div class="week-day-circle no-class">—</div>
+                  <div class="week-dot no-class"></div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:center;gap:16px;">
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="width:10px;height:10px;border-radius:50%;background:#f0fdf4;border:1.5px solid #22c55e;"></div>
+                  <span style="font-size:11px;color:#6b7280;font-weight:500;">출석</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#5b21b6);"></div>
+                  <span style="font-size:11px;color:#6b7280;font-weight:500;">오늘</span>
+                </div>
+                <div style="display:flex;align-items:center;gap:4px;">
+                  <div style="width:10px;height:10px;border-radius:50%;background:#f9fafb;border:1.5px solid #d1d5db;"></div>
+                  <span style="font-size:11px;color:#6b7280;font-weight:500;">휴강</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Class Schedule -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">🗓️</span> 수업 시간표
+            </div>
+            <div class="schedule-list">
+              <div class="schedule-item math">
+                <div class="schedule-time-col">
+                  <div class="schedule-time">4:00</div>
+                  <div class="schedule-ampm">오후</div>
+                </div>
+                <div class="schedule-info">
+                  <div class="schedule-name">수학 심화반</div>
+                  <div class="schedule-teacher">👨‍🏫 이준호 선생님</div>
+                </div>
+                <div class="schedule-room">3강</div>
+              </div>
+              <div class="schedule-item english">
+                <div class="schedule-time-col">
+                  <div class="schedule-time">6:00</div>
+                  <div class="schedule-ampm">오후</div>
+                </div>
+                <div class="schedule-info">
+                  <div class="schedule-name">수학 올림피아드</div>
+                  <div class="schedule-teacher">👩‍🏫 박지현 선생님</div>
+                </div>
+                <div class="schedule-room">1강</div>
+              </div>
+              <div class="schedule-item science">
+                <div class="schedule-time-col">
+                  <div class="schedule-time">10:00</div>
+                  <div class="schedule-ampm">오전 (토)</div>
+                </div>
+                <div class="schedule-info">
+                  <div class="schedule-name">주말 모의고사반</div>
+                  <div class="schedule-teacher">👨‍🏫 김도현 선생님</div>
+                </div>
+                <div class="schedule-room">2강</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Teacher Message -->
+          <div class="section">
+            <div class="section-title">
+              <span class="section-title-icon">💬</span> 선생님 메시지
+            </div>
+            <div class="message-card">
+              <div class="message-header">
+                <div class="message-avatar">👨‍🏫</div>
+                <div>
+                  <div class="message-from">이준호 선생님 · 수학 심화반</div>
+                  <div class="message-time-label">오늘 오전 8:30</div>
+                </div>
+              </div>
+              <div class="message-body">
+                <span class="message-highlight">민준이</span>, 이번 주 수업에서
+                <span class="message-highlight">미적분 단원</span>을 마무리합니다!<br><br>
+                지난번 시험에서 많이 향상되었어요. 오늘도 <span class="message-highlight">열심히</span> 해봐요! 모르는 문제는 꼭 질문하세요 💪
+              </div>
+            </div>
+          </div>
+
+          <!-- Spacer for bottom nav -->
+          <div style="height: 20px;"></div>
+
+        </div><!-- end main content -->
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+          <div class="nav-item active" onclick="navClick(this)">
+            <div class="nav-icon">🏠</div>
+            <span class="nav-label">홈</span>
+          </div>
+          <div class="nav-item" onclick="navClick(this)">
+            <div class="nav-icon" style="position:relative;">📊<span class="nav-dot"></span></div>
+            <span class="nav-label">성적</span>
+          </div>
+          <div class="nav-item" onclick="navClick(this)">
+            <div class="nav-icon">🏅</div>
+            <span class="nav-label">뱃지</span>
+          </div>
+          <div class="nav-item" onclick="navClick(this)">
+            <div class="nav-icon">📅</div>
+            <span class="nav-label">시간표</span>
+          </div>
+          <div class="nav-item" onclick="navClick(this)">
+            <div class="nav-icon">👤</div>
+            <span class="nav-label">내 정보</span>
+          </div>
+        </div>
+
+      </div><!-- end app-content -->
+    </div><!-- end phone-screen -->
+  </div><!-- end iphone-frame -->
+</div><!-- end phone-wrapper -->
+
+<script>
+// ============================================================
+// BACKGROUND STARS
+// ============================================================
+(function() {
+  const container = document.getElementById('bgStars');
+  for (let i = 0; i < 60; i++) {
+    const star = document.createElement('div');
+    star.className = 'bg-star';
+    const size = Math.random() * 3 + 1;
+    star.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      top:${Math.random()*100}%;
+      --dur:${2 + Math.random()*4}s;
+      --delay:${Math.random()*-5}s;
+    `;
+    container.appendChild(star);
+  }
+})();
+
+// ============================================================
+// STATUS BAR CLOCK
+// ============================================================
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  document.getElementById('statusTime').textContent =
+    `${h}:${m.toString().padStart(2,'0')}`;
+}
+updateClock();
+setInterval(updateClock, 30000);
+
+// ============================================================
+// ANIMATED COUNTERS
+// ============================================================
+function animateCounter(el, target, duration = 1500) {
+  let start = null;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target);
+    if (progress < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+// ============================================================
+// INIT ANIMATIONS ON LOAD
+// ============================================================
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    // XP Bar
+    document.getElementById('xpBarFill').style.width = '78%';
+
+    // Progress Ring: 2340/3000 = 78%
+    const ring = document.getElementById('ringFill');
+    const circumference = 2 * Math.PI * 35;
+    ring.style.strokeDasharray = circumference;
+    ring.style.strokeDashoffset = circumference;
+    setTimeout(() => {
+      const offset = circumference * (1 - 0.78);
+      ring.style.strokeDashoffset = offset;
+    }, 400);
+
+    // Counters
+    animateCounter(document.getElementById('streakVal'), 12, 1200);
+    animateCounter(document.getElementById('pointsVal'), 8420, 1800);
+    animateCounter(document.getElementById('scoreA'), 98, 2000);
+    animateCounter(document.getElementById('scoreB'), 95, 1800);
+    animateCounter(document.getElementById('scoreC'), 87, 1600);
+    animateCounter(document.getElementById('scoreD'), 91, 1900);
+
+    // Score bars
+    setTimeout(() => {
+      document.getElementById('barA').style.width = '98%';
+      document.getElementById('barB').style.width = '95%';
+      document.getElementById('barC').style.width = '87%';
+      document.getElementById('barD').style.width = '91%';
+    }, 300);
+  }, 300);
+
+  // Render badges
+  renderBadges();
+});
+
+// ============================================================
+// BADGES
+// ============================================================
+const badges = [
+  { icon: '👑', name: '수학왕', color: 'linear-gradient(135deg,#f59e0b,#d97706)', earned: true, isNew: true },
+  { icon: '🔥', name: '개근상', color: 'linear-gradient(135deg,#ef4444,#dc2626)', earned: true, isNew: false },
+  { icon: '⚡', name: '스피드왕', color: 'linear-gradient(135deg,#7c3aed,#5b21b6)', earned: true, isNew: false },
+  { icon: '💎', name: '완벽주의', color: 'linear-gradient(135deg,#06b6d4,#0891b2)', earned: true, isNew: false },
+  { icon: '🚀', name: '도전자', color: 'linear-gradient(135deg,#f97316,#ea580c)', earned: true, isNew: false },
+  { icon: '🦁', name: '리더', color: 'linear-gradient(135deg,#84cc16,#65a30d)', earned: false, isNew: false },
+  { icon: '🌙', name: '야간반왕', color: 'linear-gradient(135deg,#1e40af,#1d4ed8)', earned: false, isNew: false },
+  { icon: '🎯', name: '100점클럽', color: 'linear-gradient(135deg,#ec4899,#db2777)', earned: false, isNew: false },
+];
+
+function renderBadges() {
+  const container = document.getElementById('badgesScroll');
+  badges.forEach((b, i) => {
+    const item = document.createElement('div');
+    item.className = 'badge-item';
+    item.innerHTML = `
+      <div class="badge-icon-wrap ${b.earned ? 'earned' : 'locked'}"
+           style="background:${b.color}; animation-delay:${i*0.3}s;"
+           onclick="badgeClick(this, ${i})">
+        ${b.icon}
+        ${b.earned ? '<div class="badge-shimmer"></div>' : ''}
+        ${b.isNew ? '<div class="badge-new">NEW</div>' : ''}
+      </div>
+      <div class="badge-name">${b.name}</div>
+    `;
+    container.appendChild(item);
+  });
+}
+
+function badgeClick(el, index) {
+  if (!badges[index].earned) {
+    showToast('🔒', '아직 잠금 상태예요!');
+    el.style.animation = 'none';
+    el.style.transform = 'translateX(-4px)';
+    setTimeout(() => {
+      el.style.transform = 'translateX(4px)';
+      setTimeout(() => { el.style.transform = ''; }, 80);
+    }, 80);
+    return;
+  }
+  el.style.transform = 'scale(1.2)';
+  setTimeout(() => { el.style.transform = ''; }, 300);
+  triggerConfetti();
+  showToast('🏅', `${badges[index].name} 뱃지!`);
+  spawnSparkles(el);
+}
+
+// ============================================================
+// CHECK-IN BUTTON
+// ============================================================
+let checkedIn = false;
+function handleCheckin(e) {
+  if (checkedIn) return;
+  const btn = document.getElementById('checkinBtn');
+
+  // Ripple
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('div');
+  ripple.className = 'checkin-ripple';
+  const size = Math.max(rect.width, rect.height);
+  ripple.style.cssText = `width:${size}px;height:${size}px;left:${e.clientX-rect.left-size/2}px;top:${e.clientY-rect.top-size/2}px;`;
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 700);
+
+  // Animate button
+  btn.style.transform = 'scale(0.9)';
+  setTimeout(() => {
+    btn.style.transform = '';
+    checkedIn = true;
+    btn.classList.add('checked');
+    document.getElementById('checkinIcon').textContent = '✅';
+    document.getElementById('checkinText').textContent = '출석 완료!';
+
+    // Update streak
+    const streakEl = document.getElementById('streakVal');
+    const current = parseInt(streakEl.textContent);
+    animateCounter(streakEl, current + 1, 600);
+
+    // Update points
+    const pointsEl = document.getElementById('pointsVal');
+    const pts = parseInt(pointsEl.textContent);
+    animateCounter(pointsEl, pts + 50, 800);
+
+    // Toast and confetti
+    showToast('🎉', '출석 완료! +50 포인트');
+    setTimeout(() => triggerConfetti(), 200);
+    spawnSparklesOnScreen();
+  }, 150);
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+let toastTimer = null;
+function showToast(icon, text) {
+  const toast = document.getElementById('toast');
+  document.getElementById('toast-icon').textContent = icon;
+  document.getElementById('toast-text').textContent = text;
+  toast.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function triggerConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const frame = document.getElementById('iphoneFrame');
+  canvas.width = frame.offsetWidth;
+  canvas.height = frame.offsetHeight;
+  const ctx = canvas.getContext('2d');
+
+  const colors = ['#7c3aed','#fbbf24','#f59e0b','#a855f7','#22c55e','#ef4444','#06b6d4','#ec4899'];
+  const particles = [];
+  const count = 120;
+
+  for (let i = 0; i < count; i++) {
+    particles.push({
+      x: canvas.width / 2,
+      y: canvas.height * 0.4,
+      vx: (Math.random() - 0.5) * 14,
+      vy: Math.random() * -16 - 4,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      size: Math.random() * 8 + 4,
+      rotation: Math.random() * 360,
+      rotationSpeed: (Math.random() - 0.5) * 12,
+      shape: Math.random() > 0.5 ? 'rect' : 'circle',
+      gravity: 0.55,
+      opacity: 1,
+    });
+  }
+
+  let frame_id;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.99;
+      p.rotation += p.rotationSpeed;
+      p.opacity -= 0.012;
+      if (p.opacity > 0) {
+        alive = true;
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.opacity);
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation * Math.PI / 180);
+        ctx.fillStyle = p.color;
+        if (p.shape === 'rect') {
+          ctx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+        } else {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size/2, 0, Math.PI*2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+    });
+    if (alive) frame_id = requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  if (frame_id) cancelAnimationFrame(frame_id);
+  draw();
+}
+
+// ============================================================
+// SPARKLES
+// ============================================================
+function spawnSparkles(originEl) {
+  const screen = document.querySelector('.phone-screen');
+  const originRect = originEl.getBoundingClientRect();
+  const screenRect = screen.getBoundingClientRect();
+  const emojis = ['✨','⭐','💫','🌟','❇️'];
+  for (let i = 0; i < 5; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = (originRect.left - screenRect.left + Math.random()*40 - 20) + 'px';
+    s.style.top = (originRect.top - screenRect.top + Math.random()*20) + 'px';
+    s.style.animationDelay = (i * 0.08) + 's';
+    screen.appendChild(s);
+    setTimeout(() => s.remove(), 1000 + i*80);
+  }
+}
+
+function spawnSparklesOnScreen() {
+  const screen = document.querySelector('.phone-screen');
+  const emojis = ['✨','⭐','💫','🌟','🎊','🎉'];
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = (20 + Math.random() * 300) + 'px';
+    s.style.top = (100 + Math.random() * 400) + 'px';
+    s.style.animationDelay = (i * 0.12) + 's';
+    s.style.fontSize = (14 + Math.random() * 14) + 'px';
+    screen.appendChild(s);
+    setTimeout(() => s.remove(), 1200 + i*120);
+  }
+}
+
+// ============================================================
+// NAV INTERACTION
+// ============================================================
+function navClick(el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  el.style.transform = 'scale(0.85)';
+  setTimeout(() => { el.style.transform = ''; }, 150);
+
+  // Haptic-like visual feedback
+  const icon = el.querySelector('.nav-icon');
+  const labels = ['홈','성적','뱃지','시간표','내 정보'];
+  const navItems = document.querySelectorAll('.nav-item');
+  const idx = Array.from(navItems).indexOf(el);
+  const msgs = [
+    ['🏠','홈 화면'],
+    ['📊','성적 현황'],
+    ['🏅','뱃지 컬렉션'],
+    ['📅','수업 시간표'],
+    ['👤','내 정보'],
+  ];
+  showToast(msgs[idx][0], msgs[idx][1]);
+}
+
+// ============================================================
+// PERIODIC ANIMATIONS (keeps demo alive)
+// ============================================================
+setInterval(() => {
+  // Randomly pulse a badge
+  const earnedBadges = document.querySelectorAll('.badge-icon-wrap.earned');
+  if (earnedBadges.length > 0) {
+    const pick = earnedBadges[Math.floor(Math.random() * earnedBadges.length)];
+    pick.style.transform = 'scale(1.15)';
+    setTimeout(() => { pick.style.transform = ''; }, 300);
+  }
+}, 3000);
+
+setInterval(() => {
+  // Shimmer the XP bar again
+  const fill = document.getElementById('xpBarFill');
+  fill.style.width = '78%';
+}, 6000);
+
+</script>
+</body>
+</html>

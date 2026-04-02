@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>클린카 판교점 - Car Wash App Demo</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #0f172a;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    padding: 40px 20px;
+  }
+
+  /* ── Ambient glow behind phone ── */
+  .scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .scene::before {
+    content: '';
+    position: absolute;
+    width: 340px;
+    height: 700px;
+    background: radial-gradient(ellipse at center, rgba(251,146,60,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    filter: blur(30px);
+  }
+
+  /* ── Phone shell ── */
+  .phone {
+    position: relative;
+    width: 320px;
+    height: 680px;
+    background: #1a1a2e;
+    border-radius: 44px;
+    box-shadow:
+      0 0 0 2px #2a2a3e,
+      0 0 0 4px #111122,
+      0 40px 80px rgba(0,0,0,0.7),
+      inset 0 0 0 1px rgba(255,255,255,0.06);
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* side buttons */
+  .phone::before {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 120px;
+    width: 4px;
+    height: 60px;
+    background: #2a2a3e;
+    border-radius: 0 3px 3px 0;
+    box-shadow: 0 80px 0 #2a2a3e;
+  }
+  .phone::after {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 100px;
+    width: 4px;
+    height: 36px;
+    background: #2a2a3e;
+    border-radius: 3px 0 0 3px;
+    box-shadow: 0 50px 0 #2a2a3e, 0 96px 0 #2a2a3e;
+  }
+
+  /* ── Inner screen ── */
+  .screen {
+    position: absolute;
+    inset: 0;
+    background: #0f172a;
+    overflow: hidden;
+    border-radius: 44px;
+  }
+
+  /* ── Pill camera cutout ── */
+  .camera-cutout {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 28px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 8px;
+    gap: 5px;
+  }
+  .camera-lens {
+    width: 10px;
+    height: 10px;
+    background: #1a1a2e;
+    border-radius: 50%;
+    border: 2px solid #2a2a3e;
+    position: relative;
+  }
+  .camera-lens::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    width: 4px;
+    height: 4px;
+    background: #0d0d1a;
+    border-radius: 50%;
+  }
+  .camera-mic {
+    width: 4px;
+    height: 4px;
+    background: #1e1e2e;
+    border-radius: 50%;
+  }
+
+  /* ── Status bar ── */
+  .statusbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 24px 8px;
+    z-index: 99;
+    font-size: 11px;
+    font-weight: 600;
+    color: #e2e8f0;
+    letter-spacing: 0.3px;
+  }
+  .statusbar-time { font-size: 13px; font-weight: 700; }
+  .statusbar-icons { display: flex; align-items: center; gap: 5px; }
+  .statusbar-icons svg { width: 14px; height: 14px; fill: #e2e8f0; }
+
+  /* ── App content area ── */
+  .app-content {
+    position: absolute;
+    top: 50px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden;
+  }
+
+  /* ── Screens ── */
+  .app-screen {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 80px;
+    transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
+    scrollbar-width: none;
+  }
+  .app-screen::-webkit-scrollbar { display: none; }
+  .app-screen.hidden-left  { transform: translateX(-100%); opacity: 0; pointer-events: none; }
+  .app-screen.hidden-right { transform: translateX( 100%); opacity: 0; pointer-events: none; }
+  .app-screen.active       { transform: translateX(0);     opacity: 1; pointer-events: auto; }
+
+  /* ── Top app bar ── */
+  .topbar {
+    padding: 16px 20px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .topbar-title { font-size: 20px; font-weight: 700; color: #f1f5f9; }
+  .topbar-sub   { font-size: 12px; color: #64748b; margin-top: 1px; }
+  .topbar-avatar {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+  }
+
+  /* ── Material You Card ── */
+  .m3-card {
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 18px;
+    margin: 8px 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .m3-card-elevated {
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 20px;
+    margin: 8px 16px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.07);
+  }
+
+  /* ── Car status card ── */
+  .car-status-card {
+    background: linear-gradient(145deg, #1e3a5f 0%, #1e293b 100%);
+    border-radius: 24px;
+    padding: 22px;
+    margin: 12px 16px 8px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(251,146,60,0.15);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  .car-status-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: radial-gradient(circle, rgba(251,146,60,0.12) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+  .car-status-card::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: -20px;
+    width: 100px; height: 100px;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .plate-label { font-size: 11px; color: #94a3b8; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .license-plate {
+    display: inline-flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 6px 14px;
+    gap: 8px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+  .plate-flag {
+    width: 18px; height: 24px;
+    background: linear-gradient(180deg, #003DA5 33%, #fff 33%, #fff 66%, #CD2E3A 66%);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  .plate-text { font-size: 18px; font-weight: 800; color: #111; letter-spacing: 2px; font-family: 'Pretendard', sans-serif; }
+  .plate-dot { width: 4px; height: 4px; background: #333; border-radius: 50%; }
+
+  .car-info-row { display: flex; align-items: center; gap: 12px; position: relative; z-index: 1; }
+  .car-icon {
+    width: 48px; height: 48px;
+    background: rgba(251,146,60,0.15);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .car-details { flex: 1; }
+  .car-name  { font-size: 15px; font-weight: 700; color: #f1f5f9; }
+  .car-model { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 20px;
+    padding: 4px 10px;
+    font-size: 11px; font-weight: 600; color: #4ade80;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    background: #4ade80;
+    border-radius: 50%;
+    animation: pulse-dot 2s infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ── Stats row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin: 0 16px 8px;
+  }
+  .stat-chip {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .stat-val { font-size: 17px; font-weight: 800; color: #fb923c; }
+  .stat-lbl { font-size: 10px; color: #64748b; margin-top: 2px; font-weight: 500; }
+
+  /* ── Section header ── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 20px 8px;
+  }
+  .section-title { font-size: 15px; font-weight: 700; color: #f1f5f9; }
+  .section-more  { font-size: 12px; color: #fb923c; font-weight: 600; }
+
+  /* ── Wash packages horizontal scroll ── */
+  .packages-scroll {
+    display: flex;
+    gap: 10px;
+    padding: 0 16px 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .packages-scroll::-webkit-scrollbar { display: none; }
+
+  .pkg-card {
+    flex-shrink: 0;
+    width: 130px;
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 14px 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .pkg-card.selected {
+    border-color: rgba(251,146,60,0.5);
+    background: rgba(251,146,60,0.08);
+  }
+  .pkg-card:active { transform: scale(0.97); }
+  .pkg-icon  { font-size: 24px; margin-bottom: 8px; }
+  .pkg-name  { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+  .pkg-price { font-size: 12px; color: #fb923c; font-weight: 600; margin-top: 3px; }
+  .pkg-time  { font-size: 10px; color: #64748b; margin-top: 2px; }
+  .pkg-badge {
+    position: absolute; top: 8px; right: 8px;
+    background: #fb923c; color: #fff;
+    font-size: 9px; font-weight: 700;
+    padding: 2px 6px; border-radius: 6px;
+  }
+
+  /* ── Next appointment card ── */
+  .appointment-card {
+    background: linear-gradient(135deg, rgba(251,146,60,0.12) 0%, rgba(251,146,60,0.05) 100%);
+    border-radius: 20px;
+    padding: 16px 18px;
+    margin: 0 16px 8px;
+    border: 1px solid rgba(251,146,60,0.2);
+    display: flex; align-items: center; gap: 14px;
+  }
+  .appt-icon-wrap {
+    width: 44px; height: 44px;
+    background: rgba(251,146,60,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .appt-info { flex: 1; }
+  .appt-title { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+  .appt-time  { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+  .appt-cta {
+    background: #fb923c;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 8px 12px;
+    font-size: 11px; font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  /* ── Bottom Navigation ── */
+  .bottom-nav {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 72px;
+    background: #13213a;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    z-index: 50;
+    padding: 0 4px 8px;
+    border-radius: 0 0 44px 44px;
+  }
+  .nav-item {
+    flex: 1;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 3px;
+    padding: 8px 4px;
+    cursor: pointer;
+    border: none; background: none;
+    font-family: 'Pretendard', sans-serif;
+    transition: opacity 0.2s;
+  }
+  .nav-item:active { opacity: 0.7; }
+  .nav-icon-wrap {
+    width: 40px; height: 28px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.25s, transform 0.25s;
+    font-size: 18px;
+  }
+  .nav-item.active .nav-icon-wrap {
+    background: rgba(251,146,60,0.2);
+    transform: scale(1.05);
+  }
+  .nav-label { font-size: 10px; color: #64748b; font-weight: 500; }
+  .nav-item.active .nav-label { color: #fb923c; font-weight: 700; }
+
+  /* ── FAB ── */
+  .fab {
+    position: absolute;
+    bottom: 80px;
+    right: 20px;
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 24px rgba(251,146,60,0.4), 0 2px 8px rgba(0,0,0,0.3);
+    cursor: pointer;
+    z-index: 51;
+    border: none;
+    font-size: 22px;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: fab-bounce 3s ease-in-out infinite;
+  }
+  .fab:active {
+    transform: scale(0.92);
+    box-shadow: 0 4px 12px rgba(251,146,60,0.3);
+  }
+  @keyframes fab-bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* ════════════════════════════════
+     HISTORY SCREEN
+  ════════════════════════════════ */
+  .history-topbar {
+    padding: 16px 20px 12px;
+    font-size: 20px; font-weight: 700; color: #f1f5f9;
+  }
+  .filter-chips {
+    display: flex; gap: 8px; padding: 0 16px 12px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px; font-weight: 600;
+    background: #1e293b;
+    color: #94a3b8;
+    border: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .chip.active { background: rgba(251,146,60,0.15); color: #fb923c; border-color: rgba(251,146,60,0.3); }
+
+  /* ── Timeline ── */
+  .timeline { padding: 0 16px; }
+  .timeline-month {
+    font-size: 12px; font-weight: 700; color: #64748b;
+    letter-spacing: 0.5px; margin: 12px 0 8px 28px;
+    text-transform: uppercase;
+  }
+  .timeline-item {
+    display: flex; gap: 12px; margin-bottom: 4px; position: relative;
+  }
+  .tl-left {
+    display: flex; flex-direction: column; align-items: center; width: 24px; flex-shrink: 0;
+  }
+  .tl-dot {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; flex-shrink: 0; z-index: 1;
+  }
+  .tl-dot.done    { background: rgba(34,197,94,0.15); border: 2px solid rgba(34,197,94,0.4); }
+  .tl-dot.premium { background: rgba(251,146,60,0.15); border: 2px solid rgba(251,146,60,0.4); }
+  .tl-dot.basic   { background: rgba(99,102,241,0.15); border: 2px solid rgba(99,102,241,0.4); }
+  .tl-line {
+    flex: 1;
+    width: 2px;
+    background: rgba(255,255,255,0.06);
+    margin: 4px auto 0;
+  }
+  .tl-card {
+    flex: 1;
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .tl-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .tl-pkg    { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+  .tl-price  { font-size: 13px; font-weight: 700; color: #fb923c; }
+  .tl-date   { font-size: 11px; color: #64748b; }
+  .tl-meta   { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .tl-tag {
+    font-size: 10px; padding: 3px 8px; border-radius: 6px;
+    font-weight: 600;
+  }
+  .tl-tag.green  { background: rgba(34,197,94,0.1);  color: #4ade80; }
+  .tl-tag.orange { background: rgba(251,146,60,0.1); color: #fb923c; }
+  .tl-tag.purple { background: rgba(99,102,241,0.1); color: #818cf8; }
+
+  .rating-row { display: flex; gap: 2px; margin-top: 8px; }
+  .star { font-size: 12px; }
+
+  /* ════════════════════════════════
+     BOOKING SCREEN
+  ════════════════════════════════ */
+  .booking-topbar {
+    padding: 16px 20px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .back-btn {
+    width: 32px; height: 32px;
+    background: #1e293b;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; border: none; color: #f1f5f9;
+  }
+  .booking-title { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+
+  .calendar-card {
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 16px;
+    margin: 0 16px 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .cal-month  { font-size: 14px; font-weight: 700; color: #f1f5f9; }
+  .cal-nav    { font-size: 18px; color: #94a3b8; cursor: pointer; padding: 0 4px; }
+  .cal-days   { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day-header { font-size: 10px; color: #64748b; text-align: center; font-weight: 600; padding: 4px 0; }
+  .cal-day {
+    aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+    font-size: 12px; color: #94a3b8; border-radius: 50%; cursor: pointer;
+    transition: all 0.2s; font-weight: 500;
+  }
+  .cal-day.today  { color: #fb923c; font-weight: 800; }
+  .cal-day.selected { background: #fb923c; color: #fff; font-weight: 700; }
+  .cal-day.has-slot { position: relative; }
+  .cal-day.has-slot::after {
+    content: '';
+    position: absolute; bottom: 3px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; background: #4ade80; border-radius: 50%;
+  }
+  .cal-day.selected::after { background: rgba(255,255,255,0.7); }
+  .cal-day.empty { pointer-events: none; }
+  .cal-day.past  { opacity: 0.3; pointer-events: none; }
+
+  .time-slots { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 0 16px 12px; }
+  .time-slot {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .time-slot.selected { border-color: rgba(251,146,60,0.5); background: rgba(251,146,60,0.1); }
+  .time-slot.full     { opacity: 0.35; pointer-events: none; }
+  .time-slot-val { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+  .time-slot-avail { font-size: 10px; color: #64748b; margin-top: 2px; }
+  .time-slot.selected .time-slot-val { color: #fb923c; }
+
+  .confirm-btn {
+    display: block;
+    width: calc(100% - 32px);
+    margin: 0 16px 12px;
+    padding: 16px;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    font-size: 15px; font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 8px 24px rgba(251,146,60,0.35);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .confirm-btn:active { transform: scale(0.98); box-shadow: 0 4px 12px rgba(251,146,60,0.25); }
+
+  /* ════════════════════════════════
+     COMPLETION OVERLAY
+  ════════════════════════════════ */
+  .completion-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(9,18,36,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 200;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 44px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .completion-overlay.visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .completion-box {
+    text-align: center;
+    padding: 32px 24px;
+    width: 100%;
+  }
+  .completion-anim {
+    width: 100px; height: 100px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .comp-ring {
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: #fb923c;
+    animation: ring-spin 1.2s linear infinite;
+  }
+  .comp-ring-2 {
+    position: absolute; inset: 8px;
+    border-radius: 50%;
+    border: 3px solid transparent;
+    border-top-color: rgba(251,146,60,0.4);
+    animation: ring-spin 1.8s linear infinite reverse;
+  }
+  .comp-icon-wrap {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .comp-icon {
+    font-size: 40px;
+    animation: icon-pop 0.5s 0.3s both cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes icon-pop {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  @keyframes ring-spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .comp-title {
+    font-size: 26px; font-weight: 800; color: #f1f5f9;
+    margin-bottom: 6px;
+    animation: slide-up 0.5s 0.15s both ease-out;
+  }
+  .comp-sub {
+    font-size: 13px; color: #94a3b8;
+    margin-bottom: 24px;
+    animation: slide-up 0.5s 0.25s both ease-out;
+  }
+  @keyframes slide-up {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0); opacity: 1; }
+  }
+
+  .comp-details {
+    background: #1e293b;
+    border-radius: 18px;
+    padding: 16px;
+    text-align: left;
+    border: 1px solid rgba(255,255,255,0.06);
+    margin-bottom: 20px;
+    animation: slide-up 0.5s 0.35s both ease-out;
+  }
+  .comp-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 0;
+  }
+  .comp-row + .comp-row { border-top: 1px solid rgba(255,255,255,0.05); }
+  .comp-lbl { font-size: 12px; color: #64748b; }
+  .comp-val { font-size: 12px; font-weight: 700; color: #f1f5f9; }
+  .comp-val.orange { color: #fb923c; }
+
+  .comp-stars {
+    display: flex; justify-content: center; gap: 6px;
+    margin-bottom: 20px;
+    animation: slide-up 0.5s 0.45s both ease-out;
+  }
+  .comp-star {
+    font-size: 28px;
+    cursor: pointer;
+    transition: transform 0.15s;
+    filter: grayscale(1) opacity(0.4);
+  }
+  .comp-star.lit { filter: none; }
+  .comp-star:hover, .comp-star.lit { transform: scale(1.2); }
+
+  .comp-close {
+    display: block; width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #fb923c, #f97316);
+    color: #fff; border: none; border-radius: 14px;
+    font-size: 14px; font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(251,146,60,0.35);
+    animation: slide-up 0.5s 0.5s both ease-out;
+  }
+
+  /* confetti particles */
+  .confetti-particle {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    animation: confetti-fall linear forwards;
+    pointer-events: none;
+  }
+  @keyframes confetti-fall {
+    0%   { transform: translateY(0) rotate(0deg);   opacity: 1; }
+    100% { transform: translateY(300px) rotate(720deg); opacity: 0; }
+  }
+
+  /* ── Progress bar (wash in progress indicator) ── */
+  .wash-progress {
+    background: #1e293b;
+    border-radius: 16px;
+    padding: 14px;
+    margin: 0 16px 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .wash-prog-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .wash-prog-title  { font-size: 13px; font-weight: 700; color: #f1f5f9; }
+  .wash-prog-pct    { font-size: 13px; font-weight: 700; color: #fb923c; }
+  .prog-track {
+    height: 6px; background: rgba(255,255,255,0.08);
+    border-radius: 3px; overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, #fb923c, #fbbf24);
+    width: 0%;
+    transition: width 0.1s linear;
+  }
+  .prog-steps { display: flex; justify-content: space-between; margin-top: 8px; }
+  .prog-step { font-size: 10px; color: #64748b; }
+  .prog-step.done { color: #fb923c; }
+
+  /* notification dot */
+  .notif-dot {
+    position: absolute;
+    top: -2px; right: -2px;
+    width: 8px; height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid #0f172a;
+  }
+
+  /* ── Scroll indicator ── */
+  .scroll-hint {
+    text-align: center;
+    font-size: 10px; color: #334155;
+    padding: 8px 0 4px;
+  }
+</style>
+</head>
+<body>
+
+<div class="scene">
+  <div class="phone">
+    <div class="screen">
+
+      <!-- Camera pill cutout -->
+      <div class="camera-cutout">
+        <div class="camera-mic"></div>
+        <div class="camera-lens"></div>
+      </div>
+
+      <!-- Status bar -->
+      <div class="statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <!-- signal -->
+          <svg viewBox="0 0 24 24"><rect x="1" y="15" width="4" height="9" rx="1"/><rect x="7" y="10" width="4" height="14" rx="1"/><rect x="13" y="5" width="4" height="19" rx="1"/><rect x="19" y="1" width="4" height="23" rx="1" opacity=".3"/></svg>
+          <!-- wifi -->
+          <svg viewBox="0 0 24 24"><path d="M12 5C7 5 2.5 7.5 0 11.5l2 2C4 10.5 7.7 8 12 8s8 2.5 10 5.5l2-2C21.5 7.5 17 5 12 5zm0 5c-3 0-5.7 1.3-7.5 3.5l2 2C7.8 14 9.8 13 12 13s4.2 1 5.5 2.5l2-2C17.7 11.3 15 10 12 10zm0 5c-1.6 0-3 .7-4 1.8l4 4 4-4c-1-.1-2.4-1.8-4-1.8z"/></svg>
+          <!-- battery -->
+          <svg viewBox="0 0 24 24"><rect x="1" y="6" width="18" height="12" rx="2" opacity=".3"/><rect x="1" y="6" width="14" height="12" rx="2"/><path d="M20 10h2v4h-2z"/></svg>
+        </div>
+      </div>
+
+      <!-- App content wrapper -->
+      <div class="app-content">
+
+        <!-- ══════════════════════
+             SCREEN 1 – HOME
+        ══════════════════════ -->
+        <div class="app-screen active" id="screen-home">
+
+          <div class="topbar">
+            <div>
+              <div class="topbar-title">클린카 판교점</div>
+              <div class="topbar-sub">🌤 맑음 · 세차하기 좋은 날씨예요</div>
+            </div>
+            <div style="position:relative;">
+              <div class="topbar-avatar">김</div>
+              <div class="notif-dot"></div>
+            </div>
+          </div>
+
+          <!-- car status card -->
+          <div class="car-status-card">
+            <div class="plate-label">내 차량</div>
+            <div class="license-plate">
+              <div class="plate-flag"></div>
+              <div class="plate-dot"></div>
+              <div class="plate-text">경기 23가 4567</div>
+            </div>
+            <div class="car-info-row">
+              <div class="car-icon">🚗</div>
+              <div class="car-details">
+                <div class="car-name">현대 아반떼 CN7</div>
+                <div class="car-model">2022 · 화이트 · 가솔린</div>
+              </div>
+              <div class="status-badge">
+                <div class="status-dot"></div>
+                정상
+              </div>
+            </div>
+          </div>
+
+          <!-- stats -->
+          <div class="stats-row">
+            <div class="stat-chip">
+              <div class="stat-val">14</div>
+              <div class="stat-lbl">총 세차</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-val">6일</div>
+              <div class="stat-lbl">마지막 세차</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-val">4.8★</div>
+              <div class="stat-lbl">평균 평점</div>
+            </div>
+          </div>
+
+          <!-- wash-in-progress -->
+          <div class="wash-progress">
+            <div class="wash-prog-header">
+              <span class="wash-prog-title">🧼 현재 세차 진행중</span>
+              <span class="wash-prog-pct" id="prog-pct">72%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" id="prog-fill" style="width:72%"></div>
+            </div>
+            <div class="prog-steps">
+              <span class="prog-step done">사전 헹굼</span>
+              <span class="prog-step done">세차</span>
+              <span class="prog-step done">거품</span>
+              <span class="prog-step">건조</span>
+              <span class="prog-step">완료</span>
+            </div>
+          </div>
+
+          <!-- next appointment -->
+          <div class="appointment-card">
+            <div class="appt-icon-wrap">📅</div>
+            <div class="appt-info">
+              <div class="appt-title">다음 예약</div>
+              <div class="appt-time">4월 5일 토요일 · 오전 10:30</div>
+            </div>
+            <button class="appt-cta" onclick="switchTab(2)">변경</button>
+          </div>
+
+          <!-- wash packages -->
+          <div class="section-header">
+            <span class="section-title">세차 패키지</span>
+            <span class="section-more" onclick="switchTab(2)">예약하기 →</span>
+          </div>
+          <div class="packages-scroll">
+            <div class="pkg-card selected" onclick="selectPkg(this)">
+              <div class="pkg-badge">인기</div>
+              <div class="pkg-icon">💎</div>
+              <div class="pkg-name">프리미엄</div>
+              <div class="pkg-price">₩29,000</div>
+              <div class="pkg-time">약 45분</div>
+            </div>
+            <div class="pkg-card" onclick="selectPkg(this)">
+              <div class="pkg-icon">✨</div>
+              <div class="pkg-name">스탠다드</div>
+              <div class="pkg-price">₩18,000</div>
+              <div class="pkg-time">약 30분</div>
+            </div>
+            <div class="pkg-card" onclick="selectPkg(this)">
+              <div class="pkg-icon">💧</div>
+              <div class="pkg-name">베이직</div>
+              <div class="pkg-price">₩10,000</div>
+              <div class="pkg-time">약 15분</div>
+            </div>
+            <div class="pkg-card" onclick="selectPkg(this)">
+              <div class="pkg-badge">NEW</div>
+              <div class="pkg-icon">🌟</div>
+              <div class="pkg-name">럭셔리</div>
+              <div class="pkg-price">₩45,000</div>
+              <div class="pkg-time">약 70분</div>
+            </div>
+          </div>
+
+          <div class="scroll-hint">▾ 아래로 스크롤</div>
+
+        </div><!-- /screen-home -->
+
+        <!-- ══════════════════════
+             SCREEN 2 – HISTORY
+        ══════════════════════ -->
+        <div class="app-screen hidden-right" id="screen-history">
+
+          <div class="history-topbar">세차 기록</div>
+
+          <div class="filter-chips">
+            <div class="chip active">전체</div>
+            <div class="chip">프리미엄</div>
+            <div class="chip">스탠다드</div>
+            <div class="chip">베이직</div>
+            <div class="chip">2024</div>
+          </div>
+
+          <div class="timeline">
+
+            <div class="timeline-month">2025년 3월</div>
+
+            <div class="timeline-item">
+              <div class="tl-left">
+                <div class="tl-dot premium">💎</div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-card">
+                <div class="tl-header">
+                  <span class="tl-pkg">프리미엄 세차</span>
+                  <span class="tl-price">₩29,000</span>
+                </div>
+                <div class="tl-date">3월 26일 수요일 · 오후 2:30</div>
+                <div class="tl-meta">
+                  <span class="tl-tag orange">45분 소요</span>
+                  <span class="tl-tag green">완료</span>
+                  <span class="tl-tag purple">왁스 코팅</span>
+                </div>
+                <div class="rating-row">
+                  <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="tl-left">
+                <div class="tl-dot basic">💧</div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-card">
+                <div class="tl-header">
+                  <span class="tl-pkg">베이직 세차</span>
+                  <span class="tl-price">₩10,000</span>
+                </div>
+                <div class="tl-date">3월 15일 토요일 · 오전 10:00</div>
+                <div class="tl-meta">
+                  <span class="tl-tag orange">15분 소요</span>
+                  <span class="tl-tag green">완료</span>
+                </div>
+                <div class="rating-row">
+                  <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-month">2025년 2월</div>
+
+            <div class="timeline-item">
+              <div class="tl-left">
+                <div class="tl-dot done">✨</div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-card">
+                <div class="tl-header">
+                  <span class="tl-pkg">스탠다드 세차</span>
+                  <span class="tl-price">₩18,000</span>
+                </div>
+                <div class="tl-date">2월 28일 금요일 · 오후 4:15</div>
+                <div class="tl-meta">
+                  <span class="tl-tag orange">30분 소요</span>
+                  <span class="tl-tag green">완료</span>
+                  <span class="tl-tag purple">실내 청소</span>
+                </div>
+                <div class="rating-row">
+                  <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-item">
+              <div class="tl-left">
+                <div class="tl-dot premium">💎</div>
+                <div class="tl-line"></div>
+              </div>
+              <div class="tl-card">
+                <div class="tl-header">
+                  <span class="tl-pkg">프리미엄 세차</span>
+                  <span class="tl-price">₩29,000</span>
+                </div>
+                <div class="tl-date">2월 10일 월요일 · 오전 11:00</div>
+                <div class="tl-meta">
+                  <span class="tl-tag orange">45분 소요</span>
+                  <span class="tl-tag green">완료</span>
+                </div>
+                <div class="rating-row">
+                  <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="timeline-month">2025년 1월</div>
+
+            <div class="timeline-item">
+              <div class="tl-left">
+                <div class="tl-dot basic">💧</div>
+                <div class="tl-line" style="opacity:0"></div>
+              </div>
+              <div class="tl-card">
+                <div class="tl-header">
+                  <span class="tl-pkg">베이직 세차</span>
+                  <span class="tl-price">₩10,000</span>
+                </div>
+                <div class="tl-date">1월 22일 수요일 · 오후 3:00</div>
+                <div class="tl-meta">
+                  <span class="tl-tag orange">15분 소요</span>
+                  <span class="tl-tag green">완료</span>
+                </div>
+                <div class="rating-row">
+                  <span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span><span class="star">⭐</span>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /timeline -->
+        </div><!-- /screen-history -->
+
+        <!-- ══════════════════════
+             SCREEN 3 – BOOKING
+        ══════════════════════ -->
+        <div class="app-screen hidden-right" id="screen-booking">
+
+          <div class="booking-topbar">
+            <div class="back-btn" onclick="switchTab(0)">←</div>
+            <span class="booking-title">세차 예약</span>
+          </div>
+
+          <!-- selected package summary -->
+          <div class="m3-card-elevated" style="margin-bottom:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <div style="font-size:28px;">💎</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:700;color:#f1f5f9;">프리미엄 세차</div>
+                <div style="font-size:12px;color:#94a3b8;margin-top:2px;">45분 · 왁스 코팅 포함</div>
+              </div>
+              <div style="font-size:15px;font-weight:800;color:#fb923c;">₩29,000</div>
+            </div>
+          </div>
+
+          <!-- calendar -->
+          <div class="calendar-card">
+            <div class="cal-header">
+              <span class="cal-nav">‹</span>
+              <span class="cal-month">2026년 4월</span>
+              <span class="cal-nav">›</span>
+            </div>
+            <div class="cal-days">
+              <div class="cal-day-header">일</div><div class="cal-day-header">월</div>
+              <div class="cal-day-header">화</div><div class="cal-day-header">수</div>
+              <div class="cal-day-header">목</div><div class="cal-day-header">금</div>
+              <div class="cal-day-header">토</div>
+
+              <!-- April 2026: starts Wednesday (index 3) -->
+              <div class="cal-day empty"></div><div class="cal-day empty"></div>
+              <div class="cal-day empty"></div>
+              <div class="cal-day past">1</div>
+              <div class="cal-day today">2</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">3</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">4</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">5</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">6</div>
+              <div class="cal-day" onclick="selectDay(this)">7</div>
+              <div class="cal-day" onclick="selectDay(this)">8</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">9</div>
+              <div class="cal-day has-slot selected" onclick="selectDay(this)">10</div>
+              <div class="cal-day" onclick="selectDay(this)">11</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">12</div>
+              <div class="cal-day" onclick="selectDay(this)">13</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">14</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">15</div>
+              <div class="cal-day" onclick="selectDay(this)">16</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">17</div>
+              <div class="cal-day" onclick="selectDay(this)">18</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">19</div>
+              <div class="cal-day" onclick="selectDay(this)">20</div>
+              <div class="cal-day" onclick="selectDay(this)">21</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">22</div>
+              <div class="cal-day" onclick="selectDay(this)">23</div>
+              <div class="cal-day" onclick="selectDay(this)">24</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">25</div>
+              <div class="cal-day" onclick="selectDay(this)">26</div>
+              <div class="cal-day" onclick="selectDay(this)">27</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">28</div>
+              <div class="cal-day" onclick="selectDay(this)">29</div>
+              <div class="cal-day has-slot" onclick="selectDay(this)">30</div>
+            </div>
+          </div>
+
+          <!-- time slots -->
+          <div class="section-header" style="padding-top:4px;">
+            <span class="section-title">시간 선택</span>
+          </div>
+          <div class="time-slots">
+            <div class="time-slot full"><div class="time-slot-val">09:00</div><div class="time-slot-avail">마감</div></div>
+            <div class="time-slot full"><div class="time-slot-val">09:30</div><div class="time-slot-avail">마감</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">10:00</div><div class="time-slot-avail">2자리</div></div>
+            <div class="time-slot selected" onclick="selectTime(this)"><div class="time-slot-val">10:30</div><div class="time-slot-avail">3자리</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">11:00</div><div class="time-slot-avail">5자리</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">11:30</div><div class="time-slot-avail">4자리</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">13:00</div><div class="time-slot-avail">5자리</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">14:00</div><div class="time-slot-avail">5자리</div></div>
+            <div class="time-slot" onclick="selectTime(this)"><div class="time-slot-val">15:00</div><div class="time-slot-avail">3자리</div></div>
+          </div>
+
+          <button class="confirm-btn" onclick="showCompletion()">예약 확정하기</button>
+
+        </div><!-- /screen-booking -->
+
+        <!-- ══════════════════════
+             SCREEN 4 – PROFILE
+        ══════════════════════ -->
+        <div class="app-screen hidden-right" id="screen-profile">
+          <div class="topbar">
+            <div>
+              <div class="topbar-title">마이페이지</div>
+              <div class="topbar-sub">멤버십 · 골드 등급</div>
+            </div>
+          </div>
+
+          <div class="m3-card-elevated" style="text-align:center;padding:24px;">
+            <div style="width:64px;height:64px;background:linear-gradient(135deg,#fb923c,#f97316);border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;">👤</div>
+            <div style="font-size:16px;font-weight:800;color:#f1f5f9;">김판교</div>
+            <div style="font-size:12px;color:#64748b;margin-top:3px;">010-1234-5678</div>
+            <div style="margin-top:12px;display:inline-flex;align-items:center;gap:6px;background:rgba(251,146,60,0.12);border:1px solid rgba(251,146,60,0.3);border-radius:20px;padding:5px 14px;">
+              <span style="font-size:14px;">🥇</span>
+              <span style="font-size:12px;color:#fb923c;font-weight:700;">골드 멤버</span>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-chip"><div class="stat-val">14</div><div class="stat-lbl">세차 횟수</div></div>
+            <div class="stat-chip"><div class="stat-val">2,400</div><div class="stat-lbl">포인트</div></div>
+            <div class="stat-chip"><div class="stat-val">3개월</div><div class="stat-lbl">연속 이용</div></div>
+          </div>
+
+          <div class="section-header"><span class="section-title">쿠폰함</span></div>
+          <div class="m3-card" style="background:rgba(251,146,60,0.08);border-color:rgba(251,146,60,0.2);">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#fb923c;">스탠다드 무료 세차</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:3px;">2026.04.30 까지</div>
+              </div>
+              <div style="font-size:24px;">🎟️</div>
+            </div>
+          </div>
+          <div class="m3-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#f1f5f9;">3,000원 할인 쿠폰</div>
+                <div style="font-size:11px;color:#94a3b8;margin-top:3px;">2026.05.31 까지</div>
+              </div>
+              <div style="font-size:24px;">🏷️</div>
+            </div>
+          </div>
+
+          <div class="section-header"><span class="section-title">설정</span></div>
+          <div class="m3-card">
+            <div style="display:flex;flex-direction:column;gap:0;">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:13px;color:#f1f5f9;">알림 설정</span>
+                <div style="width:36px;height:20px;background:#fb923c;border-radius:10px;position:relative;">
+                  <div style="position:absolute;right:2px;top:2px;width:16px;height:16px;background:#fff;border-radius:50%;"></div>
+                </div>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.05);">
+                <span style="font-size:13px;color:#f1f5f9;">언어 설정</span>
+                <span style="font-size:12px;color:#64748b;">한국어 ›</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+                <span style="font-size:13px;color:#f1f5f9;">앱 버전</span>
+                <span style="font-size:12px;color:#64748b;">2.4.1</span>
+              </div>
+            </div>
+          </div>
+        </div><!-- /screen-profile -->
+
+      </div><!-- /app-content -->
+
+      <!-- FAB -->
+      <button class="fab" onclick="switchTab(2)" title="빠른 예약">＋</button>
+
+      <!-- Bottom Nav -->
+      <div class="bottom-nav">
+        <button class="nav-item active" id="nav-0" onclick="switchTab(0)">
+          <div class="nav-icon-wrap">🏠</div>
+          <span class="nav-label">홈</span>
+        </button>
+        <button class="nav-item" id="nav-1" onclick="switchTab(1)">
+          <div class="nav-icon-wrap" style="position:relative;">📋<span style="position:absolute;top:-2px;right:-2px;width:7px;height:7px;background:#ef4444;border-radius:50%;border:1.5px solid #0f172a;"></span></div>
+          <span class="nav-label">기록</span>
+        </button>
+        <button class="nav-item" id="nav-2" onclick="switchTab(2)">
+          <div class="nav-icon-wrap">📅</div>
+          <span class="nav-label">예약</span>
+        </button>
+        <button class="nav-item" id="nav-3" onclick="switchTab(3)">
+          <div class="nav-icon-wrap">👤</div>
+          <span class="nav-label">마이</span>
+        </button>
+      </div>
+
+      <!-- Completion overlay -->
+      <div class="completion-overlay" id="completion-overlay">
+        <div class="completion-box">
+          <div class="completion-anim">
+            <div class="comp-ring"></div>
+            <div class="comp-ring-2"></div>
+            <div class="comp-icon-wrap">
+              <div class="comp-icon">✨</div>
+            </div>
+          </div>
+          <div class="comp-title">세차 완료!</div>
+          <div class="comp-sub">아반떼 CN7 · 경기 23가 4567</div>
+          <div class="comp-details">
+            <div class="comp-row">
+              <span class="comp-lbl">패키지</span>
+              <span class="comp-val">프리미엄 세차</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-lbl">소요 시간</span>
+              <span class="comp-val">43분</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-lbl">결제 금액</span>
+              <span class="comp-val orange">₩29,000</span>
+            </div>
+            <div class="comp-row">
+              <span class="comp-lbl">적립 포인트</span>
+              <span class="comp-val orange">+290 P</span>
+            </div>
+          </div>
+          <div class="comp-stars">
+            <span class="comp-star" onclick="rateStar(1)">⭐</span>
+            <span class="comp-star" onclick="rateStar(2)">⭐</span>
+            <span class="comp-star" onclick="rateStar(3)">⭐</span>
+            <span class="comp-star" onclick="rateStar(4)">⭐</span>
+            <span class="comp-star" onclick="rateStar(5)">⭐</span>
+          </div>
+          <button class="comp-close" onclick="hideCompletion()">확인</button>
+        </div>
+      </div>
+
+    </div><!-- /screen -->
+  </div><!-- /phone -->
+</div><!-- /scene -->
+
+<script>
+  /* ── Tab / screen switching ── */
+  const screens  = ['screen-home','screen-history','screen-booking','screen-profile'];
+  const navItems = [0,1,2,3];
+  let currentTab = 0;
+
+  function switchTab(idx) {
+    const prev = currentTab;
+    if (prev === idx) return;
+
+    const prevScreen = document.getElementById(screens[prev]);
+    const nextScreen = document.getElementById(screens[idx]);
+
+    // direction
+    const dir = idx > prev ? 1 : -1;
+
+    prevScreen.classList.remove('active');
+    prevScreen.classList.add(dir > 0 ? 'hidden-left' : 'hidden-right');
+
+    nextScreen.classList.remove('hidden-left','hidden-right');
+    nextScreen.classList.add('active');
+
+    // nav
+    document.getElementById('nav-'+prev).classList.remove('active');
+    document.getElementById('nav-'+idx).classList.add('active');
+
+    currentTab = idx;
+  }
+
+  /* ── Package selection ── */
+  function selectPkg(el) {
+    document.querySelectorAll('.pkg-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  /* ── Calendar day selection ── */
+  function selectDay(el) {
+    document.querySelectorAll('.cal-day').forEach(d => d.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  /* ── Time slot selection ── */
+  function selectTime(el) {
+    document.querySelectorAll('.time-slot:not(.full)').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  /* ── Completion overlay ── */
+  function showCompletion() {
+    const overlay = document.getElementById('completion-overlay');
+    overlay.classList.add('visible');
+    setTimeout(spawnConfetti, 300);
+    // reset stars
+    document.querySelectorAll('.comp-star').forEach(s => s.classList.remove('lit'));
+  }
+
+  function hideCompletion() {
+    document.getElementById('completion-overlay').classList.remove('visible');
+    switchTab(0);
+  }
+
+  /* ── Confetti ── */
+  function spawnConfetti() {
+    const overlay = document.getElementById('completion-overlay');
+    const colors = ['#fb923c','#fbbf24','#4ade80','#60a5fa','#f472b6','#a78bfa'];
+    for (let i = 0; i < 28; i++) {
+      const p = document.createElement('div');
+      p.className = 'confetti-particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.top  = (Math.random() * 20) + '%';
+      p.style.background = colors[Math.floor(Math.random()*colors.length)];
+      p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      p.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
+      p.style.animationDelay    = (Math.random() * 0.6) + 's';
+      p.style.width  = (6 + Math.random()*8) + 'px';
+      p.style.height = (6 + Math.random()*8) + 'px';
+      overlay.appendChild(p);
+      p.addEventListener('animationend', () => p.remove());
+    }
+  }
+
+  /* ── Star rating ── */
+  function rateStar(n) {
+    const stars = document.querySelectorAll('.comp-star');
+    stars.forEach((s,i) => {
+      s.classList.toggle('lit', i < n);
+    });
+  }
+
+  /* ── Animated progress bar ── */
+  (function animateProgress() {
+    const fill = document.getElementById('prog-fill');
+    const pct  = document.getElementById('prog-pct');
+    if (!fill) return;
+    let val = 72;
+    setInterval(() => {
+      val = Math.min(100, val + (Math.random() > 0.7 ? 1 : 0));
+      fill.style.width = val + '%';
+      pct.textContent  = val + '%';
+      if (val >= 100) {
+        setTimeout(() => {
+          if (document.getElementById('completion-overlay').classList.contains('visible')) return;
+          showCompletion();
+        }, 800);
+      }
+    }, 1400);
+  })();
+
+  /* ── Auto-show completion after 5s (demo) ── */
+  setTimeout(() => {
+    const overlay = document.getElementById('completion-overlay');
+    if (!overlay.classList.contains('visible')) {
+      showCompletion();
+    }
+  }, 5000);
+</script>
+</body>
+</html>

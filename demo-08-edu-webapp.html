@@ -1,0 +1,1443 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>탑수학학원 목동점 EduOn</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --dp: #6d28d9;
+    --dp-dark: #5b21b6;
+    --dp-light: #7c3aed;
+    --lp: #ede9fe;
+    --lp-mid: #ddd6fe;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-800: #1f2937;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+    --yellow: #d97706;
+    --yellow-bg: #fef3c7;
+    --blue: #2563eb;
+    --blue-bg: #dbeafe;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+    --shadow-lg: 0 10px 30px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+  }
+
+  html, body {
+    height: 100%;
+    background: #c4b5fd;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  #app {
+    width: 100%;
+    max-width: 390px;
+    min-height: 100vh;
+    background: var(--gray-50);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 0 60px rgba(109,40,217,0.25);
+  }
+
+  /* ─── Header ─── */
+  .header {
+    background: var(--dp);
+    padding: 52px 20px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
+  }
+  .header-left { display: flex; flex-direction: column; gap: 2px; }
+  .header-school {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+  .header-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.3px;
+  }
+  .header-right { display: flex; align-items: center; gap: 12px; }
+  .header-icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: white;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .header-icon-btn:active { background: rgba(255,255,255,0.25); }
+  .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #f59e0b;
+    border: 1.5px solid var(--dp);
+  }
+  .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #a78bfa, #7c3aed);
+    border: 2px solid rgba(255,255,255,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: white;
+  }
+
+  /* ─── Student Info Strip ─── */
+  .student-strip {
+    background: var(--dp-dark);
+    padding: 10px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .student-info { display: flex; align-items: center; gap: 10px; }
+  .student-name { font-size: 14px; font-weight: 600; color: white; }
+  .student-class {
+    font-size: 11px; color: rgba(255,255,255,0.65);
+    background: rgba(255,255,255,0.12);
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .student-grade-badge {
+    font-size: 11px; font-weight: 700;
+    background: var(--yellow-bg); color: var(--yellow);
+    padding: 3px 10px; border-radius: 20px;
+  }
+
+  /* ─── Scroll Area ─── */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+  .content-area::-webkit-scrollbar { display: none; }
+
+  /* ─── Tabs ─── */
+  .tab-panels { position: relative; }
+  .tab-panel {
+    display: none;
+    padding: 20px 16px 100px;
+    animation: fadeSlideIn 0.28s ease;
+  }
+  .tab-panel.active { display: block; }
+
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Bottom Tab Bar ─── */
+  .tab-bar {
+    position: sticky;
+    bottom: 0;
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    display: flex;
+    z-index: 200;
+    flex-shrink: 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 10px 4px 10px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .tab-btn:active { transform: scale(0.94); }
+  .tab-icon {
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .tab-icon svg { transition: all 0.2s; }
+  .tab-label {
+    font-size: 10px; font-weight: 600;
+    color: var(--gray-400);
+    transition: color 0.2s;
+    letter-spacing: 0.2px;
+  }
+  .tab-btn.active .tab-label { color: var(--dp); }
+  .tab-btn.active .tab-icon svg { color: var(--dp); }
+  .tab-indicator {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 32px; height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--dp);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .tab-btn.active .tab-indicator { opacity: 1; }
+  .tab-badge {
+    position: absolute;
+    top: -4px; right: -6px;
+    min-width: 16px; height: 16px;
+    background: var(--red);
+    border-radius: 8px;
+    font-size: 9px; font-weight: 700; color: white;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+    border: 1.5px solid white;
+  }
+
+  /* ─── Section Header ─── */
+  .section-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: 15px; font-weight: 700; color: var(--gray-800);
+    letter-spacing: -0.2px;
+  }
+  .section-link {
+    font-size: 12px; color: var(--dp); font-weight: 600;
+    cursor: pointer; text-decoration: none;
+  }
+
+  /* ─── Card ─── */
+  .card {
+    background: var(--white);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 12px;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  /* ─── Month Nav ─── */
+  .month-nav {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .month-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%; border: 1.5px solid var(--gray-200);
+    background: white; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gray-500); transition: all 0.2s;
+  }
+  .month-nav-btn:active { background: var(--lp); color: var(--dp); }
+  .month-label { font-size: 15px; font-weight: 700; color: var(--gray-800); }
+
+  /* ─── Calendar ─── */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+  }
+  .cal-day-header {
+    font-size: 10px; font-weight: 600; color: var(--gray-400);
+    text-align: center; padding: 4px 0;
+  }
+  .cal-day-header:first-child { color: var(--red); }
+  .cal-day-header:last-child { color: var(--blue); }
+  .cal-day {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 500;
+    color: var(--gray-700);
+    cursor: default;
+    position: relative;
+    transition: transform 0.15s;
+  }
+  .cal-day.sun { color: var(--red); }
+  .cal-day.sat { color: var(--blue); }
+  .cal-day.empty { background: transparent; }
+  .cal-day.attend { background: var(--green-bg); color: var(--green); font-weight: 700; }
+  .cal-day.absent { background: var(--red-bg); color: var(--red); font-weight: 700; }
+  .cal-day.late   { background: var(--yellow-bg); color: var(--yellow); font-weight: 700; }
+  .cal-day.noclass { background: var(--gray-100); color: var(--gray-400); }
+  .cal-day.today {
+    box-shadow: 0 0 0 2px var(--dp);
+    font-weight: 800;
+  }
+
+  /* ─── Stat Chips ─── */
+  .stat-row {
+    display: flex; gap: 8px; margin-top: 14px;
+  }
+  .stat-chip {
+    flex: 1;
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid var(--gray-100);
+  }
+  .stat-chip-val {
+    font-size: 20px; font-weight: 800;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .stat-chip-label { font-size: 10px; color: var(--gray-400); font-weight: 500; }
+  .chip-green .stat-chip-val { color: var(--green); }
+  .chip-red   .stat-chip-val { color: var(--red); }
+  .chip-yellow .stat-chip-val { color: var(--yellow); }
+  .chip-purple .stat-chip-val { color: var(--dp); }
+
+  /* ─── Legend ─── */
+  .legend-row {
+    display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 11px; color: var(--gray-500);
+  }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 3px;
+  }
+  .legend-dot.attend { background: var(--green-bg); border: 1.5px solid var(--green); }
+  .legend-dot.absent { background: var(--red-bg); border: 1.5px solid var(--red); }
+  .legend-dot.late   { background: var(--yellow-bg); border: 1.5px solid var(--yellow); }
+  .legend-dot.noclass { background: var(--gray-100); border: 1.5px solid var(--gray-300); }
+
+  /* ─── Attendance Rate Ring ─── */
+  .attend-rate-wrap {
+    display: flex; align-items: center; gap: 16px; padding: 4px 0;
+  }
+  .rate-ring-wrap { position: relative; width: 80px; height: 80px; flex-shrink: 0; }
+  .rate-ring-wrap canvas { position: absolute; top: 0; left: 0; }
+  .rate-ring-center {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .rate-pct { font-size: 18px; font-weight: 800; color: var(--dp); }
+  .rate-label { font-size: 9px; color: var(--gray-400); font-weight: 500; }
+  .rate-meta { flex: 1; }
+  .rate-meta-title { font-size: 14px; font-weight: 700; color: var(--gray-800); margin-bottom: 6px; }
+  .rate-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 6px; margin-bottom: 6px; overflow: hidden; }
+  .rate-bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--dp), #a78bfa); transition: width 1s ease; }
+  .rate-meta-sub { font-size: 11px; color: var(--gray-400); }
+
+  /* ─── Payment ─── */
+  .payment-hero {
+    background: linear-gradient(135deg, var(--dp), #7c3aed);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    color: white;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+  .payment-hero::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.07);
+  }
+  .payment-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40px; right: 20px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .pay-month { font-size: 12px; opacity: 0.75; margin-bottom: 4px; }
+  .pay-amount { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 16px; }
+  .pay-amount span { font-size: 16px; font-weight: 500; margin-left: 2px; }
+  .pay-progress-label { display: flex; justify-content: space-between; font-size: 11px; opacity: 0.8; margin-bottom: 6px; }
+  .pay-progress-bar { background: rgba(255,255,255,0.25); border-radius: 6px; height: 8px; overflow: hidden; }
+  .pay-progress-fill { height: 100%; border-radius: 6px; background: #a3e635; transition: width 1s ease; }
+  .pay-status-row { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; }
+  .pay-status-badge {
+    font-size: 11px; font-weight: 700;
+    padding: 4px 12px; border-radius: 20px;
+  }
+  .pay-status-badge.paid { background: rgba(163,230,53,0.2); color: #a3e635; border: 1px solid rgba(163,230,53,0.4); }
+  .pay-status-badge.unpaid { background: rgba(251,191,36,0.2); color: #fbbf24; border: 1px solid rgba(251,191,36,0.4); }
+  .pay-btn {
+    background: white; color: var(--dp);
+    border: none; border-radius: var(--radius-md);
+    padding: 10px 20px;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    font-family: 'Pretendard', sans-serif;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .pay-btn:active { transform: scale(0.96); }
+
+  /* ─── Payment History ─── */
+  .pay-history-item {
+    display: flex; align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .pay-history-item:last-child { border-bottom: none; }
+  .pay-history-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  .pay-history-icon.paid-icon { background: var(--green-bg); }
+  .pay-history-icon.pending-icon { background: var(--yellow-bg); }
+  .pay-history-meta { flex: 1; }
+  .pay-history-title { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .pay-history-date { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .pay-history-amount { font-size: 14px; font-weight: 700; }
+  .pay-history-amount.paid-amount { color: var(--gray-700); }
+  .pay-history-amount.pending-amount { color: var(--yellow); }
+
+  /* ─── Grade Chart ─── */
+  .chart-wrap {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    margin: 8px 0 4px;
+  }
+  .chart-wrap canvas { width: 100% !important; height: 100% !important; }
+
+  /* ─── Score Cards ─── */
+  .score-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .score-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .score-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .score-subject { font-size: 11px; font-weight: 600; color: var(--gray-500); }
+  .score-trend {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 6px; border-radius: 20px;
+  }
+  .score-trend.up { background: var(--green-bg); color: var(--green); }
+  .score-trend.down { background: var(--red-bg); color: var(--red); }
+  .score-trend.same { background: var(--gray-100); color: var(--gray-500); }
+  .score-value { font-size: 30px; font-weight: 800; color: var(--gray-800); line-height: 1; }
+  .score-value span { font-size: 14px; color: var(--gray-400); font-weight: 500; }
+  .score-bar-wrap { background: var(--gray-100); border-radius: 4px; height: 4px; margin-top: 8px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+  .score-rank { font-size: 10px; color: var(--gray-400); margin-top: 5px; }
+
+  /* ─── Teacher Comment ─── */
+  .teacher-card {
+    background: var(--lp);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    display: flex; gap: 12px;
+    border: 1px solid var(--lp-mid);
+    margin-bottom: 12px;
+  }
+  .teacher-avatar {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--dp);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 2px solid rgba(109,40,217,0.3);
+  }
+  .teacher-meta { flex: 1; }
+  .teacher-name-row { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .teacher-name { font-size: 13px; font-weight: 700; color: var(--dp-dark); }
+  .teacher-role { font-size: 10px; color: var(--dp); background: white; padding: 2px 7px; border-radius: 20px; font-weight: 600; }
+  .teacher-comment { font-size: 12px; color: var(--gray-600); line-height: 1.6; }
+  .teacher-date { font-size: 10px; color: var(--dp); margin-top: 6px; font-weight: 500; }
+
+  /* ─── Notice ─── */
+  .notice-item {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex; gap: 12px; align-items: flex-start;
+    position: relative;
+  }
+  .notice-item:active { transform: scale(0.98); }
+  .notice-item.unread { border-left: 3px solid var(--dp); }
+  .notice-icon-wrap {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    flex-shrink: 0;
+  }
+  .notice-content { flex: 1; min-width: 0; }
+  .notice-top { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+  .notice-category {
+    font-size: 10px; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px;
+  }
+  .notice-unread-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%; background: var(--dp);
+    flex-shrink: 0;
+  }
+  .notice-title { font-size: 13px; font-weight: 600; color: var(--gray-800); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .notice-preview { font-size: 11px; color: var(--gray-400); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .notice-date { font-size: 10px; color: var(--gray-400); position: absolute; top: 14px; right: 16px; }
+
+  /* ─── Modal ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 500;
+    display: flex; align-items: flex-end;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+  .modal-sheet {
+    background: var(--white);
+    border-radius: 20px 20px 0 0;
+    width: 100%;
+    max-width: 390px;
+    margin: 0 auto;
+    max-height: 85vh;
+    overflow-y: auto;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    padding: 0 0 40px;
+  }
+  .modal-overlay.open .modal-sheet { transform: translateY(0); }
+  .modal-handle {
+    width: 36px; height: 4px;
+    border-radius: 2px;
+    background: var(--gray-200);
+    margin: 12px auto 0;
+  }
+  .modal-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .modal-category {
+    font-size: 11px; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    display: inline-block; margin-bottom: 6px;
+  }
+  .modal-title { font-size: 17px; font-weight: 800; color: var(--gray-800); line-height: 1.4; letter-spacing: -0.3px; }
+  .modal-meta { font-size: 11px; color: var(--gray-400); margin-top: 6px; }
+  .modal-body {
+    padding: 16px 20px;
+    font-size: 13px; color: var(--gray-600); line-height: 1.8;
+  }
+  .modal-close-btn {
+    display: block; width: calc(100% - 40px);
+    margin: 0 20px;
+    background: var(--lp); color: var(--dp);
+    border: none; border-radius: var(--radius-md);
+    padding: 13px;
+    font-size: 14px; font-weight: 700;
+    cursor: pointer; font-family: 'Pretendard', sans-serif;
+    transition: all 0.2s;
+  }
+  .modal-close-btn:active { background: var(--lp-mid); }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--gray-800); color: white;
+    padding: 10px 20px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+    opacity: 0; transition: all 0.3s;
+    z-index: 999; pointer-events: none;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ─── Pill tag colors ─── */
+  .tag-purple { background: var(--lp); color: var(--dp); }
+  .tag-blue   { background: var(--blue-bg); color: var(--blue); }
+  .tag-green  { background: var(--green-bg); color: var(--green); }
+  .tag-red    { background: var(--red-bg); color: var(--red); }
+  .tag-yellow { background: var(--yellow-bg); color: var(--yellow); }
+
+  /* ─── Divider ─── */
+  .divider { height: 1px; background: var(--gray-100); margin: 12px 0; }
+
+  /* ─── Empty / Utility ─── */
+  .mt-4  { margin-top: 16px; }
+  .mb-4  { margin-bottom: 16px; }
+  .flex  { display: flex; }
+  .items-center { align-items: center; }
+  .gap-2 { gap: 8px; }
+  .text-sm { font-size: 12px; }
+  .text-gray { color: var(--gray-500); }
+  .font-bold { font-weight: 700; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <span class="header-school">탑수학학원 목동점</span>
+      <span class="header-title">EduOn 학원관리</span>
+    </div>
+    <div class="header-right">
+      <button class="header-icon-btn" onclick="showToast('알림 없음')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span class="notif-dot"></span>
+      </button>
+      <div class="avatar">박</div>
+    </div>
+  </div>
+
+  <!-- Student Strip -->
+  <div class="student-strip">
+    <div class="student-info">
+      <span class="student-name">박서준</span>
+      <span class="student-class">중등 심화반 A</span>
+    </div>
+    <span class="student-grade-badge">중학교 2학년</span>
+  </div>
+
+  <!-- Content -->
+  <div class="content-area">
+    <div class="tab-panels">
+
+      <!-- ① 출결 탭 -->
+      <div class="tab-panel active" id="panel-attend">
+        <!-- 출석률 요약 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">이번 달 출석 현황</span>
+            <span class="section-link">상세보기</span>
+          </div>
+          <div class="attend-rate-wrap">
+            <div class="rate-ring-wrap">
+              <canvas id="ringCanvas" width="80" height="80"></canvas>
+              <div class="rate-ring-center">
+                <span class="rate-pct">91%</span>
+                <span class="rate-label">출석률</span>
+              </div>
+            </div>
+            <div class="rate-meta">
+              <div class="rate-meta-title">이번 달 출석 우수!</div>
+              <div class="rate-bar-wrap">
+                <div class="rate-bar-fill" id="attendBar" style="width:0%"></div>
+              </div>
+              <div class="rate-meta-sub">전월 대비 <strong style="color:var(--green)">+3%</strong> 향상</div>
+            </div>
+          </div>
+          <div class="stat-row">
+            <div class="stat-chip chip-green">
+              <div class="stat-chip-val">20</div>
+              <div class="stat-chip-label">출석</div>
+            </div>
+            <div class="stat-chip chip-red">
+              <div class="stat-chip-val">1</div>
+              <div class="stat-chip-label">결석</div>
+            </div>
+            <div class="stat-chip chip-yellow">
+              <div class="stat-chip-val">1</div>
+              <div class="stat-chip-label">지각</div>
+            </div>
+            <div class="stat-chip chip-purple">
+              <div class="stat-chip-val">22</div>
+              <div class="stat-chip-label">총 수업</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 달력 -->
+        <div class="card">
+          <div class="month-nav">
+            <button class="month-nav-btn" id="prevMonth">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <span class="month-label" id="monthLabel">2026년 4월</span>
+            <button class="month-nav-btn" id="nextMonth">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+          <div class="calendar-grid" id="calGrid">
+            <!-- JS로 생성 -->
+          </div>
+          <div class="legend-row">
+            <div class="legend-item"><div class="legend-dot attend"></div>출석</div>
+            <div class="legend-item"><div class="legend-dot absent"></div>결석</div>
+            <div class="legend-item"><div class="legend-dot late"></div>지각</div>
+            <div class="legend-item"><div class="legend-dot noclass"></div>수업없음</div>
+          </div>
+        </div>
+
+        <!-- 최근 출결 내역 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">최근 출결 내역</span>
+          </div>
+          <div id="recentAttend"></div>
+        </div>
+      </div>
+
+      <!-- ② 수납 탭 -->
+      <div class="tab-panel" id="panel-payment">
+        <!-- 이번달 수납 히어로 -->
+        <div class="payment-hero">
+          <div class="pay-month">2026년 4월 수강료</div>
+          <div class="pay-amount">320,000<span>원</span></div>
+          <div class="pay-progress-label">
+            <span>납부 현황</span>
+            <span id="payProgressLabel">미납</span>
+          </div>
+          <div class="pay-progress-bar">
+            <div class="pay-progress-fill" id="payProgressFill" style="width:0%"></div>
+          </div>
+          <div class="pay-status-row">
+            <span class="pay-status-badge unpaid" id="payStatusBadge">미납</span>
+            <button class="pay-btn" onclick="handlePayment()">납부하기</button>
+          </div>
+        </div>
+
+        <!-- 수납 안내 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">납부 안내</span>
+          </div>
+          <div style="font-size:12px;color:var(--gray-500);line-height:1.8;">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100);">
+              <span>수강료</span><span style="font-weight:600;color:var(--gray-700);">280,000원</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100);">
+              <span>교재비</span><span style="font-weight:600;color:var(--gray-700);">30,000원</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gray-100);">
+              <span>모의고사 응시료</span><span style="font-weight:600;color:var(--gray-700);">10,000원</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;padding:8px 0 2px;font-size:13px;">
+              <span style="font-weight:700;color:var(--gray-800);">합계</span>
+              <span style="font-weight:800;color:var(--dp);">320,000원</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 납부 계좌 -->
+        <div class="card" style="background:var(--lp);border:1px solid var(--lp-mid);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:38px;height:38px;border-radius:10px;background:var(--dp);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;">🏦</div>
+            <div>
+              <div style="font-size:11px;color:var(--dp);font-weight:600;margin-bottom:2px;">납부 계좌</div>
+              <div style="font-size:14px;font-weight:700;color:var(--dp-dark);">기업은행 012-345678-01-001</div>
+              <div style="font-size:11px;color:var(--gray-500);">예금주: 탑수학학원 목동점</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 납부 이력 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">납부 이력</span>
+          </div>
+          <div id="payHistory"></div>
+        </div>
+      </div>
+
+      <!-- ③ 성적 탭 -->
+      <div class="tab-panel" id="panel-grade">
+        <!-- 차트 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">수학 점수 추이</span>
+            <span class="section-link">6개월</span>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="gradeChart"></canvas>
+          </div>
+          <div style="display:flex;justify-content:center;gap:16px;margin-top:4px;">
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray-500);">
+              <div style="width:18px;height:3px;border-radius:2px;background:var(--dp);"></div>내 점수
+            </div>
+            <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--gray-500);">
+              <div style="width:18px;height:3px;border-radius:2px;background:var(--gray-300);"></div>반 평균
+            </div>
+          </div>
+        </div>
+
+        <!-- 과목 점수 카드 -->
+        <div class="section-header" style="margin-bottom:10px;">
+          <span class="section-title">최근 시험 성적</span>
+          <span style="font-size:11px;color:var(--gray-400);">2026년 3월 월례고사</span>
+        </div>
+        <div class="score-grid" id="scoreGrid"></div>
+
+        <!-- 선생님 코멘트 -->
+        <div class="section-header" style="margin-bottom:10px;">
+          <span class="section-title">선생님 평가</span>
+        </div>
+        <div class="teacher-card">
+          <div class="teacher-avatar">👨‍🏫</div>
+          <div class="teacher-meta">
+            <div class="teacher-name-row">
+              <span class="teacher-name">김민수 선생님</span>
+              <span class="teacher-role">수학 담당</span>
+            </div>
+            <div class="teacher-comment">
+              서준이는 이번 달 미적분 파트에서 눈에 띄는 성장을 보여줬습니다. 특히 함수 극한값 문제 풀이가 매우 정확해졌어요. 확률·통계 파트는 조금 더 연습이 필요하니, 제공된 추가 문제집을 꼭 풀어오세요. 꾸준히 노력하면 충분히 상위권 진입 가능합니다! 💪
+            </div>
+            <div class="teacher-date">2026년 3월 28일 작성</div>
+          </div>
+        </div>
+
+        <!-- 전체 순위 -->
+        <div class="card">
+          <div class="section-header">
+            <span class="section-title">반내 순위</span>
+            <span style="font-size:11px;color:var(--gray-400);">중등 심화반 A (22명)</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:16px;padding:8px 0;">
+            <div style="text-align:center;flex:1;">
+              <div style="font-size:28px;font-weight:800;color:var(--dp);">3<span style="font-size:14px;color:var(--gray-400);font-weight:500;">위</span></div>
+              <div style="font-size:10px;color:var(--gray-400);">이번 달</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--gray-200);"></div>
+            <div style="text-align:center;flex:1;">
+              <div style="font-size:28px;font-weight:800;color:var(--green);">▲2</div>
+              <div style="font-size:10px;color:var(--gray-400);">전월 대비</div>
+            </div>
+            <div style="width:1px;height:40px;background:var(--gray-200);"></div>
+            <div style="text-align:center;flex:1;">
+              <div style="font-size:28px;font-weight:800;color:var(--gray-700);">5<span style="font-size:14px;color:var(--gray-400);font-weight:500;">위</span></div>
+              <div style="font-size:10px;color:var(--gray-400);">전월</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ④ 공지 탭 -->
+      <div class="tab-panel" id="panel-notice">
+        <!-- 중요 공지 배너 -->
+        <div style="background:linear-gradient(135deg,#fef3c7,#fde68a);border-radius:var(--radius-lg);padding:14px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;border:1px solid #fcd34d;">
+          <span style="font-size:22px;">📌</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--yellow);">긴급 공지</div>
+            <div style="font-size:13px;font-weight:600;color:#78350f;">5월 연휴 기간 휴원 안내</div>
+            <div style="font-size:11px;color:#92400e;margin-top:2px;">5월 3일(토) ~ 5월 6일(화) 휴원</div>
+          </div>
+        </div>
+
+        <!-- 공지 목록 -->
+        <div class="section-header">
+          <span class="section-title">전체 공지</span>
+          <span style="font-size:11px;color:var(--gray-400);">총 8건</span>
+        </div>
+        <div id="noticeList"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="attend" onclick="switchTab('attend')">
+      <div class="tab-indicator"></div>
+      <div class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--gray-400)">
+          <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+          <path d="M8 14l2 2 4-4"/>
+        </svg>
+      </div>
+      <span class="tab-label">출결</span>
+    </button>
+    <button class="tab-btn" data-tab="payment" onclick="switchTab('payment')">
+      <div class="tab-indicator"></div>
+      <div class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--gray-400)">
+          <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/>
+        </svg>
+      </div>
+      <span class="tab-label">수납</span>
+    </button>
+    <button class="tab-btn" data-tab="grade" onclick="switchTab('grade')">
+      <div class="tab-indicator"></div>
+      <div class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--gray-400)">
+          <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/>
+          <line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/>
+        </svg>
+      </div>
+      <span class="tab-label">성적</span>
+    </button>
+    <button class="tab-btn" data-tab="notice" onclick="switchTab('notice')">
+      <div class="tab-indicator"></div>
+      <div class="tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" color="var(--gray-400)">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+      </div>
+      <span class="tab-label">공지</span>
+      <div class="tab-badge" id="noticeBadge">3</div>
+    </button>
+  </div>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal-sheet" id="modalSheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-category tag-purple" id="modalCategory"></div>
+      <div class="modal-title" id="modalTitle"></div>
+      <div class="modal-meta" id="modalMeta"></div>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <button class="modal-close-btn" onclick="closeModalBtn()">닫기</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────────
+const ATTEND_DATA = {
+  // 2026-04: key = day, val = 'attend'|'absent'|'late'|'noclass'
+  '2026-4': {
+    1:'attend', 2:'attend', 3:'attend', 4:'noclass', 5:'noclass',
+    6:'attend', 7:'attend', 8:'attend', 9:'attend', 10:'attend',
+    11:'noclass', 12:'noclass', 13:'attend', 14:'late', 15:'attend',
+    16:'attend', 17:'attend', 18:'noclass', 19:'noclass', 20:'attend',
+    21:'attend', 22:'attend', 23:'attend', 24:'attend', 25:'noclass',
+    26:'noclass', 27:'absent', 28:'attend', 29:'attend', 30:'attend'
+  },
+  '2026-3': {
+    1:'noclass', 2:'attend', 3:'attend', 4:'attend', 5:'attend',
+    6:'attend', 7:'noclass', 8:'noclass', 9:'attend', 10:'attend',
+    11:'attend', 12:'attend', 13:'attend', 14:'noclass', 15:'noclass',
+    16:'attend', 17:'attend', 18:'late', 19:'attend', 20:'attend',
+    21:'noclass', 22:'noclass', 23:'attend', 24:'attend', 25:'attend',
+    26:'attend', 27:'absent', 28:'noclass', 29:'noclass', 30:'attend', 31:'attend'
+  }
+};
+
+const RECENT_ATTEND = [
+  { date:'2026.04.30', day:'목', status:'attend', time:'15:02' },
+  { date:'2026.04.29', day:'수', status:'attend', time:'15:00' },
+  { date:'2026.04.28', day:'화', status:'attend', time:'15:01' },
+  { date:'2026.04.27', day:'월', status:'absent', time:'-' },
+  { date:'2026.04.24', day:'금', status:'attend', time:'15:03' },
+  { date:'2026.04.23', day:'목', status:'attend', time:'14:58' },
+  { date:'2026.04.14', day:'화', status:'late', time:'15:22' },
+];
+
+const PAY_HISTORY = [
+  { month:'2026년 3월', amount:'310,000', date:'2026.03.05', method:'계좌이체', status:'paid' },
+  { month:'2026년 2월', amount:'310,000', date:'2026.02.04', method:'계좌이체', status:'paid' },
+  { month:'2026년 1월', amount:'310,000', date:'2026.01.06', method:'카드결제', status:'paid' },
+  { month:'2025년 12월', amount:'310,000', date:'2025.12.03', method:'계좌이체', status:'paid' },
+  { month:'2025년 11월', amount:'300,000', date:'2025.11.04', method:'카드결제', status:'paid' },
+];
+
+const GRADE_DATA = {
+  months: ['10월','11월','12월','1월','2월','3월'],
+  scores: [72, 78, 75, 82, 85, 88],
+  avgScores: [68, 70, 69, 72, 74, 73],
+};
+
+const SUBJECTS = [
+  { name:'수학', score:88, prev:85, max:100, color:'#6d28d9', rank:'3/22' },
+  { name:'국어', score:82, prev:80, max:100, color:'#2563eb', rank:'5/22' },
+  { name:'영어', score:79, prev:83, max:100, color:'#16a34a', rank:'8/22' },
+  { name:'과학', score:91, prev:88, max:100, color:'#d97706', rank:'2/22' },
+];
+
+const NOTICES = [
+  {
+    id:1, category:'수업안내', tag:'tag-purple', icon:'📚',
+    title:'5월 모의고사 일정 및 범위 안내',
+    preview:'5월 17일(토) 오전 10시 전체 모의고사가 실시됩니다.',
+    date:'04.30', unread:true,
+    body:'안녕하세요, 탑수학학원 목동점입니다.\n\n5월 모의고사 일정을 안내드립니다.\n\n📅 일시: 2026년 5월 17일(토) 오전 10:00 ~ 12:30\n📝 범위: 수학 - 1학기 전 범위 / 국어 - 문학 + 독서 / 영어 - 교과서 1~5단원\n📍 장소: 3층 대강의실\n\n시험 당일 08:50까지 입실 완료 부탁드리며, 수험표는 별도 제공 없이 출석부로 확인합니다.\n\n문의사항은 원장실(02-123-4567)로 연락 주세요.',
+    author:'원장 이지훈', authorDate:'2026.04.30'
+  },
+  {
+    id:2, category:'납부안내', tag:'tag-green', icon:'💳',
+    title:'5월 수강료 납부 안내 (마감 5/10)',
+    preview:'5월 수강료 납부 기한은 5월 10일(토)까지입니다.',
+    date:'04.28', unread:true,
+    body:'5월 수강료 납부 안내\n\n납부 기한: 2026년 5월 10일(토)\n납부 금액: 320,000원 (수강료 280,000원 + 교재비 30,000원 + 모의고사 응시료 10,000원)\n\n계좌번호: 기업은행 012-345678-01-001 (탑수학학원 목동점)\n\n기한 내 미납 시 다음 달 수업 참여가 제한될 수 있으며, 분할 납부를 희망하시는 분은 사무실로 문의해 주세요.\n\n감사합니다.',
+    author:'사무실', authorDate:'2026.04.28'
+  },
+  {
+    id:3, category:'휴원안내', tag:'tag-red', icon:'🏖️',
+    title:'5월 연휴 휴원 안내 (5/3~5/6)',
+    preview:'어린이날 연휴 기간 동안 학원이 휴원합니다.',
+    date:'04.25', unread:true,
+    body:'학부모님, 안녕하세요!\n\n5월 연휴 기간 휴원 일정을 안내드립니다.\n\n📅 휴원 기간: 2026년 5월 3일(토) ~ 5월 6일(화)\n✅ 정상 수업 재개: 2026년 5월 7일(수)\n\n해당 기간의 보강 수업은 5월 중 별도 일정으로 진행되오니 공지를 확인해 주세요.\n\n즐거운 연휴 보내세요! 🌸',
+    author:'원장 이지훈', authorDate:'2026.04.25'
+  },
+  {
+    id:4, category:'학사일정', tag:'tag-blue', icon:'📅',
+    title:'2026년 1학기 시험 대비 특강 안내',
+    preview:'중간고사 대비 특강이 5월 12일부터 시작됩니다.',
+    date:'04.20', unread:false,
+    body:'1학기 중간고사 대비 특강 안내\n\n중간고사를 앞두고 집중 특강을 운영합니다.\n\n📌 특강 기간: 5월 12일(월) ~ 5월 23일(금)\n📌 시간: 평일 오후 6시 ~ 8시 (2시간)\n📌 대상: 중등 전 학년\n📌 과목: 수학, 국어, 영어 (요일별 로테이션)\n📌 수강료: 무료 (재원생 한정)\n\n사전 신청이 필요합니다. 5월 9일(금)까지 담임 선생님께 신청해 주세요.',
+    author:'학사부', authorDate:'2026.04.20'
+  },
+  {
+    id:5, category:'수업안내', tag:'tag-purple', icon:'✏️',
+    title:'4월 월례고사 성적 확인 방법 안내',
+    preview:'EduOn 앱 성적 탭에서 확인하실 수 있습니다.',
+    date:'04.15', unread:false,
+    body:'4월 월례고사 성적이 등록되었습니다.\n\nEduOn 앱 → 성적 탭에서 과목별 점수와 선생님 코멘트를 확인하실 수 있습니다.\n\n성적표 원본은 다음 수업 시간에 배부될 예정입니다.\n\n성적 관련 상담을 원하시는 분은 담임 선생님께 문의해 주세요.',
+    author:'학사부', authorDate:'2026.04.15'
+  },
+  {
+    id:6, category:'기타', tag:'tag-yellow', icon:'📢',
+    title:'학원 주차 안내 — 인근 공영주차장 이용 안내',
+    preview:'목동 제5공영주차장 이용 시 30분 무료 제공됩니다.',
+    date:'04.10', unread:false,
+    body:'학원 내 주차 공간이 협소하여 불편을 드려 죄송합니다.\n\n인근 목동 제5공영주차장(도보 3분)을 이용하시면 영수증 제시 시 30분 무료 주차권을 드립니다.\n\n주차권은 1층 사무실에서 수령하실 수 있습니다.\n\n감사합니다.',
+    author:'사무실', authorDate:'2026.04.10'
+  },
+];
+
+// ─── State ───────────────────────────────────────────────────────
+let currentYear = 2026, currentMonth = 4; // 1-indexed
+let chartDrawn = false;
+let payPaid = false;
+
+// ─── Tab switching ───────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+
+  document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById(`panel-${tab}`).classList.add('active');
+
+  // update icons color
+  document.querySelectorAll('.tab-btn svg').forEach(svg => svg.style.color = 'var(--gray-400)');
+  document.querySelector(`[data-tab="${tab}"] svg`).style.color = 'var(--dp)';
+
+  // scroll to top
+  document.querySelector('.content-area').scrollTop = 0;
+
+  if (tab === 'grade' && !chartDrawn) {
+    setTimeout(drawGradeChart, 100);
+    chartDrawn = true;
+  }
+}
+
+// ─── Ring Canvas ─────────────────────────────────────────────────
+function drawRing() {
+  const c = document.getElementById('ringCanvas');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const r = 34, cx = 40, cy = 40, start = -Math.PI/2;
+  const pct = 0.91;
+
+  ctx.clearRect(0,0,80,80);
+  // bg
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,2*Math.PI);
+  ctx.strokeStyle = '#ede9fe';
+  ctx.lineWidth = 7;
+  ctx.stroke();
+  // fill
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,start, start + 2*Math.PI*pct);
+  ctx.strokeStyle = '#6d28d9';
+  ctx.lineWidth = 7;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+// ─── Calendar ────────────────────────────────────────────────────
+const DOW = ['일','월','화','수','목','금','토'];
+
+function buildCalendar(year, month) {
+  const grid = document.getElementById('calGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+
+  // Headers
+  DOW.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-day-header'; h.textContent = d; grid.appendChild(h);
+  });
+
+  const firstDow = new Date(year, month-1, 1).getDay();
+  const daysInMonth = new Date(year, month, 0).getDate();
+  const key = `${year}-${month}`;
+  const data = ATTEND_DATA[key] || {};
+  const today = new Date();
+
+  for (let i = 0; i < firstDow; i++) {
+    const e = document.createElement('div'); e.className='cal-day empty'; grid.appendChild(e);
+  }
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dow = (firstDow + d - 1) % 7;
+    const el = document.createElement('div');
+    const status = data[d];
+    let cls = 'cal-day';
+    if (dow===0) cls += ' sun';
+    else if (dow===6) cls += ' sat';
+    if (status==='attend') cls += ' attend';
+    else if (status==='absent') cls += ' absent';
+    else if (status==='late') cls += ' late';
+    else if (status==='noclass') cls += ' noclass';
+    if (year===today.getFullYear() && month-1===today.getMonth() && d===today.getDate()) cls += ' today';
+    el.className = cls;
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+
+  document.getElementById('monthLabel').textContent = `${year}년 ${month}월`;
+}
+
+document.getElementById('prevMonth').addEventListener('click', () => {
+  currentMonth--; if (currentMonth<1) { currentMonth=12; currentYear--; }
+  buildCalendar(currentYear, currentMonth);
+});
+document.getElementById('nextMonth').addEventListener('click', () => {
+  currentMonth++; if (currentMonth>12) { currentMonth=1; currentYear++; }
+  buildCalendar(currentYear, currentMonth);
+});
+
+// ─── Recent Attend ───────────────────────────────────────────────
+function buildRecentAttend() {
+  const el = document.getElementById('recentAttend');
+  if (!el) return;
+  const labels = { attend:'출석', absent:'결석', late:'지각' };
+  const colors = { attend:'var(--green)', absent:'var(--red)', late:'var(--yellow)' };
+  const bgs    = { attend:'var(--green-bg)', absent:'var(--red-bg)', late:'var(--yellow-bg)' };
+  const icons  = { attend:'✅', absent:'❌', late:'⏰' };
+
+  el.innerHTML = RECENT_ATTEND.map(a => `
+    <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--gray-100);">
+      <div style="width:38px;height:38px;border-radius:10px;background:${bgs[a.status]};display:flex;align-items:center;justify-content:center;font-size:16px;margin-right:12px;flex-shrink:0;">${icons[a.status]}</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:600;color:var(--gray-800);">${a.date} (${a.day})</div>
+        <div style="font-size:11px;color:var(--gray-400);margin-top:2px;">입실 ${a.time}</div>
+      </div>
+      <span style="font-size:12px;font-weight:700;color:${colors[a.status]};background:${bgs[a.status]};padding:3px 10px;border-radius:20px;">${labels[a.status]}</span>
+    </div>
+  `).join('');
+}
+
+// ─── Payment History ─────────────────────────────────────────────
+function buildPayHistory() {
+  const el = document.getElementById('payHistory');
+  if (!el) return;
+  el.innerHTML = PAY_HISTORY.map(p => `
+    <div class="pay-history-item">
+      <div class="pay-history-icon paid-icon">💳</div>
+      <div class="pay-history-meta">
+        <div class="pay-history-title">${p.month} 수강료</div>
+        <div class="pay-history-date">${p.date} · ${p.method}</div>
+      </div>
+      <div class="pay-history-amount paid-amount">${p.amount}원</div>
+    </div>
+  `).join('');
+}
+
+function handlePayment() {
+  if (payPaid) { showToast('이미 납부 완료되었습니다!'); return; }
+  payPaid = true;
+  document.getElementById('payProgressFill').style.width = '100%';
+  document.getElementById('payProgressLabel').textContent = '납부 완료';
+  document.getElementById('payStatusBadge').textContent = '납부완료';
+  document.getElementById('payStatusBadge').className = 'pay-status-badge paid';
+  showToast('납부가 완료되었습니다! ✅');
+
+  // Add to history
+  const el = document.getElementById('payHistory');
+  const newItem = `
+    <div class="pay-history-item">
+      <div class="pay-history-icon paid-icon">💳</div>
+      <div class="pay-history-meta">
+        <div class="pay-history-title">2026년 4월 수강료</div>
+        <div class="pay-history-date">2026.04.02 · 카드결제</div>
+      </div>
+      <div class="pay-history-amount paid-amount">320,000원</div>
+    </div>`;
+  el.insertAdjacentHTML('afterbegin', newItem);
+}
+
+// ─── Grade Chart (Canvas API) ─────────────────────────────────────
+function drawGradeChart() {
+  const canvas = document.getElementById('gradeChart');
+  if (!canvas) return;
+  const parent = canvas.parentElement;
+  const W = parent.clientWidth || 300;
+  const H = 180;
+  canvas.width = W;
+  canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  const PAD = { top:20, right:20, bottom:30, left:36 };
+  const cW = W - PAD.left - PAD.right;
+  const cH = H - PAD.top - PAD.bottom;
+
+  const { months, scores, avgScores } = GRADE_DATA;
+  const N = months.length;
+  const minV = 55, maxV = 100;
+
+  function toX(i) { return PAD.left + (i / (N-1)) * cW; }
+  function toY(v) { return PAD.top + (1 - (v-minV)/(maxV-minV)) * cH; }
+
+  // Grid lines
+  ctx.strokeStyle = '#f3f4f6';
+  ctx.lineWidth = 1;
+  [60,70,80,90,100].forEach(v => {
+    ctx.beginPath();
+    ctx.moveTo(PAD.left, toY(v));
+    ctx.lineTo(PAD.left + cW, toY(v));
+    ctx.stroke();
+    ctx.fillStyle = '#9ca3af';
+    ctx.font = '9px Pretendard, sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(v, PAD.left - 5, toY(v) + 3.5);
+  });
+
+  // X labels
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '9px Pretendard, sans-serif';
+  ctx.textAlign = 'center';
+  months.forEach((m,i) => ctx.fillText(m, toX(i), H - PAD.bottom + 14));
+
+  // Avg gradient area
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(avgScores[0]));
+  avgScores.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.lineTo(toX(N-1), toY(minV));
+  ctx.lineTo(toX(0), toY(minV));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(156,163,175,0.1)';
+  ctx.fill();
+
+  // Avg line
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(avgScores[0]));
+  avgScores.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.strokeStyle = '#d1d5db';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4,3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Score gradient area
+  const grad = ctx.createLinearGradient(0, PAD.top, 0, PAD.top + cH);
+  grad.addColorStop(0, 'rgba(109,40,217,0.18)');
+  grad.addColorStop(1, 'rgba(109,40,217,0)');
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(scores[0]));
+  scores.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.lineTo(toX(N-1), toY(minV));
+  ctx.lineTo(toX(0), toY(minV));
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Score line
+  ctx.beginPath();
+  ctx.moveTo(toX(0), toY(scores[0]));
+  scores.forEach((v,i) => i>0 && ctx.lineTo(toX(i), toY(v)));
+  ctx.strokeStyle = '#6d28d9';
+  ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  // Dots + labels
+  scores.forEach((v,i) => {
+    const x = toX(i), y = toY(v);
+    ctx.beginPath();
+    ctx.arc(x, y, 5, 0, 2*Math.PI);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    ctx.strokeStyle = '#6d28d9';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    // Score label
+    ctx.fillStyle = '#374151';
+    ctx.font = 'bold 10px Pretendard, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(v, x, y - 10);
+  });
+}
+
+// ─── Score Cards ─────────────────────────────────────────────────
+function buildScoreGrid() {
+  const el = document.getElementById('scoreGrid');
+  if (!el) return;
+  el.innerHTML = SUBJECTS.map(s => {
+    const diff = s.score - s.prev;
+    const trend = diff>0 ? 'up' : diff<0 ? 'down' : 'same';
+    const trendLabel = diff>0 ? `▲${diff}` : diff<0 ? `▼${Math.abs(diff)}` : `―0`;
+    const pct = (s.score / s.max * 100).toFixed(0);
+    return `
+      <div class="score-card">
+        <div class="score-card-top">
+          <span class="score-subject">${s.name}</span>
+          <span class="score-trend ${trend}">${trendLabel}</span>
+        </div>
+        <div class="score-value">${s.score}<span>/100</span></div>
+        <div class="score-bar-wrap">
+          <div class="score-bar-fill" style="width:${pct}%;background:${s.color};"></div>
+        </div>
+        <div class="score-rank">반 순위 ${s.rank}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── Notices ─────────────────────────────────────────────────────
+function buildNotices() {
+  const el = document.getElementById('noticeList');
+  if (!el) return;
+  el.innerHTML = NOTICES.map(n => `
+    <div class="notice-item ${n.unread ? 'unread' : ''}" onclick="openNotice(${n.id})">
+      <div class="notice-icon-wrap" style="background:var(--lp)">${n.icon}</div>
+      <div class="notice-content">
+        <div class="notice-top">
+          <span class="notice-category ${n.tag}">${n.category}</span>
+          ${n.unread ? '<div class="notice-unread-dot"></div>' : ''}
+        </div>
+        <div class="notice-title">${n.title}</div>
+        <div class="notice-preview">${n.preview}</div>
+      </div>
+      <div class="notice-date">${n.date}</div>
+    </div>
+  `).join('');
+}
+
+function openNotice(id) {
+  const n = NOTICES.find(x => x.id===id);
+  if (!n) return;
+
+  // Mark as read
+  n.unread = false;
+  buildNotices();
+  updateBadge();
+
+  document.getElementById('modalCategory').textContent = n.category;
+  document.getElementById('modalCategory').className = `modal-category ${n.tag}`;
+  document.getElementById('modalTitle').textContent = n.title;
+  document.getElementById('modalMeta').textContent = `${n.author} · ${n.authorDate}`;
+  document.getElementById('modalBody').innerHTML = n.body.replace(/\n/g,'<br>');
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalBtn();
+}
+function closeModalBtn() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function updateBadge() {
+  const unread = NOTICES.filter(n=>n.unread).length;
+  const badge = document.getElementById('noticeBadge');
+  if (unread>0) { badge.textContent = unread; badge.style.display='flex'; }
+  else badge.style.display='none';
+}
+
+// ─── Toast ───────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── Progress Bar Animation ───────────────────────────────────────
+function animateBars() {
+  setTimeout(() => {
+    const bar = document.getElementById('attendBar');
+    if (bar) bar.style.width = '91%';
+  }, 300);
+}
+
+// ─── Init ────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  buildCalendar(currentYear, currentMonth);
+  buildRecentAttend();
+  buildPayHistory();
+  buildScoreGrid();
+  buildNotices();
+  drawRing();
+  animateBars();
+  updateBadge();
+
+  // Set initial icon color
+  document.querySelector('[data-tab="attend"] svg').style.color = 'var(--dp)';
+});
+
+// Redraw chart on resize
+window.addEventListener('resize', () => {
+  if (chartDrawn) drawGradeChart();
+});
+</script>
+</body>
+</html>
