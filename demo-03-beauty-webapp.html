@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -872,6 +873,72 @@
     }
     .history-pts.earn  { color: #2e7d32; }
     .history-pts.spend { color: var(--rose); }
+
+    /* ── Stamp Card ──────────────────────────────── */
+    .stamp-card {
+      margin: 0 20px 16px;
+      background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 60%, #ff758c 100%);
+      border-radius: 18px;
+      padding: 20px 18px 16px;
+      color: var(--white);
+      box-shadow: 0 6px 24px rgba(201,24,74,.25);
+      position: relative;
+      overflow: hidden;
+    }
+    .stamp-card::before {
+      content: '';
+      position: absolute;
+      width: 160px; height: 160px;
+      background: rgba(255,255,255,.06);
+      border-radius: 50%;
+      top: -60px; right: -40px;
+    }
+    .stamp-card-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .stamp-card-desc  { font-size: 11px; opacity: .8; margin-bottom: 14px; }
+    .stamp-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .stamp-dot {
+      aspect-ratio: 1;
+      border-radius: 50%;
+      background: rgba(255,255,255,.22);
+      border: 2px solid rgba(255,255,255,.35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      transition: all .3s;
+    }
+    .stamp-dot.filled {
+      background: rgba(255,255,255,.92);
+      border-color: transparent;
+      box-shadow: 0 2px 8px rgba(0,0,0,.15);
+    }
+    .stamp-dot.filled::after { content: '💅'; font-size: 16px; }
+    .stamp-dot.empty::after  { content: ''; }
+    .stamp-progress-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px;
+    }
+    .stamp-count-text { font-weight: 700; font-size: 13px; }
+    .stamp-reward-text { font-size: 11px; opacity: .85; }
+
+    /* ── Supabase connection badge ───────────────── */
+    .db-status {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 20px;
+      position: fixed;
+      bottom: 80px; right: 10px;
+      z-index: 99;
+      pointer-events: none;
+      opacity: .75;
+    }
+    .db-status.live { background: #d4edda; color: #155724; }
+    .db-status.demo { background: #fff3cd; color: #856404; }
+    .db-status-dot  { width:6px; height:6px; border-radius:50%; background:currentColor; }
 
     /* ── Points use modal ────────────────────────── */
     .points-use-modal { padding:4px 0 8px; }
@@ -1843,6 +1910,17 @@
         </div>
       </div>
 
+      <!-- 스탬프 카드 -->
+      <div class="stamp-card fade-in-d2" id="stamp-card-wrap">
+        <div class="stamp-card-title">💅 스탬프 적립 카드</div>
+        <div class="stamp-card-desc">10개 모으면 커트 무료 시술권 증정!</div>
+        <div class="stamp-grid" id="stamp-grid"></div>
+        <div class="stamp-progress-row">
+          <span class="stamp-count-text" id="stamp-count-text">8 / 10 스탬프</span>
+          <span class="stamp-reward-text">2개 더 모으면 🎁</span>
+        </div>
+      </div>
+
       <div class="section-heading fade-in-d2"><div class="dot"></div>포인트 내역</div>
       <div class="history-list fade-in-d2" id="points-history"></div>
       <div style="height:20px;"></div>
@@ -2038,7 +2116,196 @@
 
 </div><!-- /app-shell -->
 
+<!-- DB 연결 상태 배지 -->
+<div class="db-status demo" id="db-status-badge">
+  <span class="db-status-dot"></span><span id="db-status-text">데모 모드</span>
+</div>
+
 <script>
+/* ═══════════════════════════════════════════════
+   SUPABASE CONFIG
+═══════════════════════════════════════════════ */
+const SUPABASE_URL  = 'https://pgvabeyhjekhsefmwlcq.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBndmFiZXloamVraHNlZm13bGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzQwMzQsImV4cCI6MjA5MDcxMDAzNH0.zNG5hAz3CCxILcL3nzXKwuHyGB5X4dZzCQ_Ws_iNLqQ';
+
+let db = null;
+let isLive = false;
+
+try {
+  const { createClient } = supabase;
+  db = createClient(SUPABASE_URL, SUPABASE_ANON);
+  isLive = true;
+} catch(e) {
+  console.warn('[BeautyOn] Supabase 초기화 실패, 데모 모드로 실행:', e.message);
+}
+
+// DB 상태 배지 업데이트
+function setDbStatus(live) {
+  const badge = document.getElementById('db-status-badge');
+  const text  = document.getElementById('db-status-text');
+  if (!badge) return;
+  badge.className = 'db-status ' + (live ? 'live' : 'demo');
+  text.textContent = live ? '● 라이브' : '데모 모드';
+}
+
+/* 현재 로그인 고객 ID (Supabase Auth 연동 시 실제 값으로 교체) */
+let currentCustomerId = null;
+
+/* ─── Supabase 데이터 로드 ─────────────────────────────────── */
+async function loadUserDataFromDB() {
+  if (!db) { setDbStatus(false); return; }
+  try {
+    // 연결 테스트: banners 테이블 조회 (공개 읽기)
+    const { data: banners, error } = await db
+      .from('banners')
+      .select('*')
+      .order('sort_order');
+
+    if (error) throw error;
+    setDbStatus(true);
+    isLive = true;
+    console.log('[BeautyOn] Supabase 연결 성공 ✅');
+
+    // 배너 동적 렌더링 (데이터가 있을 때만)
+    if (banners && banners.length > 0) renderDynamicBanners(banners);
+
+    // 로그인 고객 데이터 로드 (로그인 상태일 때)
+    if (currentCustomerId) {
+      await loadCustomerProfile();
+      await loadStamps();
+      await loadPointBalance();
+      await loadBookings();
+    }
+  } catch(e) {
+    console.warn('[BeautyOn] DB 조회 실패, 데모 데이터 사용:', e.message);
+    setDbStatus(false);
+  }
+}
+
+async function loadCustomerProfile() {
+  if (!db || !currentCustomerId) return;
+  const { data, error } = await db
+    .from('customers')
+    .select('*')
+    .eq('id', currentCustomerId)
+    .single();
+  if (error || !data) return;
+
+  document.getElementById('myinfo-name-display').textContent = data.name + ' 님';
+  document.getElementById('myinfo-grade').textContent =
+    (data.grade === 'GOLD' ? '🥇' : data.grade === 'DIAMOND' ? '🔷' : data.grade === 'SILVER' ? '🥈' : '🥉') +
+    ' ' + data.grade + ' 등급 · 방문 ' + data.total_visits + '회';
+  const visitCell = document.querySelector('.stat-cell:nth-child(2) .stat-num');
+  if (visitCell) visitCell.textContent = data.total_visits;
+}
+
+async function loadStamps() {
+  if (!db || !currentCustomerId) return;
+  const { data, error } = await db
+    .from('stamps')
+    .select('id, redeemed')
+    .eq('customer_id', currentCustomerId)
+    .order('created_at');
+  if (error) return;
+  const active = (data || []).filter(s => !s.redeemed).length;
+  renderStampCard(active);
+}
+
+async function loadPointBalance() {
+  if (!db || !currentCustomerId) return;
+  const { data, error } = await db
+    .from('points_transactions')
+    .select('amount')
+    .eq('customer_id', currentCustomerId);
+  if (error) return;
+  const bal = (data || []).reduce((s, r) => s + r.amount, 0);
+  myPoints = bal;
+  document.getElementById('my-points-strip').textContent = bal.toLocaleString();
+  document.getElementById('points-value-display').innerHTML = bal.toLocaleString() + '<span class="points-unit">P</span>';
+  document.getElementById('myinfo-points-display').textContent = bal.toLocaleString();
+}
+
+async function loadBookings() {
+  if (!db || !currentCustomerId) return;
+  const { data, error } = await db
+    .from('bookings')
+    .select('*')
+    .eq('customer_id', currentCustomerId)
+    .order('booked_at', { ascending: false });
+  if (error) return;
+  const now = new Date();
+  upcomingBookings = (data || [])
+    .filter(b => new Date(b.booked_at) >= now && b.status !== '취소')
+    .map(b => ({
+      service: b.service,
+      designer: b.designer,
+      date: new Date(b.booked_at).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'}).replace(/ /g,'').replace(/\./g,'.').slice(0,-1),
+      time: new Date(b.booked_at).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}),
+      price: b.price,
+      status: b.status,
+      id: b.id,
+    }));
+  pastBookings = (data || [])
+    .filter(b => new Date(b.booked_at) < now || b.status === '완료')
+    .slice(0, 10)
+    .map(b => ({
+      service: b.service,
+      designer: b.designer,
+      date: new Date(b.booked_at).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'}).replace(/ /g,'').replace(/\./g,'.').slice(0,-1),
+      time: new Date(b.booked_at).toLocaleTimeString('ko-KR', {hour:'2-digit',minute:'2-digit'}),
+      price: b.price,
+      status: '완료',
+    }));
+  renderBookings();
+}
+
+/* 배너 동적 렌더링 */
+function renderDynamicBanners(banners) {
+  const track = document.getElementById('carousel-track');
+  if (!track || !banners.length) return;
+  track.innerHTML = banners.slice(0, 4).map(b => `
+    <div class="c-slide" style="background:${b.bg_color || '#c9184a'};">
+      <div class="slide-content">
+        <div class="slide-tag" style="color:${b.text_color || '#fff'};opacity:.8;">PROMOTION</div>
+        <div class="slide-title" style="color:${b.text_color || '#fff'};">${b.title}</div>
+        <div class="slide-sub" style="color:${b.text_color || '#fff'};opacity:.85;">${b.subtitle || ''}</div>
+        <button class="slide-btn" onclick="showToast('${b.cta_text || '자세히 보기'}')">${b.cta_text || '자세히 보기'}</button>
+      </div>
+    </div>`).join('');
+}
+
+/* 예약 확정 시 Supabase에 저장 */
+async function saveBookingToDB(bookingData) {
+  if (!db || !currentCustomerId) return null;
+  const { data, error } = await db
+    .from('bookings')
+    .insert({
+      customer_id: currentCustomerId,
+      designer:    bookingData.designer,
+      service:     bookingData.service,
+      price:       parseInt(bookingData.price),
+      booked_at:   bookingData.booked_at,
+      duration_min: parseInt(bookingData.dur) || 60,
+      status: '예약대기',
+    })
+    .select()
+    .single();
+  if (error) { console.warn('예약 저장 실패:', error.message); return null; }
+
+  // 예약 시 포인트 5% 적립
+  const earnPts = Math.floor(parseInt(bookingData.price) * 0.05);
+  if (earnPts > 0) {
+    await db.from('points_transactions').insert({
+      customer_id: currentCustomerId,
+      type: 'earn',
+      amount: earnPts,
+      title: bookingData.service + ' 예약 적립',
+      booking_id: data.id,
+    });
+  }
+  return data;
+}
+
 /* ═══════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════ */
@@ -2286,11 +2553,12 @@ document.getElementById('final-confirm-btn').addEventListener('click', function(
 /* ═══════════════════════════════════════════════
    BOOKING CONFIRMED
 ═══════════════════════════════════════════════ */
-function confirmBooking() {
+async function confirmBooking() {
   const s = state;
   const dateStr = `2026.${String(s.selectedDate.m+1).padStart(2,'0')}.${String(s.selectedDate.d).padStart(2,'0')}`;
+  const bookedAt = new Date(`2026-${String(s.selectedDate.m+1).padStart(2,'0')}-${String(s.selectedDate.d).padStart(2,'0')}T${s.selectedTime}:00`);
 
-  // Add to bookings list
+  // Add to local bookings list
   upcomingBookings.unshift({
     service:  s.selectedService.name,
     designer: s.selectedDesigner,
@@ -2300,7 +2568,7 @@ function confirmBooking() {
     status:   '예약완료',
   });
 
-  // Add points
+  // Add points locally
   const pts = Math.round(Number(s.selectedService.price) * 0.05);
   myPoints += pts;
   pointsHistory.unshift({
@@ -2310,6 +2578,15 @@ function confirmBooking() {
     pts:   '+' + pts.toLocaleString(),
   });
   document.getElementById('my-points-strip').textContent = myPoints.toLocaleString();
+
+  // Supabase 저장 (비동기, 실패해도 UX에 영향 없음)
+  saveBookingToDB({
+    designer: s.selectedDesigner,
+    service:  s.selectedService.name,
+    price:    s.selectedService.price,
+    dur:      s.selectedService.dur,
+    booked_at: bookedAt.toISOString(),
+  }).catch(e => console.warn('DB 저장 실패:', e));
 
   // Reset state
   state.selectedDesigner = null;
@@ -2687,6 +2964,34 @@ function renderBookings() {
 }
 
 /* ═══════════════════════════════════════════════
+   STAMP CARD RENDER
+═══════════════════════════════════════════════ */
+let myStamps = 8; // 데모 기본값
+
+function renderStampCard(count) {
+  myStamps = count;
+  const grid = document.getElementById('stamp-grid');
+  const countText = document.getElementById('stamp-count-text');
+  if (!grid) return;
+
+  const TOTAL = 10;
+  let html = '';
+  for (let i = 0; i < TOTAL; i++) {
+    html += `<div class="stamp-dot ${i < count ? 'filled' : 'empty'}"></div>`;
+  }
+  grid.innerHTML = html;
+
+  const remaining = TOTAL - count;
+  if (countText) {
+    countText.textContent = `${count} / ${TOTAL} 스탬프`;
+    const rewardEl = countText.nextElementSibling;
+    if (rewardEl) {
+      rewardEl.textContent = remaining > 0 ? `${remaining}개 더 모으면 🎁` : '무료 시술권 사용 가능! 🎉';
+    }
+  }
+}
+
+/* ═══════════════════════════════════════════════
    INIT
 ═══════════════════════════════════════════════ */
 (function init() {
@@ -2697,6 +3002,9 @@ function renderBookings() {
   renderBookings();
   renderPointsHistory();
   updateSummary();
+  renderStampCard(myStamps);
+  // Supabase에서 데이터 로드 시도 (비동기)
+  loadUserDataFromDB();
 })();
 </script>
 </body>

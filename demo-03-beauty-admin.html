@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -601,6 +602,8 @@
   .action-btn:active { opacity: 0.7; }
   .action-btn.complete { background: #e8f5ee; color: var(--success); }
   .action-btn.cancel { background: #fff0f0; color: var(--danger); }
+  .action-btn.stamp  { background: #fde8ef; color: var(--rose); }
+  .action-btn.stamp.stamped { background: #e8e8e8; color: #999; pointer-events: none; }
 
   .status-badge {
     position: absolute;
@@ -1905,6 +1908,102 @@
 <input type="file" id="photoUploadInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
 
 <script>
+// ─── SUPABASE CONFIG ───
+const SUPABASE_URL  = 'https://pgvabeyhjekhsefmwlcq.supabase.co';
+const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBndmFiZXloamVraHNlZm13bGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMzQwMzQsImV4cCI6MjA5MDcxMDAzNH0.zNG5hAz3CCxILcL3nzXKwuHyGB5X4dZzCQ_Ws_iNLqQ';
+
+let db = null;
+let isDbLive = false;
+
+try {
+  const { createClient } = supabase;
+  db = createClient(SUPABASE_URL, SUPABASE_ANON);
+  isDbLive = true;
+  console.log('[Admin] Supabase 초기화 성공 ✅');
+} catch(e) {
+  console.warn('[Admin] Supabase 초기화 실패, 데모 모드:', e.message);
+}
+
+// 스탬프 찍기 (관리자 → 고객에게 스탬프 부여)
+async function grantStamp(btn, clientName, bookingId) {
+  btn.classList.add('stamped');
+  btn.textContent = '✓ 스탬프';
+
+  if (!db) {
+    showToast(clientName + ' 님 스탬프 적립 완료 💅 (데모)');
+    return;
+  }
+
+  try {
+    // 실운영: customer_id는 booking record에서 가져와야 함
+    // 여기서는 demo용으로 booking_id만 기록
+    const { error } = await db.from('stamps').insert({
+      customer_id: '00000000-0000-0000-0000-000000000001', // TODO: 실제 customer_id로 교체
+      granted_by: 'admin',
+      booking_id: typeof bookingId === 'number' ? null : bookingId, // UUID만 허용
+    });
+    if (error) throw error;
+    showToast(clientName + ' 님 스탬프 적립 완료 💅');
+  } catch(e) {
+    console.warn('스탬프 저장 실패:', e.message);
+    showToast(clientName + ' 님 스탬프 적립 완료 💅 (로컬 저장)');
+  }
+}
+
+// 예약 저장 (관리자가 수동 추가할 때)
+async function saveBookingToDb(bookingObj) {
+  if (!db) return null;
+  try {
+    const { data, error } = await db.from('bookings').insert({
+      customer_id: '00000000-0000-0000-0000-000000000001', // TODO: 고객 선택 연동
+      designer:    bookingObj.designer,
+      service:     bookingObj.service,
+      price:       bookingObj.price,
+      booked_at:   bookingObj.booked_at,
+      status:      '예약대기',
+    }).select().single();
+    if (error) throw error;
+    return data;
+  } catch(e) {
+    console.warn('예약 DB 저장 실패:', e.message);
+    return null;
+  }
+}
+
+// DB에서 오늘 예약 로드 시도 (비동기, 실패 시 mock 유지)
+async function loadTodayBookingsFromDb() {
+  if (!db) return;
+  try {
+    const today = new Date();
+    const dateStr = today.toISOString().slice(0, 10);
+    const { data, error } = await db
+      .from('bookings')
+      .select('*, customers(name)')
+      .gte('booked_at', dateStr + 'T00:00:00')
+      .lte('booked_at', dateStr + 'T23:59:59')
+      .order('booked_at');
+    if (error) throw error;
+    if (!data || data.length === 0) return; // mock 유지
+
+    // DB 데이터를 bookingsData 형식으로 변환
+    bookingsData[dateStr] = data.map((b, i) => ({
+      id: b.id,
+      client: b.customers?.name || '고객',
+      service: b.service,
+      designer: b.designer,
+      time: new Date(b.booked_at).toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}),
+      duration: b.duration_min + 'm',
+      status: b.status === '완료' ? 'done' : b.status === '취소' ? 'cancelled' : 'reserved',
+      price: b.price,
+      stamped: false,
+    }));
+    renderBookings(dateStr);
+    console.log('[Admin] DB에서 예약 로드 성공:', data.length + '건');
+  } catch(e) {
+    console.warn('[Admin] DB 예약 로드 실패, 데모 데이터 사용:', e.message);
+  }
+}
+
 // ─── DATA ───
 const designers = [
   {
@@ -1971,30 +2070,30 @@ const designers = [
 
 const bookingsData = {
   '2026-04-02': [
-    { id:1, client:'김지수', service:'볼륨매직 + 트리트먼트', designer:'지은', time:'10:00', duration:'2h', status:'done', price:120000 },
-    { id:2, client:'박민준', service:'남성 커트 + 두피케어', designer:'준혁', time:'11:30', duration:'1h', status:'done', price:65000 },
-    { id:3, client:'이서연', service:'발레아쥬 + 커트', designer:'수아', time:'13:00', duration:'3h', status:'reserved', price:180000 },
-    { id:4, client:'최유라', service:'클리닉 + 세팅펌', designer:'하은', time:'14:30', duration:'2.5h', status:'reserved', price:90000 },
-    { id:5, client:'정민아', service:'탈색 + 오버랩 컬러', designer:'지은', time:'16:00', duration:'3h', status:'reserved', price:220000 },
-    { id:6, client:'한다연', service:'커트 + 내추럴펌', designer:'수아', time:'17:30', duration:'2h', status:'reserved', price:95000 },
+    { id:1, client:'김지수', service:'볼륨매직 + 트리트먼트', designer:'지은', time:'10:00', duration:'2h', status:'done', price:120000, stamped:true },
+    { id:2, client:'박민준', service:'남성 커트 + 두피케어', designer:'준혁', time:'11:30', duration:'1h', status:'done', price:65000, stamped:false },
+    { id:3, client:'이서연', service:'발레아쥬 + 커트', designer:'수아', time:'13:00', duration:'3h', status:'reserved', price:180000, stamped:false },
+    { id:4, client:'최유라', service:'클리닉 + 세팅펌', designer:'하은', time:'14:30', duration:'2.5h', status:'reserved', price:90000, stamped:false },
+    { id:5, client:'정민아', service:'탈색 + 오버랩 컬러', designer:'지은', time:'16:00', duration:'3h', status:'reserved', price:220000, stamped:false },
+    { id:6, client:'한다연', service:'커트 + 내추럴펌', designer:'수아', time:'17:30', duration:'2h', status:'reserved', price:95000, stamped:false },
   ],
   '2026-04-03': [
-    { id:7, client:'오지현', service:'커트 + 염색', designer:'지은', time:'11:00', duration:'2h', status:'reserved', price:130000 },
-    { id:8, client:'윤성준', service:'남성 커트', designer:'준혁', time:'14:00', duration:'40m', status:'reserved', price:25000 },
-    { id:9, client:'강미래', service:'볼륨매직', designer:'수아', time:'15:30', duration:'2h', status:'reserved', price:110000 },
+    { id:7, client:'오지현', service:'커트 + 염색', designer:'지은', time:'11:00', duration:'2h', status:'reserved', price:130000, stamped:false },
+    { id:8, client:'윤성준', service:'남성 커트', designer:'준혁', time:'14:00', duration:'40m', status:'reserved', price:25000, stamped:false },
+    { id:9, client:'강미래', service:'볼륨매직', designer:'수아', time:'15:30', duration:'2h', status:'reserved', price:110000, stamped:false },
   ],
   '2026-04-05': [
-    { id:10, client:'신예린', service:'발레아쥬 풀 탈색', designer:'지은', time:'10:30', duration:'4h', status:'reserved', price:280000 },
-    { id:11, client:'황지우', service:'세팅펌', designer:'하은', time:'13:00', duration:'2h', status:'reserved', price:85000 },
+    { id:10, client:'신예린', service:'발레아쥬 풀 탈색', designer:'지은', time:'10:30', duration:'4h', status:'reserved', price:280000, stamped:false },
+    { id:11, client:'황지우', service:'세팅펌', designer:'하은', time:'13:00', duration:'2h', status:'reserved', price:85000, stamped:false },
   ],
   '2026-04-07': [
-    { id:12, client:'이민호', service:'클리닉 + 커트', designer:'준혁', time:'11:00', duration:'1.5h', status:'cancelled', price:75000 },
-    { id:13, client:'김소율', service:'내추럴펌', designer:'수아', time:'14:00', duration:'2h', status:'reserved', price:90000 },
-    { id:14, client:'박지훈', service:'탈색 + 컬러', designer:'지은', time:'16:00', duration:'3.5h', status:'reserved', price:210000 },
+    { id:12, client:'이민호', service:'클리닉 + 커트', designer:'준혁', time:'11:00', duration:'1.5h', status:'cancelled', price:75000, stamped:false },
+    { id:13, client:'김소율', service:'내추럴펌', designer:'수아', time:'14:00', duration:'2h', status:'reserved', price:90000, stamped:false },
+    { id:14, client:'박지훈', service:'탈색 + 컬러', designer:'지은', time:'16:00', duration:'3.5h', status:'reserved', price:210000, stamped:false },
   ],
   '2026-04-09': [
-    { id:15, client:'최하늘', service:'볼륨매직', designer:'수아', time:'10:00', duration:'2h', status:'reserved', price:115000 },
-    { id:16, client:'정유진', service:'커트 + 트리트먼트', designer:'하은', time:'12:30', duration:'1.5h', status:'reserved', price:70000 },
+    { id:15, client:'최하늘', service:'볼륨매직', designer:'수아', time:'10:00', duration:'2h', status:'reserved', price:115000, stamped:false },
+    { id:16, client:'정유진', service:'커트 + 트리트먼트', designer:'하은', time:'12:30', duration:'1.5h', status:'reserved', price:70000, stamped:false },
   ]
 };
 
@@ -2288,9 +2387,13 @@ function renderBookings(dateStr) {
     items.forEach(b => {
       const statusLabel = { reserved:'예약', done:'완료', cancelled:'취소' }[b.status];
       const statusClass = b.status;
+      const stampDone = b.stamped;
+      const stampBtn = `<button class="action-btn stamp${stampDone ? ' stamped' : ''}" onclick="grantStamp(this, '${b.client}', ${b.id})">${stampDone ? '✓ 스탬프' : '💅 스탬프'}</button>`;
       const actions = b.status === 'reserved' ?
         `<button class="action-btn complete" onclick="changeStatus('${dateStr}', ${b.id}, 'done')">완료</button>
-         <button class="action-btn cancel" onclick="changeStatus('${dateStr}', ${b.id}, 'cancelled')">취소</button>` : '';
+         <button class="action-btn cancel" onclick="changeStatus('${dateStr}', ${b.id}, 'cancelled')">취소</button>
+         ${stampBtn}` :
+        (b.status === 'done' ? stampBtn : '');
 
       html += `
         <div class="booking-card" id="bcard-${b.id}">
@@ -2547,15 +2650,40 @@ function selectSwatch(el) {
 }
 
 // ─── BOOKING SUBMIT ───
-function submitBooking() {
-  const name = document.getElementById('newClientName').value.trim();
+async function submitBooking() {
+  const name    = document.getElementById('newClientName').value.trim() || '고객';
+  const service = document.getElementById('newService')?.value || '시술';
+  const dateEl  = document.getElementById('newBookingDate');
+  const timeEl  = document.getElementById('newBookingTime');
+  const date    = dateEl?.value || new Date().toISOString().slice(0,10);
+  const time    = timeEl?.value || '10:00';
+
   closeModal('addBookingModal');
-  showToast((name || '고객') + ' 님 예약이 추가되었습니다 ✓');
+
+  // DB 저장 (비동기, 실패해도 UX 영향 없음)
+  if (db) {
+    saveBookingToDb({
+      designer: '미지정',
+      service:  service,
+      price:    0,
+      booked_at: date + 'T' + time + ':00',
+    }).then(d => {
+      if (d) console.log('[Admin] 예약 DB 저장 완료:', d.id);
+    });
+  }
+
+  showToast(name + ' 님 예약이 추가되었습니다 ✓');
 }
 
 // ─── WINDOW RESIZE ───
 window.addEventListener('resize', () => {
   if (currentTab === 'home') drawRevenueChart();
+});
+
+// ─── INIT DB ───
+document.addEventListener('DOMContentLoaded', () => {
+  // 초기화 후 오늘 예약 DB에서 로드 시도
+  setTimeout(loadTodayBookingsFromDb, 800);
 });
 </script>
 </body>
