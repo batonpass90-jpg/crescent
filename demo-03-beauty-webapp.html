@@ -1382,22 +1382,26 @@
     }
 
     /* ── Login Screen ────────────────────────────── */
+    /* ── Login / Signup ────────────────────────────── */
     #login-screen {
       position: fixed; inset: 0; z-index: 1000;
       display: flex; align-items: center; justify-content: center;
       background: #f0e8e0;
+      transition: opacity .4s;
     }
+    #login-screen.hiding { opacity: 0; pointer-events: none; }
     .login-shell {
       width: 390px; min-height: 100dvh;
       background: var(--cream);
       display: flex; flex-direction: column;
       box-shadow: 0 0 60px rgba(0,0,0,.18);
       overflow: hidden;
+      position: relative;
     }
     .login-hero {
       background: linear-gradient(135deg, var(--rose-dk) 0%, var(--rose) 60%, var(--rose-lt) 100%);
-      padding: 72px 32px 48px;
-      text-align: center; position: relative; overflow: hidden;
+      padding: 52px 32px 36px;
+      text-align: center; position: relative; overflow: hidden; flex-shrink: 0;
     }
     .login-hero::before {
       content: ''; position: absolute;
@@ -1406,61 +1410,65 @@
       top: -80px; right: -60px;
     }
     .login-logo {
-      width: 72px; height: 72px;
+      width: 64px; height: 64px;
       background: rgba(255,255,255,.2);
-      border-radius: 20px;
+      border-radius: 18px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 36px; margin: 0 auto 16px;
+      font-size: 32px; margin: 0 auto 12px;
       backdrop-filter: blur(8px);
       border: 2px solid rgba(255,255,255,.3);
     }
-    .login-brand { font-family:'Noto Serif KR',serif; font-size:22px; font-weight:700; color:#fff; }
-    .login-store { font-size:13px; color:rgba(255,255,255,.8); margin-top:4px; }
-    .login-body { padding: 32px 24px; flex:1; display:flex; flex-direction:column; gap:12px; }
+    .login-brand { font-family:'Noto Serif KR',serif; font-size:20px; font-weight:700; color:#fff; }
+    .login-store { font-size:12px; color:rgba(255,255,255,.8); margin-top:3px; }
+
+    /* Step panels */
+    .login-step { padding: 28px 24px 20px; flex:1; display:flex; flex-direction:column; gap:11px; }
+    .login-step.hidden { display: none !important; }
+    .login-back {
+      display: flex; align-items: center; gap:6px;
+      font-size:14px; font-weight:600; color:var(--rose); cursor:pointer;
+      background:none; border:none; padding:0; font-family:'Pretendard',sans-serif;
+      margin-bottom: 4px; width: fit-content;
+    }
+    .step-title { font-size:18px; font-weight:700; color:var(--text); margin-bottom:-4px; }
+    .step-desc  { font-size:13px; color:var(--muted); line-height:1.6; }
     .login-section-label {
       font-size:11px; color:var(--muted); text-align:center;
-      margin: 4px 0; letter-spacing:.5px; text-transform:uppercase;
+      letter-spacing:.5px; text-transform:uppercase; margin: 2px 0;
     }
-    /* 카카오 로그인 */
+
+    /* Social buttons */
     .btn-kakao {
-      width:100%; padding:15px; border:none; border-radius:14px;
+      width:100%; padding:14px; border:none; border-radius:14px;
       background:#FEE500; color:#191919;
       font-size:15px; font-weight:700; cursor:pointer;
       display:flex; align-items:center; justify-content:center; gap:10px;
-      transition:opacity .2s, transform .1s;
-      font-family:'Pretendard',sans-serif;
+      transition:opacity .2s, transform .1s; font-family:'Pretendard',sans-serif;
     }
-    .btn-kakao:hover { opacity:.92; }
-    .btn-kakao:active { transform:scale(.98); }
-    /* 네이버 로그인 */
+    .btn-kakao:active { transform:scale(.98); opacity:.9; }
     .btn-naver {
-      width:100%; padding:15px; border:none; border-radius:14px;
+      width:100%; padding:14px; border:none; border-radius:14px;
       background:#03C75A; color:#fff;
       font-size:15px; font-weight:700; cursor:pointer;
       display:flex; align-items:center; justify-content:center; gap:10px;
-      transition:opacity .2s, transform .1s;
-      font-family:'Pretendard',sans-serif;
+      transition:opacity .2s, transform .1s; font-family:'Pretendard',sans-serif;
     }
-    .btn-naver:hover { opacity:.92; }
-    .btn-naver:active { transform:scale(.98); }
-    /* 전화번호 로그인 */
+    .btn-naver:active { transform:scale(.98); opacity:.9; }
     .btn-phone {
-      width:100%; padding:15px; border:2px solid #e8ddd8; border-radius:14px;
+      width:100%; padding:14px; border:2px solid #e8ddd8; border-radius:14px;
       background:#fff; color:var(--text);
       font-size:15px; font-weight:700; cursor:pointer;
       display:flex; align-items:center; justify-content:center; gap:10px;
       transition:all .2s; font-family:'Pretendard',sans-serif;
     }
     .btn-phone:hover { border-color:var(--rose); color:var(--rose); }
-    /* 전화번호 입력 폼 */
-    #phone-login-form {
-      display:none; flex-direction:column; gap:10px;
-    }
-    #phone-login-form.show { display:flex; }
+
+    /* Inputs */
     .login-input {
-      width:100%; padding:14px 16px; border:2px solid #f0e0e8;
+      width:100%; padding:14px 16px; border:1.5px solid #e8d8d0;
       border-radius:12px; font-size:15px;
-      font-family:'Pretendard',sans-serif; outline:none; transition:border .2s;
+      font-family:'Pretendard',sans-serif; outline:none;
+      transition:border .2s; background:#fff; color:var(--text);
     }
     .login-input:focus { border-color:var(--rose); }
     .btn-login-submit {
@@ -1468,20 +1476,82 @@
       background:linear-gradient(90deg,var(--rose-dk),var(--rose-lt));
       color:#fff; font-size:15px; font-weight:700; cursor:pointer;
       font-family:'Pretendard',sans-serif;
-      box-shadow:0 6px 20px rgba(201,24,74,.35);
-      transition:opacity .2s;
+      box-shadow:0 6px 20px rgba(201,24,74,.30);
+      transition:opacity .2s; margin-top: 4px;
     }
     .btn-login-submit:hover { opacity:.9; }
+    .btn-login-submit:disabled { opacity:.45; cursor:not-allowed; }
+
+    /* Divider */
     .login-divider {
-      display:flex; align-items:center; gap:12px; margin:4px 0;
+      display:flex; align-items:center; gap:12px;
     }
     .login-divider::before, .login-divider::after {
       content:''; flex:1; height:1px; background:#f0e0e8;
     }
     .login-divider span { font-size:11px; color:var(--muted); white-space:nowrap; }
+
+    /* OTP boxes */
+    .otp-row { display:flex; gap:8px; justify-content:center; margin:6px 0; }
+    .otp-box {
+      width: 46px; height: 54px;
+      border: 1.5px solid #e8d8d0; border-radius: 12px;
+      text-align: center; font-size: 22px; font-weight: 700;
+      font-family: 'Pretendard', sans-serif; color: var(--rose);
+      outline: none; background: #fff;
+      transition: border-color .15s;
+      -moz-appearance: textfield;
+    }
+    .otp-box:focus { border-color: var(--rose); }
+    .otp-box::-webkit-inner-spin-button,
+    .otp-box::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .otp-sent-to { font-size:13px; color:var(--muted); text-align:center; line-height:1.7; }
+    .otp-timer { font-size:13px; color:var(--rose); font-weight:700; text-align:center; }
+    .otp-resend {
+      font-size:13px; color:var(--muted); text-align:center; cursor:pointer;
+      text-decoration:underline; background:none; border:none;
+      font-family:'Pretendard',sans-serif; margin-top:-4px;
+    }
+
+    /* Signup step */
+    .signup-method-badge {
+      display: inline-flex; align-items: center; gap:6px;
+      background: #fde8ef; color: var(--rose);
+      font-size:12px; font-weight:700; padding:6px 14px;
+      border-radius:20px; align-self:flex-start;
+    }
+    .signup-agree-row {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 12px; color: var(--muted); line-height: 1.6;
+      padding: 2px 0;
+    }
+    .signup-agree-row input[type=checkbox] { margin-top:2px; accent-color:var(--rose); flex-shrink:0; }
+    .signup-agree-row a { color:var(--rose); text-decoration:none; }
+
+    /* Loading overlay */
+    #login-loading {
+      position: absolute; inset: 0;
+      background: rgba(255,248,240,.95);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 16px; z-index: 10;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+    }
+    #login-loading.show { opacity:1; pointer-events:all; }
+    .login-spinner {
+      width: 44px; height: 44px;
+      border: 3px solid #f0e0e8;
+      border-top-color: var(--rose);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #login-loading-text { font-size:14px; font-weight:600; color:var(--text); }
+
+    /* Terms */
     .login-terms {
       font-size:11px; color:var(--muted); text-align:center;
-      line-height:1.6; margin-top:4px;
+      line-height:1.6; margin-top:2px;
     }
     .login-terms a { color:var(--rose); text-decoration:none; }
 
@@ -1514,42 +1584,111 @@
 <!-- ── Login Screen ──────────────────────────────── -->
 <div id="login-screen">
   <div class="login-shell">
+
+    <!-- Hero -->
     <div class="login-hero">
       <div class="login-logo">💇</div>
       <div class="login-brand">BeautyOn</div>
       <div class="login-store">러브헤어 홍대점</div>
     </div>
-    <div class="login-body">
-      <div class="login-section-label">간편 로그인</div>
 
-      <button class="btn-kakao" onclick="loginWith('kakao')">
+    <!-- ── Step 1: 로그인 방법 선택 ── -->
+    <div class="login-step" id="step-method">
+      <div class="login-section-label">로그인 · 회원가입</div>
+
+      <button class="btn-kakao" onclick="startSocialLogin('kakao')">
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M10 2C5.58 2 2 4.92 2 8.5c0 2.28 1.44 4.28 3.6 5.46l-.92 3.4 3.96-2.6c.43.06.87.1 1.36.1 4.42 0 8-2.92 8-6.5S14.42 2 10 2z" fill="#191919"/></svg>
         카카오로 시작하기
       </button>
 
-      <button class="btn-naver" onclick="loginWith('naver')">
+      <button class="btn-naver" onclick="startSocialLogin('naver')">
         <span style="font-size:18px;font-weight:900;letter-spacing:-1px;">N</span>
         네이버로 시작하기
       </button>
 
       <div class="login-divider"><span>또는 전화번호로</span></div>
 
-      <button class="btn-phone" onclick="togglePhoneLogin()">
+      <button class="btn-phone" onclick="showLoginStep('phone')">
         📱 전화번호로 시작하기
       </button>
 
-      <div id="phone-login-form">
-        <input class="login-input" id="phone-input" type="tel" placeholder="전화번호 입력 (010-0000-0000)">
-        <input class="login-input" id="verify-input" type="number" placeholder="인증번호 6자리" style="display:none;">
-        <button class="btn-login-submit" id="phone-btn" onclick="handlePhoneLogin()">인증번호 받기</button>
-      </div>
-
       <p class="login-terms">
-        로그인 시 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에<br>동의하는 것으로 간주합니다.
+        로그인 · 가입 시 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에<br>동의하는 것으로 간주합니다.
       </p>
     </div>
+
+    <!-- ── Step 2: 전화번호 입력 ── -->
+    <div class="login-step hidden" id="step-phone">
+      <button class="login-back" onclick="showLoginStep('method')">‹ 뒤로</button>
+      <div class="step-title">전화번호 인증</div>
+      <div class="step-desc">가입 또는 로그인할 전화번호를 입력해주세요</div>
+
+      <div id="phone-entry">
+        <input class="login-input" id="phone-input" type="tel"
+          placeholder="010-0000-0000" maxlength="13"
+          oninput="formatPhone(this)" onkeydown="if(event.key==='Enter')sendOTP()">
+        <button class="btn-login-submit" onclick="sendOTP()">인증번호 받기</button>
+      </div>
+
+      <div id="otp-entry" style="display:none;gap:12px;flex-direction:column;">
+        <div class="otp-sent-to" id="otp-sent-label">010-0000-0000으로<br>인증번호 6자리가 발송되었습니다</div>
+        <div class="otp-row">
+          <input class="otp-box" id="otp0" type="number" maxlength="1" oninput="otpInput(this,0)">
+          <input class="otp-box" id="otp1" type="number" maxlength="1" oninput="otpInput(this,1)">
+          <input class="otp-box" id="otp2" type="number" maxlength="1" oninput="otpInput(this,2)">
+          <input class="otp-box" id="otp3" type="number" maxlength="1" oninput="otpInput(this,3)">
+          <input class="otp-box" id="otp4" type="number" maxlength="1" oninput="otpInput(this,4)">
+          <input class="otp-box" id="otp5" type="number" maxlength="1" oninput="otpInput(this,5)">
+        </div>
+        <div class="otp-timer" id="otp-timer">3:00</div>
+        <button class="otp-resend" onclick="sendOTP()">인증번호 재발송</button>
+        <button class="btn-login-submit" id="otp-verify-btn" onclick="verifyOTP()">확인</button>
+        <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:-4px;">데모 인증번호: <strong style="color:var(--rose);">1 2 3 4 5 6</strong></p>
+      </div>
+    </div>
+
+    <!-- ── Step 3: 회원 정보 입력 (신규 / 첫 로그인) ── -->
+    <div class="login-step hidden" id="step-signup">
+      <div class="step-title">처음 오셨군요! 👋</div>
+      <div class="step-desc">빠른 서비스 이용을 위해<br>간단한 정보를 입력해주세요</div>
+      <div class="signup-method-badge" id="signup-method-badge">📱 카카오 계정</div>
+
+      <input class="login-input" id="signup-name" type="text"
+        placeholder="이름 (실명)">
+      <input class="login-input" id="signup-phone-display" type="tel"
+        placeholder="전화번호" readonly style="background:#f9f3ef;color:var(--muted);">
+      <input class="login-input" id="signup-birthday" type="text"
+        placeholder="생년월일 (예: 1995.04.02)"
+        oninput="formatBirthday(this)" maxlength="10">
+
+      <div class="signup-agree-row">
+        <input type="checkbox" id="agree-all" onchange="toggleAgreeAll(this)">
+        <label for="agree-all" style="font-weight:700;color:var(--text);">전체 동의</label>
+      </div>
+      <div class="signup-agree-row" style="padding-left:4px;">
+        <input type="checkbox" id="agree-terms" required>
+        <label for="agree-terms"><a href="#">이용약관</a> 동의 (필수)</label>
+      </div>
+      <div class="signup-agree-row" style="padding-left:4px;">
+        <input type="checkbox" id="agree-privacy" required>
+        <label for="agree-privacy"><a href="#">개인정보 처리방침</a> 동의 (필수)</label>
+      </div>
+      <div class="signup-agree-row" style="padding-left:4px;">
+        <input type="checkbox" id="agree-marketing">
+        <label for="agree-marketing">마케팅 정보 수신 동의 (선택)</label>
+      </div>
+
+      <button class="btn-login-submit" onclick="completeSignup()">가입 완료 →</button>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="login-loading">
+      <div class="login-spinner"></div>
+      <div id="login-loading-text">연결 중...</div>
+    </div>
+
   </div>
-</div>
+</div></div>
 
 <canvas id="confetti-canvas"></canvas>
 <div id="toast"></div>
@@ -2639,7 +2778,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pm = document.getElementById('payment-modal');
   if (pm) pm.addEventListener('click', e => { if (e.target === pm) pm.classList.remove('open'); });
 });
-
+/* 
 ══
    BOOKING CONFIRMED
 ═══════════════════════════════════════════════ */
@@ -2714,6 +2853,101 @@ const pastBookings = [
 
 const DESIGNER_COLORS = { 수연:'avatar-1', 지훈:'avatar-2', 민지:'avatar-3', 유라:'avatar-4', 민호:'avatar-5', default:'avatar-1' };
 const DESIGNER_EMOJI  = { 수연:'👩', 지훈:'👨', 민지:'🧑', 유라:'👩‍🦱', 민호:'👨‍🦲' };
+
+/* ═════════════════════════════════════════════
+   KAKAO / NAVER CHANNEL
+═════════════════════════════════════════════ */
+function openKakaoChannel() {
+  // 실제 서비스에서는 카카오톡 체널 URL로 연결
+  // window.open('https://pf.kakao.com/_체널ID', '_blank');
+  showToast('카카오톡 체널로 연결 중... 💬');
+}
+
+function openNaverReview() {
+  // 실제 서비스에서는 네이버 지도 리뷰 URL로 연결
+  // window.open('https://map.naver.com/v5/entry/place/네이버플레이스ID?c=...', '_blank');
+  showToast('네이버 지도 리뷰 페이지로 이동 중... ⭐');
+}
+
+/* ═════════════════════════════════════════════
+   INVITE LINK COPY
+═════════════════════════════════════════════ */
+function copyInviteLink() {
+  const link = document.getElementById('invite-link-input').value;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link).then(() => showToast('초대 링크가 복사되었습니다! 🎉'));
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = link;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('초대 링크가 복사되었습니다! 🎉');
+  }
+}
+
+/* ═════════════════════════════════════════════
+   DESIGNER SCROLL DRAG (DESKTOP)
+═════════════════════════════════════════════ */
+(function() {
+  const el = document.getElementById('designers-scroll');
+  if (!el) return;
+  let isDown = false, startX, scrollLeft;
+  el.addEventListener('mousedown', e => {
+    isDown = true;
+    el.classList.add('grabbing');
+    startX = e.pageX - el.offsetLeft;
+    scrollLeft = el.scrollLeft;
+  });
+  document.addEventListener('mouseup',   () => { isDown = false; el.classList.remove('grabbing'); });
+  document.addEventListener('mousemove', e => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - el.offsetLeft;
+    el.scrollLeft = scrollLeft - (x - startX) * 1.2;
+  });
+})();
+
+/* ═════════════════════════════════════════════
+   BOOKINGS RENDER
+═════════════════════════════════════════════ */
+function renderBookings() {
+  const uEl = document.getElementById('bookings-upcoming');
+  const pEl = document.getElementById('bookings-past');
+
+  uEl.innerHTML = upcomingBookings.map((b, i) => `
+    <div class="booking-card fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price">₩${Number(b.price).toLocaleString()}</div>
+        <button class="cancel-btn" onclick="cancelBooking(${i})">예약 취소</button>
+      </div>
+    </div>
+  `).join('') || `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">예정된 예약이 없습니다</div>`;
+
+  pEl.innerHTML = pastBookings.map((b, i) => `
+    <div class="booking-card past fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
+      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
+      <div class="booking-service-name">${b.service}</div>
+      <div class="booking-designer-row">
+        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
+        ${b.designer} 디자이너
+      </div>
+      <div class="booking-price-row">
+        <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
+        <button class="review-btn" onclick="openReviewModal(${i})">N 네이버 리뷰</button>
+      </div>
+    </div>
+  `).join('');
+
+  document.getElementById('mybooking-dot').style.display = upcomingBookings.length ? '' : 'none';
+}
 
 function cancelBooking(idx) {
   if (!confirm('예약을 취소하시겠습니까?')) return;
@@ -2897,163 +3131,6 @@ document.getElementById('edit-profile-modal').addEventListener('click', function
 });
 
 /* ═══════════════════════════════════════════════
-   LOGIN / LOGOUT
-═══════════════════════════════════════════════ */
-let loginMethod = '';
-let phoneStep = 1;
-
-function loginWith(method) {
-  loginMethod = method;
-  const names = { kakao:'카카오', naver:'네이버' };
-  document.getElementById('myinfo-name-display').textContent = (method === 'kakao' ? '김예린' : '이지현') + ' 님';
-  document.getElementById('login-method-desc').textContent = names[method] + ' 계정으로 로그인됨';
-  doLogin();
-}
-
-function togglePhoneLogin() {
-  const form = document.getElementById('phone-login-form');
-  form.classList.toggle('show');
-}
-
-function handlePhoneLogin() {
-  const phone = document.getElementById('phone-input').value.trim();
-  const verify = document.getElementById('verify-input');
-  const btn = document.getElementById('phone-btn');
-  if (phoneStep === 1) {
-    if (!phone) { showToast('전화번호를 입력해주세요'); return; }
-    verify.style.display = '';
-    btn.textContent = '확인';
-    phoneStep = 2;
-    showToast('인증번호가 발송되었습니다 (데모: 123456)');
-  } else {
-    const code = document.getElementById('verify-input').value;
-    if (code !== '123456') { showToast('인증번호가 올바르지 않습니다'); return; }
-    loginMethod = 'phone';
-    document.getElementById('login-method-desc').textContent = '전화번호로 로그인됨';
-    doLogin();
-  }
-}
-
-function doLogin() {
-  const screen = document.getElementById('login-screen');
-  screen.style.opacity = '1';
-  screen.style.transition = 'opacity .4s';
-  setTimeout(() => { screen.style.opacity = '0'; }, 100);
-  setTimeout(() => { screen.style.display = 'none'; }, 500);
-}
-
-function logout() {
-  if (!confirm('로그아웃 하시겠습니까?')) return;
-  phoneStep = 1;
-  document.getElementById('phone-input').value = '';
-  document.getElementById('verify-input').value = '';
-  document.getElementById('verify-input').style.display = 'none';
-  document.getElementById('phone-btn').textContent = '인증번호 받기';
-  document.getElementById('phone-login-form').classList.remove('show');
-  const screen = document.getElementById('login-screen');
-  screen.style.display = 'flex';
-  screen.style.opacity = '0';
-  setTimeout(() => { screen.style.opacity = '1'; }, 10);
-  switchTab('reserve');
-  showToast('로그아웃 되었습니다');
-}
-
-/* ═══════════════════════════════════════════════
-   KAKAO / NAVER CHANNEL
-═══════════════════════════════════════════════ */
-function openKakaoChannel() {
-  // 실제 서비스에서는 카카오톡 채널 URL로 연결
-  // window.open('https://pf.kakao.com/_채널ID', '_blank');
-  showToast('카카오톡 채널로 연결 중... 💬');
-}
-
-function openNaverReview() {
-  // 실제 서비스에서는 네이버 지도 리뷰 URL로 연결
-  // window.open('https://map.naver.com/v5/entry/place/네이버플레이스ID?c=...', '_blank');
-  showToast('네이버 지도 리뷰 페이지로 이동 중... ⭐');
-}
-
-/* ═══════════════════════════════════════════════
-   INVITE LINK COPY
-═══════════════════════════════════════════════ */
-function copyInviteLink() {
-  const link = document.getElementById('invite-link-input').value;
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(link).then(() => showToast('초대 링크가 복사되었습니다! 🎉'));
-  } else {
-    const ta = document.createElement('textarea');
-    ta.value = link;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('초대 링크가 복사되었습니다! 🎉');
-  }
-}
-
-/* ═══════════════════════════════════════════════
-   DESIGNER SCROLL DRAG (DESKTOP)
-═══════════════════════════════════════════════ */
-(function() {
-  const el = document.getElementById('designers-scroll');
-  if (!el) return;
-  let isDown = false, startX, scrollLeft;
-  el.addEventListener('mousedown', e => {
-    isDown = true;
-    el.classList.add('grabbing');
-    startX = e.pageX - el.offsetLeft;
-    scrollLeft = el.scrollLeft;
-  });
-  document.addEventListener('mouseup',   () => { isDown = false; el.classList.remove('grabbing'); });
-  document.addEventListener('mousemove', e => {
-    if (!isDown) return;
-    e.preventDefault();
-    const x = e.pageX - el.offsetLeft;
-    el.scrollLeft = scrollLeft - (x - startX) * 1.2;
-  });
-})();
-
-/* ═══════════════════════════════════════════════
-   BOOKINGS RENDER (updated with review modal)
-═══════════════════════════════════════════════ */
-function renderBookings() {
-  const uEl = document.getElementById('bookings-upcoming');
-  const pEl = document.getElementById('bookings-past');
-
-  uEl.innerHTML = upcomingBookings.map((b, i) => `
-    <div class="booking-card fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
-      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
-      <div class="booking-service-name">${b.service}</div>
-      <div class="booking-designer-row">
-        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
-        ${b.designer} 디자이너
-      </div>
-      <div class="booking-price-row">
-        <div class="booking-price">₩${Number(b.price).toLocaleString()}</div>
-        <button class="cancel-btn" onclick="cancelBooking(${i})">예약 취소</button>
-      </div>
-    </div>
-  `).join('') || `<div style="text-align:center;padding:30px;color:var(--muted);font-size:13px;">예정된 예약이 없습니다</div>`;
-
-  pEl.innerHTML = pastBookings.map((b, i) => `
-    <div class="booking-card past fade-in" data-status="${b.status}" style="animation-delay:${i*0.08}s">
-      <div class="booking-date-row">📅 ${b.date} · ${b.time}</div>
-      <div class="booking-service-name">${b.service}</div>
-      <div class="booking-designer-row">
-        <div class="mini-avatar ${DESIGNER_COLORS[b.designer]||'avatar-1'}">${DESIGNER_EMOJI[b.designer]||'👩'}</div>
-        ${b.designer} 디자이너
-      </div>
-      <div class="booking-price-row">
-        <div class="booking-price" style="color:var(--muted)">₩${Number(b.price).toLocaleString()}</div>
-        <button class="review-btn" onclick="openReviewModal(${i})">N 네이버 리뷰</button>
-      </div>
-    </div>
-  `).join('');
-
-  document.getElementById('mybooking-dot').style.display = upcomingBookings.length ? '' : 'none';
-}
-
-/* ═══════════════════════════════════════════════
    STAMP CARD RENDER
 ═══════════════════════════════════════════════ */
 let myStamps = 8; // 데모 기본값
@@ -3096,6 +3173,181 @@ function renderStampCard(count) {
   // Supabase에서 데이터 로드 시도 (비동기)
   loadUserDataFromDB();
 })();
+
+
+/* ═══════════════════════════════════════════════
+   LOGIN / SIGNUP — Multi-step flow
+═══════════════════════════════════════════════ */
+let loginMethod = '';
+let otpTimerInterval = null;
+
+/* 로그인 스텝 전환 */
+function showLoginStep(step) {
+  ['step-method', 'step-phone', 'step-signup'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.toggle('hidden', id !== 'step-' + step);
+  });
+  hideLoginLoading();
+}
+
+/* 로딩 오버레이 */
+function showLoginLoading(text) {
+  var el = document.getElementById('login-loading');
+  document.getElementById('login-loading-text').textContent = text || '연결 중...';
+  if (el) el.classList.add('show');
+}
+function hideLoginLoading() {
+  var el = document.getElementById('login-loading');
+  if (el) el.classList.remove('show');
+}
+
+/* 소셜 로그인 (카카오 / 네이버) */
+function startSocialLogin(method) {
+  loginMethod = method;
+  var names = { kakao:'카카오', naver:'네이버' };
+  showLoginLoading(names[method] + ' 계정 확인 중...');
+  setTimeout(function() {
+    hideLoginLoading();
+    var badge = document.getElementById('signup-method-badge');
+    var icons = { kakao:'💛 카카오 계정으로 가입', naver:'💚 네이버 계정으로 가입' };
+    if (badge) badge.textContent = icons[method];
+    var phoneDisplay = document.getElementById('signup-phone-display');
+    if (phoneDisplay) { phoneDisplay.value = ''; phoneDisplay.placeholder = '전화번호 (선택)'; phoneDisplay.readOnly = false; }
+    showLoginStep('signup');
+  }, 1400);
+}
+
+/* 전화번호 포맷 */
+function formatPhone(input) {
+  var v = input.value.replace(/D/g,'');
+  if (v.length > 11) v = v.slice(0,11);
+  if (v.length > 7) v = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7);
+  else if (v.length > 3) v = v.slice(0,3) + '-' + v.slice(3);
+  input.value = v;
+}
+
+/* OTP 발송 */
+function sendOTP() {
+  var phone = document.getElementById('phone-input').value.trim();
+  if (phone.replace(/D/g,'').length < 10) { showToast('올바른 전화번호를 입력해주세요'); return; }
+  loginMethod = 'phone';
+  document.getElementById('phone-entry').style.display = 'none';
+  var otpEntry = document.getElementById('otp-entry');
+  otpEntry.style.display = 'flex';
+  document.getElementById('otp-sent-label').innerHTML = '<strong>' + phone + '</strong>으로<br>인증번호 6자리가 발송되었습니다';
+  for (var i = 0; i < 6; i++) { var box = document.getElementById('otp' + i); if (box) box.value = ''; }
+  document.getElementById('otp0').focus();
+  startOtpTimer(180);
+  showToast('인증번호가 발송되었습니다 (데모: 123456)');
+}
+
+/* OTP 입력 */
+function otpInput(el, idx) {
+  if (el.value.length > 1) el.value = el.value.slice(-1);
+  el.value = el.value.replace(/D/g,'');
+  if (el.value && idx < 5) document.getElementById('otp' + (idx+1)).focus();
+  if (getOTPValue().length === 6) verifyOTP();
+}
+
+function getOTPValue() {
+  var code = '';
+  for (var i = 0; i < 6; i++) { var box = document.getElementById('otp' + i); code += box ? (box.value || '') : ''; }
+  return code;
+}
+
+function startOtpTimer(seconds) {
+  clearInterval(otpTimerInterval);
+  var timerEl = document.getElementById('otp-timer');
+  var remaining = seconds;
+  function tick() {
+    var m = Math.floor(remaining / 60);
+    var s = remaining % 60;
+    if (timerEl) timerEl.textContent = m + ':' + String(s).padStart(2,'0');
+    if (remaining <= 0) { clearInterval(otpTimerInterval); if (timerEl) timerEl.textContent = '만료됨 — 재발송 해주세요'; }
+    remaining--;
+  }
+  tick();
+  otpTimerInterval = setInterval(tick, 1000);
+}
+
+function verifyOTP() {
+  var code = getOTPValue();
+  if (code.length < 6) { showToast('인증번호 6자리를 입력해주세요'); return; }
+  if (code !== '123456') { showToast('인증번호가 올바르지 않습니다 🔢'); return; }
+  clearInterval(otpTimerInterval);
+  showLoginLoading('인증 확인 중...');
+  setTimeout(function() {
+    hideLoginLoading();
+    var phone = document.getElementById('phone-input').value;
+    var badge = document.getElementById('signup-method-badge');
+    if (badge) badge.textContent = '📱 ' + phone;
+    var phoneDisplay = document.getElementById('signup-phone-display');
+    if (phoneDisplay) { phoneDisplay.value = phone; phoneDisplay.readOnly = true; }
+    showLoginStep('signup');
+  }, 900);
+}
+
+/* 전체 동의 */
+function toggleAgreeAll(master) {
+  ['agree-terms','agree-privacy','agree-marketing'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.checked = master.checked;
+  });
+}
+
+/* 회원가입 완료 */
+function completeSignup() {
+  var name = document.getElementById('signup-name').value.trim();
+  if (!name) { showToast('이름을 입력해주세요'); document.getElementById('signup-name').focus(); return; }
+  if (!document.getElementById('agree-terms').checked) { showToast('이용약관에 동의해주세요'); return; }
+  if (!document.getElementById('agree-privacy').checked) { showToast('개인정보 처리방침에 동의해주세요'); return; }
+  showLoginLoading('가입 완료 중...');
+  setTimeout(function() { doLogin(name); }, 1000);
+}
+
+/* 앱 진입 */
+function doLogin(name) {
+  var displayName = name || (loginMethod === 'kakao' ? '김예린' : loginMethod === 'naver' ? '이지현' : '회원');
+  var methods = { kakao:'카카오', naver:'네이버', phone:'전화번호' };
+  document.getElementById('myinfo-name-display').textContent = displayName + ' 님';
+  var methodDesc = document.getElementById('login-method-desc');
+  if (methodDesc) methodDesc.textContent = (methods[loginMethod] || loginMethod) + ' 계정으로 로그인됨';
+  var screen = document.getElementById('login-screen');
+  screen.classList.add('hiding');
+  setTimeout(function() { screen.style.display = 'none'; }, 450);
+  showToast('어서오세요, ' + displayName + ' 님! 💝');
+}
+
+/* 로그아웃 */
+function logout() {
+  loginMethod = '';
+  clearInterval(otpTimerInterval);
+  var screen = document.getElementById('login-screen');
+  screen.style.display = 'flex';
+  screen.classList.remove('hiding');
+  showLoginStep('method');
+  document.getElementById('phone-entry').style.display = '';
+  var otpEntry = document.getElementById('otp-entry');
+  if (otpEntry) otpEntry.style.display = 'none';
+  var phoneInput = document.getElementById('phone-input');
+  if (phoneInput) phoneInput.value = '';
+  ['signup-name','signup-birthday'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value = ''; });
+  ['agree-terms','agree-privacy','agree-marketing','agree-all'].forEach(function(id) { var el = document.getElementById(id); if(el) el.checked = false; });
+  switchTab('reserve');
+}
+
+/* 생년월일 포맷 */
+function formatBirthday(input) {
+  var v = input.value.replace(/D/g,'');
+  if (v.length > 8) v = v.slice(0,8);
+  if (v.length > 6) v = v.slice(0,4) + '.' + v.slice(4,6) + '.' + v.slice(6);
+  else if (v.length > 4) v = v.slice(0,4) + '.' + v.slice(4);
+  input.value = v;
+}
+
+
+
+
+
 </script>
 </body>
 </html>
