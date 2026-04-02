@@ -1,0 +1,2562 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BeautyOn 관리자 - 러브헤어 홍대점</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --rose: #c9184a;
+    --rose-light: #ff4d6d;
+    --rose-dark: #a4133c;
+    --cream: #fff8f0;
+    --cream-dark: #f5ede0;
+    --gold: #c9a84c;
+    --gold-light: #e8c96a;
+    --text-dark: #1a1a1a;
+    --text-mid: #555;
+    --text-light: #888;
+    --border: #e8d8c8;
+    --white: #ffffff;
+    --success: #2d9b6f;
+    --warning: #e07b2a;
+    --danger: #c9184a;
+    --info: #3a7bd5;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 32px rgba(0,0,0,0.14);
+  }
+
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #f0e8e0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px 0;
+  }
+
+  #app {
+    width: 390px;
+    min-height: 844px;
+    background: var(--cream);
+    border-radius: 40px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+  }
+
+  /* ─── LOGIN SCREEN ─── */
+  #login-screen {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, #2d0d1a 0%, #6b0f2e 50%, #c9184a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 40px 32px;
+    transition: opacity 0.5s, transform 0.5s;
+  }
+
+  #login-screen.hidden {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+
+  .login-logo {
+    font-family: 'Noto Serif KR', serif;
+    color: var(--white);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .login-logo .brand { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; }
+  .login-logo .tag { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+  .login-badge {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 20px;
+    padding: 6px 18px;
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 40px;
+    letter-spacing: 0.5px;
+  }
+
+  .login-card {
+    background: var(--white);
+    border-radius: 24px;
+    padding: 32px 28px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+
+  .login-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+  }
+
+  .login-card .store-name {
+    font-size: 13px;
+    color: var(--rose);
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+
+  .field-group { margin-bottom: 16px; }
+
+  .field-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+
+  .field-group input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 15px;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .field-group input:focus { border-color: var(--rose); }
+
+  .login-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .login-btn:active { transform: scale(0.98); opacity: 0.9; }
+
+  .login-error {
+    background: #fff0f0;
+    border: 1px solid #ffcccc;
+    color: var(--danger);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .login-error.show { display: block; }
+
+  .login-hint {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-light);
+    margin-top: 16px;
+  }
+
+  /* ─── MAIN APP ─── */
+  #main-app {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
+  #main-app.visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  /* ─── TOP BAR ─── */
+  .top-bar {
+    background: var(--white);
+    padding: 16px 20px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .top-bar-left { display: flex; flex-direction: column; }
+
+  .top-bar-brand {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 10px;
+    color: var(--rose);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .top-bar-store {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+  }
+
+  .top-bar-right { display: flex; align-items: center; gap: 12px; }
+
+  .notif-btn {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--cream-dark);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    position: relative;
+  }
+
+  .notif-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 8px; height: 8px;
+    background: var(--rose);
+    border-radius: 50%;
+    border: 2px solid var(--white);
+  }
+
+  .avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  /* ─── CONTENT AREA ─── */
+  .content-area {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .content-area::-webkit-scrollbar { display: none; }
+
+  /* ─── TABS ─── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ─── BOTTOM NAV ─── */
+  .bottom-nav {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 16px;
+    flex-shrink: 0;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: transform 0.15s;
+  }
+
+  .nav-item:active { transform: scale(0.92); }
+
+  .nav-icon {
+    font-size: 22px;
+    line-height: 1;
+    transition: filter 0.2s;
+    filter: grayscale(1) opacity(0.45);
+  }
+
+  .nav-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-light);
+    transition: color 0.2s;
+  }
+
+  .nav-item.active .nav-icon { filter: none; }
+  .nav-item.active .nav-label { color: var(--rose); }
+
+  /* ─── SECTION HEADERS ─── */
+  .section { padding: 20px 20px 0; }
+  .section-last { padding: 20px; }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-light);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  /* ─── STAT CARDS ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 20px 20px 0;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .stat-card.rose::before { background: var(--rose); }
+  .stat-card.gold::before { background: var(--gold); }
+  .stat-card.green::before { background: var(--success); }
+  .stat-card.blue::before { background: var(--info); }
+
+  .stat-label { font-size: 11px; color: var(--text-light); font-weight: 600; margin-bottom: 6px; }
+  .stat-value { font-size: 22px; font-weight: 800; color: var(--text-dark); line-height: 1; }
+  .stat-value.small { font-size: 17px; }
+  .stat-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+  .stat-icon { position: absolute; bottom: 12px; right: 14px; font-size: 28px; opacity: 0.12; }
+
+  /* ─── TIMELINE ─── */
+  .timeline-wrap {
+    background: var(--white);
+    border-radius: 20px;
+    margin: 16px 20px 0;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .timeline-title { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+  .timeline-date { font-size: 12px; color: var(--text-light); }
+
+  .timeline-item {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    position: relative;
+  }
+
+  .timeline-item:last-child { margin-bottom: 0; }
+
+  .tl-time {
+    width: 46px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+    padding-top: 1px;
+    flex-shrink: 0;
+  }
+
+  .tl-bar {
+    width: 4px;
+    border-radius: 2px;
+    flex-shrink: 0;
+    min-height: 50px;
+  }
+
+  .tl-content { flex: 1; }
+
+  .tl-name { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+  .tl-service { font-size: 12px; color: var(--text-mid); }
+  .tl-designer {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 2px 7px;
+    margin-top: 4px;
+    color: var(--white);
+  }
+
+  /* ─── CHART ─── */
+  .chart-wrap {
+    background: var(--white);
+    border-radius: 20px;
+    margin: 16px 20px 0;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .chart-title { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+  .chart-total { font-size: 13px; font-weight: 700; color: var(--rose); }
+
+  canvas#revenueChart { width: 100% !important; }
+
+  /* ─── QUICK ACTIONS ─── */
+  .quick-actions {
+    display: flex;
+    gap: 10px;
+    padding: 16px 20px 20px;
+  }
+
+  .quick-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Pretendard', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    transition: transform 0.15s, opacity 0.15s;
+  }
+
+  .quick-btn:active { transform: scale(0.95); opacity: 0.85; }
+  .quick-btn .q-icon { font-size: 22px; }
+
+  .quick-btn.primary { background: linear-gradient(135deg, var(--rose), var(--rose-dark)); color: var(--white); }
+  .quick-btn.gold-btn { background: linear-gradient(135deg, var(--gold), #a07830); color: var(--white); }
+  .quick-btn.neutral { background: var(--cream-dark); color: var(--text-dark); }
+
+  /* ─── CALENDAR ─── */
+  .cal-wrap {
+    background: var(--white);
+    border-radius: 20px;
+    margin: 0 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .cal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .cal-title { font-size: 16px; font-weight: 700; color: var(--text-dark); }
+
+  .cal-nav-btn {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    background: var(--white);
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .cal-days-header {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .cal-day-name { font-size: 11px; font-weight: 700; color: var(--text-light); padding: 4px 0; }
+  .cal-day-name:first-child { color: #e94560; }
+  .cal-day-name:last-child { color: var(--info); }
+
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+
+  .cal-cell {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .cal-cell:hover { background: var(--cream-dark); }
+
+  .cal-cell.selected { background: var(--rose) !important; }
+  .cal-cell.selected .cal-num { color: var(--white) !important; }
+  .cal-cell.today .cal-num {
+    background: var(--rose);
+    color: var(--white);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+  }
+
+  .cal-cell.empty { cursor: default; }
+  .cal-cell.empty:hover { background: none; }
+
+  .cal-num { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+  .cal-cell.sunday .cal-num { color: #e94560; }
+  .cal-cell.saturday .cal-num { color: var(--info); }
+
+  .cal-dots { display: flex; gap: 2px; }
+  .cal-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+  /* ─── BOOKING LIST ─── */
+  .booking-list { padding: 16px 20px 20px; }
+  .booking-date-label { font-size: 13px; font-weight: 700; color: var(--text-mid); margin-bottom: 12px; }
+
+  .booking-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    position: relative;
+  }
+
+  .booking-time-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 48px;
+  }
+
+  .booking-time { font-size: 14px; font-weight: 800; color: var(--text-dark); }
+  .booking-duration { font-size: 10px; color: var(--text-light); }
+
+  .booking-info { flex: 1; }
+  .booking-client { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+  .booking-service { font-size: 12px; color: var(--text-mid); margin-top: 2px; }
+  .booking-designer { font-size: 11px; color: var(--text-light); margin-top: 3px; }
+
+  .booking-actions { display: flex; gap: 6px; margin-top: 8px; }
+
+  .action-btn {
+    padding: 5px 10px;
+    border-radius: 8px;
+    border: none;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .action-btn:active { opacity: 0.7; }
+  .action-btn.complete { background: #e8f5ee; color: var(--success); }
+  .action-btn.cancel { background: #fff0f0; color: var(--danger); }
+
+  .status-badge {
+    position: absolute;
+    top: 14px; right: 14px;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+
+  .status-badge.reserved { background: #e8f0ff; color: var(--info); }
+  .status-badge.done { background: #e8f5ee; color: var(--success); }
+  .status-badge.cancelled { background: #fff0f0; color: var(--danger); }
+
+  /* ─── FAB ─── */
+  .fab {
+    position: fixed;
+    bottom: 100px;
+    right: calc(50% - 195px + 20px);
+    width: 56px; height: 56px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    border-radius: 50%;
+    border: none;
+    color: var(--white);
+    font-size: 28px;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(201,24,74,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+    z-index: 50;
+  }
+
+  .fab:active { transform: scale(0.92); }
+
+  /* ─── DESIGNER CARDS ─── */
+  .designer-list { padding: 16px 20px 20px; }
+
+  .designer-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+
+  .designer-photo-wrap {
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .designer-photo {
+    width: 64px; height: 64px;
+    border-radius: 18px;
+    object-fit: cover;
+    background: var(--cream-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .designer-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+  .upload-overlay {
+    position: absolute;
+    bottom: -6px; right: -6px;
+    width: 22px; height: 22px;
+    background: var(--rose);
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--white);
+  }
+
+  .designer-info { flex: 1; }
+  .designer-name { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+  .designer-role { font-size: 12px; color: var(--rose); font-weight: 600; margin-top: 2px; }
+
+  .designer-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+
+  .tag {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--cream-dark);
+    color: var(--text-mid);
+  }
+
+  .designer-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .checkin-label { font-size: 12px; color: var(--text-mid); font-weight: 600; }
+
+  .toggle-switch {
+    width: 44px; height: 24px;
+    background: #ddd;
+    border-radius: 12px;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.25s;
+    flex-shrink: 0;
+  }
+
+  .toggle-switch.on { background: var(--success); }
+
+  .toggle-knob {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: var(--white);
+    border-radius: 50%;
+    transition: left 0.25s;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+
+  .toggle-switch.on .toggle-knob { left: 23px; }
+
+  .edit-btn {
+    padding: 7px 14px;
+    border-radius: 10px;
+    background: var(--cream-dark);
+    border: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+    font-family: 'Pretendard', sans-serif;
+  }
+
+  .add-designer-btn {
+    width: 100%;
+    padding: 16px;
+    border: 2px dashed var(--border);
+    border-radius: 16px;
+    background: none;
+    color: var(--text-light);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .add-designer-btn:hover { border-color: var(--rose); color: var(--rose); }
+
+  /* ─── MARKETING ─── */
+  .mkt-section {
+    padding: 20px 20px 0;
+  }
+
+  .mkt-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .add-mini-btn {
+    padding: 6px 12px;
+    background: var(--rose);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+  }
+
+  .banner-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+
+  .banner-thumb {
+    width: 60px; height: 60px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .banner-info { flex: 1; }
+  .banner-title { font-size: 13px; font-weight: 700; color: var(--text-dark); }
+  .banner-desc { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .banner-period { font-size: 10px; color: var(--gold); font-weight: 600; margin-top: 3px; }
+
+  .banner-toggle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .banner-status { font-size: 9px; font-weight: 600; color: var(--text-light); }
+
+  .coupon-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .coupon-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 4px;
+    background: var(--gold);
+  }
+
+  .coupon-name { font-size: 14px; font-weight: 700; color: var(--text-dark); padding-left: 8px; }
+  .coupon-discount { font-size: 20px; font-weight: 800; color: var(--rose); padding-left: 8px; margin-top: 4px; }
+  .coupon-meta { display: flex; gap: 12px; margin-top: 8px; padding-left: 8px; }
+  .coupon-meta-item { font-size: 11px; color: var(--text-light); }
+  .coupon-meta-item span { font-weight: 700; color: var(--text-mid); }
+
+  .naver-section {
+    background: var(--white);
+    border-radius: 20px;
+    margin: 0 20px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+  }
+
+  .naver-header { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .naver-icon {
+    width: 32px; height: 32px;
+    background: #03c75a;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: white;
+    font-weight: 900;
+    font-family: sans-serif;
+  }
+
+  .naver-title { font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+  .naver-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--cream-dark);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+  }
+
+  .naver-score { font-size: 24px; font-weight: 800; color: var(--text-dark); }
+  .naver-stars { font-size: 16px; }
+  .naver-reviews { font-size: 12px; color: var(--text-light); }
+
+  /* ─── SETTINGS ─── */
+  .settings-group {
+    background: var(--white);
+    border-radius: 20px;
+    margin: 0 20px 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .settings-group-title {
+    padding: 14px 18px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .settings-row {
+    display: flex;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .settings-row:last-child { border-bottom: none; }
+
+  .settings-row-icon { font-size: 20px; width: 28px; text-align: center; flex-shrink: 0; }
+  .settings-row-label { flex: 1; font-size: 14px; font-weight: 600; color: var(--text-dark); }
+  .settings-row-value { font-size: 12px; color: var(--text-light); max-width: 140px; text-align: right; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .settings-row-arrow { font-size: 14px; color: var(--text-light); }
+
+  .settings-input-row {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .settings-input-row:last-child { border-bottom: none; }
+
+  .settings-input-label { font-size: 11px; font-weight: 700; color: var(--text-light); margin-bottom: 6px; }
+
+  .settings-input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 13px;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+  }
+
+  .settings-input:focus { border-color: var(--rose); }
+
+  .settings-save-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    margin: 0 20px 20px;
+    width: calc(100% - 40px);
+  }
+
+  /* ─── MODALS ─── */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .modal-overlay.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .modal-sheet {
+    width: 390px;
+    background: var(--white);
+    border-radius: 24px 24px 0 0;
+    padding: 0 0 40px;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.open .modal-sheet {
+    transform: translateY(0);
+  }
+
+  .modal-handle {
+    width: 40px; height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    margin: 12px auto 4px;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .modal-title { font-size: 17px; font-weight: 700; color: var(--text-dark); }
+
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--cream-dark);
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-body { padding: 20px; }
+
+  .form-field { margin-bottom: 16px; }
+
+  .form-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-mid);
+    margin-bottom: 6px;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'Pretendard', sans-serif;
+    color: var(--text-dark);
+    background: var(--cream);
+    outline: none;
+  }
+
+  .form-field input:focus,
+  .form-field select:focus,
+  .form-field textarea:focus { border-color: var(--rose); }
+
+  .form-field textarea { resize: none; height: 80px; }
+
+  .color-picker-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-swatch {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+
+  .color-swatch.selected { border-color: var(--text-dark); transform: scale(1.1); }
+
+  .days-picker { display: flex; gap: 6px; flex-wrap: wrap; }
+
+  .day-chip {
+    padding: 6px 12px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mid);
+    cursor: pointer;
+    background: var(--white);
+    font-family: 'Pretendard', sans-serif;
+    transition: all 0.15s;
+  }
+
+  .day-chip.selected { background: var(--rose); color: var(--white); border-color: var(--rose); }
+
+  .modal-submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    color: var(--white);
+    border: none;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Pretendard', sans-serif;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+
+  .modal-submit-btn:active { opacity: 0.85; }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 100px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: rgba(30,30,30,0.9);
+    color: var(--white);
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 600;
+    z-index: 999;
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* ─── MISC ─── */
+  .divider { height: 1px; background: var(--border); margin: 0 20px 16px; }
+
+  .tab-top-pad { height: 20px; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-light);
+    font-size: 14px;
+  }
+
+  .empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+
+  .sub-tab-row {
+    display: flex;
+    gap: 0;
+    margin: 16px 20px 0;
+    background: var(--cream-dark);
+    border-radius: 12px;
+    padding: 3px;
+  }
+
+  .sub-tab {
+    flex: 1;
+    padding: 8px;
+    border-radius: 10px;
+    border: none;
+    background: none;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    cursor: pointer;
+    font-family: 'Pretendard', sans-serif;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .sub-tab.active { background: var(--white); color: var(--rose); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+  .bottom-spacer { height: 20px; }
+
+  /* ─── STAFF ACCOUNTS ─── */
+  .staff-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .staff-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    flex-shrink: 0;
+  }
+
+  .staff-info { flex: 1; }
+  .staff-name { font-size: 14px; font-weight: 700; color: var(--text-dark); }
+  .staff-role { font-size: 11px; color: var(--text-light); }
+
+  .staff-action {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--rose);
+    cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ── LOGIN SCREEN ── -->
+  <div id="login-screen">
+    <div class="login-logo">
+      <div class="brand">💄 BeautyOn 관리자</div>
+      <div class="tag">뷰티 살롱 통합 관리 플랫폼</div>
+    </div>
+    <div class="login-badge">OWNER DASHBOARD</div>
+
+    <div class="login-card">
+      <h2>관리자 로그인</h2>
+      <div class="store-name">러브헤어 홍대점</div>
+
+      <div class="field-group">
+        <label>관리자 ID</label>
+        <input type="text" id="loginId" placeholder="아이디를 입력하세요" autocomplete="off">
+      </div>
+
+      <div class="field-group">
+        <label>비밀번호</label>
+        <input type="password" id="loginPw" placeholder="비밀번호를 입력하세요" autocomplete="off">
+      </div>
+
+      <button class="login-btn" onclick="doLogin()">로그인</button>
+
+      <div class="login-error" id="loginError">
+        ❌ ID 또는 비밀번호가 올바르지 않습니다
+      </div>
+
+      <div class="login-hint">
+        데모: ID = <b>admin</b> / PW = <b>1234</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MAIN APP ── -->
+  <div id="main-app">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="top-bar-left">
+        <span class="top-bar-brand">BeautyOn Admin</span>
+        <span class="top-bar-store">러브헤어 홍대점</span>
+      </div>
+      <div class="top-bar-right">
+        <button class="notif-btn" onclick="showToast('알림이 3개 있습니다')">
+          🔔
+          <div class="notif-dot"></div>
+        </button>
+        <div class="avatar" onclick="showToast('관리자 계정')">원</div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content-area" id="contentArea">
+
+      <!-- TAB 1: 홈 대시보드 -->
+      <div class="tab-panel active" id="tab-home">
+        <div class="tab-top-pad"></div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card rose">
+            <div class="stat-label">오늘 예약</div>
+            <div class="stat-value" data-target="8" id="stat-bookings">0</div>
+            <div class="stat-sub">전일 대비 +2건</div>
+            <div class="stat-icon">📅</div>
+          </div>
+          <div class="stat-card gold">
+            <div class="stat-label">오늘 매출</div>
+            <div class="stat-value small" data-target="520000" id="stat-revenue">0</div>
+            <div class="stat-sub">목표 80% 달성</div>
+            <div class="stat-icon">💰</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">신규 고객</div>
+            <div class="stat-value" data-target="2" id="stat-new">0</div>
+            <div class="stat-sub">이번 주 +7명</div>
+            <div class="stat-icon">👤</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-label">평균 평점</div>
+            <div class="stat-value" id="stat-rating">0</div>
+            <div class="stat-sub">리뷰 127개</div>
+            <div class="stat-icon">⭐</div>
+          </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="timeline-wrap">
+          <div class="timeline-header">
+            <div class="timeline-title">오늘 예약 일정</div>
+            <div class="timeline-date">4월 2일 (수)</div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">10:00</div>
+            <div class="tl-bar" style="background:#c9184a"></div>
+            <div class="tl-content">
+              <div class="tl-name">김지수 님</div>
+              <div class="tl-service">볼륨매직 + 트리트먼트</div>
+              <span class="tl-designer" style="background:#c9184a">지은</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">11:30</div>
+            <div class="tl-bar" style="background:#3a7bd5"></div>
+            <div class="tl-content">
+              <div class="tl-name">박민준 님</div>
+              <div class="tl-service">남성 커트 + 두피케어</div>
+              <span class="tl-designer" style="background:#3a7bd5">준혁</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">13:00</div>
+            <div class="tl-bar" style="background:#c9a84c"></div>
+            <div class="tl-content">
+              <div class="tl-name">이서연 님</div>
+              <div class="tl-service">발레아쥬 + 커트</div>
+              <span class="tl-designer" style="background:#c9a84c">수아</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">14:30</div>
+            <div class="tl-bar" style="background:#2d9b6f"></div>
+            <div class="tl-content">
+              <div class="tl-name">최유라 님</div>
+              <div class="tl-service">클리닉 + 세팅펌</div>
+              <span class="tl-designer" style="background:#2d9b6f">하은</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">16:00</div>
+            <div class="tl-bar" style="background:#9b5de5"></div>
+            <div class="tl-content">
+              <div class="tl-name">정민아 님</div>
+              <div class="tl-service">탈색 + 오버랩 컬러</div>
+              <span class="tl-designer" style="background:#9b5de5">지은</span>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="tl-time">17:30</div>
+            <div class="tl-bar" style="background:#c9184a"></div>
+            <div class="tl-content">
+              <div class="tl-name">한다연 님</div>
+              <div class="tl-service">커트 + 내추럴펌</div>
+              <span class="tl-designer" style="background:#c9184a">수아</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Revenue Chart -->
+        <div class="chart-wrap">
+          <div class="chart-header">
+            <div class="chart-title">주간 매출 현황</div>
+            <div class="chart-total">이번주 3,240,000원</div>
+          </div>
+          <canvas id="revenueChart" height="120"></canvas>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <button class="quick-btn primary" onclick="openModal('addBookingModal')">
+            <span class="q-icon">📋</span>예약추가
+          </button>
+          <button class="quick-btn gold-btn" onclick="openModal('holidayModal')">
+            <span class="q-icon">🗓️</span>휴무설정
+          </button>
+          <button class="quick-btn neutral" onclick="openModal('noticeModal')">
+            <span class="q-icon">📢</span>공지등록
+          </button>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+
+      <!-- TAB 2: 예약관리 -->
+      <div class="tab-panel" id="tab-booking">
+        <div class="tab-top-pad"></div>
+
+        <!-- Calendar -->
+        <div style="padding: 0 20px;">
+          <div class="cal-wrap">
+            <div class="cal-header">
+              <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+              <div class="cal-title" id="calTitle">2026년 4월</div>
+              <button class="cal-nav-btn" onclick="calNext()">›</button>
+            </div>
+            <div class="cal-days-header">
+              <div class="cal-day-name">일</div>
+              <div class="cal-day-name">월</div>
+              <div class="cal-day-name">화</div>
+              <div class="cal-day-name">수</div>
+              <div class="cal-day-name">목</div>
+              <div class="cal-day-name">금</div>
+              <div class="cal-day-name">토</div>
+            </div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+        </div>
+
+        <!-- Booking List -->
+        <div class="booking-list" id="bookingList">
+          <div class="booking-date-label" id="bookingDateLabel">4월 2일 예약 목록</div>
+          <!-- Dynamic content -->
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+
+      <!-- TAB 3: 디자이너 -->
+      <div class="tab-panel" id="tab-designer">
+        <div class="tab-top-pad"></div>
+
+        <div class="designer-list" id="designerList">
+          <!-- Dynamic content -->
+        </div>
+        <div style="padding: 0 20px 20px;">
+          <button class="add-designer-btn" onclick="openModal('addDesignerModal')">+ 디자이너 추가</button>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+
+      <!-- TAB 4: 마케팅 -->
+      <div class="tab-panel" id="tab-marketing">
+        <div class="tab-top-pad"></div>
+
+        <div class="sub-tab-row">
+          <button class="sub-tab active" onclick="showMktTab('banner', this)">배너/프로모션</button>
+          <button class="sub-tab" onclick="showMktTab('coupon', this)">쿠폰</button>
+          <button class="sub-tab" onclick="showMktTab('naver', this)">네이버</button>
+        </div>
+
+        <!-- Banner Panel -->
+        <div id="mkt-banner" class="mkt-section">
+          <div class="mkt-section-title" style="margin-top:16px;">
+            현재 배너
+            <button class="add-mini-btn" onclick="openModal('addBannerModal')">+ 추가</button>
+          </div>
+          <div id="bannerList"></div>
+        </div>
+
+        <!-- Coupon Panel -->
+        <div id="mkt-coupon" class="mkt-section" style="display:none;">
+          <div class="mkt-section-title" style="margin-top:16px;">
+            발행된 쿠폰
+            <button class="add-mini-btn" onclick="openModal('addCouponModal')">+ 발행</button>
+          </div>
+          <div id="couponList"></div>
+        </div>
+
+        <!-- Naver Panel -->
+        <div id="mkt-naver" class="mkt-section" style="display:none;">
+          <div style="margin-top:16px;">
+            <div class="naver-section">
+              <div class="naver-header">
+                <div class="naver-icon">N</div>
+                <div class="naver-title">네이버 플레이스 연동</div>
+              </div>
+
+              <div class="naver-rating-display">
+                <div class="naver-score">4.9</div>
+                <div>
+                  <div class="naver-stars">⭐⭐⭐⭐⭐</div>
+                  <div class="naver-reviews">방문자 리뷰 127개</div>
+                </div>
+              </div>
+
+              <div class="form-field">
+                <label>네이버 플레이스 URL</label>
+                <input type="text" value="https://place.naver.com/restaurant/1234567" id="naverUrl">
+              </div>
+
+              <div class="form-field">
+                <label>리뷰 유도 메시지</label>
+                <textarea style="height:70px;width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:12px;font-size:13px;font-family:Pretendard,sans-serif;resize:none;outline:none;background:var(--cream);">방문해주셔서 감사합니다! 소중한 리뷰 부탁드려요 🙏</textarea>
+              </div>
+
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
+                <span style="font-size:14px;font-weight:600;color:var(--text-dark);">리뷰 유도 메시지 자동 발송</span>
+                <div class="toggle-switch on" id="reviewToggle" onclick="toggleSwitch(this, '리뷰 유도 메시지')"></div>
+              </div>
+
+              <button class="modal-submit-btn" style="margin-top:16px;" onclick="showToast('네이버 플레이스 설정이 저장되었습니다')">저장하기</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+
+      <!-- TAB 5: 설정 -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="tab-top-pad"></div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">매장 정보</div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">상호명</div>
+            <input type="text" class="settings-input" value="러브헤어 홍대점">
+          </div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">주소</div>
+            <input type="text" class="settings-input" value="서울시 마포구 홍익로 23-1 2층">
+          </div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">전화번호</div>
+            <input type="text" class="settings-input" value="02-1234-5678">
+          </div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">영업시간</div>
+            <input type="text" class="settings-input" value="10:00 ~ 20:00 (일요일 휴무)">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">외부 채널 연결</div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">카카오톡 채널 ID</div>
+            <input type="text" class="settings-input" value="@lovehair-hongdae">
+          </div>
+          <div class="settings-input-row">
+            <div class="settings-input-label">네이버 플레이스 URL</div>
+            <input type="text" class="settings-input" value="https://place.naver.com/restaurant/1234567">
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">알림 설정</div>
+          <div class="settings-row">
+            <div class="settings-row-icon">🔔</div>
+            <div class="settings-row-label">신규 예약 알림</div>
+            <div class="toggle-switch on" onclick="toggleSwitch(this, '신규 예약 알림')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-icon">❌</div>
+            <div class="settings-row-label">예약 취소 알림</div>
+            <div class="toggle-switch on" onclick="toggleSwitch(this, '예약 취소 알림')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-icon">💬</div>
+            <div class="settings-row-label">리뷰 등록 알림</div>
+            <div class="toggle-switch" onclick="toggleSwitch(this, '리뷰 등록 알림')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+          <div class="settings-row">
+            <div class="settings-row-icon">📊</div>
+            <div class="settings-row-label">일일 매출 리포트</div>
+            <div class="toggle-switch on" onclick="toggleSwitch(this, '일일 매출 리포트')">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <div class="settings-group-title">직원 계정 관리</div>
+          <div id="staffList" style="padding:12px 0 4px;"></div>
+        </div>
+
+        <div style="padding: 0 20px 20px;">
+          <button class="settings-save-btn" onclick="showToast('설정이 저장되었습니다 ✓')">변경사항 저장</button>
+        </div>
+
+        <div style="padding: 0 20px;">
+          <button onclick="doLogout()" style="width:100%;padding:14px;background:none;border:1.5px solid var(--border);border-radius:14px;font-size:14px;font-weight:600;color:var(--text-light);font-family:Pretendard,sans-serif;cursor:pointer;margin-bottom:20px;">로그아웃</button>
+        </div>
+
+        <div class="bottom-spacer"></div>
+      </div>
+
+    </div><!-- end content-area -->
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+      <div class="nav-item active" id="nav-home" onclick="switchTab('home')">
+        <div class="nav-icon">🏠</div>
+        <div class="nav-label">홈</div>
+      </div>
+      <div class="nav-item" id="nav-booking" onclick="switchTab('booking')">
+        <div class="nav-icon">📅</div>
+        <div class="nav-label">예약관리</div>
+      </div>
+      <div class="nav-item" id="nav-designer" onclick="switchTab('designer')">
+        <div class="nav-icon">💇</div>
+        <div class="nav-label">디자이너</div>
+      </div>
+      <div class="nav-item" id="nav-marketing" onclick="switchTab('marketing')">
+        <div class="nav-icon">📣</div>
+        <div class="nav-label">마케팅</div>
+      </div>
+      <div class="nav-item" id="nav-settings" onclick="switchTab('settings')">
+        <div class="nav-icon">⚙️</div>
+        <div class="nav-label">설정</div>
+      </div>
+    </div>
+  </div><!-- end main-app -->
+
+</div><!-- end app -->
+
+<!-- ── MODALS ── -->
+
+<!-- Add Booking Modal -->
+<div class="modal-overlay" id="addBookingModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">예약 추가</div>
+      <button class="modal-close" onclick="closeModal('addBookingModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>고객명</label>
+        <input type="text" placeholder="고객 이름 입력" id="newClientName">
+      </div>
+      <div class="form-field">
+        <label>연락처</label>
+        <input type="tel" placeholder="010-0000-0000">
+      </div>
+      <div class="form-field">
+        <label>시술 메뉴</label>
+        <select>
+          <option>커트</option>
+          <option>펌</option>
+          <option>염색</option>
+          <option>탈색</option>
+          <option>클리닉</option>
+          <option>볼륨매직</option>
+          <option>발레아쥬</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>담당 디자이너</label>
+        <select>
+          <option>지은 (실장)</option>
+          <option>준혁 (수석)</option>
+          <option>수아 (디자이너)</option>
+          <option>하은 (디자이너)</option>
+          <option>민서 (인턴)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>예약 날짜</label>
+        <input type="date" value="2026-04-02">
+      </div>
+      <div class="form-field">
+        <label>예약 시간</label>
+        <input type="time" value="14:00">
+      </div>
+      <button class="modal-submit-btn" onclick="submitBooking()">예약 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- Holiday Modal -->
+<div class="modal-overlay" id="holidayModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">휴무 설정</div>
+      <button class="modal-close" onclick="closeModal('holidayModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>휴무 날짜</label>
+        <input type="date" value="2026-04-06">
+      </div>
+      <div class="form-field">
+        <label>휴무 유형</label>
+        <select>
+          <option>정기 휴무 (매주 일요일)</option>
+          <option>임시 휴무</option>
+          <option>공휴일</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>사유 (선택)</label>
+        <input type="text" placeholder="예: 단체 교육, 시설 정비...">
+      </div>
+      <button class="modal-submit-btn" onclick="closeModal('holidayModal');showToast('휴무일이 설정되었습니다 🗓️')">설정 완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notice Modal -->
+<div class="modal-overlay" id="noticeModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">공지 등록</div>
+      <button class="modal-close" onclick="closeModal('noticeModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>제목</label>
+        <input type="text" placeholder="공지 제목">
+      </div>
+      <div class="form-field">
+        <label>내용</label>
+        <textarea placeholder="공지 내용을 입력하세요..."></textarea>
+      </div>
+      <div class="form-field">
+        <label>노출 대상</label>
+        <select>
+          <option>전체 고객</option>
+          <option>예약 고객만</option>
+          <option>VIP 고객만</option>
+        </select>
+      </div>
+      <button class="modal-submit-btn" onclick="closeModal('noticeModal');showToast('공지가 등록되었습니다 📢')">등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Banner Modal -->
+<div class="modal-overlay" id="addBannerModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">배너 추가</div>
+      <button class="modal-close" onclick="closeModal('addBannerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>배너 제목</label>
+        <input type="text" placeholder="예: 봄 맞이 특가 프로모션">
+      </div>
+      <div class="form-field">
+        <label>설명</label>
+        <input type="text" placeholder="예: 전 메뉴 20% 할인">
+      </div>
+      <div class="form-field">
+        <label>할인율 (%)</label>
+        <input type="number" placeholder="20" min="1" max="100">
+      </div>
+      <div class="form-field">
+        <label>노출 기간</label>
+        <input type="date" placeholder="종료일">
+      </div>
+      <div class="form-field">
+        <label>배경 색상</label>
+        <div class="color-picker-row">
+          <div class="color-swatch selected" style="background:#c9184a;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#c9a84c;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#3a7bd5;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#2d9b6f;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#9b5de5;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#e07b2a;" onclick="selectSwatch(this)"></div>
+          <div class="color-swatch" style="background:#1a1a2e;" onclick="selectSwatch(this)"></div>
+        </div>
+      </div>
+      <button class="modal-submit-btn" onclick="addBanner()">배너 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Coupon Modal -->
+<div class="modal-overlay" id="addCouponModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">쿠폰 발행</div>
+      <button class="modal-close" onclick="closeModal('addCouponModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>쿠폰명</label>
+        <input type="text" placeholder="예: 신규 고객 환영 쿠폰">
+      </div>
+      <div class="form-field">
+        <label>할인 유형</label>
+        <select>
+          <option>정률 할인 (%)</option>
+          <option>정액 할인 (원)</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>할인 값</label>
+        <input type="number" placeholder="예: 15">
+      </div>
+      <div class="form-field">
+        <label>유효기간</label>
+        <input type="date">
+      </div>
+      <div class="form-field">
+        <label>발급 대상</label>
+        <select>
+          <option>전체 고객</option>
+          <option>신규 고객</option>
+          <option>재방문 고객</option>
+          <option>VIP 고객</option>
+        </select>
+      </div>
+      <button class="modal-submit-btn" onclick="addCoupon()">쿠폰 발행</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Designer Modal -->
+<div class="modal-overlay" id="editDesignerModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">디자이너 정보 수정</div>
+      <button class="modal-close" onclick="closeModal('editDesignerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>이름</label>
+        <input type="text" id="editName" value="">
+      </div>
+      <div class="form-field">
+        <label>직급/역할</label>
+        <select id="editRole">
+          <option>실장</option>
+          <option>수석 디자이너</option>
+          <option>디자이너</option>
+          <option>인턴</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>전문 시술</label>
+        <input type="text" id="editSpecialties" placeholder="예: 볼륨매직, 발레아쥬, 클리닉">
+      </div>
+      <div class="form-field">
+        <label>근무 요일</label>
+        <div class="days-picker" id="editDays">
+          <button class="day-chip selected" onclick="toggleDay(this)">월</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">화</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">수</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">목</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">금</button>
+          <button class="day-chip" onclick="toggleDay(this)">토</button>
+          <button class="day-chip" onclick="toggleDay(this)">일</button>
+        </div>
+      </div>
+      <button class="modal-submit-btn" onclick="saveDesigner()">저장하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Designer Modal -->
+<div class="modal-overlay" id="addDesignerModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">디자이너 추가</div>
+      <button class="modal-close" onclick="closeModal('addDesignerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-field">
+        <label>이름</label>
+        <input type="text" placeholder="디자이너 이름">
+      </div>
+      <div class="form-field">
+        <label>직급/역할</label>
+        <select>
+          <option>실장</option>
+          <option>수석 디자이너</option>
+          <option>디자이너</option>
+          <option>인턴</option>
+        </select>
+      </div>
+      <div class="form-field">
+        <label>전문 시술</label>
+        <input type="text" placeholder="예: 커트, 펌, 클리닉">
+      </div>
+      <div class="form-field">
+        <label>근무 요일</label>
+        <div class="days-picker">
+          <button class="day-chip selected" onclick="toggleDay(this)">월</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">화</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">수</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">목</button>
+          <button class="day-chip selected" onclick="toggleDay(this)">금</button>
+          <button class="day-chip" onclick="toggleDay(this)">토</button>
+          <button class="day-chip" onclick="toggleDay(this)">일</button>
+        </div>
+      </div>
+      <button class="modal-submit-btn" onclick="closeModal('addDesignerModal');showToast('디자이너가 추가되었습니다 ✓')">추가하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Hidden file input for photo upload -->
+<input type="file" id="photoUploadInput" accept="image/*" style="display:none;" onchange="handlePhotoUpload(event)">
+
+<script>
+// ─── DATA ───
+const designers = [
+  {
+    id: 1,
+    name: '지은',
+    role: '실장',
+    emoji: '👩‍🦰',
+    color: '#c9184a',
+    specialties: ['볼륨매직', '발레아쥬', '클리닉'],
+    days: ['월','화','수','목','금'],
+    bookings: 42,
+    checkin: true,
+    photoUrl: null
+  },
+  {
+    id: 2,
+    name: '준혁',
+    role: '수석 디자이너',
+    emoji: '👨‍🦱',
+    color: '#3a7bd5',
+    specialties: ['남성 커트', '두피케어', '매직스트레이트'],
+    days: ['화','수','목','금','토'],
+    bookings: 38,
+    checkin: true,
+    photoUrl: null
+  },
+  {
+    id: 3,
+    name: '수아',
+    role: '디자이너',
+    emoji: '👩‍🦳',
+    color: '#c9a84c',
+    specialties: ['내추럴펌', '커트', '트리트먼트'],
+    days: ['월','화','목','금','토'],
+    bookings: 29,
+    checkin: false,
+    photoUrl: null
+  },
+  {
+    id: 4,
+    name: '하은',
+    role: '디자이너',
+    emoji: '👩‍🦲',
+    color: '#2d9b6f',
+    specialties: ['세팅펌', '클리닉', '탈색'],
+    days: ['월','수','목','금','토'],
+    bookings: 25,
+    checkin: true,
+    photoUrl: null
+  },
+  {
+    id: 5,
+    name: '민서',
+    role: '인턴',
+    emoji: '🧑',
+    color: '#9b5de5',
+    specialties: ['보조 시술', '샴푸', '두피케어'],
+    days: ['월','화','수','목','금'],
+    bookings: 11,
+    checkin: true,
+    photoUrl: null
+  }
+];
+
+const bookingsData = {
+  '2026-04-02': [
+    { id:1, client:'김지수', service:'볼륨매직 + 트리트먼트', designer:'지은', time:'10:00', duration:'2h', status:'done', price:120000 },
+    { id:2, client:'박민준', service:'남성 커트 + 두피케어', designer:'준혁', time:'11:30', duration:'1h', status:'done', price:65000 },
+    { id:3, client:'이서연', service:'발레아쥬 + 커트', designer:'수아', time:'13:00', duration:'3h', status:'reserved', price:180000 },
+    { id:4, client:'최유라', service:'클리닉 + 세팅펌', designer:'하은', time:'14:30', duration:'2.5h', status:'reserved', price:90000 },
+    { id:5, client:'정민아', service:'탈색 + 오버랩 컬러', designer:'지은', time:'16:00', duration:'3h', status:'reserved', price:220000 },
+    { id:6, client:'한다연', service:'커트 + 내추럴펌', designer:'수아', time:'17:30', duration:'2h', status:'reserved', price:95000 },
+  ],
+  '2026-04-03': [
+    { id:7, client:'오지현', service:'커트 + 염색', designer:'지은', time:'11:00', duration:'2h', status:'reserved', price:130000 },
+    { id:8, client:'윤성준', service:'남성 커트', designer:'준혁', time:'14:00', duration:'40m', status:'reserved', price:25000 },
+    { id:9, client:'강미래', service:'볼륨매직', designer:'수아', time:'15:30', duration:'2h', status:'reserved', price:110000 },
+  ],
+  '2026-04-05': [
+    { id:10, client:'신예린', service:'발레아쥬 풀 탈색', designer:'지은', time:'10:30', duration:'4h', status:'reserved', price:280000 },
+    { id:11, client:'황지우', service:'세팅펌', designer:'하은', time:'13:00', duration:'2h', status:'reserved', price:85000 },
+  ],
+  '2026-04-07': [
+    { id:12, client:'이민호', service:'클리닉 + 커트', designer:'준혁', time:'11:00', duration:'1.5h', status:'cancelled', price:75000 },
+    { id:13, client:'김소율', service:'내추럴펌', designer:'수아', time:'14:00', duration:'2h', status:'reserved', price:90000 },
+    { id:14, client:'박지훈', service:'탈색 + 컬러', designer:'지은', time:'16:00', duration:'3.5h', status:'reserved', price:210000 },
+  ],
+  '2026-04-09': [
+    { id:15, client:'최하늘', service:'볼륨매직', designer:'수아', time:'10:00', duration:'2h', status:'reserved', price:115000 },
+    { id:16, client:'정유진', service:'커트 + 트리트먼트', designer:'하은', time:'12:30', duration:'1.5h', status:'reserved', price:70000 },
+  ]
+};
+
+const banners = [
+  { id:1, title:'봄 맞이 특가', desc:'전 메뉴 20% 할인', period:'~4월 30일', color:'#c9184a', icon:'🌸', active:true },
+  { id:2, title:'신규 고객 혜택', desc:'첫 방문 커트 무료', period:'상시', color:'#3a7bd5', icon:'🎁', active:true },
+  { id:3, title:'주말 클리닉 특가', desc:'토요일 클리닉 15% DC', period:'매주 토요일', color:'#2d9b6f', icon:'💆', active:false },
+];
+
+const coupons = [
+  { id:1, name:'신규 고객 환영', discount:'20%', used:45, total:200, expires:'2026-06-30', target:'신규 고객' },
+  { id:2, name:'재방문 감사 쿠폰', discount:'10%', used:128, total:500, expires:'2026-12-31', target:'재방문 고객' },
+  { id:3, name:'생일 특별 할인', discount:'30%', used:12, total:50, expires:'2026-12-31', target:'생일 고객' },
+  { id:4, name:'볼륨매직 10,000원 할인', discount:'10,000원', used:67, total:100, expires:'2026-05-31', target:'전체' },
+];
+
+const staffAccounts = [
+  { name:'원장 (관리자)', role:'최고 관리자', color:'#c9184a', initials:'원' },
+  { name:'지은 실장', role:'디자이너 계정', color:'#c9a84c', initials:'지' },
+  { name:'준혁 디자이너', role:'디자이너 계정', color:'#3a7bd5', initials:'준' },
+];
+
+// ─── STATE ───
+let currentTab = 'home';
+let calYear = 2026, calMonth = 3; // April = 3 (0-indexed)
+let selectedDate = '2026-04-02';
+let currentUploadDesignerId = null;
+let countersAnimated = false;
+
+// ─── LOGIN ───
+function doLogin() {
+  const id = document.getElementById('loginId').value.trim();
+  const pw = document.getElementById('loginPw').value.trim();
+  const err = document.getElementById('loginError');
+
+  if (id === 'admin' && pw === '1234') {
+    err.classList.remove('show');
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('main-app').classList.add('visible');
+    setTimeout(() => {
+      initApp();
+    }, 200);
+  } else {
+    err.classList.add('show');
+    document.getElementById('loginPw').value = '';
+  }
+}
+
+document.getElementById('loginId').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginPw').focus();
+});
+document.getElementById('loginPw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogout() {
+  document.getElementById('main-app').classList.remove('visible');
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('loginId').value = '';
+  document.getElementById('loginPw').value = '';
+  countersAnimated = false;
+}
+
+// ─── INIT ───
+function initApp() {
+  renderDesigners();
+  renderBanners();
+  renderCoupons();
+  renderStaffAccounts();
+  renderCalendar();
+  renderBookings(selectedDate);
+  drawRevenueChart();
+  animateCounters();
+}
+
+// ─── TAB SWITCHING ───
+function switchTab(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+
+  document.getElementById('contentArea').scrollTop = 0;
+  currentTab = tab;
+
+  if (tab === 'home' && !countersAnimated) {
+    animateCounters();
+    setTimeout(drawRevenueChart, 100);
+  }
+
+  if (tab === 'home') {
+    setTimeout(drawRevenueChart, 100);
+  }
+}
+
+// ─── COUNTER ANIMATION ───
+function animateCounters() {
+  countersAnimated = true;
+
+  animateNum('stat-bookings', 0, 8, 800, v => v);
+  animateNum('stat-revenue', 0, 520000, 1200, v => v.toLocaleString('ko') + '원');
+  animateNum('stat-new', 0, 2, 600, v => v);
+  animateFloat('stat-rating', 0, 4.9, 1000, v => v.toFixed(1));
+}
+
+function animateNum(id, from, to, duration, format) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(from + (to - from) * ease);
+    el.textContent = format(val);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+function animateFloat(id, from, to, duration, format) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = from + (to - from) * ease;
+    el.textContent = format(val);
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ─── REVENUE CHART ───
+function drawRevenueChart() {
+  const canvas = document.getElementById('revenueChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const dpr = window.devicePixelRatio || 1;
+  const containerW = canvas.parentElement.clientWidth - 40;
+  canvas.width = containerW * dpr;
+  canvas.height = 120 * dpr;
+  canvas.style.width = containerW + 'px';
+  canvas.style.height = '120px';
+  ctx.scale(dpr, dpr);
+
+  const W = containerW;
+  const H = 120;
+  const data = [320000, 480000, 210000, 550000, 390000, 520000, 770000];
+  const days = ['월', '화', '수', '목', '금', '토', '일'];
+  const maxVal = Math.max(...data);
+  const padL = 10, padR = 10, padT = 10, padB = 30;
+  const barW = (W - padL - padR) / data.length;
+  const chartH = H - padT - padB;
+
+  ctx.clearRect(0, 0, W, H);
+
+  data.forEach((val, i) => {
+    const barH = (val / maxVal) * chartH;
+    const x = padL + i * barW + barW * 0.15;
+    const y = padT + chartH - barH;
+    const bw = barW * 0.7;
+
+    const grad = ctx.createLinearGradient(0, y, 0, y + barH);
+    const isToday = (i === 5);
+    grad.addColorStop(0, isToday ? '#c9184a' : '#e8c8d4');
+    grad.addColorStop(1, isToday ? '#a4133c' : '#d4a8b8');
+
+    ctx.fillStyle = grad;
+    const radius = 6;
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + bw - radius, y);
+    ctx.quadraticCurveTo(x + bw, y, x + bw, y + radius);
+    ctx.lineTo(x + bw, y + barH);
+    ctx.lineTo(x, y + barH);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+
+    ctx.fillStyle = isToday ? '#c9184a' : '#aaa';
+    ctx.font = `bold ${isToday ? 11 : 10}px Pretendard, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.fillText(days[i], x + bw / 2, H - 8);
+
+    if (isToday) {
+      ctx.fillStyle = '#c9184a';
+      ctx.font = 'bold 10px Pretendard, sans-serif';
+      ctx.fillText((val / 10000).toFixed(0) + '만', x + bw / 2, y - 4);
+    }
+  });
+}
+
+// ─── CALENDAR ───
+function renderCalendar() {
+  const titles = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+  document.getElementById('calTitle').textContent = calYear + '년 ' + titles[calMonth];
+
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML = '';
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+  const bookingCounts = {};
+  Object.keys(bookingsData).forEach(dateStr => {
+    const [y, m, d] = dateStr.split('-').map(Number);
+    if (y === calYear && m - 1 === calMonth) {
+      bookingCounts[d] = bookingsData[dateStr].length;
+    }
+  });
+
+  for (let i = 0; i < firstDay; i++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-cell empty';
+    grid.appendChild(cell);
+  }
+
+  const today = new Date();
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const cell = document.createElement('div');
+    const dayOfWeek = (firstDay + d - 1) % 7;
+    const dateStr = calYear + '-' + String(calMonth + 1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+
+    let classes = 'cal-cell';
+    if (dayOfWeek === 0) classes += ' sunday';
+    if (dayOfWeek === 6) classes += ' saturday';
+    if (calYear === today.getFullYear() && calMonth === today.getMonth() && d === today.getDate()) classes += ' today';
+    if (dateStr === selectedDate) classes += ' selected';
+
+    cell.className = classes;
+    cell.onclick = () => selectCalDate(dateStr);
+
+    const numDiv = document.createElement('div');
+    numDiv.className = 'cal-num';
+    numDiv.textContent = d;
+    cell.appendChild(numDiv);
+
+    if (bookingCounts[d]) {
+      const dots = document.createElement('div');
+      dots.className = 'cal-dots';
+      const count = Math.min(bookingCounts[d], 3);
+      for (let j = 0; j < count; j++) {
+        const dot = document.createElement('div');
+        dot.className = 'cal-dot';
+        dot.style.background = ['#c9184a','#c9a84c','#3a7bd5'][j];
+        dots.appendChild(dot);
+      }
+      cell.appendChild(dots);
+    }
+
+    grid.appendChild(cell);
+  }
+}
+
+function selectCalDate(dateStr) {
+  selectedDate = dateStr;
+  renderCalendar();
+  renderBookings(dateStr);
+}
+
+function calPrev() {
+  calMonth--;
+  if (calMonth < 0) { calMonth = 11; calYear--; }
+  renderCalendar();
+}
+
+function calNext() {
+  calMonth++;
+  if (calMonth > 11) { calMonth = 0; calYear++; }
+  renderCalendar();
+}
+
+// ─── BOOKINGS ───
+function renderBookings(dateStr) {
+  const list = document.getElementById('bookingList');
+  const label = document.getElementById('bookingDateLabel');
+  const [y, m, d] = dateStr.split('-').map(Number);
+  label.textContent = m + '월 ' + d + '일 예약 목록';
+
+  const items = bookingsData[dateStr] || [];
+  let html = '';
+
+  if (items.length === 0) {
+    html = '<div class="empty-state"><div class="empty-icon">📅</div>이 날짜에 예약이 없습니다</div>';
+  } else {
+    items.forEach(b => {
+      const statusLabel = { reserved:'예약', done:'완료', cancelled:'취소' }[b.status];
+      const statusClass = b.status;
+      const actions = b.status === 'reserved' ?
+        `<button class="action-btn complete" onclick="changeStatus('${dateStr}', ${b.id}, 'done')">완료</button>
+         <button class="action-btn cancel" onclick="changeStatus('${dateStr}', ${b.id}, 'cancelled')">취소</button>` : '';
+
+      html += `
+        <div class="booking-card" id="bcard-${b.id}">
+          <div class="booking-time-col">
+            <div class="booking-time">${b.time}</div>
+            <div class="booking-duration">${b.duration}</div>
+          </div>
+          <div class="booking-info">
+            <div class="booking-client">${b.client} 님</div>
+            <div class="booking-service">${b.service}</div>
+            <div class="booking-designer">👩‍🎨 ${b.designer} · ${b.price.toLocaleString('ko')}원</div>
+            <div class="booking-actions">${actions}</div>
+          </div>
+          <div class="status-badge ${statusClass}">${statusLabel}</div>
+        </div>
+      `;
+    });
+  }
+
+  list.innerHTML = '<div class="booking-date-label" id="bookingDateLabel">' + m + '월 ' + d + '일 예약 목록</div>' + html;
+}
+
+function changeStatus(dateStr, id, newStatus) {
+  const items = bookingsData[dateStr];
+  if (!items) return;
+  const booking = items.find(b => b.id === id);
+  if (booking) {
+    booking.status = newStatus;
+    renderBookings(dateStr);
+    showToast(newStatus === 'done' ? '예약이 완료 처리되었습니다 ✓' : '예약이 취소되었습니다');
+  }
+}
+
+// ─── DESIGNERS ───
+function renderDesigners() {
+  const list = document.getElementById('designerList');
+  list.innerHTML = designers.map(d => `
+    <div class="designer-card" id="designer-${d.id}">
+      <div class="designer-photo-wrap">
+        <div class="designer-photo" id="dphoto-${d.id}" onclick="triggerPhotoUpload(${d.id})">
+          ${d.photoUrl ? `<img src="${d.photoUrl}" alt="${d.name}">` : d.emoji}
+        </div>
+        <div class="upload-overlay" onclick="triggerPhotoUpload(${d.id})">📷</div>
+      </div>
+      <div class="designer-info">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+          <div>
+            <div class="designer-name">${d.name}</div>
+            <div class="designer-role" style="color:${d.color}">${d.role}</div>
+          </div>
+          <button class="edit-btn" onclick="openEditDesigner(${d.id})">편집</button>
+        </div>
+        <div class="designer-tags">
+          ${d.specialties.map(s => `<span class="tag">${s}</span>`).join('')}
+          <span class="tag">📅 ${d.days.join('·')}</span>
+          <span class="tag">예약 ${d.bookings}건</span>
+        </div>
+        <div class="designer-footer">
+          <span class="checkin-label">오늘 출근 여부</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:11px;color:var(--text-light)" id="checkin-label-${d.id}">${d.checkin ? '출근' : '결근'}</span>
+            <div class="toggle-switch ${d.checkin ? 'on' : ''}" id="checkin-toggle-${d.id}" onclick="toggleCheckin(${d.id})">
+              <div class="toggle-knob"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleCheckin(id) {
+  const d = designers.find(x => x.id === id);
+  if (!d) return;
+  d.checkin = !d.checkin;
+  const toggle = document.getElementById('checkin-toggle-' + id);
+  const label = document.getElementById('checkin-label-' + id);
+  toggle.classList.toggle('on', d.checkin);
+  label.textContent = d.checkin ? '출근' : '결근';
+  showToast(d.name + ' ' + (d.checkin ? '출근 처리' : '결근 처리') + '되었습니다');
+}
+
+function openEditDesigner(id) {
+  const d = designers.find(x => x.id === id);
+  if (!d) return;
+  document.getElementById('editName').value = d.name;
+  document.getElementById('editSpecialties').value = d.specialties.join(', ');
+  const roleSelect = document.getElementById('editRole');
+  const roleMap = { '실장': '실장', '수석 디자이너': '수석 디자이너', '디자이너': '디자이너', '인턴': '인턴' };
+  roleSelect.value = roleMap[d.role] || '디자이너';
+
+  const daysContainer = document.getElementById('editDays');
+  daysContainer.querySelectorAll('.day-chip').forEach(chip => {
+    chip.classList.toggle('selected', d.days.includes(chip.textContent));
+  });
+
+  openModal('editDesignerModal');
+  editDesignerModal._editId = id;
+}
+
+function saveDesigner() {
+  closeModal('editDesignerModal');
+  showToast('디자이너 정보가 저장되었습니다 ✓');
+  setTimeout(renderDesigners, 200);
+}
+
+// ─── PHOTO UPLOAD ───
+function triggerPhotoUpload(id) {
+  currentUploadDesignerId = id;
+  document.getElementById('photoUploadInput').click();
+}
+
+function handlePhotoUpload(event) {
+  const file = event.target.files[0];
+  if (!file || !currentUploadDesignerId) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const d = designers.find(x => x.id === currentUploadDesignerId);
+    if (d) {
+      d.photoUrl = e.target.result;
+      renderDesigners();
+      showToast('프로필 사진이 업데이트되었습니다 ✓');
+    }
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+// ─── BANNERS ───
+function renderBanners() {
+  const list = document.getElementById('bannerList');
+  list.innerHTML = banners.map(b => `
+    <div class="banner-card" id="banner-${b.id}">
+      <div class="banner-thumb" style="background:${b.color}20;">${b.icon}</div>
+      <div class="banner-info">
+        <div class="banner-title">${b.title}</div>
+        <div class="banner-desc">${b.desc}</div>
+        <div class="banner-period">${b.period}</div>
+      </div>
+      <div class="banner-toggle-wrap">
+        <div class="toggle-switch ${b.active ? 'on' : ''}" id="banner-toggle-${b.id}" onclick="toggleBanner(${b.id})">
+          <div class="toggle-knob"></div>
+        </div>
+        <div class="banner-status" id="banner-status-${b.id}">${b.active ? '노출중' : '숨김'}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleBanner(id) {
+  const b = banners.find(x => x.id === id);
+  if (!b) return;
+  b.active = !b.active;
+  const toggle = document.getElementById('banner-toggle-' + id);
+  const status = document.getElementById('banner-status-' + id);
+  toggle.classList.toggle('on', b.active);
+  status.textContent = b.active ? '노출중' : '숨김';
+  showToast(b.title + ' 배너 ' + (b.active ? '노출' : '숨김') + ' 처리');
+}
+
+function addBanner() {
+  closeModal('addBannerModal');
+  showToast('배너가 등록되었습니다 ✓');
+}
+
+// ─── COUPONS ───
+function renderCoupons() {
+  const list = document.getElementById('couponList');
+  list.innerHTML = coupons.map(c => `
+    <div class="coupon-card">
+      <div class="coupon-name">${c.name}</div>
+      <div class="coupon-discount">${c.discount}</div>
+      <div class="coupon-meta">
+        <div class="coupon-meta-item">사용 <span>${c.used}/${c.total}</span></div>
+        <div class="coupon-meta-item">대상 <span>${c.target}</span></div>
+        <div class="coupon-meta-item">~<span>${c.expires}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function addCoupon() {
+  closeModal('addCouponModal');
+  showToast('쿠폰이 발행되었습니다 ✓');
+}
+
+// ─── STAFF ACCOUNTS ───
+function renderStaffAccounts() {
+  const list = document.getElementById('staffList');
+  list.innerHTML = staffAccounts.map(s => `
+    <div class="staff-card">
+      <div class="staff-avatar" style="background:${s.color}">${s.initials}</div>
+      <div class="staff-info">
+        <div class="staff-name">${s.name}</div>
+        <div class="staff-role">${s.role}</div>
+      </div>
+      <div class="staff-action" onclick="showToast('${s.name} 계정 관리')">관리 ›</div>
+    </div>
+  `).join('') +
+  `<div style="padding:0 18px 8px;">
+    <button onclick="showToast('직원 계정 추가 기능')" style="width:100%;padding:12px;border:2px dashed var(--border);border-radius:12px;background:none;color:var(--text-light);font-size:13px;font-weight:600;font-family:Pretendard,sans-serif;cursor:pointer;">+ 직원 계정 추가</button>
+   </div>`;
+}
+
+// ─── MARKETING SUB-TABS ───
+function showMktTab(tab, btn) {
+  ['banner','coupon','naver'].forEach(t => {
+    document.getElementById('mkt-' + t).style.display = t === tab ? 'block' : 'none';
+  });
+  btn.closest('.sub-tab-row').querySelectorAll('.sub-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── MODALS ───
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('open');
+  });
+});
+
+// ─── TOAST ───
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ─── TOGGLE SWITCH ───
+function toggleSwitch(el, label) {
+  el.classList.toggle('on');
+  const isOn = el.classList.contains('on');
+  if (label) showToast(label + ' ' + (isOn ? '켜짐' : '꺼짐'));
+}
+
+// ─── DAY CHIPS ───
+function toggleDay(btn) {
+  btn.classList.toggle('selected');
+}
+
+// ─── COLOR SWATCHES ───
+function selectSwatch(el) {
+  el.closest('.color-picker-row').querySelectorAll('.color-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+// ─── BOOKING SUBMIT ───
+function submitBooking() {
+  const name = document.getElementById('newClientName').value.trim();
+  closeModal('addBookingModal');
+  showToast((name || '고객') + ' 님 예약이 추가되었습니다 ✓');
+}
+
+// ─── WINDOW RESIZE ───
+window.addEventListener('resize', () => {
+  if (currentTab === 'home') drawRevenueChart();
+});
+</script>
+</body>
+</html>
