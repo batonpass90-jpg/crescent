@@ -1657,9 +1657,17 @@
         placeholder="이름 (실명)">
       <input class="login-input" id="signup-phone-display" type="tel"
         placeholder="전화번호" readonly style="background:#f9f3ef;color:var(--muted);">
-      <input class="login-input" id="signup-birthday" type="text"
-        placeholder="생년월일 (예: 1995.04.02)"
-        oninput="formatBirthday(this)" maxlength="10">
+      <div style="display:flex;gap:8px;margin-bottom:0;">
+  <select id="signup-birth-year" class="login-input" style="flex:2;appearance:none;-webkit-appearance:none;background:url(&quot;data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:30px;cursor:pointer;">
+    <option value="">출생연도</option>
+  </select>
+  <select id="signup-birth-month" class="login-input" style="flex:1.5;appearance:none;-webkit-appearance:none;background:url(&quot;data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:30px;cursor:pointer;">
+    <option value="">월</option>
+  </select>
+  <select id="signup-birth-day" class="login-input" style="flex:1.5;appearance:none;-webkit-appearance:none;background:url(&quot;data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E&quot;) no-repeat right 12px center;padding-right:30px;cursor:pointer;">
+    <option value="">일</option>
+  </select>
+</div>
 
       <div class="signup-agree-row">
         <input type="checkbox" id="agree-all" onchange="toggleAgreeAll(this)">
@@ -1689,6 +1697,158 @@
 
   </div>
 </div></div>
+
+<!-- Kakao OAuth Simulation Screen -->
+<div id="kakao-oauth-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:#FEE500;font-family:'Pretendard',sans-serif;overflow:auto;">
+  <div style="max-width:390px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;">
+    <!-- Kakao header -->
+    <div style="background:#FEE500;padding:20px 20px 0;display:flex;align-items:center;gap:8px;">
+      <svg width="28" height="28" viewBox="0 0 28 28"><path d="M14 3C8.48 3 4 6.87 4 11.67c0 3.19 2.02 5.99 5.04 7.64l-1.29 4.76 5.54-3.64c.55.08 1.12.14 1.71.14 5.52 0 10-3.87 10-8.9S19.52 3 14 3z" fill="#191919"/></svg>
+      <span style="font-size:18px;font-weight:700;color:#191919;">카카오 로그인</span>
+    </div>
+    <!-- Kakao account box -->
+    <div style="flex:1;padding:32px 20px;display:flex;flex-direction:column;gap:12px;">
+      <div style="background:#fff;border-radius:16px;padding:24px;box-shadow:0 2px 12px rgba(0,0,0,.08);">
+        <div style="font-size:13px;color:#666;margin-bottom:16px;text-align:center;">카카오계정으로 로그인</div>
+        <div style="background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:14px 16px;font-size:15px;color:#333;margin-bottom:10px;">이메일 또는 전화번호</div>
+        <div style="background:#f9f9f9;border:1.5px solid #ddd;border-radius:10px;padding:14px 16px;font-size:15px;color:#999;margin-bottom:18px;">비밀번호</div>
+        <button onclick="completeOAuthLogin('kakao')" style="width:100%;background:#FEE500;border:none;border-radius:10px;padding:15px;font-size:16px;font-weight:700;color:#191919;cursor:pointer;font-family:'Pretendard',sans-serif;">로그인</button>
+      </div>
+      <div style="text-align:center;font-size:13px;color:#666;">
+        <span onclick="completeOAuthLogin('kakao')" style="cursor:pointer;color:#555;">계정 찾기</span>
+        <span style="margin:0 8px;color:#ddd;">|</span>
+        <span onclick="completeOAuthLogin('kakao')" style="cursor:pointer;color:#555;">회원가입</span>
+        <span style="margin:0 8px;color:#ddd;">|</span>
+        <span onclick="completeOAuthLogin('kakao')" style="cursor:pointer;color:#555;">보안 로그인</span>
+      </div>
+      <div style="background:#fff;border-radius:12px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.06);margin-top:8px;">
+        <div style="font-size:12px;color:#888;text-align:center;line-height:1.6;">카카오계정 로그인 시 <strong>개인정보처리방침</strong> 및<br><strong>서비스 이용약관</strong>에 동의한 것으로 간주됩니다</div>
+      </div>
+    </div>
+    <div style="padding:20px;text-align:center;">
+      <button onclick="closeOAuthScreen()" style="background:none;border:none;font-size:14px;color:#888;cursor:pointer;font-family:'Pretendard',sans-serif;">← 이전으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- Naver OAuth Simulation Screen -->
+<div id="naver-oauth-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:#fff;font-family:'Pretendard',sans-serif;overflow:auto;">
+  <div style="max-width:390px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;">
+    <!-- Naver header -->
+    <div style="background:#03C75A;padding:16px 20px;display:flex;align-items:center;justify-content:center;">
+      <svg width="80" height="24" viewBox="0 0 80 24"><text x="0" y="20" font-size="24" font-weight="900" fill="#fff" font-family="Arial">NAVER</text></svg>
+    </div>
+    <!-- Naver login form -->
+    <div style="padding:32px 24px;display:flex;flex-direction:column;gap:12px;">
+      <div style="text-align:center;margin-bottom:8px;">
+        <div style="font-size:18px;font-weight:700;color:#1a1a1a;margin-bottom:4px;">네이버 로그인</div>
+        <div style="font-size:13px;color:#888;">네이버 아이디로 간편하게 로그인하세요</div>
+      </div>
+      <div style="border:1.5px solid #ddd;border-radius:8px;padding:14px 16px;font-size:15px;color:#999;">아이디</div>
+      <div style="border:1.5px solid #ddd;border-radius:8px;padding:14px 16px;font-size:15px;color:#999;">비밀번호</div>
+      <button onclick="completeOAuthLogin('naver')" style="width:100%;background:#03C75A;border:none;border-radius:8px;padding:15px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;margin-top:4px;font-family:'Pretendard',sans-serif;">로그인</button>
+      <div style="display:flex;justify-content:center;gap:16px;font-size:13px;color:#888;margin-top:4px;">
+        <span onclick="completeOAuthLogin('naver')" style="cursor:pointer;">아이디 찾기</span>
+        <span>|</span>
+        <span onclick="completeOAuthLogin('naver')" style="cursor:pointer;">비밀번호 찾기</span>
+        <span>|</span>
+        <span onclick="completeOAuthLogin('naver')" style="cursor:pointer;">회원가입</span>
+      </div>
+      <div style="margin-top:16px;border-top:1px solid #eee;padding-top:16px;">
+        <div style="font-size:12px;color:#aaa;text-align:center;margin-bottom:12px;">다른 방법으로 로그인</div>
+        <div style="display:flex;justify-content:center;gap:16px;">
+          <div onclick="completeOAuthLogin('naver')" style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;">📱</div>
+          <div onclick="completeOAuthLogin('naver')" style="width:48px;height:48px;border-radius:50%;background:#FEE500;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;">💬</div>
+          <div onclick="completeOAuthLogin('naver')" style="width:48px;height:48px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:20px;">🍎</div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:20px;text-align:center;margin-top:auto;">
+      <button onclick="closeOAuthScreen()" style="background:none;border:none;font-size:14px;color:#888;cursor:pointer;font-family:'Pretendard',sans-serif;">← 이전으로</button>
+    </div>
+  </div>
+</div>
+
+<!-- Naver Maps Review Screen -->
+<div id="naver-review-screen" style="display:none;position:fixed;inset:0;z-index:9999;background:#fff;font-family:'Pretendard',sans-serif;overflow:auto;">
+  <div style="max-width:390px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;">
+    <!-- Naver Maps header -->
+    <div style="background:#03C75A;padding:0;display:flex;align-items:center;">
+      <button onclick="closeNaverReviewScreen()" style="background:none;border:none;padding:16px;cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M13 4l-6 6 6 6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <div style="flex:1;text-align:center;font-size:16px;font-weight:700;color:#fff;padding-right:36px;">리뷰 작성</div>
+    </div>
+    <!-- Place info -->
+    <div style="padding:20px 20px 16px;border-bottom:1px solid #f0f0f0;display:flex;gap:12px;align-items:center;">
+      <div style="width:52px;height:52px;border-radius:10px;background:linear-gradient(135deg,#ff6b8a,#ffb3c1);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">💇</div>
+      <div>
+        <div style="font-size:16px;font-weight:700;color:#1a1a1a;">크레센트 스튜디오</div>
+        <div style="font-size:12px;color:#888;margin-top:2px;">미용실 · 헤어살롱</div>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+          <span style="font-size:11px;background:#fff3f0;color:#ff4757;padding:2px 6px;border-radius:4px;font-weight:600;">방문자</span>
+          <span style="font-size:12px;color:#888;">최근 방문</span>
+        </div>
+      </div>
+    </div>
+    <!-- Star rating -->
+    <div style="padding:20px;border-bottom:1px solid #f5f5f5;">
+      <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:12px;">별점을 선택해주세요</div>
+      <div style="display:flex;gap:6px;justify-content:center;" id="naver-stars">
+        <span onclick="setNaverStar(1)" style="font-size:40px;cursor:pointer;filter:grayscale(1);transition:filter .15s;" data-star="1">⭐</span>
+        <span onclick="setNaverStar(2)" style="font-size:40px;cursor:pointer;filter:grayscale(1);transition:filter .15s;" data-star="2">⭐</span>
+        <span onclick="setNaverStar(3)" style="font-size:40px;cursor:pointer;filter:grayscale(1);transition:filter .15s;" data-star="3">⭐</span>
+        <span onclick="setNaverStar(4)" style="font-size:40px;cursor:pointer;filter:grayscale(1);transition:filter .15s;" data-star="4">⭐</span>
+        <span onclick="setNaverStar(5)" style="font-size:40px;cursor:pointer;filter:grayscale(1);transition:filter .15s;" data-star="5">⭐</span>
+      </div>
+      <div id="naver-star-label" style="text-align:center;font-size:14px;color:#03C75A;font-weight:600;margin-top:8px;min-height:20px;"></div>
+    </div>
+    <!-- Review text -->
+    <div style="padding:20px;border-bottom:1px solid #f5f5f5;">
+      <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:10px;">방문 후기 <span style="color:#aaa;font-weight:400;">(선택)</span></div>
+      <textarea id="naver-review-text" style="width:100%;height:120px;border:1.5px solid #e0e0e0;border-radius:10px;padding:14px;font-size:14px;color:#333;resize:none;font-family:'Pretendard',sans-serif;box-sizing:border-box;outline:none;" placeholder="이 장소에 대한 나의 솔직한 후기를 남겨보세요 :)"></textarea>
+      <div style="font-size:12px;color:#aaa;text-align:right;margin-top:4px;" id="naver-review-len">0 / 2000</div>
+    </div>
+    <!-- Photo -->
+    <div style="padding:20px;border-bottom:1px solid #f5f5f5;">
+      <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:10px;">사진 첨부 <span style="color:#aaa;font-weight:400;">(선택, 최대 10장)</span></div>
+      <div style="display:flex;gap:8px;overflow-x:auto;">
+        <div onclick="showToast('사진 첨부 기능은 앱에서 이용 가능합니다')" style="width:72px;height:72px;border:1.5px dashed #ddd;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
+          <div style="font-size:24px;">📷</div>
+          <div style="font-size:10px;color:#aaa;margin-top:2px;">사진 추가</div>
+        </div>
+      </div>
+    </div>
+    <!-- Tags -->
+    <div style="padding:20px;border-bottom:1px solid #f5f5f5;">
+      <div style="font-size:14px;font-weight:600;color:#333;margin-bottom:10px;">키워드 선택 <span style="color:#aaa;font-weight:400;">(선택)</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;" id="naver-tags">
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">✂️ 실력 좋아요</span>
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">💬 친절해요</span>
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">✨ 청결해요</span>
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">🪑 공간이 넓어요</span>
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">⏱️ 대기 없어요</span>
+        <span onclick="toggleNaverTag(this)" style="padding:8px 14px;border-radius:100px;border:1.5px solid #e0e0e0;font-size:13px;cursor:pointer;transition:all .15s;">💰 가격 합리적</span>
+      </div>
+    </div>
+    <!-- Submit -->
+    <div style="padding:20px;padding-bottom:40px;">
+      <div style="background:#fff8e6;border-radius:10px;padding:12px;margin-bottom:16px;display:flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">🎁</span>
+        <div style="font-size:12px;color:#b8860b;line-height:1.5;">리뷰 작성 시 다음 방문 때 <strong>500P</strong>를 드립니다!<br><span style="color:#aaa;">포인트는 매장 방문 확인 후 적립됩니다</span></div>
+      </div>
+      <button onclick="submitNaverReview()" style="width:100%;background:#03C75A;border:none;border-radius:12px;padding:16px;font-size:16px;font-weight:700;color:#fff;cursor:pointer;font-family:'Pretendard',sans-serif;">등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Coupon Detail Modal -->
+<div class="modal-overlay" id="coupon-detail-modal">
+  <div class="modal-sheet" style="padding-bottom:40px;">
+    <div class="modal-handle"></div>
+    <div id="coupon-detail-content"></div>
+  </div>
+</div>
 
 <canvas id="confetti-canvas"></canvas>
 <div id="toast"></div>
@@ -2153,7 +2313,7 @@
       <!-- 쿠폰함 -->
       <div class="section-heading fade-in-d2"><div class="dot"></div>내 쿠폰함 <span style="font-size:12px;color:var(--rose);font-family:'Pretendard',sans-serif;font-weight:700;">3장</span></div>
       <div class="coupon-list fade-in-d2">
-        <div class="coupon-card">
+        <div class="coupon-card" onclick="openCouponDetail(this)">
           <div class="coupon-icon">🌸</div>
           <div class="coupon-info">
             <div class="coupon-name">봄맞이 트리트먼트 쿠폰</div>
@@ -2162,7 +2322,7 @@
           </div>
           <div class="coupon-discount">20%</div>
         </div>
-        <div class="coupon-card">
+        <div class="coupon-card" onclick="openCouponDetail(this)">
           <div class="coupon-icon">🎂</div>
           <div class="coupon-info">
             <div class="coupon-name">생일 축하 쿠폰 🎉</div>
@@ -2171,7 +2331,7 @@
           </div>
           <div class="coupon-discount">10%</div>
         </div>
-        <div class="coupon-card">
+        <div class="coupon-card" onclick="openCouponDetail(this)">
           <div class="coupon-icon">👯</div>
           <div class="coupon-info">
             <div class="coupon-name">친구 초대 보상 쿠폰</div>
@@ -2863,10 +3023,55 @@ function openKakaoChannel() {
   showToast('카카오톡 체널로 연결 중... 💬');
 }
 
+var naverReviewStar = 0;
+var naverStarLabels = ['','별로예요','그저 그래요','보통이에요','좋아요','최고예요!'];
+
+function openNaverReviewScreen() {
+  naverReviewStar = 0;
+  document.getElementById('naver-review-screen').style.display = 'block';
+  document.getElementById('naver-review-screen').scrollTop = 0;
+  document.getElementById('naver-review-text').value = '';
+  document.getElementById('naver-review-len').textContent = '0 / 2000';
+  document.getElementById('naver-star-label').textContent = '';
+  document.querySelectorAll('#naver-stars span').forEach(function(s) { s.style.filter = 'grayscale(1)'; });
+  // Wire up textarea char count
+  var ta = document.getElementById('naver-review-text');
+  ta.oninput = function() { document.getElementById('naver-review-len').textContent = ta.value.length + ' / 2000'; };
+  closeModal('review-modal');
+}
+
+function closeNaverReviewScreen() {
+  document.getElementById('naver-review-screen').style.display = 'none';
+}
+
+function setNaverStar(n) {
+  naverReviewStar = n;
+  document.querySelectorAll('#naver-stars span').forEach(function(s, i) {
+    s.style.filter = i < n ? 'none' : 'grayscale(1)';
+    s.style.transform = i < n ? 'scale(1.1)' : 'scale(1)';
+  });
+  document.getElementById('naver-star-label').textContent = naverStarLabels[n];
+}
+
+function toggleNaverTag(el) {
+  var active = el.style.background === 'rgb(3, 199, 90)';
+  el.style.background = active ? '' : '#03C75A';
+  el.style.color = active ? '' : '#fff';
+  el.style.borderColor = active ? '#e0e0e0' : '#03C75A';
+}
+
+function submitNaverReview() {
+  if (!naverReviewStar) { showToast('별점을 선택해주세요 ⭐'); return; }
+  showLoginLoading('리뷰 등록 중...');
+  setTimeout(function() {
+    hideLoginLoading();
+    closeNaverReviewScreen();
+    showToast('리뷰가 등록되었습니다! 500P가 다음 방문 시 적립됩니다 🎉');
+  }, 1200);
+}
+
 function openNaverReview() {
-  // 실제 서비스에서는 네이버 지도 리뷰 URL로 연결
-  // window.open('https://map.naver.com/v5/entry/place/네이버플레이스ID?c=...', '_blank');
-  showToast('네이버 지도 리뷰 페이지로 이동 중... ⭐');
+  openNaverReviewScreen();
 }
 
 /* ═════════════════════════════════════════════
@@ -3204,17 +3409,40 @@ function hideLoginLoading() {
 /* 소셜 로그인 (카카오 / 네이버) */
 function startSocialLogin(method) {
   loginMethod = method;
+  // Show OAuth simulation screen
+  var kakaoEl = document.getElementById('kakao-oauth-screen');
+  var naverEl = document.getElementById('naver-oauth-screen');
+  if (method === 'kakao') {
+    kakaoEl.style.display = 'block';
+    kakaoEl.scrollTop = 0;
+  } else {
+    naverEl.style.display = 'block';
+    naverEl.scrollTop = 0;
+  }
+}
+
+function closeOAuthScreen() {
+  document.getElementById('kakao-oauth-screen').style.display = 'none';
+  document.getElementById('naver-oauth-screen').style.display = 'none';
+}
+
+function completeOAuthLogin(method) {
+  loginMethod = method;
+  closeOAuthScreen();
   var names = { kakao:'카카오', naver:'네이버' };
   showLoginLoading(names[method] + ' 계정 확인 중...');
   setTimeout(function() {
     hideLoginLoading();
     var badge = document.getElementById('signup-method-badge');
-    var icons = { kakao:'💛 카카오 계정으로 가입', naver:'💚 네이버 계정으로 가입' };
-    if (badge) badge.textContent = icons[method];
+    var icons = { kakao:'💛 카카오 계정', naver:'💚 네이버 계정' };
+    if (badge) badge.textContent = icons[method] || method;
     var phoneDisplay = document.getElementById('signup-phone-display');
-    if (phoneDisplay) { phoneDisplay.value = ''; phoneDisplay.placeholder = '전화번호 (선택)'; phoneDisplay.readOnly = false; }
+    if (phoneDisplay) {
+      phoneDisplay.value = '010-****-****';
+      phoneDisplay.placeholder = method === 'kakao' ? '카카오 연결 번호' : '네이버 연결 번호';
+    }
     showLoginStep('signup');
-  }, 1400);
+  }, 1200);
 }
 
 /* 전화번호 포맷 */
@@ -3330,18 +3558,75 @@ function logout() {
   if (otpEntry) otpEntry.style.display = 'none';
   var phoneInput = document.getElementById('phone-input');
   if (phoneInput) phoneInput.value = '';
-  ['signup-name','signup-birthday'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value = ''; });
+  ['signup-name'].forEach(function(id) { var el = document.getElementById(id); if(el) el.value = ''; });
+  ['signup-birth-year','signup-birth-month','signup-birth-day'].forEach(function(id) { var el = document.getElementById(id); if(el) el.selectedIndex = 0; });
   ['agree-terms','agree-privacy','agree-marketing','agree-all'].forEach(function(id) { var el = document.getElementById(id); if(el) el.checked = false; });
   switchTab('reserve');
 }
 
-/* 생년월일 포맷 */
-function formatBirthday(input) {
-  var v = input.value.replace(/D/g,'');
-  if (v.length > 8) v = v.slice(0,8);
-  if (v.length > 6) v = v.slice(0,4) + '.' + v.slice(4,6) + '.' + v.slice(6);
-  else if (v.length > 4) v = v.slice(0,4) + '.' + v.slice(4);
-  input.value = v;
+/* 생년월일 셀렉트 초기화 */
+(function initBirthdaySelects() {
+  var yEl = document.getElementById('signup-birth-year');
+  var mEl = document.getElementById('signup-birth-month');
+  var dEl = document.getElementById('signup-birth-day');
+  if (!yEl) return;
+  var curYear = new Date().getFullYear();
+  for (var y = curYear - 14; y >= curYear - 80; y--) {
+    var o = document.createElement('option'); o.value = y; o.textContent = y + '년';
+    yEl.appendChild(o);
+  }
+  for (var m = 1; m <= 12; m++) {
+    var o2 = document.createElement('option'); o2.value = m; o2.textContent = m + '월';
+    mEl.appendChild(o2);
+  }
+  for (var d = 1; d <= 31; d++) {
+    var o3 = document.createElement('option'); o3.value = d; o3.textContent = d + '일';
+    dEl.appendChild(o3);
+  }
+})();
+
+var COUPONS = [
+  { icon:'🌸', name:'봄맞이 트리트먼트 쿠폰', desc:'케라틴 트리트먼트 시술 시 사용', expiry:'2026.05.31', discount:'20%', code:'SPRING2026', color:'#ff6b8a' },
+  { icon:'🎂', name:'생일 축하 쿠폰 🎉', desc:'모든 시술 전체 적용', expiry:'2026.04.30', discount:'10%', code:'BDAY2026', color:'#ff9500', urgent:true },
+  { icon:'👯', name:'친구 초대 보상 쿠폰', desc:'커트 시술 시 사용', expiry:'2026.06.15', discount:'₩5,000', code:'FRIEND5K', color:'#5856d6' }
+];
+
+function openCouponDetail(el) {
+  var idx = Array.from(document.querySelectorAll('.coupon-card')).indexOf(el);
+  if (idx < 0) idx = 0;
+  var cp = COUPONS[idx] || COUPONS[0];
+  var barcode = generateBarcode(cp.code);
+  document.getElementById('coupon-detail-content').innerHTML = '<div style="text-align:center;padding:0 0 20px;">'
+    + '<div style="font-size:52px;margin-bottom:8px;">' + cp.icon + '</div>'
+    + '<div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">' + cp.name + '</div>'
+    + '<div style="font-size:13px;color:var(--muted);margin-bottom:16px;">' + cp.desc + '</div>'
+    + '<div style="background:linear-gradient(135deg,' + cp.color + '15,' + cp.color + '08);border:2px solid ' + cp.color + '40;border-radius:16px;padding:20px;margin:0 4px 16px;">'
+    + '<div style="font-size:48px;font-weight:900;color:' + cp.color + ';line-height:1;">' + cp.discount + '</div>'
+    + '<div style="font-size:13px;color:' + cp.color + ';margin-top:4px;font-weight:600;">할인</div>'
+    + '</div>'
+    + '<div style="background:#f8f8f8;border-radius:12px;padding:16px;margin:0 4px 16px;">'
+    + barcode
+    + '<div style="font-size:11px;letter-spacing:3px;color:#aaa;margin-top:8px;font-family:monospace;">' + cp.code + '</div>'
+    + '</div>'
+    + '<div style="font-size:12px;color:' + (cp.urgent ? '#ff4757' : 'var(--muted)') + ';font-weight:' + (cp.urgent ? 700 : 400) + ';">유효기간: ~' + cp.expiry + (cp.urgent ? ' (곧 만료!)' : '') + '</div>'
+    + '<div style="margin-top:16px;background:#f9f3ef;border-radius:10px;padding:12px;text-align:left;">'
+    + '<div style="font-size:12px;color:var(--muted);line-height:1.8;">• 예약 시 쿠폰 선택 화면에서 적용<br>• 타 쿠폰 및 할인과 중복 적용 불가<br>• 유효기간 내 1회 사용 가능</div>'
+    + '</div>'
+    + '<button onclick="closeModal(\'coupon-detail-modal\')" style="width:100%;margin-top:16px;padding:15px;background:var(--rose);color:#fff;border:none;border-radius:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:\'Pretendard\',sans-serif;">닫기</button>'
+    + '</div>';
+  document.getElementById('coupon-detail-modal').classList.add('open');
+}
+
+function generateBarcode(code) {
+  var bars = '';
+  var seed = code.split('').reduce(function(a,c){return a+c.charCodeAt(0);},0);
+  for (var i = 0; i < 60; i++) {
+    seed = (seed * 1664525 + 1013904223) & 0xffffffff;
+    var w = (Math.abs(seed) % 3) + 1;
+    var isBlack = i % 2 === 0;
+    bars += '<rect x="' + (i*5) + '" y="0" width="' + (w+2) + '" height="50" fill="' + (isBlack?'#1a1a1a':'#fff') + '"/>';
+  }
+  return '<svg width="100%" height="50" viewBox="0 0 300 50" style="display:block;">' + bars + '</svg>';
 }
 
 
