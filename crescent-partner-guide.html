@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crescent Studio — 영업 파트너 가이드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #f5c518; --gold-l: #fffbeb; --gold-b: #fde68a;
+  --dark: #07080f; --dark2: #0d1117; --ink: #1a1d24;
+  --mid: #6b7280; --light: #9ca3af; --line: #e5e7eb; --bg: #f9fafb;
+  --beauty: #db2777; --car: #ea580c; --edu: #7c3aed;
+  --review: #ca8a04; --care: #0d9488; --insure: #1d4ed8; --factory: #374151;
+}
+body { font-family: 'Pretendard', sans-serif; background: #fff; color: var(--ink); font-size: 14px; line-height: 1.7; }
+
+/* 인쇄 */
+@media print {
+  .no-print { display: none; }
+  body { font-size: 12px; }
+  .page-break { page-break-before: always; }
+}
+@media screen {
+  body { max-width: 860px; margin: 0 auto; padding: 24px 20px; }
+}
+
+/* 공통 */
+.gold-bar { height: 5px; background: linear-gradient(90deg, var(--gold), #fde68a); margin-bottom: 0; }
+h1, h2, h3, h4 { letter-spacing: -.02em; line-height: 1.3; }
+.tag {
+  display: inline-flex; font-size: 10px; font-weight: 700;
+  letter-spacing: .15em; text-transform: uppercase;
+  color: var(--gold); background: var(--gold-l);
+  border: 1px solid var(--gold-b);
+  padding: 3px 11px; border-radius: 20px; margin-bottom: 10px;
+}
+
+/* 커버 */
+.cover {
+  background: var(--dark); color: #fff;
+  padding: 52px 48px; margin-bottom: 0;
+  position: relative; overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(245,197,24,.12), transparent 70%);
+}
+.cover-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+.cover-moon { position: relative; width: 30px; height: 30px; }
+.cover-moon::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--gold); }
+.cover-moon::after { content: ''; position: absolute; top: -1px; right: -1px; width: 20px; height: 20px; border-radius: 50%; background: var(--dark); }
+.cover-logo-text { font-size: 16px; font-weight: 800; color: #fff; }
+.cover-eyebrow {
+  display: inline-flex; margin-bottom: 16px;
+  background: rgba(245,197,24,.12); border: 1px solid rgba(245,197,24,.3);
+  color: var(--gold); font-size: 10px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+  padding: 4px 14px; border-radius: 20px;
+}
+.cover h1 { font-size: 40px; font-weight: 900; line-height: 1.1; margin-bottom: 12px; }
+.cover h1 em { color: var(--gold); font-style: normal; }
+.cover-sub { font-size: 14px; color: rgba(255,255,255,.55); line-height: 1.8; margin-bottom: 32px; }
+.cover-date { font-size: 11px; color: rgba(255,255,255,.25); }
+
+/* 섹션 */
+.section { padding: 40px 0; border-bottom: 1px solid var(--line); }
+.section:last-child { border-bottom: none; }
+.section-header { margin-bottom: 24px; }
+.section-header h2 { font-size: 26px; font-weight: 900; color: var(--dark); margin-bottom: 6px; }
+.section-header h2 em { color: var(--gold); font-style: normal; }
+.section-header p { font-size: 13px; color: var(--mid); }
+
+/* 카드 */
+.card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; margin-bottom: 10px; }
+.card.gold { background: var(--gold-l); border-color: var(--gold-b); }
+.card.dark { background: var(--dark); color: #fff; border-color: var(--dark); }
+
+/* 그리드 */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+@media (max-width: 600px) {
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .cover { padding: 36px 24px; }
+  .cover h1 { font-size: 28px; }
+}
+
+/* 스탯 */
+.stat { background: var(--bg); border-radius: 8px; padding: 14px 16px; }
+.stat-val { font-size: 24px; font-weight: 900; color: var(--dark); letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 11px; color: var(--mid); }
+
+/* 테이블 */
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th { padding: 10px 14px; background: var(--dark); color: rgba(255,255,255,.7); font-size: 10px; font-weight: 700; text-align: left; letter-spacing: .08em; text-transform: uppercase; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+.gold-td { color: var(--gold); font-weight: 700; }
+.note { font-size: 10px; color: var(--mid); margin-top: 2px; }
+
+/* 수수료 박스 */
+.fee-box {
+  background: var(--dark); border-radius: 12px; padding: 28px 32px;
+  text-align: center; margin-bottom: 20px;
+}
+.fee-main { font-size: 48px; font-weight: 900; color: var(--gold); letter-spacing: -.04em; line-height: 1; margin-bottom: 8px; }
+.fee-sub { font-size: 14px; color: rgba(255,255,255,.5); }
+
+/* 파이프라인 */
+.pipeline { display: flex; gap: 0; margin-bottom: 20px; overflow-x: auto; }
+.pipe-step {
+  flex: 1; min-width: 100px; padding: 14px 12px; text-align: center;
+  background: var(--bg); border: 1px solid var(--line);
+  border-right: none; position: relative;
+}
+.pipe-step:last-child { border-right: 1px solid var(--line); border-radius: 0 8px 8px 0; }
+.pipe-step:first-child { border-radius: 8px 0 0 8px; }
+.pipe-step.active { background: var(--gold-l); border-color: var(--gold-b); }
+.pipe-step::after {
+  content: '→'; position: absolute; right: -12px; top: 50%;
+  transform: translateY(-50%); font-size: 14px; color: var(--light);
+  z-index: 1; background: #fff; padding: 0 2px;
+}
+.pipe-step:last-child::after { display: none; }
+.pipe-num { font-size: 20px; font-weight: 900; color: var(--dark); line-height: 1; }
+.pipe-lbl { font-size: 10px; color: var(--mid); margin-top: 4px; }
+
+/* 업종 배지 */
+.on-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 12px; font-weight: 800; margin: 3px;
+}
+
+/* 멘트 박스 */
+.script-box {
+  background: var(--gold-l); border: 1.5px solid var(--gold-b);
+  border-left: 4px solid var(--gold);
+  border-radius: 0 8px 8px 0; padding: 16px 18px; margin-bottom: 12px;
+}
+.script-label { font-size: 10px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.script-text { font-size: 13px; color: var(--ink); line-height: 1.75; }
+
+/* 체크리스트 */
+.checklist { list-style: none; }
+.checklist li {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px;
+}
+.checklist li:last-child { border-bottom: none; }
+.checklist li::before { content: '□'; font-size: 16px; color: var(--gold); flex-shrink: 0; line-height: 1.3; }
+
+/* FAQ */
+.faq-item { border-bottom: 1px solid var(--line); padding: 14px 0; }
+.faq-q { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 6px; display: flex; gap: 8px; }
+.faq-q::before { content: 'Q.'; color: var(--gold); font-weight: 900; flex-shrink: 0; }
+.faq-a { font-size: 13px; color: var(--mid); line-height: 1.75; display: flex; gap: 8px; }
+.faq-a::before { content: 'A.'; color: var(--dark); font-weight: 700; flex-shrink: 0; }
+
+/* 연락처 */
+.contact-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: 13px; }
+.contact-icon { font-size: 16px; width: 24px; text-align: center; }
+</style>
+</head>
+<body>
+
+<!-- 상단 골드 바 -->
+<div class="gold-bar"></div>
+
+<!-- ══ 커버 ══ -->
+<div class="cover">
+  <div class="cover-logo">
+    <div class="cover-moon"></div>
+    <span class="cover-logo-text">Crescent Studio</span>
+  </div>
+  <div class="cover-eyebrow">영업 파트너 가이드</div>
+  <h1>함께 팔고<br><em>함께 버는</em><br>파트너십</h1>
+  <p class="cover-sub">
+    크레센트 스튜디오 On 시리즈 외부 영업 파트너를 위한<br>
+    상세 가이드입니다. 영업 방법, 수수료 구조, 영업 멘트까지<br>
+    이 문서 하나로 바로 시작할 수 있습니다.
+  </p>
+  <div class="cover-date">2026 · Crescent Studio · 고래컴퍼니 · crescentstudio.co.kr</div>
+</div>
+
+<!-- ══ 목차 ══ -->
+<div class="section">
+  <div class="tag">Index</div>
+  <div class="section-header">
+    <h2>목차</h2>
+  </div>
+  <div class="grid2">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">이 문서에서 알 수 있는 것</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="font-size:13px;color:var(--mid)">01 · 크레센트 스튜디오란?</div>
+        <div style="font-size:13px;color:var(--mid)">02 · On 시리즈 상품 소개</div>
+        <div style="font-size:13px;color:var(--mid)">03 · 가격 구조 (웹앱/네이티브)</div>
+        <div style="font-size:13px;color:var(--mid)">04 · 수수료 구조</div>
+        <div style="font-size:13px;color:var(--mid)">05 · 타겟 고객 & 영업 방법</div>
+        <div style="font-size:13px;color:var(--mid)">06 · 영업 멘트 & 스크립트</div>
+        <div style="font-size:13px;color:var(--mid)">07 · 자주 나오는 반론 대응</div>
+        <div style="font-size:13px;color:var(--mid)">08 · FAQ</div>
+        <div style="font-size:13px;color:var(--mid)">09 · 연락처 & 지원</div>
+      </div>
+    </div>
+    <div class="card gold">
+      <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:12px">💡 핵심 요약</div>
+      <div style="font-size:13px;color:var(--ink);line-height:1.8">
+        ✓ 건당 <strong>5~30만원</strong> 고정 수수료<br>
+        ✓ 별도 자격/경력 불필요<br>
+        ✓ 샘플 데모로 영업 (기술 몰라도 됨)<br>
+        ✓ 계약 즉시 수수료 지급<br>
+        ✓ 상한선 없음
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 01 회사 소개 ══ -->
+<div class="section">
+  <div class="tag">01</div>
+  <div class="section-header">
+    <h2>크레센트 스튜디오란?</h2>
+    <p>소상공인을 위한 업종 맞춤 앱 & 웹 제작 스튜디오</p>
+  </div>
+
+  <div class="card dark" style="margin-bottom:16px">
+    <div style="font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-.02em">
+      "아이디어를 매출로 바꾸는<br>가장 합리적인 방법"
+    </div>
+    <div style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.75">
+      PM 출신 기획자 + AI 개발 = 기존 에이전시 1/3 가격, 2주 납품<br>
+      소상공인 사장님들이 진짜 필요한 앱을 합리적인 가격에 제공합니다.
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="stat">
+      <div class="stat-val">1~2주</div>
+      <div class="stat-lbl">평균 납품 기간</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">1/3</div>
+      <div class="stat-lbl">기존 에이전시 대비 비용</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">7개</div>
+      <div class="stat-lbl">업종별 완성형 템플릿</div>
+    </div>
+  </div>
+
+  <div style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">경쟁사 대비 포지셔닝</div>
+    <table>
+      <thead>
+        <tr>
+          <th>항목</th>
+          <th>노코드 툴</th>
+          <th>프리랜서</th>
+          <th style="background:#f5c518;color:#07080f">✦ On 시리즈</th>
+          <th>에이전시</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>초기 비용</td><td>무료~3만</td><td>50~200만</td><td class="gold-td">29만~</td><td>300~500만+</td></tr>
+        <tr><td>제작 기간</td><td>즉시</td><td>2~6주</td><td class="gold-td">1~2주</td><td>4~8주+</td></tr>
+        <tr><td>업종 맞춤</td><td>✕</td><td>✕</td><td class="gold-td">✓</td><td>✓</td></tr>
+        <tr><td>내 브랜드</td><td>제한</td><td>✓</td><td class="gold-td">✓</td><td>✓</td></tr>
+        <tr><td>PM 기획</td><td>✕</td><td>✕</td><td class="gold-td">✓</td><td>✓</td></tr>
+        <tr><td>유지보수</td><td>✕</td><td>별도</td><td class="gold-td">월 이용료 포함</td><td>별도</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ 02 상품 소개 ══ -->
+<div class="section page-break">
+  <div class="tag">02</div>
+  <div class="section-header">
+    <h2>On 시리즈 <em>상품 소개</em></h2>
+    <p>각 업종에 맞게 설계된 완성형 앱 패키지. 홈페이지 + 고객앱 + 관리자 대시보드 3종 세트.</p>
+  </div>
+
+  <table style="margin-bottom:16px">
+    <thead>
+      <tr>
+        <th>상품</th>
+        <th>타겟 업종</th>
+        <th>핵심 기능</th>
+        <th>사장님 이득</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="color:var(--beauty);font-weight:800">BeautyOn</span></td>
+        <td>헤어샵·네일·피부</td>
+        <td>예약관리, 노쇼방지, 단골관리</td>
+        <td>노쇼 감소 + 재방문율 향상</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--car);font-weight:800">CarOn</span></td>
+        <td>세차장·정비</td>
+        <td>예약, 차량이력, 포인트적립</td>
+        <td>예약 공백 제로 + 재방문 유도</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--edu);font-weight:800">EduOn</span></td>
+        <td>학원·교습소</td>
+        <td>출결, 수납, 성적, 학부모 소통</td>
+        <td>수납 자동화 + 학부모 신뢰</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--review);font-weight:800">ReviewOn</span></td>
+        <td>식당·카페·F&B</td>
+        <td>AI 리뷰 분석, 자동 답글</td>
+        <td>별점 회복 + 신규 유입 증가</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--care);font-weight:800">CareOn</span></td>
+        <td>요양원·복지시설</td>
+        <td>시설홈페이지+보호사앱+관리자</td>
+        <td>입소 문의 증가 + 운영 효율화</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--insure);font-weight:800">InsureOn</span></td>
+        <td>보험 설계사</td>
+        <td>CRM, 갱신알림, AI약관분석</td>
+        <td>갱신율 향상 + 영업 시간 절약</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--factory);font-weight:800">FactoryOn</span></td>
+        <td>중소 제조업</td>
+        <td>생산현황, 재고, 불량률 관리</td>
+        <td>납기 준수 + 생산 손실 감소</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card gold">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">📌 영업 핵심 포인트</div>
+    <div style="font-size:13px;color:var(--ink);line-height:1.8">
+      모든 On 시리즈는 <strong>홈페이지 + 고객앱 + 관리자 대시보드 3종 패키지</strong>예요.<br>
+      "앱 하나"가 아니라 "디지털 운영 시스템 전체"를 드리는 거예요.<br>
+      샘플 링크(crescentstudio.co.kr)를 보여주면 말보다 효과적이에요.
+    </div>
+  </div>
+</div>
+
+<!-- ══ 03 가격 구조 ══ -->
+<div class="section">
+  <div class="tag">03</div>
+  <div class="section-header">
+    <h2>가격 구조</h2>
+    <p>웹앱(저렴, 빠름)과 네이티브앱(고품질, 푸시알림)으로 구분합니다.</p>
+  </div>
+
+  <div class="grid2" style="margin-bottom:16px">
+    <div class="card" style="border-left:4px solid var(--gold)">
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px">🌐 웹앱</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.7">
+        브라우저로 접속. 설치 없음.<br>
+        카카오 문자로 알림 대체.<br>
+        <strong style="color:var(--dark)">빠른 납품, 낮은 진입장벽.</strong>
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--dark)">
+      <div style="font-size:14px;font-weight:800;margin-bottom:6px">📱 네이티브앱</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.7">
+        App Store 설치형.<br>
+        푸시알림, 오프라인 지원.<br>
+        <strong style="color:var(--dark)">고객 경험 최상, 브랜드 자산.</strong>
+      </div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>On 시리즈</th>
+        <th>🌐 웹앱 초기</th>
+        <th>🌐 웹앱 월</th>
+        <th>📱 네이티브 초기</th>
+        <th>📱 네이티브 월</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span style="color:var(--beauty);font-weight:700">BeautyOn</span></td><td class="gold-td">29만원</td><td class="gold-td">2.2만원</td><td class="gold-td">79만원</td><td class="gold-td">4.9만원</td></tr>
+      <tr><td><span style="color:var(--car);font-weight:700">CarOn</span></td><td class="gold-td">29만원</td><td class="gold-td">2.2만원</td><td class="gold-td">79만원</td><td class="gold-td">4.9만원</td></tr>
+      <tr><td><span style="color:var(--edu);font-weight:700">EduOn</span></td><td class="gold-td">29만원</td><td class="gold-td">1.9만원</td><td class="gold-td">79만원</td><td class="gold-td">4.9만원</td></tr>
+      <tr><td><span style="color:var(--review);font-weight:700">ReviewOn</span></td><td class="gold-td">69만원</td><td class="gold-td">6.9만원</td><td colspan="2" style="color:var(--light)">웹앱 전용</td></tr>
+      <tr><td><span style="color:var(--care);font-weight:700">CareOn</span></td><td class="gold-td">99만원</td><td class="gold-td">7.9만원</td><td class="gold-td">149만원</td><td class="gold-td">12.9만원</td></tr>
+      <tr><td><span style="color:var(--insure);font-weight:700">InsureOn</span></td><td class="gold-td">79만원</td><td class="gold-td">9.9만원</td><td class="gold-td">129만원</td><td class="gold-td">14.9만원</td></tr>
+      <tr><td><span style="color:var(--factory);font-weight:700">FactoryOn</span></td><td class="gold-td">149만원</td><td class="gold-td">14.9만원</td><td class="gold-td">249만원</td><td class="gold-td">24.9만원</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--light);margin-top:8px">
+    ※ 최소 계약 12개월 / 연간 결제 시 2개월 무료<br>
+    ※ 레퍼런스 초기 고객은 별도 협의 가능
+  </div>
+</div>
+
+<!-- ══ 04 수수료 구조 ══ -->
+<div class="section page-break">
+  <div class="tag">04</div>
+  <div class="section-header">
+    <h2>수수료 구조</h2>
+    <p>계약 완료 즉시 지급. 상한선 없음.</p>
+  </div>
+
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="fee-box">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">웹앱 계약 시</div>
+      <div class="fee-main">5만원</div>
+      <div class="fee-sub">건당 고정 수수료</div>
+    </div>
+    <div class="fee-box">
+      <div style="font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">네이티브앱 계약 시</div>
+      <div class="fee-main">15만원</div>
+      <div class="fee-sub">건당 고정 수수료</div>
+    </div>
+  </div>
+
+  <table style="margin-bottom:16px">
+    <thead>
+      <tr>
+        <th>On 시리즈</th>
+        <th>티어</th>
+        <th>초기 제작비</th>
+        <th>영업자 수수료</th>
+        <th>월 20건 기준</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="color:var(--beauty);font-weight:700">BeautyOn</span></td>
+        <td>웹앱</td>
+        <td>29만원</td>
+        <td class="gold-td">5만원</td>
+        <td>100만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--beauty);font-weight:700">BeautyOn</span></td>
+        <td>네이티브</td>
+        <td>79만원</td>
+        <td class="gold-td">15만원</td>
+        <td>300만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--car);font-weight:700">CarOn</span></td>
+        <td>웹앱</td>
+        <td>29만원</td>
+        <td class="gold-td">5만원</td>
+        <td>100만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--review);font-weight:700">ReviewOn</span></td>
+        <td>웹앱</td>
+        <td>69만원</td>
+        <td class="gold-td">12만원</td>
+        <td>240만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--care);font-weight:700">CareOn</span></td>
+        <td>웹앱</td>
+        <td>99만원</td>
+        <td class="gold-td">18만원</td>
+        <td>360만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--insure);font-weight:700">InsureOn</span></td>
+        <td>웹앱</td>
+        <td>79만원</td>
+        <td class="gold-td">15만원</td>
+        <td>300만원</td>
+      </tr>
+      <tr>
+        <td><span style="color:var(--factory);font-weight:700">FactoryOn</span></td>
+        <td>웹앱</td>
+        <td>149만원</td>
+        <td class="gold-td">25만원</td>
+        <td>500만원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card gold">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">💰 수수료 지급 조건</div>
+    <ul style="font-size:13px;color:var(--ink);line-height:1.9;padding-left:16px">
+      <li>계약금 입금 확인 즉시 지급</li>
+      <li>계약 취소 시 수수료 반환 (계약 후 7일 이내 취소 한정)</li>
+      <li>동일 고객 재계약 시 50% 지급</li>
+      <li>지인 소개로 연결된 계약도 동일 수수료 지급</li>
+    </ul>
+  </div>
+
+  <div class="card" style="margin-top:10px">
+    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">📊 월 수입 시뮬레이션</div>
+    <div class="grid3">
+      <div class="stat">
+        <div class="stat-val" style="font-size:18px">월 10건</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:4px">웹앱 위주</div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold);margin-top:6px">50~100만원</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" style="font-size:18px">월 20건</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:4px">웹앱+네이티브 믹스</div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold);margin-top:6px">150~200만원</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" style="font-size:18px">월 30건</div>
+        <div style="font-size:12px;color:var(--mid);margin-top:4px">고단가 포함</div>
+        <div style="font-size:16px;font-weight:800;color:var(--gold);margin-top:6px">300~500만원</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 05 타겟 & 영업 방법 ══ -->
+<div class="section">
+  <div class="tag">05</div>
+  <div class="section-header">
+    <h2>타겟 고객 & <em>영업 방법</em></h2>
+    <p>어디서 누구를 만나고, 어떻게 접근할지 정리했어요.</p>
+  </div>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">우선 타겟 업종 (저항 낮음)</div>
+  <div class="grid2" style="margin-bottom:20px">
+    <div class="card" style="border-left:4px solid var(--beauty)">
+      <div style="font-size:14px;font-weight:800;color:var(--beauty);margin-bottom:6px">BeautyOn — 첫 번째 타겟 ⭐</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.75">
+        전국 18만+ 업소<br>
+        노쇼 문제 = 즉각적인 ROI<br>
+        사장님 대부분 30~40대 여성 → 디지털 친숙<br>
+        <strong style="color:var(--dark)">찾는 곳: 네이버 플레이스 "헤어샵/네일샵"</strong>
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--car)">
+      <div style="font-size:14px;font-weight:800;color:var(--car);margin-bottom:6px">CarOn — 두 번째 타겟</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.75">
+        전국 세차장 약 1만개<br>
+        경쟁 앱 사실상 없음 → 공백 시장<br>
+        차량 증가로 시장 성장 중<br>
+        <strong style="color:var(--dark)">찾는 곳: 네이버 플레이스 "세차장"</strong>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">영업 채널별 효과</div>
+  <table style="margin-bottom:20px">
+    <thead>
+      <tr>
+        <th>채널</th>
+        <th>응답률</th>
+        <th>비용</th>
+        <th>추천도</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>문자 + 샘플 링크</td><td class="gold-td">3~8%</td><td>건당 15원</td><td>⭐⭐⭐⭐⭐ 최우선</td></tr>
+      <tr><td>전화 콜드콜</td><td>5~10%</td><td>시간 비용</td><td>⭐⭐⭐⭐ 문자 후 follow-up</td></tr>
+      <tr><td>직접 방문</td><td>10~20%</td><td>교통비</td><td>⭐⭐⭐⭐ 고단가 업종</td></tr>
+      <tr><td>지인 소개</td><td>30~50%</td><td>무료</td><td>⭐⭐⭐⭐⭐ 항상 최우선</td></tr>
+      <tr><td>SNS DM</td><td>~0.5%</td><td>무료</td><td>⭐ 비추</td></tr>
+    </tbody>
+  </table>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">영업 프로세스</div>
+  <div class="pipeline">
+    <div class="pipe-step">
+      <div class="pipe-num">①</div>
+      <div class="pipe-lbl">타겟 발굴</div>
+    </div>
+    <div class="pipe-step active">
+      <div class="pipe-num">②</div>
+      <div class="pipe-lbl">문자 발송</div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">③</div>
+      <div class="pipe-lbl">응답 확인</div>
+    </div>
+    <div class="pipe-step active">
+      <div class="pipe-num">④</div>
+      <div class="pipe-lbl">샘플 시연</div>
+    </div>
+    <div class="pipe-step">
+      <div class="pipe-num">⑤</div>
+      <div class="pipe-lbl">계약 클로징</div>
+    </div>
+    <div class="pipe-step active">
+      <div class="pipe-num">⑥</div>
+      <div class="pipe-lbl">수수료 수령</div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:4px">
+    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:10px">📍 타겟 찾는 방법 (네이버 플레이스)</div>
+    <ol style="font-size:13px;color:var(--mid);line-height:2;padding-left:18px">
+      <li>네이버 지도 → "지역 + 업종" 검색 (예: "홍대 헤어샵")</li>
+      <li>예약 버튼 없는 업체 우선 → 디지털화 안 된 곳</li>
+      <li>전화번호 수집 → 문자 발송</li>
+      <li>응답 오면 샘플 링크 전송: <strong>crescentstudio.co.kr</strong></li>
+    </ol>
+  </div>
+</div>
+
+<!-- ══ 06 영업 멘트 ══ -->
+<div class="section page-break">
+  <div class="tag">06</div>
+  <div class="section-header">
+    <h2>영업 멘트 & <em>스크립트</em></h2>
+    <p>그대로 써도 되고, 자연스럽게 변형해도 됩니다.</p>
+  </div>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">📱 문자 템플릿</div>
+
+  <div class="script-box">
+    <div class="script-label">BeautyOn — 헤어샵/네일샵</div>
+    <div class="script-text">
+      [업체명] 원장님, 안녕하세요!<br><br>
+      헤어샵 전용 예약 앱 BeautyOn을 소개드립니다.<br>
+      ✔ 노쇼 방지 자동 알림<br>
+      ✔ 단골 고객 재방문 유도<br>
+      ✔ 내 가게만의 전용 앱<br><br>
+      샘플 보기: crescentstudio.co.kr<br>
+      문의: 카카오톡 @crescent_ai_studio
+    </div>
+  </div>
+
+  <div class="script-box">
+    <div class="script-label">CarOn — 세차장</div>
+    <div class="script-text">
+      [업체명] 사장님, 안녕하세요!<br><br>
+      세차장 전용 예약 앱 CarOn을 소개드립니다.<br>
+      ✔ 예약 공백 자동으로 채우기<br>
+      ✔ 차량 이력으로 단골 유도<br>
+      ✔ 포인트 적립 시스템<br><br>
+      샘플 보기: crescentstudio.co.kr<br>
+      문의: 카카오톡 @crescent_ai_studio
+    </div>
+  </div>
+
+  <div class="script-box">
+    <div class="script-label">EduOn — 학원</div>
+    <div class="script-text">
+      [업체명] 원장님, 안녕하세요!<br><br>
+      학원 관리 앱 EduOn을 소개드립니다.<br>
+      ✔ 출결 자동 알림 (학부모 앱)<br>
+      ✔ 수강료 수납 자동화<br>
+      ✔ 성적 리포트 자동 생성<br><br>
+      샘플 보기: crescentstudio.co.kr<br>
+      문의: 카카오톡 @crescent_ai_studio
+    </div>
+  </div>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-top:24px;margin-bottom:12px">📞 전화 스크립트</div>
+
+  <div class="script-box">
+    <div class="script-label">첫 통화 — 30초 오프닝</div>
+    <div class="script-text">
+      "원장님(사장님), 안녕하세요. 저는 크레센트 스튜디오 파트너 [이름]이라고 합니다.<br>
+      혹시 문자 받아보셨어요? 헤어샵 전용 예약 앱 관련해서요.<br><br>
+      지금 30초만 시간 괜찮으시면, 샘플 하나만 보여드려도 될까요?"
+    </div>
+  </div>
+
+  <div class="script-box">
+    <div class="script-label">샘플 시연 멘트</div>
+    <div class="script-text">
+      "이게 실제로 [업체명]처럼 세팅된 모습이에요.<br>
+      고객이 이 링크로 들어오면 바로 디자이너 선택하고 예약할 수 있어요.<br>
+      원장님은 이 관리 화면에서 오늘 예약 현황, 노쇼 현황을 한눈에 보실 수 있고요.<br><br>
+      지금 노쇼가 한 달에 몇 건이나 되세요?<br>
+      건당 5만원이라고 하면, 5건만 줄여도 월 25만원이잖아요.<br>
+      이용료가 2.2만원인데, 첫 달부터 본전이에요."
+    </div>
+  </div>
+
+  <div class="script-box">
+    <div class="script-label">클로징 멘트</div>
+    <div class="script-text">
+      "지금 바로 결정 안 하셔도 되고요.<br>
+      일단 샘플을 [업체명]으로 맞춤 제작해서 보내드릴게요. 무료로요.<br>
+      써보시고 마음에 드시면 그때 계약하시면 됩니다.<br><br>
+      전화번호랑 카카오 연결되면 제가 48시간 안에 보내드릴게요."
+    </div>
+  </div>
+
+  <div class="card gold" style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">💡 ROI 계산 멘트 (가장 강력)</div>
+    <div style="font-size:13px;color:var(--ink);line-height:1.9">
+      BeautyOn: "노쇼 한 달 5건만 줄여도 25만원 절약. 이용료 2.2만원. 첫 달부터 22.8만원 이익."<br>
+      CarOn: "평일 빈 베이 하루 2건만 채워도 월 수십만원. 이용료 2.2만원."<br>
+      EduOn: "수납 전화 줄고 행정 시간 주 5시간 절감. 그 시간에 원생 상담하세요."<br>
+      ReviewOn: "별점 0.5 오르면 월 방문객 15% 증가. 매출 수백만원 차이."
+    </div>
+  </div>
+</div>
+
+<!-- ══ 07 반론 대응 ══ -->
+<div class="section">
+  <div class="tag">07</div>
+  <div class="section-header">
+    <h2>자주 나오는 반론 <em>대응법</em></h2>
+    <p>미리 알고 가면 당황하지 않아요.</p>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">누메이즈/카카오헤어샵 이미 쓰고 있어요.</div>
+    <div class="faq-a">
+      그 앱들은 내 고객 옆에 경쟁 헤어샵을 같이 보여줘요. 수수료도 나가고요.
+      BeautyOn은 내 가게만의 앱이라 경쟁자가 없고, 수수료도 없어요.
+      "누메이즈로 새 손님 받고, BeautyOn으로 단골 만드세요." 병행하시면 돼요.
+    </div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">앱 만드는 데 왜 이렇게 싸요? 믿어도 되나요?</div>
+    <div class="faq-a">
+      처음부터 만드는 게 아니라 업종별 완성형 템플릿에 브랜드만 세팅하는 거라 빠르고 저렴해요.
+      에이전시는 300~500만원인데, 저희는 같은 품질을 1/3 가격에 드려요.
+      샘플 먼저 보시면 품질 확인하실 수 있어요.
+    </div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">우리 직원들이 쓸 수 있을지 모르겠어요.</div>
+    <div class="faq-a">
+      배포 완료 후 직접 사용 교육을 해드려요. 보통 30분이면 다 배우세요.
+      카카오톡처럼 직관적으로 만들어져 있어서 어렵지 않아요.
+    </div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">만들고 나서 고장나면 어떻게 해요?</div>
+    <div class="faq-a">
+      월 이용료에 유지보수가 포함돼 있어요. 문제 발생 시 24시간 내 처리해드려요.
+      계약서에 명시돼 있으니 걱정 안 하셔도 됩니다.
+    </div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">지금 바쁜데 나중에 연락할게요.</div>
+    <div class="faq-a">
+      네, 물론이죠. 그럼 일단 샘플을 [업체명]으로 맞춤 제작해서 카카오로 보내드릴게요.
+      바쁘실 때 시간 날 때 천천히 보시면 되고, 결정은 그 다음에 하셔도 돼요.
+    </div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">12개월 계약이 부담스러워요.</div>
+    <div class="faq-a">
+      월 이용료가 2.2만원이라 12개월 해도 26.4만원이에요. 노쇼 한 달만 줄여도 본전이에요.
+      처음엔 웹앱으로 시작하시고, 만족하시면 네이티브 앱으로 업그레이드하시는 분도 많아요.
+    </div>
+  </div>
+</div>
+
+<!-- ══ 08 FAQ ══ -->
+<div class="section">
+  <div class="tag">08</div>
+  <div class="section-header">
+    <h2>파트너 FAQ</h2>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">기술을 몰라도 영업할 수 있나요?</div>
+    <div class="faq-a">네. 샘플 링크만 보여주면 됩니다. 기술적인 질문은 크레센트 스튜디오로 연결해드리세요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">영업 지역 제한이 있나요?</div>
+    <div class="faq-a">없어요. 전국 어디서나 영업 가능합니다. 온라인 계약도 가능해서 지역 무관이에요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">한 사람이 여러 업종을 동시에 영업해도 되나요?</div>
+    <div class="faq-a">됩니다. 다만 처음엔 BeautyOn이나 CarOn 하나에 집중하는 게 효율적이에요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">수수료는 언제 지급되나요?</div>
+    <div class="faq-a">계약금 입금 확인 후 2~3영업일 내 지급됩니다. 계좌이체로 드려요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">샘플을 직접 커스터마이징할 수 있나요?</div>
+    <div class="faq-a">업체명 변경은 크레센트 스튜디오에 요청하시면 됩니다. 48시간 내 맞춤 샘플 제작해드려요.</div>
+  </div>
+  <div class="faq-item">
+    <div class="faq-q">계약서 작성은 어떻게 하나요?</div>
+    <div class="faq-a">크레센트 스튜디오에서 전자 계약서를 발송합니다. 영업자는 고객 정보만 전달해주시면 돼요.</div>
+  </div>
+</div>
+
+<!-- ══ 09 연락처 ══ -->
+<div class="section">
+  <div class="tag">09</div>
+  <div class="section-header">
+    <h2>연락처 & <em>지원</em></h2>
+    <p>궁금한 점은 언제든지 연락주세요. 24시간 내 답변드립니다.</p>
+  </div>
+
+  <div class="grid2">
+    <div class="card dark">
+      <div style="font-size:14px;font-weight:800;color:#fff;margin-bottom:16px">🌙 Crescent Studio</div>
+      <div class="contact-row">
+        <span class="contact-icon">🌐</span>
+        <span style="color:rgba(255,255,255,.7)">crescentstudio.co.kr</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-icon">✉</span>
+        <span style="color:rgba(255,255,255,.7)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="402221342f2e30213333797000272d21292c6e232f2d">[email&#160;protected]</a></span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-icon">💬</span>
+        <span style="color:rgba(255,255,255,.7)">카카오채널 @crescent_ai_studio</span>
+      </div>
+      <div class="contact-row">
+        <span class="contact-icon">📸</span>
+        <span style="color:rgba(255,255,255,.7)">인스타 @crescent_ai_studio</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="card gold" style="margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">📋 파트너 시작 체크리스트</div>
+        <ul class="checklist">
+          <li>샘플 사이트 직접 체험 (crescentstudio.co.kr)</li>
+          <li>타겟 업종 1개 선택 (BeautyOn 추천)</li>
+          <li>첫 영업 대상 10곳 리스트업</li>
+          <li>문자 템플릿 복사 저장</li>
+          <li>카카오채널 추가</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:6px">📌 샘플 링크</div>
+        <div style="font-size:13px;color:var(--mid);line-height:1.8">
+          메인: <strong>crescentstudio.co.kr</strong><br>
+          BeautyOn 샘플: crescentstudio.co.kr/demo-03<br>
+          CarOn 샘플: crescentstudio.co.kr/demo-10<br>
+          EduOn 샘플: crescentstudio.co.kr/demo-08
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 하단 -->
+<div style="text-align:center;padding:32px 0;border-top:1px solid var(--line)">
+  <div style="display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:8px">
+    <div style="position:relative;width:20px;height:20px">
+      <div style="position:absolute;inset:0;border-radius:50%;background:var(--gold)"></div>
+      <div style="position:absolute;top:-1px;right:-1px;width:14px;height:14px;border-radius:50%;background:#fff"></div>
+    </div>
+    <span style="font-size:14px;font-weight:800;color:var(--dark)">Crescent Studio</span>
+  </div>
+  <div style="font-size:11px;color:var(--ligh

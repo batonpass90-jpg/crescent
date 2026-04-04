@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>On 시리즈 시장조사 & 매출 시뮬레이터</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #f5c518; --gold-l: #fffbeb; --gold-b: #fde68a;
+  --dark: #0f1117; --ink: #1a1d24; --mid: #6b7280; --light: #9ca3af;
+  --line: #e5e7eb; --bg: #f9fafb;
+  --beauty: #db2777; --car: #ea580c; --edu: #7c3aed;
+  --review: #ca8a04; --care: #0f766e; --insure: #1d4ed8; --factory: #374151;
+}
+body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.6; }
+
+/* 헤더 */
+.header { background: var(--dark); padding: 32px 24px; text-align: center; }
+.header-logo { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+.header-moon { width: 28px; height: 28px; border-radius: 50%; background: var(--gold); position: relative; }
+.header-moon::after { content: ''; position: absolute; top: -1px; right: -1px; width: 19px; height: 19px; border-radius: 50%; background: var(--dark); }
+.header-logo-text { font-size: 16px; font-weight: 800; color: #fff; }
+.header h1 { font-size: clamp(22px, 4vw, 32px); font-weight: 900; color: #fff; letter-spacing: -.03em; margin-bottom: 8px; }
+.header h1 em { color: var(--gold); font-style: normal; }
+.header p { font-size: 13px; color: rgba(255,255,255,.5); }
+
+/* 탭 */
+.tabs { display: flex; background: #fff; border-bottom: 2px solid var(--line); overflow-x: auto; position: sticky; top: 0; z-index: 50; }
+.tab { padding: 14px 20px; font-size: 13px; font-weight: 700; color: var(--mid); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all .15s; }
+.tab:hover { color: var(--ink); }
+.tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* 콘텐츠 */
+.content { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* 섹션 */
+.sec-title { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--dark); margin-bottom: 4px; }
+.sec-desc { font-size: 12px; color: var(--mid); margin-bottom: 20px; }
+.tag { display: inline-flex; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); background: var(--gold-l); border: 1px solid var(--gold-b); padding: 2px 10px; border-radius: 20px; margin-bottom: 10px; }
+
+/* 카드 */
+.card { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+.card-head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.brand-badge { font-size: 18px; font-weight: 900; letter-spacing: -.02em; }
+.cat-tag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--light); background: var(--bg); padding: 3px 9px; border-radius: 4px; }
+.market-size { margin-left: auto; text-align: right; }
+.market-num { font-size: 22px; font-weight: 900; color: var(--dark); letter-spacing: -.02em; line-height: 1; }
+.market-lbl { font-size: 10px; color: var(--light); }
+
+/* 그리드 */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+@media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .grid3 { grid-template-columns: 1fr 1fr; } .grid4 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .grid3 { grid-template-columns: 1fr; } .grid4 { grid-template-columns: 1fr 1fr; } }
+
+/* 스탯 박스 */
+.stat-box { background: var(--bg); border-radius: 8px; padding: 12px 14px; }
+.stat-box-label { font-size: 10px; color: var(--light); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .08em; }
+.stat-box-val { font-size: 18px; font-weight: 800; color: var(--dark); letter-spacing: -.02em; line-height: 1.2; }
+.stat-box-val small { font-size: 11px; font-weight: 500; color: var(--mid); }
+
+/* 경쟁사 */
+.comp-list { display: flex; flex-direction: column; gap: 7px; }
+.comp-item { display: flex; align-items: center; gap: 10px; background: var(--bg); border-radius: 7px; padding: 9px 12px; }
+.comp-name { font-size: 13px; font-weight: 700; color: var(--dark); min-width: 90px; }
+.comp-type { font-size: 10px; color: var(--mid); background: #fff; border: 1px solid var(--line); padding: 2px 7px; border-radius: 4px; }
+.comp-price { margin-left: auto; font-size: 12px; font-weight: 700; color: var(--dark); }
+.comp-weak { font-size: 10px; color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; padding: 2px 7px; border-radius: 4px; }
+
+/* 기회/위협 */
+.opp-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 600px) { .opp-wrap { grid-template-columns: 1fr; } }
+.opp-box { border-radius: 8px; padding: 14px; }
+.opp-box.green { background: #f0fdf4; border: 1px solid #86efac; }
+.opp-box.red { background: #fef2f2; border: 1px solid #fecaca; }
+.opp-title { font-size: 12px; font-weight: 800; margin-bottom: 8px; }
+.opp-box.green .opp-title { color: #16a34a; }
+.opp-box.red .opp-title { color: #dc2626; }
+.opp-item { font-size: 11px; color: var(--mid); margin-bottom: 4px; display: flex; align-items: flex-start; gap: 6px; }
+.opp-item::before { content: '•'; flex-shrink: 0; font-weight: 900; }
+.opp-box.green .opp-item::before { color: #16a34a; }
+.opp-box.red .opp-item::before { color: #dc2626; }
+
+/* 시뮬레이터 */
+.sim-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 700px) { .sim-wrap { grid-template-columns: 1fr; } }
+.sim-controls { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.sim-result { background: var(--dark); border-radius: 12px; padding: 20px; }
+.sim-select { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.sim-btn { padding: 8px 10px; border: 2px solid var(--line); background: #fff; border-radius: 7px; font-size: 11px; font-weight: 700; cursor: pointer; text-align: left; transition: all .15s; }
+.sim-btn:hover { border-color: var(--gold); }
+.sim-btn.sel { background: var(--gold-l); border-color: var(--gold); }
+.sim-btn .sb-brand { font-size: 13px; font-weight: 900; }
+.sim-btn .sb-cat { font-size: 9px; color: var(--mid); margin-top: 2px; }
+
+.slider-group { margin-bottom: 14px; }
+.slider-label { display: flex; justify-content: space-between; margin-bottom: 5px; font-size: 12px; font-weight: 600; color: var(--ink); }
+.slider-label span { font-weight: 700; color: var(--gold); }
+input[type=range] { width: 100%; accent-color: var(--gold); height: 4px; }
+
+.res-item { margin-bottom: 14px; }
+.res-label { font-size: 10px; color: rgba(255,255,255,.4); font-weight: 600; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.res-val { font-size: 26px; font-weight: 900; color: var(--gold); letter-spacing: -.02em; line-height: 1; }
+.res-val small { font-size: 13px; font-weight: 500; color: rgba(255,255,255,.5); }
+.res-divider { height: 1px; background: rgba(255,255,255,.08); margin: 14px 0; }
+.res-breakdown { display: flex; flex-direction: column; gap: 5px; }
+.res-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.5); }
+.res-row strong { color: rgba(255,255,255,.85); }
+.res-scenario { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 14px; }
+.scenario-card { background: rgba(255,255,255,.06); border-radius: 7px; padding: 10px 8px; text-align: center; }
+.scenario-name { font-size: 9px; color: rgba(255,255,255,.4); margin-bottom: 4px; }
+.scenario-val { font-size: 14px; font-weight: 800; color: #fff; }
+.scenario-card.mid { background: rgba(245,197,24,.15); }
+.scenario-card.mid .scenario-val { color: var(--gold); }
+
+/* 총 매출 시뮬레이터 */
+.total-sim { background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 20px; margin-bottom: 14px; }
+.total-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 16px; }
+.total-item { background: var(--bg); border-radius: 8px; padding: 12px; }
+.total-item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.total-brand { font-size: 12px; font-weight: 800; }
+.total-count { display: flex; align-items: center; gap: 6px; }
+.total-count input[type=number] { width: 52px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 5px; font-size: 12px; font-weight: 700; text-align: center; font-family: inherit; outline: none; }
+.total-count span { font-size: 10px; color: var(--mid); }
+.total-result { background: var(--dark); border-radius: 10px; padding: 16px 20px; display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; text-align: center; }
+.tr-item .tr-label { font-size: 9px; color: rgba(255,255,255,.4); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 4px; }
+.tr-item .tr-val { font-size: 20px; font-weight: 900; color: var(--gold); letter-spacing: -.02em; }
+
+/* 가격표 */
+.price-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.price-table th { padding: 10px 12px; background: var(--dark); color: rgba(255,255,255,.7); font-size: 10px; text-align: left; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.price-table th:first-child { border-radius: 8px 0 0 0; }
+.price-table th:last-child { border-radius: 0 8px 0 0; }
+.price-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.price-table tr:last-child td { border-bottom: none; }
+.price-table tr:hover td { background: var(--bg); }
+.price-table td.gold { color: var(--gold); font-weight: 700; }
+.price-note { font-size: 10px; color: var(--mid); margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">
+    <div class="header-moon"></div>
+    <span class="header-logo-text">Crescent Studio</span>
+  </div>
+  <h1>On 시리즈 <em>시장조사 & 매출 시뮬레이터</em></h1>
+  <p>업종별 시장 규모 · 경쟁사 분석 · 적정 가격 · 예상 매출 시뮬레이션</p>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('market')">📊 시장 조사</div>
+  <div class="tab" onclick="switchTab('price')">💰 적정 가격</div>
+  <div class="tab" onclick="switchTab('sim')">🚀 매출 시뮬레이터</div>
+  <div class="tab" onclick="switchTab('total')">📈 포트폴리오 시뮬레이터</div>
+</div>
+
+<div class="content">
+
+<!-- ══ 시장 조사 ══ -->
+<div id="panel-market" class="panel active">
+
+  <!-- BeautyOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--beauty)">Beauty<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">뷰티 · 헤어 · 네일</span>
+      <div class="market-size">
+        <div class="market-num">18만+</div>
+        <div class="market-lbl">전국 업소 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">헤어샵</div><div class="stat-box-val">~9만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">네일샵</div><div class="stat-box-val">~5만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">피부미용</div><div class="stat-box-val">~4만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">디지털화율</div><div class="stat-box-val">~30%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">누메이즈</span><span class="comp-type">플랫폼</span><span class="comp-price">무료 (수수료)</span><span class="comp-weak">수수료 부담, 경쟁 노출</span></div>
+      <div class="comp-item"><span class="comp-name">마메드네</span><span class="comp-type">플랫폼</span><span class="comp-price">수수료형</span><span class="comp-weak">내 브랜드 없음</span></div>
+      <div class="comp-item"><span class="comp-name">핸드SOS</span><span class="comp-type">관리 SaaS</span><span class="comp-price">월 19,900원</span><span class="comp-weak">범용, 업종맞춤 부족</span></div>
+      <div class="comp-item"><span class="comp-name">공비서</span><span class="comp-type">관리 SaaS</span><span class="comp-price">무료~유료</span><span class="comp-weak">UI 복잡, 브랜드 없음</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">70%는 아직 전문 관리 앱 없음</div>
+        <div class="opp-item">노쇼 문제 심각, 즉각적인 ROI</div>
+        <div class="opp-item">플랫폼 수수료 피로감 높음</div>
+        <div class="opp-item">내 브랜드 앱 수요 증가</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">무료 플랫폼과 가격 경쟁</div>
+        <div class="opp-item">사장님 디지털 전환 저항</div>
+        <div class="opp-item">네이버 예약 독점화 우려</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CarOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--car)">Car<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">세차 · 정비</span>
+      <div class="market-size">
+        <div class="market-num">2,550만</div>
+        <div class="market-lbl">등록 차량 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">등록 세차장</div><div class="stat-box-val">~1만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">셀프세차 시장</div><div class="stat-box-val">3,600억 <small>원</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">연간차량증가</div><div class="stat-box-val">+1.7%</div></div>
+      <div class="stat-box"><div class="stat-box-label">디지털화율</div><div class="stat-box-val">~15%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">마이클(Mycle)</span><span class="comp-type">정비 플랫폼</span><span class="comp-price">수수료형</span><span class="comp-weak">내 브랜드 없음</span></div>
+      <div class="comp-item"><span class="comp-name">갓차</span><span class="comp-type">출장세차</span><span class="comp-price">건당 요금</span><span class="comp-weak">세차장 관리 불가</span></div>
+      <div class="comp-item"><span class="comp-name">자체 키오스크</span><span class="comp-type">하드웨어</span><span class="comp-price">수백만원</span><span class="comp-weak">앱 연동 없음</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">세차장 전용 앱 시장 공백</div>
+        <div class="opp-item">차량 이력 기반 재방문 유도 강력</div>
+        <div class="opp-item">예약 기반 운영이 점점 트렌드</div>
+        <div class="opp-item">디테일링 문화 성장</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">사장님 평균 연령대 높음</div>
+        <div class="opp-item">현금 거래 비중 아직 높음</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EduOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--edu)">Edu<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">교육 · 학원</span>
+      <div class="market-size">
+        <div class="market-num">8만+</div>
+        <div class="market-lbl">전국 사설학원 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">사설학원</div><div class="stat-box-val">8만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">교습소</div><div class="stat-box-val">5만+ <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">사교육비</div><div class="stat-box-val">27조 <small>원/년</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">디지털화율</div><div class="stat-box-val">~45%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">클래스업</span><span class="comp-type">무료 SaaS</span><span class="comp-price">무료</span><span class="comp-weak">광고 기반, 브랜드 없음</span></div>
+      <div class="comp-item"><span class="comp-name">공선학관</span><span class="comp-type">SaaS</span><span class="comp-price">월 정액</span><span class="comp-weak">서비스 종료됨</span></div>
+      <div class="comp-item"><span class="comp-name">아이엠스쿨</span><span class="comp-type">플랫폼</span><span class="comp-price">수수료형</span><span class="comp-weak">범용, 개성 없음</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">무료 툴 불신 증가 (서비스 종료 사례)</div>
+        <div class="opp-item">학부모 소통 디지털화 수요 강함</div>
+        <div class="opp-item">원장님 앱 필요성 절실</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">무료 경쟁자 다수 존재</div>
+        <div class="opp-item">소규모 학원 비용 민감</div>
+        <div class="opp-item">인구 감소로 장기 시장 축소</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ReviewOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--review)">Review<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">식당 · F&B</span>
+      <div class="market-size">
+        <div class="market-num">70만+</div>
+        <div class="market-lbl">전국 음식점 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">일반음식점</div><div class="stat-box-val">70만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">폐업률</div><div class="stat-box-val">~20% <small>/년</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">리뷰 영향력</div><div class="stat-box-val">83% <small>참고</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">AI 도구 미사용</div><div class="stat-box-val">~92%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">네이버 플레이스</span><span class="comp-type">플랫폼</span><span class="comp-price">무료 (광고 유도)</span><span class="comp-weak">AI 분석 없음</span></div>
+      <div class="comp-item"><span class="comp-name">리뷰어스</span><span class="comp-type">리뷰 관리</span><span class="comp-price">유료</span><span class="comp-weak">B2B, 대형 전용</span></div>
+      <div class="comp-item"><span class="comp-name">캐치테이블</span><span class="comp-type">예약 플랫폼</span><span class="comp-price">수수료형</span><span class="comp-weak">고급 식당 전용</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">소상공인용 AI 리뷰 분석 공백</div>
+        <div class="opp-item">리뷰 답글 자동화 수요 폭발</div>
+        <div class="opp-item">70만 업소 중 도구 미사용 92%</div>
+        <div class="opp-item">폐업률 높아 차별화 필요성 절실</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">높은 폐업률 = 이탈 위험</div>
+        <div class="opp-item">플랫폼 API 정책 변경 가능</div>
+        <div class="opp-item">마진 얇은 업종 특성</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- InsureOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--insure)">Insure<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">보험 영업인</span>
+      <div class="market-size">
+        <div class="market-num">60만+</div>
+        <div class="market-lbl">전국 보험설계사 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">전체 설계사</div><div class="stat-box-val">60만 <small>명</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">GA 소속</div><div class="stat-box-val">29만 <small>명 (44%)</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">대형 GA 수</div><div class="stat-box-val">75개 <small>500인+</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">CRM 미사용</div><div class="stat-box-val">~60%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">설계사 전용 CRM</span><span class="comp-type">SaaS</span><span class="comp-price">월 3~10만원</span><span class="comp-weak">AI 기능 없음</span></div>
+      <div class="comp-item"><span class="comp-name">GA 자체 시스템</span><span class="comp-type">인트라넷</span><span class="comp-price">GA 제공</span><span class="comp-weak">개인화 불가</span></div>
+      <div class="comp-item"><span class="comp-name">엑셀/구글 시트</span><span class="comp-type">수동</span><span class="comp-price">무료</span><span class="comp-weak">비효율 극심</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">GA 설계사 수 매년 급증 (+16.7%)</div>
+        <div class="opp-item">AI 약관 분석 = 강력한 차별화</div>
+        <div class="opp-item">GA 대표 영업 시 수십명 계약 가능</div>
+        <div class="opp-item">개인 설계사 도구 시장 공백</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">GA 자체 시스템으로 교체 가능</div>
+        <div class="opp-item">설계사 이직률 높아 이탈 위험</div>
+        <div class="opp-item">금융 규제 변화 민감</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FactoryOn -->
+  <div class="card">
+    <div class="card-head">
+      <div class="brand-badge" style="color:var(--factory)">Factory<span style="color:var(--dark)">On</span></div>
+      <span class="cat-tag">제조업</span>
+      <div class="market-size">
+        <div class="market-num">7만+</div>
+        <div class="market-lbl">중소 제조업체 수</div>
+      </div>
+    </div>
+    <div class="grid4" style="margin-bottom:14px">
+      <div class="stat-box"><div class="stat-box-label">제조업체</div><div class="stat-box-val">7만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">스마트공장 전환</div><div class="stat-box-val">~3만 <small>개소</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">정부지원</div><div class="stat-box-val">연 3조+ <small>원</small></div></div>
+      <div class="stat-box"><div class="stat-box-label">MES 미도입</div><div class="stat-box-val">~60%</div></div>
+    </div>
+    <div class="comp-list" style="margin-bottom:12px">
+      <div class="comp-item"><span class="comp-name">더존 ERP</span><span class="comp-type">대형 ERP</span><span class="comp-price">수천만원+</span><span class="comp-weak">중소기업에 너무 복잡/비쌈</span></div>
+      <div class="comp-item"><span class="comp-name">스마트공장 MES</span><span class="comp-type">하드웨어+SW</span><span class="comp-price">수억원</span><span class="comp-weak">소규모 불가</span></div>
+      <div class="comp-item"><span class="comp-name">엑셀 관리</span><span class="comp-type">수동</span><span class="comp-price">무료</span><span class="comp-weak">실시간 불가, 오류 다수</span></div>
+    </div>
+    <div class="opp-wrap">
+      <div class="opp-box green"><div class="opp-title">✦ 기회</div>
+        <div class="opp-item">중소 제조업 디지털화 정부 지원</div>
+        <div class="opp-item">저렴한 MES 수요 명확</div>
+        <div class="opp-item">한 번 도입 시 이탈률 낮음</div>
+        <div class="opp-item">B2B 고단가 가능</div>
+      </div>
+      <div class="opp-box red"><div class="opp-title">⚠ 위협</div>
+        <div class="opp-item">도입 결정 오래 걸림</div>
+        <div class="opp-item">커스터마이징 요구 강함</div>
+        <div class="opp-item">온보딩 비용 높음</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /panel-market -->
+
+<!-- ══ 적정 가격 ══ -->
+<div id="panel-price" class="panel">
+  <div class="tag">가격 전략</div>
+  <div class="sec-title">On 시리즈 적정 가격표</div>
+  <div class="sec-desc">시장 시세 + 경쟁사 + 고객 지불 의향 기반 산정. 초기 저항을 낮추고 LTV를 최대화하는 구조.</div>
+
+  <!-- 웹앱/네이티브 설명 -->
+  <div class="grid2" style="margin-bottom:14px">
+    <div class="card" style="border-left:4px solid var(--gold)">
+      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px">🌐 웹앱 티어</div>
+      <div style="font-size:11px;color:var(--mid);line-height:1.7">브라우저로 접속하는 앱. 설치 없음.<br>사장님 관리 대시보드 + 고객 예약 페이지.<br><strong style="color:var(--dark)">진입 장벽 낮음, 빠른 납품, 저렴.</strong><br>알림은 카카오 메시지로 대체.</div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--dark)">
+      <div style="font-size:13px;font-weight:800;color:var(--dark);margin-bottom:6px">📱 네이티브앱 티어</div>
+      <div style="font-size:11px;color:var(--mid);line-height:1.7">App Store 설치형 앱.<br>푸시 알림, 오프라인 지원, 빠른 UX.<br><strong style="color:var(--dark)">고객 경험 최상, 브랜드 자산 강력.</strong><br>앱스토어 심사 + 개발 비용 높음.</div>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden">
+    <table class="price-table">
+      <thead>
+        <tr>
+          <th>On 시리즈</th>
+          <th>🌐 웹앱 — 초기</th>
+          <th>🌐 웹앱 — 월</th>
+          <th>📱 네이티브 — 초기</th>
+          <th>📱 네이티브 — 월</th>
+          <th>추천 시작</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span style="color:var(--beauty);font-weight:800">BeautyOn</span><div class="price-note">뷰티·헤어·네일</div></td>
+          <td class="gold">29만원</td>
+          <td class="gold">2.2만원</td>
+          <td class="gold">79만원</td>
+          <td class="gold">4.9만원</td>
+          <td><span style="background:var(--gold-l);color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">웹앱 권장</span><div class="price-note">고객 예약은 카카오 링크로 충분</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--car);font-weight:800">CarOn</span><div class="price-note">세차·정비</div></td>
+          <td class="gold">29만원</td>
+          <td class="gold">2.2만원</td>
+          <td class="gold">79만원</td>
+          <td class="gold">4.9만원</td>
+          <td><span style="background:var(--gold-l);color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">웹앱 권장</span><div class="price-note">정비 알림은 문자로 대체</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--edu);font-weight:800">EduOn</span><div class="price-note">교육·학원</div></td>
+          <td class="gold">29만원</td>
+          <td class="gold">1.9만원</td>
+          <td class="gold">79만원</td>
+          <td class="gold">4.9만원</td>
+          <td><span style="background:#f0fdf4;color:#166534;border:1px solid #86efac;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">네이티브 권장</span><div class="price-note">학부모 푸시 알림이 핵심</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--review);font-weight:800">ReviewOn</span><div class="price-note">식당·F&B</div></td>
+          <td class="gold">69만원</td>
+          <td class="gold">6.9만원</td>
+          <td style="color:var(--light)">—</td>
+          <td style="color:var(--light)">—</td>
+          <td><span style="background:var(--gold-l);color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">웹앱 전용</span><div class="price-note">AI 분석 대시보드, 앱 불필요</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--care);font-weight:800">CareOn</span><div class="price-note">요양·복지</div></td>
+          <td class="gold">99만원</td>
+          <td class="gold">7.9만원</td>
+          <td class="gold">149만원</td>
+          <td class="gold">12.9만원</td>
+          <td><span style="background:#f0fdf4;color:#166534;border:1px solid #86efac;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">네이티브 권장</span><div class="price-note">보호사 현장 앱 필수</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--insure);font-weight:800">InsureOn</span><div class="price-note">보험 영업인</div></td>
+          <td class="gold">79만원</td>
+          <td class="gold">9.9만원</td>
+          <td class="gold">129만원</td>
+          <td class="gold">14.9만원</td>
+          <td><span style="background:var(--gold-l);color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">웹앱 권장</span><div class="price-note">CRM+AI는 PC 사용이 주</div></td>
+        </tr>
+        <tr>
+          <td><span style="color:var(--factory);font-weight:800">FactoryOn</span><div class="price-note">제조업</div></td>
+          <td class="gold">149만원</td>
+          <td class="gold">14.9만원</td>
+          <td class="gold">249만원</td>
+          <td class="gold">24.9만원</td>
+          <td><span style="background:var(--gold-l);color:#92400e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">웹앱 권장</span><div class="price-note">공장 태블릿+PC 대시보드</div></td>
+        </tr>
+        <tr style="background:var(--bg)">
+          <td colspan="6" style="padding:8px 12px;font-size:10px;color:var(--light)">
+            ※ BrandOn(79만~), CompanyOn(129만~)은 단건 웹 제작. 월 이용료 없음.<br>
+            ※ 모든 가격은 최소 12개월 계약 기준. 연간 결제 시 2개월 무료.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="tag">가격 책정 원칙</div>
+    <div class="grid3">
+      <div class="stat-box">
+        <div class="stat-box-label">심리적 가격 단위</div>
+        <div class="stat-box-val" style="font-size:14px">3.3 / 9.9 / 14.9 / 19.9</div>
+        <div class="price-note">각각 "3만원대", "10만원 안", "15만원대" 로 인식</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">초기 세팅비 전략</div>
+        <div class="stat-box-val" style="font-size:14px">낮게 → 빠른 도입</div>
+        <div class="price-note">39~49만원 = "한번 해볼까" 진입 장벽 최소화</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-box-label">LTV 극대화</div>
+        <div class="stat-box-val" style="font-size:14px">12개월 최소 계약</div>
+        <div class="price-note">연간 결제 시 2개월 무료로 선결제 유도</div>
+      </div>
+    </div>
+  </div>
+</div><!-- /panel-price -->
+
+<!-- ══ 매출 시뮬레이터 ══ -->
+<div id="panel-sim" class="panel">
+  <div class="tag">개별 시뮬레이터</div>
+  <div class="sec-title">On 시리즈별 매출 시뮬레이션</div>
+  <div class="sec-desc">업종 선택 후 고객 수, 전환율 등을 조정해 예상 매출을 계산하세요.</div>
+
+  <div class="sim-wrap">
+    <div class="sim-controls">
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px;color:var(--dark)">업종 선택</div>
+      <div class="sim-select" id="simBtns">
+        <button class="sim-btn sel" onclick="selectProduct('beauty')" data-id="beauty">
+          <div class="sb-brand" style="color:var(--beauty)">BeautyOn</div>
+          <div class="sb-cat">뷰티·헤어·네일</div>
+        </button>
+        <button class="sim-btn" onclick="selectProduct('car')" data-id="car">
+          <div class="sb-brand" style="color:var(--car)">CarOn</div>
+          <div class="sb-cat">세차·정비</div>
+        </button>
+        <button class="sim-btn" onclick="selectProduct('edu')" data-id="edu">
+          <div class="sb-brand" style="color:var(--edu)">EduOn</div>
+          <div class="sb-cat">교육·학원</div>
+        </button>
+        <button class="sim-btn" onclick="selectProduct('review')" data-id="review">
+          <div class="sb-brand" style="color:var(--review)">ReviewOn</div>
+          <div class="sb-cat">식당·F&B</div>
+        </button>
+        <button class="sim-btn" onclick="selectProduct('insure')" data-id="insure">
+          <div class="sb-brand" style="color:var(--insure)">InsureOn</div>
+          <div class="sb-cat">보험 영업인</div>
+        </button>
+        <button class="sim-btn" onclick="selectProduct('factory')" data-id="factory">
+          <div class="sb-brand" style="color:var(--factory)">FactoryOn</div>
+          <div class="sb-cat">제조업</div>
+        </button>
+      </div>
+
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        <button id="btn-web" onclick="setTier('web')" style="flex:1;padding:8px;border:2px solid var(--gold);background:var(--gold-l);border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;color:#92400e">🌐 웹앱</button>
+        <button id="btn-native" onclick="setTier('native')" style="flex:1;padding:8px;border:2px solid var(--line);background:#fff;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mid)">📱 네이티브앱</button>
+      </div>
+
+      <div class="slider-group">
+        <div class="slider-label">월 신규 영업 건수 <span id="lbl-contact">50</span>건</div>
+        <input type="range" id="sl-contact" min="10" max="500" value="50" step="10" oninput="updateSim()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">영업 → 계약 전환율 <span id="lbl-conv">3</span>%</div>
+        <input type="range" id="sl-conv" min="1" max="15" value="3" step="1" oninput="updateSim()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">월 계약 유지율 <span id="lbl-retain">90</span>%</div>
+        <input type="range" id="sl-retain" min="70" max="99" value="90" step="1" oninput="updateSim()">
+      </div>
+      <div class="slider-group">
+        <div class="slider-label">누적 운영 개월 <span id="lbl-month">6</span>개월</div>
+        <input type="range" id="sl-month" min="1" max="24" value="6" step="1" oninput="updateSim()">
+      </div>
+    </div>
+
+    <div class="sim-result">
+      <div class="res-item">
+        <div class="res-label">현재 월 반복 매출 (MRR)</div>
+        <div class="res-val" id="res-mrr">—</div>
+      </div>
+      <div class="res-item">
+        <div class="res-label">누적 고객 수</div>
+        <div class="res-val" id="res-customers">—</div>
+      </div>
+      <div class="res-divider"></div>
+      <div class="res-breakdown">
+        <div class="res-row"><span>이번 달 신규 계약</span><strong id="res-new">—</strong></div>
+        <div class="res-row"><span>초기 세팅비 수익</span><strong id="res-setup">—</strong></div>
+        <div class="res-row"><span>월 이용료 수익</span><strong id="res-monthly">—</strong></div>
+        <div class="res-row"><span>이번 달 총 매출</span><strong id="res-total">—</strong></div>
+        <div class="res-row"><span>연간 예상 매출</span><strong id="res-annual">—</strong></div>
+      </div>
+      <div class="res-divider"></div>
+      <div style="font-size:10px;color:rgba(255,255,255,.3);margin-bottom:8px">시나리오별 연간 매출</div>
+      <div class="res-scenario">
+        <div class="scenario-card">
+          <div class="scenario-name">보수적</div>
+          <div class="scenario-val" id="sc-low">—</div>
+        </div>
+        <div class="scenario-card mid">
+          <div class="scenario-name">현재 설정</div>
+          <div class="scenario-val" id="sc-mid">—</div>
+        </div>
+        <div class="scenario-card">
+          <div class="scenario-name">공격적</div>
+          <div class="scenario-val" id="sc-high">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 고객 사용 시뮬레이션 -->
+  <div class="card" style="margin-top:20px">
+    <div class="tag">사용 시뮬레이션</div>
+    <div class="sec-title" style="font-size:16px;margin-bottom:4px" id="sim-usecase-title">BeautyOn 도입 시뮬레이션</div>
+    <div class="sec-desc" id="sim-usecase-desc">서울 홍대 근처 헤어샵 원장님 사례</div>
+    <div id="sim-usecase-content"></div>
+  </div>
+</div><!-- /panel-sim -->
+
+<!-- ══ 포트폴리오 시뮬레이터 ══ -->
+<div id="panel-total" class="panel">
+  <div class="tag">포트폴리오 시뮬레이터</div>
+  <div class="sec-title">전체 고객 포트폴리오 매출</div>
+  <div class="sec-desc">각 On 시리즈별 고객 수를 입력하면 월 총 매출이 자동 계산됩니다.</div>
+
+  <div class="total-sim">
+    <div class="total-grid" id="total-grid"></div>
+    <div class="total-result">
+      <div class="tr-item"><div class="tr-label">월 이용료 수익 (MRR)</div><div class="tr-val" id="tr-mrr">0원</div></div>
+      <div class="tr-item"><div class="tr-label">총 고객 수</div><div class="tr-val" id="tr-customers">0명</div></div>
+      <div class="tr-item"><div class="tr-label">연간 예상 수익</div><div class="tr-val" id="tr-annual">0원</div></div>
+    </div>
+  </div>
+
+  <!-- 목표 역산 -->
+  <div class="card">
+    <div class="tag">목표 역산</div>
+    <div class="sec-title" style="font-size:16px;margin-bottom:16px">목표 월 매출을 입력하면 필요 고객 수를 계산합니다</div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600">목표 월 MRR</div>
+      <input type="number" id="target-mrr" value="500" min="10" step="10"
+        style="width:90px;padding:6px 10px;border:2px solid var(--gold);border-radius:7px;font-size:14px;font-weight:700;font-family:inherit;outline:none;color:var(--dark)"
+        oninput="calcTarget()">
+      <div style="font-size:13px;font-weight:600">만원</div>
+    </div>
+    <div id="target-result" class="grid3"></div>
+  </div>
+</div><!-- /panel-total -->
+
+</div><!-- /content -->
+
+<script>
+// ── 상품 데이터
+const products = {
+  beauty:  { name: 'BeautyOn',  color: '#db2777', web:{setup:29,monthly:2.2}, native:{setup:79,monthly:4.9},  cat: '뷰티·헤어·네일',  market: '18만개', pain: '노쇼+전화예약 지침', roi: '재방문 1명 = 수십만원' },
+  car:     { name: 'CarOn',     color: '#ea580c', web:{setup:29,monthly:2.2}, native:{setup:79,monthly:4.9},  cat: '세차·정비',       market: '1만개',  pain: '예약 공백+이력 없음', roi: '차량 이력 = 재방문 유도' },
+  edu:     { name: 'EduOn',     color: '#7c3aed', web:{setup:29,monthly:1.9}, native:{setup:79,monthly:4.9},  cat: '교육·학원',       market: '13만개', pain: '수납+출결 수동관리',  roi: '학부모 신뢰 = 원생 유지' },
+  review:  { name: 'ReviewOn',  color: '#ca8a04', web:{setup:69,monthly:6.9}, native:{setup:69,monthly:6.9},  cat: '식당·F&B',        market: '70만개', pain: '나쁜 리뷰 = 매출 하락', roi: 'AI 답글 = 별점 회복' },
+  care:    { name: 'CareOn',    color: '#0f766e', web:{setup:99,monthly:7.9}, native:{setup:149,monthly:12.9}, cat: '요양·복지',       market: '5천개+', pain: '문의 응대+인력 관리',  roi: '신뢰감 = 입소 문의 증가' },
+  insure:  { name: 'InsureOn',  color: '#1d4ed8', web:{setup:79,monthly:9.9}, native:{setup:129,monthly:14.9}, cat: '보험 영업인',     market: '60만명', pain: '갱신 놓침+약관 복잡',  roi: 'AI 분석 = 영업 효율 10x' },
+  factory: { name: 'FactoryOn', color: '#374151', web:{setup:149,monthly:14.9},native:{setup:249,monthly:24.9},cat: '제조업',          market: '7만개',  pain: '엑셀 생산관리+실시간 불가', roi: 'MES 1/10 비용' },
+};
+let currentTier = 'web';
+
+function setTier(tier) {
+  currentTier = tier;
+  document.getElementById('btn-web').style.cssText = tier==='web'
+    ? 'flex:1;padding:8px;border:2px solid var(--gold);background:var(--gold-l);border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;color:#92400e'
+    : 'flex:1;padding:8px;border:2px solid var(--line);background:#fff;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mid)';
+  document.getElementById('btn-native').style.cssText = tier==='native'
+    ? 'flex:1;padding:8px;border:2px solid var(--dark);background:var(--dark);border-radius:7px;font-size:12px;font-weight:800;cursor:pointer;color:#fff'
+    : 'flex:1;padding:8px;border:2px solid var(--line);background:#fff;border-radius:7px;font-size:12px;font-weight:700;cursor:pointer;color:var(--mid)';
+  updateSim();
+  updateTotal();
+}
+
+let currentProduct = 'beauty';
+
+// ── 탭 전환
+function switchTab(id) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['market','price','sim','total'][i] === id));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+}
+
+// ── 상품 선택
+function selectProduct(id) {
+  currentProduct = id;
+  document.querySelectorAll('.sim-btn').forEach(b => b.classList.toggle('sel', b.dataset.id === id));
+  updateSim();
+  updateUsecase();
+}
+
+// ── 시뮬레이터 계산
+function updateSim() {
+  const prod = products[currentProduct];
+  const p = { ...prod, setup: prod[currentTier].setup, monthly: prod[currentTier].monthly };
+  const contact = +document.getElementById('sl-contact').value;
+  const conv = +document.getElementById('sl-conv').value / 100;
+  const retain = +document.getElementById('sl-retain').value / 100;
+  const months = +document.getElementById('sl-month').value;
+
+  document.getElementById('lbl-contact').textContent = contact;
+  document.getElementById('lbl-conv').textContent = (conv*100).toFixed(0);
+  document.getElementById('lbl-retain').textContent = (retain*100).toFixed(0);
+  document.getElementById('lbl-month').textContent = months;
+
+  // 누적 고객 계산 (매달 신규 계약, 이탈 반영)
+  let customers = 0;
+  const newPerMonth = Math.round(contact * conv);
+  for (let m = 0; m < months; m++) {
+    customers = Math.round(customers * retain + newPerMonth);
+  }
+
+  const mrr = customers * p.monthly;
+  const setupRevenue = newPerMonth * p.setup;
+  const totalThisMonth = mrr + setupRevenue;
+  const annual = mrr * 12 + newPerMonth * 12 * p.setup;
+
+  const fmt = n => n >= 10000 ? (n/10000).toFixed(1) + '억' : n >= 1000 ? (n/1000).toFixed(0) + '천만' : Math.round(n) + '만';
+
+  document.getElementById('res-mrr').innerHTML = fmt(mrr) + '<small>원/월</small>';
+  document.getElementById('res-customers').innerHTML = customers + '<small>명</small>';
+  document.getElementById('res-new').textContent = newPerMonth + '건';
+  document.getElementById('res-setup').textContent = fmt(setupRevenue) + '원';
+  document.getElementById('res-monthly').textContent = fmt(mrr) + '원';
+  document.getElementById('res-total').textContent = fmt(totalThisMonth) + '원';
+  document.getElementById('res-annual').textContent = fmt(annual) + '원';
+
+  // 시나리오 (전환율 절반, 현재, 2배)
+  const calcAnnual = (c2) => {
+    let cu = 0; const np = Math.round(contact * c2);
+    for (let m = 0; m < months; m++) cu = Math.round(cu * retain + np);
+    return cu * p.monthly * 12 + np * 12 * p.setup;
+  };
+  document.getElementById('sc-low').textContent  = fmt(calcAnnual(conv * 0.5)) + '원';
+  document.getElementById('sc-mid').textContent  = fmt(annual) + '원';
+  document.getElementById('sc-high').textContent = fmt(calcAnnual(Math.min(conv * 2, 0.3))) + '원';
+}
+
+// ── 사용 시뮬레이션
+const usecases = {
+  beauty: {
+    title: 'BeautyOn 도입 시뮬레이션',
+    desc: '서울 홍대 근처 헤어샵 (2인 운영) 원장님 사례',
+    before: ['전화 예약 하루 15~20건 — 시술 중에도 전화 받아야', '노쇼 월 8건 → 월 32만원 손실 (건당 4만원)', '단골 고객 재방문 주기 파악 불가', '고객 이력 없음 → 재예약 유도 불가'],
+    after: ['앱 예약 전환 70% → 전화 줄어 시술 집중', '노쇼 자동 알림 → 월 2건으로 감소 (24만원 절약)', '단골 TOP 50 명단 자동 추출 → 재방문 DM', '월 3.3만원으로 월 24만+ 절약 + 매출 증대'],
+    roi: '월 이용료 3.3만원 → 노쇼 절감만 24만원, ROI 700%+'
+  },
+  car: {
+    title: 'CarOn 도입 시뮬레이션',
+    desc: '경기 분당 셀프세차장 (8베이) 사장님 사례',
+    before: ['예약 없음 → 주말 대기 1시간, 평일 텅 빔', '차량 이력 없음 → 재방문 연락 불가', '포인트 없음 → 단골 유도 수단 없음', '매출 분석 엑셀 수동 작업'],
+    after: ['앱 예약 → 평일 빈 슬롯 30% 채움', '차량 이력 → 정기 세차 알림 → 재방문율 15% 향상', '포인트 10회 적립 시 1회 무료 → 단골 형성', '매출 대시보드 자동화'],
+    roi: '월 이용료 3.3만원 → 평일 충진 수익 수십만원, ROI 500%+'
+  },
+  edu: {
+    title: 'EduOn 도입 시뮬레이션',
+    desc: '서울 목동 수학학원 (원생 60명) 원장님 사례',
+    before: ['수강료 수납 전화+계좌이체 — 월말 확인 지옥', '출결 수기 체크 → 학부모 문의 폭주', '성적 리포트 없음 → 학부모 불만', '원생 이탈 시 이유 파악 불가'],
+    after: ['앱 수납 → 미납 자동 알림, 월말 정산 자동화', '출결 앱 → 학부모 실시간 알림 → 문의 80% 감소', '월별 성적 리포트 → 학부모 만족도 상승', '원생 이탈 전 알림 → 사전 상담 가능'],
+    roi: '월 이용료 2.9만원 → 행정 시간 주 5시간 절감, 원생 유지율 향상'
+  },
+  review: {
+    title: 'ReviewOn 도입 시뮬레이션',
+    desc: '서울 강남 파스타 레스토랑 (월 매출 3,000만원) 사장님 사례',
+    before: ['네이버 리뷰 별점 3.8 → 신규 방문객 감소', '악성 리뷰 방치 → 이미지 손상', '리뷰 답글 수동 → 시간 없어 방치', '경쟁 식당 리뷰 전략 파악 불가'],
+    after: ['AI 리뷰 분석 → 핵심 불만 원인 파악', '자동 답글 → 별점 3.8 → 4.3으로 회복 (3개월)', '별점 0.5 상승 = 월 방문객 15% 증가 → 매출 +450만원', '경쟁사 키워드 분석 → 차별화 포인트 발견'],
+    roi: '월 이용료 9.9만원 → 매출 +450만원, ROI 4,500%+'
+  },
+  insure: {
+    title: 'InsureOn 도입 시뮬레이션',
+    desc: 'GA 소속 보험설계사 (경력 5년, 고객 200명) 사례',
+    before: ['갱신 일정 엑셀 → 놓치는 경우 월 3~4건', '약관 소구 포인트 파악에 30분/건', '고객 이력 파편화 → 상담 준비 비효율', '수당 계산 수동 → 실수 잦음'],
+    after: ['갱신 자동 알림 → 갱신율 85% → 92%', 'AI 약관 분석 → 소구 포인트 3분 내 파악', '고객 CRM → 상담 준비 시간 50% 단축', '수당 자동 계산 → 오류 제로'],
+    roi: '월 이용료 14.9만원 → 갱신 1건 수당 수십만원, ROI 200%+'
+  },
+  factory: {
+    title: 'FactoryOn 도입 시뮬레이션',
+    desc: '경기 안산 금속 가공 업체 (직원 15명) 대표 사례',
+    before: ['생산 현황 엑셀 수기 → 실시간 파악 불가', '재고 부족 = 납기 지연 → 클레임', '불량률 통계 없음 → 원인 파악 불가', '작업지시서 종이 → 분실 잦음'],
+    after: ['실시간 라인별 가동 현황 대시보드', '재고 알림 → 납기 지연 0건 (첫 달)', '불량률 통계 → 원인 파악 → 불량률 30% 감소', '디지털 작업지시 → 분실 없음, 이력 자동 보관'],
+    roi: '월 이용료 19.9만원 → 납기 클레임 방지 수백만원, ROI 1,000%+'
+  }
+};
+
+function updateUsecase() {
+  const u = usecases[currentProduct];
+  document.getElementById('sim-usecase-title').textContent = u.title;
+  document.getElementById('sim-usecase-desc').textContent = u.desc;
+  document.getElementById('sim-usecase-content').innerHTML = `
+    <div class="opp-wrap" style="margin-bottom:12px">
+      <div class="opp-box red">
+        <div class="opp-title">도입 전 문제</div>
+        ${u.before.map(b => `<div class="opp-item">${b}</div>`).join('')}
+      </div>
+      <div class="opp-box green">
+        <div class="opp-title">도입 후 변화</div>
+        ${u.after.map(a => `<div class="opp-item">${a}</div>`).join('')}
+      </div>
+    </div>
+    <div style="background:var(--gold-l);border:1px solid var(--gold-b);border-radius:8px;padding:12px 14px;font-size:12px;color:#92400e;font-weight:600">
+      💡 ROI: ${u.roi}
+    </div>`;
+}
+
+// ── 포트폴리오 시뮬레이터 초기화
+function initTotalSim() {
+  const grid = document.getElementById('total-grid');
+  grid.innerHTML = Object.entries(products).map(([id, p]) => `
+    <div class="total-item">
+      <div class="total-item-head">
+        <div class="total-brand" style="color:${p.color}">${p.name}</div>
+        <div style="font-size:9px;color:var(--light)">${p.cat}</div>
+      </div>
+      <div class="total-count">
+        <input type="number" id="tc-${id}" value="0" min="0" max="9999" oninput="updateTotal()">
+        <span>고객</span>
+        <span style="margin-left:6px;color:var(--gold);font-weight:700">×${p.monthly}만</span>
+      </div>
+    </div>`).join('');
+  updateTotal();
+  calcTarget();
+}
+
+function updateTotal() {
+  let mrr = 0, customers = 0;
+  Object.entries(products).forEach(([id, p]) => {
+    const n = +(document.getElementById('tc-'+id)?.value || 0);
+    mrr += n * p[currentTier].monthly;
+    customers += n;
+  });
+  document.getElementById('tr-mrr').textContent = mrr.toFixed(1) + '만원';
+  document.getElementById('tr-customers').textContent = customers + '명';
+  document.getElementById('tr-annual').textContent = (mrr * 12).toFixed(0) + '만원';
+}
+
+function calcTarget() {
+  const target = +(document.getElementById('target-mrr').value) || 500;
+  const res = document.getElementById('target-result');
+  const combos = [
+    { label: 'BeautyOn 위주', mix: {beauty:0.5, car:0.2, edu:0.3} },
+    { label: '균형 믹스',     mix: {beauty:0.2, car:0.1, edu:0.2, review:0.2, insure:0.2, factory:0.1} },
+    { label: '고단가 위주',   mix: {review:0.3, insure:0.4, factory:0.3} },
+  ];
+  res.innerHTML = combos.map(c => {
+    const avgMonthly = Object.entries(c.mix).reduce((s,[id,r]) => s + products[id][currentTier].monthly * r, 0);
+    const needed = Math.ceil(target / avgMonthly);
+    return `<div class="stat-box"><div class="stat-box-label">${c.label}</div><div class="stat-box-val">${needed}<small>명</small></div><div class="price-note">평균 월 이용료 ${avgMonthly.toFixed(1)}만원</div></div>`;
+  }).join('');
+}
+
+// ── 초기화
+updateSim();
+updateUsecase();
+initTotalSim();
+</script>
+</body>
+</html>
