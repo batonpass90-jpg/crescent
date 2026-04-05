@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crescent Studio — 영업 자료 패키지</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --gold: #f5c518; --gold-l: #fffbeb; --gold-b: #fde68a;
+  --dark: #07080f; --dark2: #0d1117;
+  --ink: #1a1d24; --mid: #6b7280; --light: #9ca3af;
+  --line: #e5e7eb; --bg: #f9fafb;
+  --beauty: #db2777; --car: #ea580c; --edu: #7c3aed;
+  --review: #ca8a04; --care: #0d9488; --insure: #1d4ed8; --factory: #374151;
+  --basic: #6b7280; --standard: #0d9488; --pro: #7c3aed; --enterprise: #d97706;
+}
+body { font-family: 'Pretendard', sans-serif; background: var(--bg); color: var(--ink); font-size: 14px; line-height: 1.7; }
+@media screen { body { max-width: 960px; margin: 0 auto; } }
+@media print { body { background: #fff; } .no-print { display: none !important; } .page-break { page-break-before: always; } }
+
+/* 탭 네비 */
+.nav { background: var(--dark); position: sticky; top: 0; z-index: 100; display: flex; overflow-x: auto; }
+.nav-btn { padding: 14px 18px; font-size: 12px; font-weight: 700; color: rgba(255,255,255,.4); cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all .15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; }
+.nav-btn:hover { color: rgba(255,255,255,.8); }
+.nav-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* 패널 */
+.panel { display: none; padding: 32px 24px; }
+.panel.active { display: block; }
+
+/* 커버 */
+.cover { background: var(--dark); padding: 48px 40px; border-radius: 12px; margin-bottom: 24px; position: relative; overflow: hidden; }
+.cover::before { content: ''; position: absolute; top: -80px; right: -80px; width: 320px; height: 320px; border-radius: 50%; background: radial-gradient(circle, rgba(245,197,24,.1), transparent 70%); }
+.cover-logo { display: flex; align-items: center; gap: 9px; margin-bottom: 32px; }
+.moon { position: relative; width: 26px; height: 26px; }
+.moon::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: var(--gold); }
+.moon::after { content: ''; position: absolute; top: -1px; right: -1px; width: 18px; height: 18px; border-radius: 50%; background: var(--dark); }
+.cover-logo-text { font-size: 15px; font-weight: 800; color: #fff; }
+.cover h1 { font-size: 36px; font-weight: 900; color: #fff; letter-spacing: -.03em; line-height: 1.15; margin-bottom: 12px; }
+.cover h1 em { color: var(--gold); font-style: normal; }
+.cover p { font-size: 13px; color: rgba(255,255,255,.45); line-height: 1.8; }
+
+/* 공통 */
+.tag { display: inline-flex; font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--gold); background: var(--gold-l); border: 1px solid var(--gold-b); padding: 3px 11px; border-radius: 20px; margin-bottom: 8px; }
+.sec-title { font-size: 22px; font-weight: 900; color: var(--dark); letter-spacing: -.02em; margin-bottom: 4px; }
+.sec-title em { color: var(--gold); font-style: normal; }
+.sec-desc { font-size: 12px; color: var(--mid); margin-bottom: 20px; }
+.divider { height: 1px; background: var(--line); margin: 32px 0; }
+
+/* 카드 */
+.card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+.card.gold { background: var(--gold-l); border-color: var(--gold-b); }
+.card.dark { background: var(--dark); border-color: var(--dark); }
+
+/* 그리드 */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+@media (max-width: 640px) { .g2,.g3,.g4 { grid-template-columns: 1fr; } }
+
+/* 스탯 */
+.stat { background: var(--bg); border-radius: 8px; padding: 14px 16px; }
+.stat-val { font-size: 22px; font-weight: 900; color: var(--dark); letter-spacing: -.02em; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 10px; color: var(--light); }
+
+/* 테이블 */
+table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+th { padding: 9px 13px; background: var(--dark); color: rgba(255,255,255,.65); font-size: 10px; font-weight: 700; text-align: left; letter-spacing: .08em; text-transform: uppercase; }
+td { padding: 9px 13px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg); }
+.gold-td { color: var(--gold); font-weight: 700; }
+td .note { font-size: 10px; color: var(--light); margin-top: 2px; }
+
+/* 구독 플랜 */
+.plan-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 20px; }
+@media (max-width: 640px) { .plan-cards { grid-template-columns: 1fr 1fr; } }
+.plan { border-radius: 12px; padding: 20px 16px; position: relative; }
+.plan.basic { background: #f8fafc; border: 1.5px solid #e2e8f0; }
+.plan.standard { background: #f0fdf4; border: 1.5px solid #86efac; }
+.plan.pro { background: #faf5ff; border: 1.5px solid #d8b4fe; }
+.plan.enterprise { background: var(--gold-l); border: 1.5px solid var(--gold-b); }
+.plan-badge { position: absolute; top: 10px; right: 10px; font-size: 9px; font-weight: 800; padding: 2px 7px; border-radius: 8px; }
+.plan.pro .plan-badge { background: var(--pro); color: #fff; }
+.plan-name { font-size: 10px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 10px; }
+.plan.basic .plan-name { color: var(--basic); }
+.plan.standard .plan-name { color: var(--standard); }
+.plan.pro .plan-name { color: var(--pro); }
+.plan.enterprise .plan-name { color: var(--enterprise); }
+.plan-price { font-size: 26px; font-weight: 900; letter-spacing: -.03em; line-height: 1; margin-bottom: 2px; }
+.plan.basic .plan-price { color: var(--dark); }
+.plan.standard .plan-price { color: var(--standard); }
+.plan.pro .plan-price { color: var(--pro); }
+.plan.enterprise .plan-price { color: var(--enterprise); }
+.plan-unit { font-size: 10px; color: var(--mid); margin-bottom: 14px; }
+.plan-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.plan-list li { font-size: 11px; color: var(--mid); display: flex; gap: 6px; line-height: 1.5; }
+.plan-list li::before { content: '✓'; font-weight: 800; flex-shrink: 0; }
+.plan.basic .plan-list li::before { color: var(--basic); }
+.plan.standard .plan-list li::before { color: var(--standard); }
+.plan.pro .plan-list li::before { color: var(--pro); }
+.plan.enterprise .plan-list li::before { color: var(--enterprise); }
+
+/* 수수료 박스 */
+.fee-big { background: var(--dark); border-radius: 12px; padding: 24px 28px; text-align: center; }
+.fee-val { font-size: 52px; font-weight: 900; color: var(--gold); letter-spacing: -.04em; line-height: 1; margin-bottom: 6px; }
+.fee-lbl { font-size: 13px; color: rgba(255,255,255,.45); }
+
+/* 스크립트 박스 */
+.script { background: var(--gold-l); border: 1.5px solid var(--gold-b); border-left: 4px solid var(--gold); border-radius: 0 8px 8px 0; padding: 14px 16px; margin-bottom: 10px; }
+.script-label { font-size: 10px; font-weight: 700; color: #92400e; text-transform: uppercase; letter-spacing: .1em; margin-bottom: 8px; }
+.script-text { font-size: 13px; color: var(--ink); line-height: 1.8; white-space: pre-line; }
+
+/* ROI 카드 */
+.roi { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+.roi-title { font-size: 13px; font-weight: 800; color: var(--dark); margin-bottom: 6px; }
+.roi-calc { font-size: 13px; color: var(--mid); line-height: 1.8; }
+.roi-result { font-size: 14px; font-weight: 800; color: var(--gold); margin-top: 8px; }
+
+/* FAQ */
+.faq { border-bottom: 1px solid var(--line); padding: 13px 0; }
+.faq:last-child { border-bottom: none; }
+.faq-q { font-size: 13px; font-weight: 700; color: var(--dark); display: flex; gap: 8px; margin-bottom: 6px; }
+.faq-q::before { content: 'Q'; color: var(--gold); font-weight: 900; flex-shrink: 0; }
+.faq-a { font-size: 13px; color: var(--mid); line-height: 1.75; display: flex; gap: 8px; }
+.faq-a::before { content: 'A'; color: var(--dark); font-weight: 700; flex-shrink: 0; }
+
+/* 체크 */
+.check-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.check-list li { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: var(--mid); padding: 8px 0; border-bottom: 1px solid var(--line); }
+.check-list li:last-child { border-bottom: none; }
+.check-list li::before { content: '□'; font-size: 16px; color: var(--gold); flex-shrink: 0; line-height: 1.3; }
+
+/* 파일 카드 */
+.file-card { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; display: flex; align-items: center; gap: 14px; text-decoration: none; color: inherit; transition: all .15s; }
+.file-card:hover { border-color: var(--gold); background: var(--gold-l); }
+.file-icon { font-size: 24px; flex-shrink: 0; width: 40px; text-align: center; }
+.file-name { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
+.file-desc { font-size: 11px; color: var(--mid); }
+.file-tag { margin-left: auto; font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 4px; flex-shrink: 0; }
+.file-tag.done { background: #dcfce7; color: #166534; }
+.file-tag.key { background: var(--gold-l); color: #92400e; border: 1px solid var(--gold-b); }
+
+/* 온 시리즈 뱃지 */
+.on-row { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.on-row:last-child { border-bottom: none; }
+.on-name { font-size: 14px; font-weight: 800; min-width: 110px; }
+.on-cat { font-size: 10px; color: var(--light); background: var(--bg); padding: 2px 8px; border-radius: 4px; }
+.on-gain { font-size: 11px; color: var(--mid); flex: 1; }
+.on-price { font-size: 12px; font-weight: 700; color: var(--gold); text-align: right; min-width: 80px; }
+
+/* 수익 시뮬레이터 */
+.sim-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 640px) { .sim-wrap { grid-template-columns: 1fr; } }
+.sim-controls { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 20px; }
+.sim-result { background: var(--dark); border-radius: 10px; padding: 20px; }
+.sl-group { margin-bottom: 14px; }
+.sl-label { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; margin-bottom: 5px; }
+.sl-label span { color: var(--gold); font-weight: 700; }
+input[type=range] { width: 100%; accent-color: var(--gold); }
+.res-label { font-size: 10px; color: rgba(255,255,255,.35); text-transform: uppercase; letter-spacing: .1em; margin-bottom: 3px; }
+.res-val { font-size: 28px; font-weight: 900; color: var(--gold); letter-spacing: -.02em; line-height: 1; margin-bottom: 14px; }
+.res-row { display: flex; justify-content: space-between; font-size: 11px; color: rgba(255,255,255,.45); margin-bottom: 5px; }
+.res-row strong { color: rgba(255,255,255,.8); }
+</style>
+</head>
+<body>
+
+<!-- 네비 -->
+<nav class="nav no-print">
+  <button class="nav-btn active" onclick="tab('index')">📁 전체 자료</button>
+  <button class="nav-btn" onclick="tab('price')">💰 가격 정책</button>
+  <button class="nav-btn" onclick="tab('sub')">📦 구독 플랜</button>
+  <button class="nav-btn" onclick="tab('commission')">🤝 수수료 체계</button>
+  <button class="nav-btn" onclick="tab('sales')">📣 영업 멘트</button>
+  <button class="nav-btn" onclick="tab('roi')">📊 ROI 자료</button>
+  <button class="nav-btn" onclick="tab('objection')">💬 반론 대응</button>
+  <button class="nav-btn" onclick="tab('sim')">💵 수수료 시뮬</button>
+</nav>
+
+<!-- ══════════════════════════════
+  패널 1 — 전체 자료 인덱스
+══════════════════════════════ -->
+<div id="panel-index" class="panel active">
+
+  <div class="cover">
+    <div class="cover-logo"><div class="moon"></div><span class="cover-logo-text">Crescent Studio</span></div>
+    <h1>영업에 필요한<br><em>모든 자료</em></h1>
+    <p>가격 정책부터 영업 멘트, ROI 자료, 반론 대응까지<br>이 문서 하나로 바로 영업 시작할 수 있습니다.</p>
+  </div>
+
+  <!-- 핵심 수치 -->
+  <div class="g4" style="margin-bottom:24px">
+    <div class="stat"><div class="stat-val">39만~</div><div class="stat-lbl">최소 초기 제작비</div></div>
+    <div class="stat"><div class="stat-val">249만~</div><div class="stat-lbl">최대 초기 제작비</div></div>
+    <div class="stat"><div class="stat-val">4단계</div><div class="stat-lbl">구독 플랜</div></div>
+    <div class="stat"><div class="stat-val">+2개월</div><div class="stat-lbl">연간 선계약 혜택</div></div>
+  </div>
+
+  <!-- 자료 목록 -->
+  <div class="tag">자료 목록</div>
+  <div class="sec-title" style="margin-bottom:4px">영업 자료 <em>패키지</em></div>
+  <div class="sec-desc">상단 탭에서 각 자료로 이동하거나, 아래 링크를 직접 사용하세요.</div>
+
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    <a class="file-card" href="crescent-sales.html" target="_blank">
+      <span class="file-icon">📱</span>
+      <div><div class="file-name">SNS 영업용 랜딩페이지</div><div class="file-desc">고객에게 바로 보내는 모바일 최적화 제안서</div></div>
+      <span class="file-tag key">핵심</span>
+    </a>
+    <a class="file-card" href="crescent-deck.html" target="_blank">
+      <span class="file-icon">📄</span>
+      <div><div class="file-name">사업소개서 (HTML/인쇄용)</div><div class="file-desc">방문 영업 시 출력해서 사용. 8슬라이드 구성</div></div>
+      <span class="file-tag done">완료</span>
+    </a>
+    <a class="file-card" href="crescent-studio-deck.pptx" target="_blank">
+      <span class="file-icon">📊</span>
+      <div><div class="file-name">사업소개서 PPT</div><div class="file-desc">프레젠테이션용 파워포인트. 8슬라이드</div></div>
+      <span class="file-tag done">완료</span>
+    </a>
+    <a class="file-card" href="crescent-partner-guide.html" target="_blank">
+      <span class="file-icon">🤝</span>
+      <div><div class="file-name">영업 파트너 가이드</div><div class="file-desc">외부 영업자용. 수수료, 멘트, FAQ 포함</div></div>
+      <span class="file-tag key">핵심</span>
+    </a>
+    <a class="file-card" href="on-series-market.html" target="_blank">
+      <span class="file-icon">📈</span>
+      <div><div class="file-name">시장조사 & 매출 시뮬레이터</div><div class="file-desc">업종별 시장규모, 경쟁사 분석, 수익 시뮬레이션</div></div>
+      <span class="file-tag done">완료</span>
+    </a>
+    <a class="file-card" href="crescentstudio.co.kr" target="_blank">
+      <span class="file-icon">🌐</span>
+      <div><div class="file-name">공식 웹사이트</div><div class="file-desc">crescentstudio.co.kr — 샘플 데모 전체 포함</div></div>
+      <span class="file-tag key">핵심</span>
+    </a>
+  </div>
+
+  <!-- On 시리즈 데모 -->
+  <div class="tag">샘플 데모</div>
+  <div class="sec-title" style="margin-bottom:16px">업종별 <em>샘플 링크</em></div>
+  <div style="display:flex;flex-direction:column;gap:0">
+    <div class="on-row"><span class="on-name" style="color:var(--beauty)">BeautyOn</span><span class="on-cat">뷰티·헤어·네일</span><span class="on-gain">예약+노쇼방지+단골관리</span><a href="demo-03-beauty-app.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--car)">CarOn</span><span class="on-cat">세차·정비</span><span class="on-gain">예약+차량이력+포인트</span><a href="demo-10-caron.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--edu)">EduOn</span><span class="on-cat">교육·학원</span><span class="on-gain">출결+수납+성적+학부모앱</span><a href="demo-08-eduon.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--review)">ReviewOn</span><span class="on-cat">식당·F&B</span><span class="on-gain">AI리뷰분석+자동답글</span><a href="demo-02-reviewon.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--care)">CareOn</span><span class="on-cat">요양·복지</span><span class="on-gain">홈페이지+보호사앱+관리자</span><a href="demo-09-careon.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--insure)">InsureOn</span><span class="on-cat">보험 영업인</span><span class="on-gain">CRM+갱신알림+AI약관분석</span><a href="demo-05-insureon.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+    <div class="on-row"><span class="on-name" style="color:var(--factory)">FactoryOn</span><span class="on-cat">제조업</span><span class="on-gain">생산현황+재고+불량률관리</span><a href="demo-01-manufacturing.html" target="_blank" style="font-size:11px;color:var(--gold);font-weight:700">샘플 보기 →</a></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  패널 2 — 가격 정책
+══════════════════════════════ -->
+<div id="panel-price" class="panel">
+  <div class="tag">가격 정책</div>
+  <div class="sec-title">초기 제작비 <em>정책</em></div>
+  <div class="sec-desc">초기 제작비는 매출 규모와 작업량에 따라 자유 책정. 구독 플랜과 별도.</div>
+
+  <!-- 제작비 범위 -->
+  <div class="card" style="margin-bottom:20px;border-left:4px solid var(--gold)">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+      <div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:4px">최소 (소규모 웹앱)</div>
+        <div style="font-size:36px;font-weight:900;color:var(--dark);letter-spacing:-.03em">39만원</div>
+      </div>
+      <div style="font-size:24px;color:var(--line)">→</div>
+      <div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:4px">최대 (고기능 네이티브)</div>
+        <div style="font-size:36px;font-weight:900;color:var(--dark);letter-spacing:-.03em">249만원</div>
+      </div>
+      <div style="font-size:24px;color:var(--line)">|</div>
+      <div>
+        <div style="font-size:12px;color:var(--mid);margin-bottom:4px">구독 없는 단건 제작</div>
+        <div style="font-size:20px;font-weight:800;color:var(--dark)">시세의 70%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 업종별 가격 가이드 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">업종별 초기 제작비 가이드</div>
+  <table style="margin-bottom:6px">
+    <thead>
+      <tr>
+        <th>On 시리즈</th>
+        <th>웹앱 기본</th>
+        <th>웹앱 풀기능</th>
+        <th>네이티브 기본</th>
+        <th>네이티브 풀기능</th>
+        <th>규모 조정</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><span style="color:var(--beauty);font-weight:700">BeautyOn</span></td><td class="gold-td">39만</td><td>79만</td><td>99만</td><td>149만</td><td class="note">1인샵~다지점</td></tr>
+      <tr><td><span style="color:var(--car);font-weight:700">CarOn</span></td><td class="gold-td">39만</td><td>79만</td><td>99만</td><td>149만</td><td class="note">소형~대형세차장</td></tr>
+      <tr><td><span style="color:var(--edu);font-weight:700">EduOn</span></td><td class="gold-td">49만</td><td>99만</td><td>129만</td><td>179만</td><td class="note">소규모~대형학원</td></tr>
+      <tr><td><span style="color:var(--review);font-weight:700">ReviewOn</span></td><td class="gold-td">69만</td><td>129만</td><td colspan="2" style="color:var(--light)">웹앱 전용</td><td class="note">단독~프랜차이즈</td></tr>
+      <tr><td><span style="color:var(--care);font-weight:700">CareOn</span></td><td class="gold-td">99만</td><td>149만</td><td>179만</td><td>249만</td><td class="note">소형~대형시설</td></tr>
+      <tr><td><span style="color:var(--insure);font-weight:700">InsureOn</span></td><td class="gold-td">79만</td><td>149만</td><td>129만</td><td>199만</td><td class="note">개인~GA법인</td></tr>
+      <tr><td><span style="color:var(--factory);font-weight:700">FactoryOn</span></td><td class="gold-td">149만</td><td>199만</td><td>199만</td><td>249만</td><td class="note">소규모~중형공장</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:11px;color:var(--light);margin-bottom:24px">※ 위 금액은 가이드라인. 실제 작업량·규모에 따라 영업자와 협의 후 확정.</div>
+
+  <!-- 레퍼런스 초기 특가 -->
+  <div class="card gold">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">🎯 초기 레퍼런스 특가 (선착순 5건)</div>
+    <div class="g2">
+      <div>
+        <div style="font-size:12px;color:#92400e;margin-bottom:4px">웹앱</div>
+        <div style="font-size:28px;font-weight:900;color:var(--dark)">39만원</div>
+        <div style="font-size:11px;color:var(--mid)">정상가 79만원</div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:#92400e;margin-bottom:4px">네이티브</div>
+        <div style="font-size:28px;font-weight:900;color:var(--dark)">49만원</div>
+        <div style="font-size:11px;color:var(--mid)">정상가 99~149만원</div>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:#92400e;line-height:1.75">
+      ✓ 레퍼런스 사진·후기 활용 동의 조건<br>
+      ✓ 구독 플랜 정상가 그대로 적용<br>
+      ✓ 5건 이후 자동으로 정상가 전환
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 단가 로드맵 -->
+  <div class="tag">단가 로드맵</div>
+  <div class="sec-title" style="margin-bottom:16px">레퍼런스 따라 <em>단가 상승</em></div>
+  <table>
+    <thead>
+      <tr><th>단계</th><th>기간</th><th>웹앱 가격</th><th>네이티브 가격</th><th>조건</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span style="font-weight:700;color:var(--gold)">론칭</span></td><td>지금~3개월</td><td class="gold-td">39만원</td><td class="gold-td">49만원</td><td>레퍼런스 5건 선착순</td></tr>
+      <tr><td><span style="font-weight:700">성장</span></td><td>3~6개월</td><td>79만원</td><td>99만원</td><td>레퍼런스 확보 후</td></tr>
+      <tr><td><span style="font-weight:700">안정</span></td><td>6~12개월</td><td>99만원</td><td>149만원</td><td>후기 + 입소문</td></tr>
+      <tr><td><span style="font-weight:700">확장</span></td><td>12개월+</td><td>149만원+</td><td>249만원+</td><td>브랜드 완성 후</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════
+  패널 3 — 구독 플랜
+══════════════════════════════ -->
+<div id="panel-sub" class="panel">
+  <div class="tag">구독 플랜</div>
+  <div class="sec-title">4단계 <em>구독 플랜</em></div>
+  <div class="sec-desc">초기 제작비와 별도. 업체 규모와 니즈에 따라 선택. 연간 선계약 시 2개월 무료.</div>
+
+  <div class="plan-cards">
+    <div class="plan basic">
+      <div class="plan-name">Basic</div>
+      <div class="plan-price">2.9만</div>
+      <div class="plan-unit">원 / 월</div>
+      <ul class="plan-list">
+        <li>앱 서버 운영</li>
+        <li>버그 수정</li>
+        <li>기능 유지보수</li>
+        <li>24시간 내 처리 보장</li>
+      </ul>
+    </div>
+    <div class="plan standard">
+      <div class="plan-name">Standard</div>
+      <div class="plan-price">5.9만</div>
+      <div class="plan-unit">원 / 월</div>
+      <ul class="plan-list">
+        <li>Basic 전체 포함</li>
+        <li>프로모션 기획 월 1회</li>
+        <li>문자 발송 100건</li>
+        <li>빈 시간대 분석</li>
+      </ul>
+    </div>
+    <div class="plan pro">
+      <div class="plan-badge">인기</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">9.9만</div>
+      <div class="plan-unit">원 / 월</div>
+      <ul class="plan-list">
+        <li>Standard 전체 포함</li>
+        <li>프로모션 기획 월 2회</li>
+        <li>문자 발송 300건</li>
+        <li>SNS 템플릿 제공</li>
+        <li>월간 매출 리포트</li>
+      </ul>
+    </div>
+    <div class="plan enterprise">
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-price">19.9만</div>
+      <div class="plan-unit">원 / 월</div>
+      <ul class="plan-list">
+        <li>Pro 전체 포함</li>
+        <li>전담 매니저 배정</li>
+        <li>무제한 수정 요청</li>
+        <li>리뷰 관리 대행</li>
+        <li>매출 컨설팅 포함</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 연간 혜택 -->
+  <div class="card gold" style="margin-bottom:20px">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">🎁 연간 선계약 시 2개월 무료</div>
+    <div class="g4">
+      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Basic 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">29만원</div><div style="font-size:10px;color:var(--mid)">월 2.4만원 효과</div></div>
+      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Standard 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">59만원</div><div style="font-size:10px;color:var(--mid)">월 4.9만원 효과</div></div>
+      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Pro 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">99만원</div><div style="font-size:10px;color:var(--mid)">월 8.25만원 효과</div></div>
+      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Enterprise 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">199만원</div><div style="font-size:10px;color:var(--mid)">월 16.6만원 효과</div></div>
+    </div>
+  </div>
+
+  <!-- 업종별 추천 구독 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">업종별 추천 구독 플랜</div>
+  <table>
+    <thead><tr><th>업체 규모</th><th>예시 업종</th><th>추천 플랜</th><th>이유</th></tr></thead>
+    <tbody>
+      <tr><td>1인 소규모</td><td>헤어샵, 세차장</td><td><span style="color:var(--basic);font-weight:700">Basic</span> or <span style="color:var(--standard);font-weight:700">Standard</span></td><td>앱 유지 + 프로모션 시작</td></tr>
+      <tr><td>직원 2~5명</td><td>학원, 식당, 카페</td><td><span style="color:var(--standard);font-weight:700">Standard</span> or <span style="color:var(--pro);font-weight:700">Pro</span></td><td>프로모션 + 리포트 필요</td></tr>
+      <tr><td>직원 5~10명</td><td>요양원, 보험GA</td><td><span style="color:var(--pro);font-weight:700">Pro</span></td><td>전체 관리 필요</td></tr>
+      <tr><td>법인/다지점</td><td>제조업, 프랜차이즈</td><td><span style="color:var(--enterprise);font-weight:700">Enterprise</span></td><td>전담 매니저 + 컨설팅 필수</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ══════════════════════════════
+  패널 4 — 수수료 체계
+══════════════════════════════ -->
+<div id="panel-commission" class="panel">
+  <div class="tag">수수료 체계</div>
+  <div class="sec-title">영업 파트너 <em>수수료 정책</em></div>
+  <div class="sec-desc">계약서에 명시되는 공식 정책. 계약 완료 즉시 지급. 상한선 없음.</div>
+
+  <!-- 기본 수수료 -->
+  <div class="g2" style="margin-bottom:20px">
+    <div class="fee-big">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">웹앱 계약 시</div>
+      <div class="fee-val">15만원</div>
+      <div class="fee-lbl">건당 고정 수수료</div>
+    </div>
+    <div class="fee-big">
+      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">네이티브 계약 시</div>
+      <div class="fee-val">25만원</div>
+      <div class="fee-lbl">건당 고정 수수료</div>
+    </div>
+  </div>
+
+  <!-- 전체 수수료 테이블 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">전체 수수료 체계</div>
+  <table style="margin-bottom:20px">
+    <thead>
+      <tr><th>단계</th><th>조건</th><th>수수료</th><th>예시</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span style="font-weight:800;color:var(--gold)">기본 — 웹앱</span></td>
+        <td>웹앱 신규 계약</td>
+        <td class="gold-td">건당 15만원</td>
+        <td style="color:var(--mid)">월 10건 = 150만원</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800;color:var(--gold)">기본 — 네이티브</span></td>
+        <td>네이티브 신규 계약</td>
+        <td class="gold-td">건당 25만원</td>
+        <td style="color:var(--mid)">월 10건 = 250만원</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800">추가 — 업그레이드</span></td>
+        <td>웹앱→네이티브 전환</td>
+        <td class="gold-td">건당 10만원</td>
+        <td style="color:var(--mid)">기존 고객 업그레이드</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800">추가 — 애드온</span></td>
+        <td>기능 추가 계약</td>
+        <td class="gold-td">추가금액의 20%</td>
+        <td style="color:var(--mid)">30만원 애드온 → 6만원</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800">추가 — 2호점</span></td>
+        <td>동일 고객 추가 지점</td>
+        <td class="gold-td">건당 15~25만원</td>
+        <td style="color:var(--mid)">신규 계약과 동일</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800;color:var(--standard)">잔류 — 30건+</span></td>
+        <td>누적 30건 달성 후</td>
+        <td class="gold-td">담당 MRR의 10%</td>
+        <td style="color:var(--mid)">30건 × 2.9만 = 월 8.7만</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800;color:var(--pro)">잔류 — 50건+</span></td>
+        <td>누적 50건 달성 후</td>
+        <td class="gold-td">담당 MRR의 15%</td>
+        <td style="color:var(--mid)">50건 × 2.9만 = 월 21.75만</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 월 수입 시뮬 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">월 수입 시뮬레이션</div>
+  <table style="margin-bottom:20px">
+    <thead>
+      <tr><th>시나리오</th><th>월 계약</th><th>수수료 수입</th><th>잔류 수수료 (30건 이후)</th><th>합계</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>웹앱만 10건</td><td>10건</td><td>150만원</td><td>+8.7만원</td><td class="gold-td">158.7만원</td></tr>
+      <tr><td>웹앱 10 + 네이티브 5</td><td>15건</td><td>275만원</td><td>+추가</td><td class="gold-td">280만원+</td></tr>
+      <tr><td>웹앱 15 + 네이티브 10</td><td>25건</td><td>475만원</td><td>+추가</td><td class="gold-td">490만원+</td></tr>
+      <tr><td>고단가 위주 (CareOn, FactoryOn)</td><td>10건</td><td>250만원+</td><td>+추가</td><td class="gold-td">260만원+</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 계약서 핵심 조항 -->
+  <div class="card" style="border-left:4px solid var(--gold)">
+    <div style="font-size:13px;font-weight:700;color:var(--dark);margin-bottom:12px">📋 계약서 핵심 조항</div>
+    <div class="g2">
+      <ul style="font-size:12px;color:var(--mid);line-height:2;padding-left:16px">
+        <li>수수료 지급: 계약금 입금 후 3영업일 내</li>
+        <li>잔류 수수료: 매월 말일 정산, 익월 5일 지급</li>
+        <li>고객 이탈 시: 해당 고객 잔류 수수료 중단</li>
+        <li>계약 취소: 7일 내 취소 시 수수료 반환</li>
+      </ul>
+      <ul style="font-size:12px;color:var(--mid);line-height:2;padding-left:16px">
+        <li>영업 구역: 제한 없음 (전국)</li>
+        <li>경업 금지: 동일 상품 타사 영업 금지</li>
+        <li>기밀 유지: 가격·고객정보 외부 유출 금지</li>
+        <li>계약 기간: 1년 자동 연장</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  패널 5 — 영업 멘트
+══════════════════════════════ -->
+<div id="panel-sales" class="panel">
+  <div class="tag">영업 멘트</div>
+  <div class="sec-title">바로 쓰는 <em>영업 스크립트</em></div>
+  <div class="sec-desc">문자 → 전화 → 시연 → 클로징 순서로 사용하세요.</div>
+
+  <!-- 문자 템플릿 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">📱 문자 템플릿 (업종별)</div>
+
+  <div class="script">
+    <div class="script-label">BeautyOn — 헤어샵·네일·피부</div>
+    <div class="script-text">[업체명] 원장님, 안녕하세요!
+헤어샵 전용 예약 앱 BeautyOn을 소개드립니다.
+✔ 노쇼 방지 자동 알림
+✔ 단골 고객 재방문 유도
+✔ 내 가게만의 전용 앱 (홈페이지+앱+관리자)
+
+샘플 보기: crescentstudio.co.kr
+문의: 카카오 @crescent_ai_studio</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">CarOn — 세차장·정비</div>
+    <div class="script-text">[업체명] 사장님, 안녕하세요!
+세차장 전용 예약 앱 CarOn을 소개드립니다.
+✔ 예약 공백 자동으로 채우기
+✔ 차량 이력으로 단골 재방문 유도
+✔ 포인트 적립 시스템
+
+샘플 보기: crescentstudio.co.kr
+문의: 카카오 @crescent_ai_studio</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">EduOn — 학원·교습소</div>
+    <div class="script-text">[업체명] 원장님, 안녕하세요!
+학원 관리 앱 EduOn을 소개드립니다.
+✔ 출결 자동 알림 (학부모 앱 연동)
+✔ 수강료 수납 자동화
+✔ 성적 리포트 자동 생성
+
+샘플 보기: crescentstudio.co.kr
+문의: 카카오 @crescent_ai_studio</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">ReviewOn — 식당·카페·F&B</div>
+    <div class="script-text">[업체명] 사장님, 안녕하세요!
+AI 리뷰 관리 서비스 ReviewOn을 소개드립니다.
+✔ 네이버·카카오·구글 리뷰 AI 분석
+✔ 부정 리뷰 원인 자동 파악
+✔ 리뷰 답글 자동 생성
+
+샘플 보기: crescentstudio.co.kr
+문의: 카카오 @crescent_ai_studio</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 전화 스크립트 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">📞 전화 스크립트</div>
+
+  <div class="script">
+    <div class="script-label">오프닝 (30초)</div>
+    <div class="script-text">"원장님(사장님), 안녕하세요. 저는 크레센트 스튜디오 파트너 [이름]이라고 합니다.
+혹시 문자 받아보셨어요? 헤어샵 전용 예약 앱 관련해서요.
+지금 30초만 시간 괜찮으시면, 샘플 하나만 보여드려도 될까요?"</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">샘플 시연 멘트</div>
+    <div class="script-text">"이게 실제로 [업체명]처럼 세팅된 모습이에요.
+고객이 이 링크로 들어오면 바로 예약할 수 있어요.
+원장님은 이 관리 화면에서 오늘 예약, 노쇼 현황을 한눈에 보실 수 있고요.
+
+지금 노쇼가 한 달에 몇 건이나 되세요?
+건당 5만원이라고 하면, 5건만 줄여도 월 25만원이잖아요.
+구독료가 2.9만원인데, 첫 달부터 본전 이상이에요."</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">연간 선계약 유도</div>
+    <div class="script-text">"참고로 1년 선계약 하시면 2개월 무료로 드려요.
+어차피 쓰실 거면 지금 결정하시는 게 이득이에요.
+Pro 플랜 기준 월 9.9만원인데, 연간 결제하시면 99만원이에요.
+실질적으로 월 8.25만원인 거예요."</div>
+  </div>
+
+  <div class="script">
+    <div class="script-label">클로징 멘트</div>
+    <div class="script-text">"지금 바로 결정 안 하셔도 되고요.
+일단 샘플을 [업체명]으로 맞춤 제작해서 보내드릴게요. 무료로요.
+써보시고 마음에 드시면 그때 계약하시면 됩니다.
+
+카카오 주소 알려주시면 48시간 안에 맞춤 샘플 보내드려요."</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 추가 매출 멘트 -->
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">💰 추가 매출 어필 멘트</div>
+  <div class="card gold">
+    <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:12px">가격 말고 매출을 얘기하세요</div>
+    <div style="display:flex;flex-direction:column;gap:8px;font-size:13px;color:var(--ink);line-height:1.8">
+      <div><strong>BeautyOn:</strong> "노쇼 5건 줄면 월 25만원 절약. 구독료 2.9만. 첫 달 22만원 이익."</div>
+      <div><strong>CarOn:</strong> "평일 빈 베이 하루 2건만 채워도 월 수십만원. 구독료는 2.9만원."</div>
+      <div><strong>EduOn:</strong> "원생 이탈 1명 방지하면 월 30만원. 수납 전화도 없어져요."</div>
+      <div><strong>ReviewOn:</strong> "별점 0.5 오르면 월 방문객 15% 증가. 매출 수백만원 차이."</div>
+      <div><strong>InsureOn:</strong> "갱신 1건 놓치면 수당 수십만원 손실. 자동 알림으로 막으세요."</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  패널 6 — ROI 자료
+══════════════════════════════ -->
+<div id="panel-roi" class="panel">
+  <div class="tag">ROI 자료</div>
+  <div class="sec-title">업종별 <em>ROI 계산서</em></div>
+  <div class="sec-desc">영업 시 출력해서 함께 보여주세요. 숫자로 설득하세요.</div>
+
+  <div class="g2">
+    <div class="roi">
+      <div class="roi-title" style="color:var(--beauty)">💗 BeautyOn</div>
+      <div class="roi-calc">
+        노쇼 월 5건 × 5만원 = 25만원 손실<br>
+        BeautyOn 도입 후 노쇼 80% 감소<br>
+        → 월 20만원 절약<br>
+        구독료 (Basic): 2.9만원/월
+      </div>
+      <div class="roi-result">✦ 첫 달부터 월 17만원 이익</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--car)">🟠 CarOn</div>
+      <div class="roi-calc">
+        평일 빈 베이 하루 2칸 × 1.5만원<br>
+        월 22일 기준 = 66만원 추가 매출 가능<br>
+        구독료 (Basic): 2.9만원/월
+      </div>
+      <div class="roi-result">✦ 월 63만원 추가 매출 가능</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--edu)">🟣 EduOn</div>
+      <div class="roi-calc">
+        원생 이탈 1명 = 월 30만원 손실<br>
+        학부모 신뢰도 향상으로 이탈 방지<br>
+        수납 전화 업무 월 10시간 절감<br>
+        구독료 (Standard): 5.9만원/월
+      </div>
+      <div class="roi-result">✦ 원생 유지 1명만 해도 본전 10배</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--review)">🟡 ReviewOn</div>
+      <div class="roi-calc">
+        별점 3.8 → 4.3 (AI 답글 관리)<br>
+        별점 0.5 상승 = 방문객 15% 증가<br>
+        월 매출 3,000만원 × 15% = 450만원 증가<br>
+        구독료 (Pro): 9.9만원/월
+      </div>
+      <div class="roi-result">✦ ROI 4,500% — 월 440만원 추가</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--care)">🟢 CareOn</div>
+      <div class="roi-calc">
+        입소 문의 월 5건 증가<br>
+        입소 1명 = 월 150만원+ 수익<br>
+        문의→입소 전환율 20% = 월 1명<br>
+        구독료 (Enterprise): 19.9만원/월
+      </div>
+      <div class="roi-result">✦ 입소 1명 추가 = 월 130만원 순이익</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--insure)">🔵 InsureOn</div>
+      <div class="roi-calc">
+        갱신 놓친 건 월 3건 × 30만원 수당<br>
+        = 월 90만원 손실 방지<br>
+        AI 약관 분석으로 영업 효율 2배<br>
+        구독료 (Pro): 9.9만원/월
+      </div>
+      <div class="roi-result">✦ 갱신 3건만 지켜도 월 80만원 추가</div>
+    </div>
+    <div class="roi">
+      <div class="roi-title" style="color:var(--factory)">⚫ FactoryOn</div>
+      <div class="roi-calc">
+        납기 클레임 1건 = 수백만원 손실<br>
+        불량률 30% 감소 → 재작업 비용 절감<br>
+        대형 ERP 월 수백만원 → 19.9만원<br>
+        구독료 (Enterprise): 19.9만원/월
+      </div>
+      <div class="roi-result">✦ ERP 대비 월 수백만원 절감</div>
+    </div>
+    <div class="card gold">
+      <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">📌 영업 시 활용법</div>
+      <div style="font-size:12px;color:var(--ink);line-height:1.9">
+        1. 사장님과 대화 중 현재 손실 파악<br>
+        2. 위 ROI 계산서 해당 항목 보여주기<br>
+        3. "구독료 ○○만원인데, 이것만 해결해도 본전이에요" 마무리<br>
+        4. 연간 선계약 혜택으로 클로징
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  패널 7 — 반론 대응
+══════════════════════════════ -->
+<div id="panel-objection" class="panel">
+  <div class="tag">반론 대응</div>
+  <div class="sec-title">자주 나오는 반론 <em>대응법</em></div>
+  <div class="sec-desc">미리 알고 가면 당황하지 않아요. 숙지 후 자연스럽게 말하세요.</div>
+
+  <div class="faq">
+    <div class="faq-q">누메이즈/카카오헤어샵 이미 쓰고 있어요.</div>
+    <div class="faq-a">그 앱들은 내 고객 옆에 경쟁 헤어샵이 같이 보여요. 수수료도 나가고요. BeautyOn은 내 가게만의 앱이라 경쟁자가 없고, 수수료도 없어요. "누메이즈로 새 손님 받고, BeautyOn으로 단골 만드세요." 같이 쓰시면 돼요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">왜 이렇게 싸요? 믿어도 되나요?</div>
+    <div class="faq-a">처음부터 만드는 게 아니라 업종별 완성형 템플릿에 브랜드만 세팅하는 구조예요. 에이전시는 300~500만원인데, 같은 품질을 1/3 가격에 드려요. 샘플 먼저 보시면 품질 직접 확인하실 수 있어요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">직원들이 쓸 수 있을지 모르겠어요.</div>
+    <div class="faq-a">배포 후 직접 사용 교육을 해드려요. 카카오톡처럼 직관적으로 만들어져 있어서 보통 30분이면 다 배우세요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">만들고 나서 고장나면 어떻게 해요?</div>
+    <div class="faq-a">구독료에 유지보수가 포함돼 있어요. 문제 발생 시 24시간 내 처리 보장이 계약서에 명시돼 있어요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">12개월 계약이 부담스러워요.</div>
+    <div class="faq-a">Basic 기준 월 2.9만원이라 12개월 해도 34.8만원이에요. 노쇼 한 달만 줄여도 본전이에요. 연간 선계약하시면 2개월 무료라 실제로 29만원이에요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">지금 바쁜데 나중에 연락할게요.</div>
+    <div class="faq-a">네, 물론이죠. 그럼 일단 샘플을 [업체명]으로 맞춤 제작해서 카카오로 보내드릴게요. 바쁘실 때 틈틈이 보시고, 결정은 그 다음에 하셔도 돼요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">다른 앱이랑 뭐가 달라요?</div>
+    <div class="faq-a">다른 앱은 "관리 툴"이에요. On 시리즈는 홈페이지 + 고객 앱 + 관리자 대시보드 3종 패키지예요. 내 브랜드로 된 전용 앱이라 고객이 설치하면 내 브랜드가 폰에 남아요.</div>
+  </div>
+  <div class="faq">
+    <div class="faq-q">구독 플랜 올릴 수 있지 않나요?</div>
+    <div class="faq-a">계약서에 명시된 구독료는 12개월간 고정이에요. 갱신 시점에 플랜 조정은 가능하지만, 계약 기간 중 일방적 인상은 없어요.</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+  패널 8 — 영업자 수수료 시뮬레이터
+══════════════════════════════ -->
+<div id="panel-sim" class="panel">
+  <div class="tag">수수료 시뮬레이터</div>
+  <div class="sec-title">내 월 수입이 <em>얼마나 될까?</em></div>
+  <div class="sec-desc">계약 건수를 조정해서 예상 수수료 수입을 확인하세요.</div>
+
+  <div class="sim-wrap">
+    <div class="sim-controls">
+      <div class="sl-group">
+        <div class="sl-label">월 웹앱 계약 건수 <span id="lw">5</span>건</div>
+        <input type="range" id="sl-web" min="0" max="30" value="5" oninput="calcSim()">
+      </div>
+      <div class="sl-group">
+        <div class="sl-label">월 네이티브 계약 건수 <span id="ln">2</span>건</div>
+        <input type="range" id="sl-native" min="0" max="20" value="2" oninput="calcSim()">
+      </div>
+      <div class="sl-group">
+        <div class="sl-label">월 업그레이드 건수 <span id="lu">1</span>건</div>
+        <input type="range" id="sl-upgrade" min="0" max="10" value="1" oninput="calcSim()">
+      </div>
+      <div class="sl-group">
+        <div class="sl-label">누적 계약 고객 수 <span id="lc">20</span>명</div>
+        <input type="range" id="sl-cumul" min="0" max="100" value="20" oninput="calcSim()">
+      </div>
+      <div style="background:var(--bg);border-radius:8px;padding:14px;margin-top:8px">
+        <div style="font-size:11px;color:var(--mid);line-height:1.9">
+          💡 <strong>잔류 수수료 안내</strong><br>
+          누적 30건+ → 담당 고객 MRR의 <strong>10%</strong> 매달 지급<br>
+          누적 50건+ → 담당 고객 MRR의 <strong>15%</strong> 매달 지급
+        </div>
+      </div>
+    </div>
+
+    <div class="sim-result">
+      <div class="res-label">이번 달 수수료 수입</div>
+      <div class="res-val" id="r-commission">—</div>
+      <div class="res-label">잔류 수수료 (누적 기반)</div>
+      <div class="res-val" id="r-residual" style="font-size:20px;margin-bottom:16px">—</div>
+      <div style="height:1px;background:rgba(255,255,255,.08);margin-bottom:14px"></div>
+      <div class="res-row"><span>웹앱 수수료 (15만 × <span id="rw">0</span>건)</span><strong id="r-web">—</strong></div>
+      <div class="res-row"><span>네이티브 수수료 (25만 × <span id="rn">0</span>건)</span><strong id="r-nat">—</strong></div>
+      <div class="res-row"><span>업그레이드 수수료 (10만 × <span id="ru">0</span>건)</span><strong id="r-upg">—</strong></div>
+      <div style="height:1px;background:rgba(255,255,255,.08);margin:10px 0"></div>
+      <div class="res-row"><span>이번 달 총 수입</span><strong id="r-total" style="color:var(--gold);font-size:16px">—</strong></div>
+      <div class="res-row"><span>연간 예상 수입</span><strong id="r-annual" style="color:var(--gold)">—</strong></div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- 시나리오 예시 -->
+  <div class="tag">시나리오 예시</div>
+  <div class="sec-title" style="margin-bottom:16px">이렇게 하면 <em>얼마 버나요?</em></div>
+  <table>
+    <thead>
+      <tr><th>시나리오</th><th>월 계약</th><th>이번 달 수수료</th><th>잔류 (30건+)</th><th>월 총 수입</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>입문</strong><div class="note">주말 부업</div></td>
+        <td>웹앱 3건</td>
+        <td>45만원</td>
+        <td>—</td>
+        <td class="gold-td">45만원</td>
+      </tr>
+      <tr>
+        <td><strong>성장</strong><div class="note">파트타임</div></td>
+        <td>웹앱 8 + 네이티브 2</td>
+        <td>170만원</td>
+        <td>+8만원</td>
+        <td class="gold-td">178만원</td>
+      </tr>
+      <tr>
+        <td><strong>안정</strong><div class="note">풀타임 전환</div></td>
+        <td>웹앱 15 + 네이티브 5</td>
+        <td>350만원</td>
+        <td>+25만원</td>
+        <td class="gold-td">375만원</td>
+      </tr>
+      <tr>
+        <td><strong>고단가</strong><div class="note">CareOn, FactoryOn 위주</div></td>
+        <td>네이티브 10건</td>
+        <td>250만원</td>
+        <td>+30만원</td>
+        <td class="gold-td">280만원</td>
+      </tr>
+      <tr>
+        <td><strong>누적 50건+</strong><div class="note">잔류 수수료 극대화</div></td>
+        <td>신규 5건</td>
+        <td>75만원</td>
+        <td>+75만원 (15%)</td>
+        <td class="gold-td">150만원</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="card gold" style="margin-top:16px">
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:8px">💡 잔류 수수료가 진짜 자산이에요</div>
+    <div style="font-size:13px;color:var(--ink);line-height:1.9">
+      한 번 계약한 고객이 계속 구독하는 한 매달 수수료가 들어와요.<br>
+      누적 50건 달성하면 신규 영업 없이도 <strong>월 50~100만원+</strong> 자동 수입이에요.<br>
+      고객을 잘 관리할수록 내 잔류 수수료가 늘어나요.
+    </div>
+  </div>
+</div></div>
+
+<script>
+function tab(id) {
+  document.querySelectorAll('.nav-btn').forEach((b,i) => {
+    b.classList.toggle('active', ['index','price','sub','commission','sales','roi','objection','sim'][i] === id);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+const plans = [
+  { name: 'Basic', web: 2.9, native: 2.9 },
+  { name: 'Standard', web: 5.9, native: 5.9 },
+  { name: 'Pro', web: 9.9, native: 9.9 },
+  { name: 'Enterprise', web: 19.9, native: 19.9 },
+];
+
+function fmt(n) {
+  if (n >= 10000) return (n/10000).toFixed(1) + '억';
+  if (n >= 1000) return (n/1000).toFixed(0) + '천만';
+  return Math.round(n) + '만';
+}
+
+function calcSim() {
+  const webN = +document.getElementById('sl-web').value;
+  const nativeN = +document.getElementById('sl-native').value;
+  const upgradeN = +document.getElementById('sl-upgrade').value;
+  const cumulN = +document.getElementById('sl-cumul').value;
+
+  document.getElementById('lw').textContent = webN;
+  document.getElementById('ln').textContent = nativeN;
+  document.getElementById('lu').textContent = upgradeN;
+  document.getElementById('lc').textContent = cumulN;
+  document.getElementById('rw').textContent = webN;
+  document.getElementById('rn').textContent = nativeN;
+  document.getElementById('ru').textContent = upgradeN;
+
+  const webFee = webN * 15;
+  const nativeFee = nativeN * 25;
+  const upgradeFee = upgradeN * 10;
+  const totalFee = webFee + nativeFee + upgradeFee;
+
+  // 잔류 수수료 계산 (평균 구독 5.9만원 기준)
+  const avgSub = 5.9;
+  const residualRate = cumulN >= 50 ? 0.15 : cumulN >= 30 ? 0.10 : 0;
+  const residual = cumulN * avgSub * residualRate;
+  const total = totalFee + residual;
+  const annual = total * 12;
+
+  document.getElementById('r-commission').textContent = fmt(totalFee) + '원/월';
+  document.getElementById('r-residual').textContent = cumulN >= 30 ? fmt(residual) + '원/월' : '30건 달성 후 지급';
+  document.getElementById('r-web').textContent = fmt(webFee) + '원';
+  document.getElementById('r-nat').textContent = fmt(nativeFee) + '원';
+  document.getElementById('r-upg').textContent = fmt(upgradeFee) + '원';
+  document.getElementById('r-total').textContent = fmt(total) + '원/월';
+  document.getElementById('r-annual').textContent = fmt(annual) + '원';
+}
+
+calcSim();
+</script>
+</body>
+</html>
