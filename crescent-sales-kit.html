@@ -178,6 +178,7 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
   <button class="nav-btn" onclick="tab('roi')">📊 ROI 자료</button>
   <button class="nav-btn" onclick="tab('objection')">💬 반론 대응</button>
   <button class="nav-btn" onclick="tab('sim')">💵 수수료 시뮬</button>
+  <button class="nav-btn" onclick="tab('prospecting')">🗺️ 업체 발굴</button>
 </nav>
 
 <!-- ══════════════════════════════
@@ -215,22 +216,17 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
       <div><div class="file-name">사업소개서 (HTML/인쇄용)</div><div class="file-desc">방문 영업 시 출력해서 사용. 8슬라이드 구성</div></div>
       <span class="file-tag done">완료</span>
     </a>
-    <a class="file-card" href="crescent-studio-deck.pptx" target="_blank">
+    <a class="file-card" href="https://docs.google.com/presentation/d/1aprXzNwjKceG8y2pw_Ngli2NoZokcp7T/edit?usp=sharing" target="_blank">
       <span class="file-icon">📊</span>
-      <div><div class="file-name">사업소개서 PPT</div><div class="file-desc">프레젠테이션용 파워포인트. 8슬라이드</div></div>
+      <div><div class="file-name">사업소개서 구글 슬라이드</div><div class="file-desc">프레젠테이션용 슬라이드. 브라우저에서 바로 열림</div></div>
       <span class="file-tag done">완료</span>
     </a>
-    <a class="file-card" href="crescent-partner-guide.html" target="_blank">
-      <span class="file-icon">🤝</span>
-      <div><div class="file-name">영업 파트너 가이드</div><div class="file-desc">외부 영업자용. 수수료, 멘트, FAQ 포함</div></div>
+    <a class="file-card" href="#panel-prospecting" onclick="switchPanel(event,"panel-prospecting")" target="_self">
+      <span class="file-icon">🗺️</span>
+      <div><div class="file-name">전국 업체 발굴 전략</div><div class="file-desc">카테고리별 업체 찾는 법 · 지역별 영업 접근법</div></div>
       <span class="file-tag key">핵심</span>
     </a>
-    <a class="file-card" href="on-series-market.html" target="_blank">
-      <span class="file-icon">📈</span>
-      <div><div class="file-name">시장조사 & 매출 시뮬레이터</div><div class="file-desc">업종별 시장규모, 경쟁사 분석, 수익 시뮬레이션</div></div>
-      <span class="file-tag done">완료</span>
-    </a>
-    <a class="file-card" href="crescentstudio.co.kr" target="_blank">
+    <a class="file-card" href="https://crescentstudio.co.kr/" target="_blank">
       <span class="file-icon">🌐</span>
       <div><div class="file-name">공식 웹사이트</div><div class="file-desc">crescentstudio.co.kr — 샘플 데모 전체 포함</div></div>
       <span class="file-tag key">핵심</span>
@@ -889,10 +885,80 @@ Pro 플랜 기준 월 9.9만원인데, 연간 결제하시면 99만원이에요.
   </div>
 </div></div>
 
+<!-- ══════════════════════════════
+  패널 — 전국 업체 발굴 전략
+══════════════════════════════ -->
+<div id="panel-prospecting" class="panel">
+  <div class="tag">영업 전략</div>
+  <div class="sec-title">전국 업체 <em>발굴 전략</em></div>
+  <div class="sec-desc">카테고리별 업체를 효율적으로 찾고 첫 접촉하는 방법을 정리했습니다.</div>
+
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">🔍 업체 찾는 채널</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+    <div class="card" style="padding:16px">
+      <div style="font-weight:700;margin-bottom:6px">📍 네이버 지도</div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">네이버 지도 → 업종 검색 (예: "강남구 헤어샵") → 리뷰 적은 곳 우선 타겟<br>리뷰·별점 낮은 업체 = 디지털 관리 안 되는 곳 = 우리 고객</div>
+    </div>
+    <div class="card" style="padding:16px">
+      <div style="font-weight:700;margin-bottom:6px">🗺️ 카카오맵</div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">카카오맵 → 카테고리 필터 → 전화번호 직접 수집<br>지도 줌 레벨 조절로 동네 단위 집중 공략 가능</div>
+    </div>
+    <div class="card" style="padding:16px">
+      <div style="font-weight:700;margin-bottom:6px">📱 인스타그램</div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">#헤어샵 #네일샵 #세차장 등 해시태그 검색<br>팔로워 적고 게시글 오래된 계정 = 마케팅 안 되는 곳 = 니즈 높음<br>DM으로 "샘플 무료 제작" 제안</div>
+    </div>
+    <div class="card" style="padding:16px">
+      <div style="font-weight:700;margin-bottom:6px">🏢 골목 직접 방문</div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">상권 밀집 지역 도보 영업 — 헤어샵 밀집 거리, 세차장 밀집 구역 등<br>명함 + QR 코드(샘플 링크) 지참. 원장님 한가한 오전 11시~12시 공략</div>
+    </div>
+    <div class="card" style="padding:16px">
+      <div style="font-weight:700;margin-bottom:6px">💼 소상공인마당 / 상권정보</div>
+      <div style="font-size:13px;color:var(--mid);line-height:1.8">소상공인마당(sg.sbiz.or.kr) → 업종별 현황 검색<br>서울시 상권분석서비스 → 지역·업종별 사업체 수 파악 → 공략 지역 선정</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">🎯 업종별 공략 포인트</div>
+  <div class="g2" style="margin-bottom:24px">
+    <div class="card" style="padding:14px;border-left:3px solid var(--beauty)">
+      <div style="font-weight:700;color:var(--beauty);margin-bottom:4px">💗 뷰티·헤어·네일</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.8">• 네이버 예약 없는 곳 우선<br>• 1인샵 원장님 = 혼자 다 하느라 바쁨<br>• "전화 안 받아도 예약 받을 수 있어요"<br>• 오전 10~11시 방문 영업 효과적</div>
+    </div>
+    <div class="card" style="padding:14px;border-left:3px solid var(--car)">
+      <div style="font-weight:700;color:var(--car);margin-bottom:4px">🟠 세차·정비</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.8">• 평일 낮 빈 베이 있는 곳<br>• "예약 없이 오는 손님만 받으세요?"<br>• 차량 이력 관리 니즈 강조<br>• 지도 앱에서 "셀프세차" 검색</div>
+    </div>
+    <div class="card" style="padding:14px;border-left:3px solid var(--edu)">
+      <div style="font-weight:700;color:var(--edu);margin-bottom:4px">🟣 교육·학원</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.8">• 소규모 개인 학원 (5~30명)<br>• "수납 전화 몇 번이나 하세요?"<br>• 학부모 앱 데모 직접 보여주기<br>• 학원가 상권 집중 공략</div>
+    </div>
+    <div class="card" style="padding:14px;border-left:3px solid var(--review)">
+      <div style="font-weight:700;color:var(--review);margin-bottom:4px">🟡 식당·카페</div>
+      <div style="font-size:12px;color:var(--mid);line-height:1.8">• 별점 3.5~4.0 사이 업체<br>• "리뷰 답글 직접 쓰세요?"<br>• AI 자동 답글 데모 즉시 시연<br>• 저녁 피크 전 오후 3~4시 공략</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">⚡ 하루 영업 루틴 (추천)</div>
+  <div class="card gold" style="margin-bottom:0">
+    <div style="font-size:12px;color:#92400e;line-height:2">
+      <strong>오전 9~10시</strong> — 네이버 지도·인스타로 오늘 공략 업체 20곳 리스트업<br>
+      <strong>오전 10~12시</strong> — 문자 발송 10건 + 전화 5건<br>
+      <strong>오후 2~4시</strong> — 현장 방문 영업 (점심 피크 후 여유 시간)<br>
+      <strong>오후 4~5시</strong> — 답장 온 건 즉시 샘플 링크 발송 + 팔로업<br>
+      <strong>저녁</strong> — 당일 반응 기록, 내일 리스트 준비
+    </div>
+  </div>
+</div>
+
 <script>
+function switchPanel(e, id) {
+  e.preventDefault();
+  tab(id);
+}
 function tab(id) {
   document.querySelectorAll('.nav-btn').forEach((b,i) => {
-    b.classList.toggle('active', ['index','price','sub','commission','sales','roi','objection','sim'][i] === id);
+    b.classList.toggle('active', ['index','price','sub','commission','sales','roi','objection','sim','prospecting'][i] === id);
   });
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
