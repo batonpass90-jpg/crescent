@@ -1,0 +1,39 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: #07080f;
+  color: #e2e8f0;
+  font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #0d1117 inset;
+  -webkit-text-fill-color: #e2e8f0;
+}
+
+@layer components {
+  .card { @apply bg-[#0d1117] rounded-xl border border-white/[0.06]; }
+  .btn-primary { @apply bg-gold text-bg font-semibold rounded-xl px-4 py-2.5 hover:bg-yellow-400 transition-colors disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer; }
+  .btn-secondary { @apply border border-gold text-gold font-semibold rounded-xl px-4 py-2.5 hover:bg-gold/10 transition-colors disabled:opacity-40 cursor-pointer; }
+  .btn-ghost { @apply text-sub font-medium rounded-xl px-4 py-2.5 hover:bg-white/5 hover:text-textPrimary transition-colors cursor-pointer; }
+  .input { @apply bg-[#0d1117] border border-white/[0.06] rounded-xl px-4 py-2.5 text-textPrimary placeholder-sub w-full focus:border-gold/40 transition-colors text-sm; }
+  .badge { @apply inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold; }
+  .sidebar-item { @apply flex items-center gap-3 px-4 py-3 rounded-xl text-sub font-medium transition-all hover:text-textPrimary hover:bg-white/5 cursor-pointer select-none; }
+  .sidebar-item.active { @apply text-gold bg-gold/10; }
+  .section-title { @apply text-xs font-semibold text-sub uppercase tracking-widest mb-3; }
+  .chip { @apply px-3 py-1.5 rounded-full border border-white/[0.06] text-xs font-medium text-sub hover:border-gold/40 hover:text-gold transition-colors cursor-pointer; }
+  .chip.active { @apply border-gold/40 text-gold bg-gold/10; }
+}
