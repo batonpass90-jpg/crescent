@@ -141,6 +141,38 @@ input[type=range] { width: 100%; accent-color: var(--gold); height: 4px; }
 .price-table tr:hover td { background: var(--bg); }
 .price-table td.gold { color: var(--gold); font-weight: 700; }
 .price-note { font-size: 10px; color: var(--mid); margin-top: 2px; }
+
+/* ── 구독 플랜 4단계 ── */
+.plan-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+@media(max-width:640px){ .plan-cards{ grid-template-columns:1fr 1fr; } }
+.plan { border-radius:12px; padding:18px 14px; position:relative; }
+.plan.basic    { background:#f8fafc; border:1.5px solid #e2e8f0; }
+.plan.standard { background:#f0fdf4; border:1.5px solid #86efac; }
+.plan.pro      { background:#faf5ff; border:1.5px solid #d8b4fe; }
+.plan.enterprise{ background:#fffbeb; border:1.5px solid #fde68a; }
+.plan-badge { position:absolute; top:10px; right:10px; font-size:9px; font-weight:800;
+  padding:2px 7px; border-radius:8px; background:#7c3aed; color:#fff; }
+.plan-name { font-size:10px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; }
+.plan.basic     .plan-name { color:#6b7280; }
+.plan.standard  .plan-name { color:#0d9488; }
+.plan.pro       .plan-name { color:#7c3aed; }
+.plan.enterprise .plan-name{ color:#d97706; }
+.plan-price { font-size:26px; font-weight:900; letter-spacing:-.03em; line-height:1; margin-bottom:2px; }
+.plan.basic     .plan-price { color:#1a1d24; }
+.plan.standard  .plan-price { color:#0d9488; }
+.plan.pro       .plan-price { color:#7c3aed; }
+.plan.enterprise .plan-price{ color:#d97706; }
+.plan-unit { font-size:10px; color:#6b7280; margin-bottom:12px; }
+.plan-list { list-style:none; display:flex; flex-direction:column; gap:5px; }
+.plan-list li { font-size:11px; color:#6b7280; display:flex; gap:6px; line-height:1.5; }
+.plan-list li::before { content:'✓'; font-weight:800; flex-shrink:0; }
+.plan.basic     .plan-list li::before { color:#6b7280; }
+.plan.standard  .plan-list li::before { color:#0d9488; }
+.plan.pro       .plan-list li::before { color:#7c3aed; }
+.plan.enterprise .plan-list li::before{ color:#d97706; }
+.plan-note { font-size:11px; color:#6b7280; background:#f9fafb; border:1px solid #e5e7eb;
+  border-radius:8px; padding:10px 14px; margin-bottom:20px; }
+
 </style>
 </head>
 <body>
