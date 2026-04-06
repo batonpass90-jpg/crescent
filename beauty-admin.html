@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>러브헤어 · 원장 관리</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f8;color:#1a1a2e;max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:72px}
+:root{--pk:#ff4d8d;--pk2:#ff80ab;--pk-bg:#fff0f6;--dark:#1a1a2e;--gray:#6b7280;--light:#f4f4f8;--white:#fff;--border:#efefef;--green:#22c55e;--orange:#f59e0b;--red:#ef4444;--purple:#8b5cf6;--blue:#3b82f6}
+
+/* ====== BOTTOM NAV ====== */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;height:64px}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:#c0c0c8;transition:color .15s;border:none;background:none;font-family:inherit}
+.bnav-item.active{color:var(--pk)}
+.bnav-icon{font-size:20px;line-height:1}
+.bnav-label{font-size:10px;font-weight:600}
+
+/* ====== PAGES ====== */
+.page{display:none;animation:fadeUp .22s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ====== 공통 카드 ====== */
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.card+.card{margin-top:10px}
+.card-title{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.card-link{font-size:12px;color:var(--pk);font-weight:600;cursor:pointer;background:none;border:none;font-family:inherit}
+.sec-pad{padding:0 16px}
+.sec-gap{height:10px}
+.sec-divider{height:8px;background:var(--light)}
+
+/* ====== TOP HEADER ====== */
+.top-header{background:#fff;padding:16px 20px 12px;position:sticky;top:0;z-index:60;border-bottom:1px solid var(--border)}
+.th-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:2px}
+.th-shop{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:5px}
+.th-shop-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.th-title{font-size:20px;font-weight:800;color:var(--dark)}
+.th-btns{display:flex;gap:8px}
+.th-btn{width:38px;height:38px;border-radius:50%;background:var(--light);border:none;display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;position:relative}
+.notif-badge{position:absolute;top:5px;right:5px;width:16px;height:16px;background:var(--red);border-radius:50%;font-size:9px;font-weight:800;color:#fff;display:flex;align-items:center;justify-content:center;border:1.5px solid #fff}
+
+/* ====== WEEK STRIP ====== */
+.week-strip{padding:10px 0 4px;background:#fff;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--border)}
+.week-strip::-webkit-scrollbar{display:none}
+.week-inner{display:flex;gap:4px;padding:0 16px;width:max-content}
+.wday{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;min-width:42px;padding:8px 4px;border-radius:14px;transition:all .15s;position:relative}
+.wday:active{transform:scale(.92)}
+.wday.active{background:var(--pk)}
+.wd-label{font-size:10px;font-weight:600;color:var(--gray)}
+.wday.active .wd-label{color:rgba(255,255,255,.8)}
+.wd-num{font-size:18px;font-weight:800;color:var(--dark)}
+.wday.active .wd-num{color:#fff}
+.wd-dot{width:5px;height:5px;border-radius:50%;background:var(--pk)}
+.wday.active .wd-dot{background:rgba(255,255,255,.6)}
+.wday:not(.has-dot) .wd-dot{opacity:0}
+.wday.has-dot .wd-dot{opacity:1}
+
+/* ====== STATS GRID ====== */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 16px}
+.sg-card{background:#fff;border-radius:14px;padding:10px 6px;text-align:center;box-shadow:0 1px 6px rgba(0,0,0,.05)}
+.sg-num{font-size:22px;font-weight:800;color:var(--dark)}
+.sg-label{font-size:10px;color:var(--gray);margin-top:2px;font-weight:500}
+.sg-num.pk{color:var(--pk)}
+.sg-num.green{color:var(--green)}
+.sg-num.orange{color:var(--orange)}
+.sg-num.red{color:var(--red)}
+
+/* ====== DESIGNER FILTER ====== */
+.designer-filter{display:flex;gap:10px;padding:8px 16px 12px;overflow-x:auto;scrollbar-width:none;background:#fff;border-bottom:1px solid var(--border)}
+.designer-filter::-webkit-scrollbar{display:none}
+.df-chip{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;flex-shrink:0;padding:6px 10px;border-radius:14px;transition:all .15s;border:1.5px solid transparent}
+.df-chip.active{background:var(--pk-bg);border-color:var(--pk)}
+.df-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;position:relative;border:2.5px solid transparent;transition:all .15s}
+.df-chip.active .df-avatar{border-color:var(--pk);box-shadow:0 0 0 3px rgba(255,77,141,.2)}
+.df-online{position:absolute;bottom:1px;right:1px;width:10px;height:10px;border-radius:50%;background:var(--green);border:2px solid #fff}
+.df-name{font-size:10px;font-weight:700;color:var(--gray);white-space:nowrap}
+.df-cnt{font-size:11px;font-weight:800;color:var(--pk)}
+.df-chip.active .df-name{color:var(--pk)}
+
+/* ====== APPOINTMENT CARDS ====== */
+.appt-list{display:grid;gap:8px;padding:12px 16px}
+.appt-card{background:#fff;border-radius:16px;padding:14px 14px;box-shadow:0 2px 10px rgba(0,0,0,.05);display:flex;align-items:flex-start;gap:10px;border-left:3px solid #eee;cursor:pointer;transition:all .15s;position:relative}
+.appt-card:active{transform:scale(.985)}
+.appt-card.done{border-left-color:var(--green)}
+.appt-card.progress{border-left-color:var(--pk);box-shadow:0 4px 20px rgba(255,77,141,.12);background:#fffafc;border:1.5px solid #ffd6e7;border-left:3px solid var(--pk)}
+.appt-card.upcoming{border-left-color:var(--orange)}
+.appt-card.noshew{border-left-color:var(--red);opacity:.65}
+.appt-card.empty{background:transparent;border:2px dashed #e0e0e0;border-left:2px dashed #e0e0e0;box-shadow:none;justify-content:center;align-items:center;padding:11px 14px}
+.empty-text{font-size:12px;color:#ccc;display:flex;align-items:center;gap:6px}
+.add-btn{background:var(--pk-bg);color:var(--pk);border:none;border-radius:50px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+
+.ac-time-col{min-width:50px;flex-shrink:0}
+.ac-time{font-size:14px;font-weight:800;color:var(--dark)}
+.ac-dur{font-size:10px;color:var(--gray);margin-top:2px;white-space:nowrap}
+
+.ac-body{flex:1;min-width:0}
+.ac-name{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:3px}
+.ac-service{font-size:12px;color:var(--gray);margin-bottom:7px}
+.ac-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center}
+.tag{padding:3px 8px;border-radius:50px;font-size:10px;font-weight:700;display:inline-flex;align-items:center;gap:3px}
+.tag-done{background:#dcfce7;color:#16a34a}
+.tag-prog{background:var(--pk-bg);color:var(--pk)}
+.tag-up{background:#fef3c7;color:#d97706}
+.tag-no{background:#fee2e2;color:var(--red)}
+.tag-n{background:#03c75a;color:#fff}
+.tag-k{background:#fee500;color:#3d3000}
+.tag-w{background:#e5e7eb;color:#374151}
+.tag-p{background:var(--pk-bg);color:var(--pk)}
+.tag-ph{background:#dbeafe;color:var(--blue)}
+
+.ac-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.ac-price{font-size:15px;font-weight:800;color:var(--dark)}
+.ac-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* ====== DASHBOARD ====== */
+.dash-header{background:linear-gradient(135deg,#1a0a12,#c9184a);padding:20px 20px 24px;position:relative;overflow:hidden}
+.dash-header::after{content:'✂️';position:absolute;right:16px;bottom:-6px;font-size:80px;opacity:.12}
+.dash-shop{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:3px;display:flex;align-items:center;gap:5px}
+.dash-shop-dot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:blink 1.5s infinite}
+.dash-name{font-size:22px;font-weight:800;color:#fff;margin-bottom:2px}
+.dash-date{font-size:12px;color:rgba(255,255,255,.7)}
+.dash-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.kpi-item{background:rgba(255,255,255,.15);backdrop-filter:blur(8px);border-radius:12px;padding:10px 8px;text-align:center}
+.kpi-num{font-size:20px;font-weight:800;color:#ffd6e7}
+.kpi-label{font-size:9px;color:rgba(255,255,255,.7);margin-top:2px}
+
+/* 매출 바 차트 */
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:80px}
+.bc-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bc-bar{width:100%;border-radius:4px 4px 0 0;background:var(--pk-bg);min-height:4px;transition:height .3s}
+.bc-bar.today{background:var(--pk)}
+.bc-label{font-size:9px;color:var(--gray)}
+.bc-val{font-size:9px;color:var(--pk);font-weight:700}
+
+/* 디자이너별 실적 */
+.designer-stats{display:grid;gap:8px}
+.ds-item{display:flex;align-items:center;gap:10px;padding:10px;background:var(--light);border-radius:12px}
+.ds-avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.ds-info{flex:1}
+.ds-name{font-size:13px;font-weight:700;color:var(--dark);margin-bottom:3px}
+.ds-bar-bg{height:5px;background:#e5e7eb;border-radius:3px;overflow:hidden}
+.ds-bar-fill{height:100%;border-radius:3px;background:var(--pk)}
+.ds-right{text-align:right;flex-shrink:0}
+.ds-sales{font-size:14px;font-weight:800;color:var(--dark)}
+.ds-cnt{font-size:10px;color:var(--gray)}
+
+/* 노쇼 */
+.noshew-list{display:grid;gap:6px}
+.ns-item{background:var(--light);border-radius:10px;padding:9px 12px;display:flex;justify-content:space-between;align-items:center;border-left:3px solid var(--red)}
+.ns-name{font-size:13px;font-weight:700;color:var(--dark)}
+.ns-detail{font-size:11px;color:var(--gray);margin-top:1px}
+.ns-time{font-size:12px;color:var(--red);font-weight:700}
+
+/* ====== 고객 관리 ====== */
+.search-bar{background:#fff;border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:8px;border:1.5px solid var(--border);margin-bottom:12px}
+.search-bar input{border:none;outline:none;font-size:14px;font-family:inherit;flex:1;color:var(--dark);background:transparent}
+.search-bar input::placeholder{color:#c0c0c8}
+
+.customer-tabs{display:flex;background:#fff;border-bottom:1px solid var(--border)}
+.ct{flex:1;padding:12px 0;font-size:12px;font-weight:700;color:var(--gray);text-align:center;border-bottom:2px solid transparent;cursor:pointer;transition:all .2s}
+.ct.active{color:var(--pk);border-bottom-color:var(--pk)}
+
+.cust-card{background:#fff;border-radius:14px;padding:13px 14px;box-shadow:0 1px 6px rgba(0,0,0,.05);display:flex;align-items:center;gap:10px}
+.cust-avatar-c{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.cust-name-c{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:2px}
+.cust-detail-c{font-size:11px;color:var(--gray)}
+.cust-right{margin-left:auto;text-align:right}
+.cust-label-c{font-size:10px;color:var(--gray);margin-bottom:2px}
+.cust-badge{padding:3px 9px;border-radius:50px;font-size:11px;font-weight:700}
+.cb-vip{background:#fef3c7;color:#d97706}
+.cb-new{background:#dcfce7;color:#16a34a}
+.cb-risk{background:#fee2e2;color:var(--red)}
+.cb-normal{background:var(--light);color:var(--gray)}
+.cust-visit{font-size:12px;font-weight:700;color:var(--pk);margin-top:3px}
+
+/* ====== 설정 ====== */
+.setting-section{padding:16px 16px 8px}
+.ss-title{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;padding-left:4px}
+.setting-list{background:#fff;border-radius:14px;overflow:hidden}
+.setting-item{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.setting-item:last-child{border:none}
+.si-left{display:flex;align-items:center;gap:12px}
+.si-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.si-text{font-size:14px;font-weight:600;color:var(--dark)}
+.si-sub{font-size:11px;color:var(--gray);margin-top:1px}
+.si-right{display:flex;align-items:center;gap:8px}
+.si-value{font-size:12px;color:var(--gray)}
+.si-arrow{font-size:14px;color:#c0c0c8}
+/* 토글 */
+.toggle{width:42px;height:24px;border-radius:12px;background:#e5e7eb;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle.on{background:var(--pk)}
+.toggle::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.toggle.on::after{left:21px}
+
+/* 운영시간 */
+.hours-grid{display:grid;gap:6px}
+.hour-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--light);border-radius:10px}
+.hour-day{font-size:12px;font-weight:700;color:var(--dark);width:28px}
+.hour-time{font-size:12px;color:var(--gray);flex:1}
+.hour-toggle{font-size:10px;font-weight:700;padding:3px 9px;border-radius:50px}
+.hour-toggle.open{background:#dcfce7;color:#16a34a}
+.hour-toggle.closed{background:#fee2e2;color:var(--red)}
+
+</style>
+</head>
+<body>
+
+<!-- ====== PAGE: 오늘 예약 ====== -->
+<div class="page active" id="pg-today">
+
+  <!-- TOP HEADER -->
+  <div class="top-header">
+    <div class="th-top">
+      <div>
+        <div class="th-shop"><span class="th-shop-dot"></span>✂️ 러브헤어 홍대점</div>
+        <div class="th-title">오늘의 예약</div>
+      </div>
+      <div class="th-btns">
+        <button class="th-btn" onclick="alert('알림 3건')">🔔<span class="notif-badge">3</span></button>
+        <button class="th-btn" onclick="goPage('settings')">⚙️</button>
+      </div>
+    </div>
+
+    <!-- 주간 달력 -->
+    <div class="week-strip" style="margin:0 -20px;padding:10px 20px 4px">
+      <div class="week-inner">
+        <div class="wday has-dot" onclick="selDay(this)"><div class="wd-label">월</div><div class="wd-num">20</div><div class="wd-dot"></div></div>
+        <div class="wday has-dot" onclick="selDay(this)"><div class="wd-label">화</div><div class="wd-num">21</div><div class="wd-dot"></div></div>
+        <div class="wday has-dot" onclick="selDay(this)"><div class="wd-label">수</div><div class="wd-num">22</div><div class="wd-dot"></div></div>
+        <div class="wday has-dot" onclick="selDay(this)"><div class="wd-label">목</div><div class="wd-num">23</div><div class="wd-dot"></div></div>
+        <div class="wday has-dot active" onclick="selDay(this)"><div class="wd-label">금</div><div class="wd-num">24</div><div class="wd-dot"></div></div>
+        <div class="wday has-dot" onclick="selDay(this)"><div class="wd-label">토</div><div class="wd-num">25</div><div class="wd-dot"></div></div>
+        <div class="wday" onclick="selDay(this)"><div class="wd-label">일</div><div class="wd-num">26</div><div class="wd-dot"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div class="stats-grid">
+    <div class="sg-card"><div class="sg-num pk">14</div><div class="sg-label">총 예약</div></div>
+    <div class="sg-card"><div class="sg-num green">9</div><div class="sg-label">완료</div></div>
+    <div class="sg-card"><div class="sg-num orange">4</div><div class="sg-label">대기</div></div>
+    <div class="sg-card"><div class="sg-num red">1</div><div class="sg-label">노쇼</div></div>
+  </div>
+
+  <!-- 디자이너 필터 -->
+  <div class="designer-filter">
+    <div class="df-chip active" onclick="filterDesigner(this,'all')">
+      <div class="df-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d);font-size:20px">👥</div>
+      <div class="df-name">전체</div>
+      <div class="df-cnt">14건</div>
+    </div>
+    <div class="df-chip" onclick="filterDesigner(this,'이지은')">
+      <div class="df-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">이<div class="df-online"></div></div>
+      <div class="df-name">이지은</div>
+      <div class="df-cnt">5건</div>
+    </div>
+    <div class="df-chip" onclick="filterDesigner(this,'김소희')">
+      <div class="df-avatar" style="background:linear-gradient(135deg,#9c1239,#e11d48)">김<div class="df-online"></div></div>
+      <div class="df-name">김소희</div>
+      <div class="df-cnt">4건</div>
+    </div>
+    <div class="df-chip" onclick="filterDesigner(this,'박나연')">
+      <div class="df-avatar" style="background:linear-gradient(135deg,#be185d,#db2777)">박<div class="df-online"></div></div>
+      <div class="df-name">박나연</div>
+      <div class="df-cnt">3건</div>
+    </div>
+  </div>
+
+  <!-- 예약 리스트 -->
+  <div class="appt-list">
+
+    <!-- 10:00 김민지 — 완료 -->
+    <div class="appt-card done" data-designer="이지은">
+      <div class="ac-time-col"><div class="ac-time">10:00</div><div class="ac-dur">50분</div></div>
+      <div class="ac-body">
+        <div class="ac-name">김민지</div>
+        <div class="ac-service">커트 + 드라이</div>
+        <div class="ac-tags">
+          <span class="tag tag-done">완료</span>
+          <span class="tag tag-p">이지은</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">35,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">이</div>
+      </div>
+    </div>
+
+    <!-- 11:00 박수연 — 완료 -->
+    <div class="appt-card done" data-designer="김소희">
+      <div class="ac-time-col"><div class="ac-time">11:00</div><div class="ac-dur">2시간</div></div>
+      <div class="ac-body">
+        <div class="ac-name">박수연</div>
+        <div class="ac-service">염색 (전체)</div>
+        <div class="ac-tags">
+          <span class="tag tag-done">완료</span>
+          <span class="tag tag-p">김소희</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">85,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#9c1239,#e11d48)">김</div>
+      </div>
+    </div>
+
+    <!-- 13:00 빈 슬롯 -->
+    <div class="appt-card empty">
+      <div class="empty-text">13:00 빈 슬롯<button class="add-btn" onclick="alert('예약 추가')">+ 예약 추가</button></div>
+    </div>
+
+    <!-- 14:00 이하은 — 시술중 -->
+    <div class="appt-card progress" data-designer="이지은">
+      <div class="ac-time-col"><div class="ac-time">14:00</div><div class="ac-dur">2시간 30분</div></div>
+      <div class="ac-body">
+        <div class="ac-name">이하은</div>
+        <div class="ac-service">펌 (디지털)</div>
+        <div class="ac-tags">
+          <span class="tag tag-prog">🔴 시술중</span>
+          <span class="tag tag-p">이지은</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">120,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">이</div>
+      </div>
+    </div>
+
+    <!-- 15:30 최유리 — 예약 -->
+    <div class="appt-card upcoming" data-designer="박나연">
+      <div class="ac-time-col"><div class="ac-time">15:30</div><div class="ac-dur">1시간</div></div>
+      <div class="ac-body">
+        <div class="ac-name">최유리</div>
+        <div class="ac-service">네일 젤 (손)</div>
+        <div class="ac-tags">
+          <span class="tag tag-up">예약</span>
+          <span class="tag tag-p">박나연</span>
+          <span class="tag tag-n">N 네이버</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">55,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#be185d,#db2777)">박</div>
+      </div>
+    </div>
+
+    <!-- 16:30 강지민 — 예약 -->
+    <div class="appt-card upcoming" data-designer="김소희">
+      <div class="ac-time-col"><div class="ac-time">16:30</div><div class="ac-dur">1시간 30분</div></div>
+      <div class="ac-body">
+        <div class="ac-name">강지민</div>
+        <div class="ac-service">탈색 + 부분 염색</div>
+        <div class="ac-tags">
+          <span class="tag tag-up">예약</span>
+          <span class="tag tag-p">김소희</span>
+          <span class="tag tag-k">K 카카오</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">95,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#9c1239,#e11d48)">김</div>
+      </div>
+    </div>
+
+    <!-- 17:00 오민혁 — 예약 -->
+    <div class="appt-card upcoming" data-designer="이지은">
+      <div class="ac-time-col"><div class="ac-time">17:00</div><div class="ac-dur">40분</div></div>
+      <div class="ac-body">
+        <div class="ac-name">오민혁</div>
+        <div class="ac-service">커트</div>
+        <div class="ac-tags">
+          <span class="tag tag-up">예약</span>
+          <span class="tag tag-p">이지은</span>
+          <span class="tag tag-ph">📞 전화</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">25,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">이</div>
+      </div>
+    </div>
+
+    <!-- 노쇼 -->
+    <div class="appt-card noshew" data-designer="박나연">
+      <div class="ac-time-col"><div class="ac-time">12:00</div><div class="ac-dur">—</div></div>
+      <div class="ac-body">
+        <div class="ac-name">한서현</div>
+        <div class="ac-service">매직스트레이트</div>
+        <div class="ac-tags">
+          <span class="tag tag-no">노쇼</span>
+          <span class="tag tag-p">박나연</span>
+        </div>
+      </div>
+      <div class="ac-right">
+        <div class="ac-price">100,000</div>
+        <div class="ac-avatar" style="background:linear-gradient(135deg,#be185d,#db2777)">박</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 예약 추가 FAB -->
+  <div style="position:fixed;bottom:80px;right:calc(50% - 215px + 16px);z-index:90">
+    <button onclick="alert('새 예약 등록')" style="width:52px;height:52px;border-radius:50%;background:var(--pk);color:#fff;border:none;font-size:24px;cursor:pointer;box-shadow:0 4px 16px rgba(255,77,141,.4);display:flex;align-items:center;justify-content:center">+</button>
+  </div>
+</div>
+
+<!-- ====== PAGE: 대시보드 ====== -->
+<div class="page" id="pg-dash">
+  <div class="dash-header">
+    <div class="dash-shop"><span class="dash-shop-dot"></span>러브헤어 홍대점</div>
+    <div class="dash-name">원장 대시보드</div>
+    <div class="dash-date">2026년 4월 24일 금요일</div>
+    <div class="dash-kpi">
+      <div class="kpi-item"><div class="kpi-num">425만</div><div class="kpi-label">이달 매출</div></div>
+      <div class="kpi-item"><div class="kpi-num">92%</div><div class="kpi-label">예약 달성률</div></div>
+      <div class="kpi-item"><div class="kpi-num">4.9★</div><div class="kpi-label">평균 별점</div></div>
+    </div>
+  </div>
+
+  <!-- 이번 주 매출 -->
+  <div style="padding:14px 16px 0">
+    <div class="card">
+      <div class="card-title">이번 주 매출 (만원) <button class="card-link">월별 보기</button></div>
+      <div class="bar-chart">
+        <div class="bc-wrap"><div class="bc-val">58</div><div class="bc-bar" style="height:46px"></div><div class="bc-label">월</div></div>
+        <div class="bc-wrap"><div class="bc-val">72</div><div class="bc-bar" style="height:58px"></div><div class="bc-label">화</div></div>
+        <div class="bc-wrap"><div class="bc-val">65</div><div class="bc-bar" style="height:52px"></div><div class="bc-label">수</div></div>
+        <div class="bc-wrap"><div class="bc-val">88</div><div class="bc-bar" style="height:70px"></div><div class="bc-label">목</div></div>
+        <div class="bc-wrap"><div class="bc-val">94</div><div class="bc-bar today" style="height:75px"></div><div class="bc-label">금(오늘)</div></div>
+        <div class="bc-wrap"><div class="bc-val">—</div><div class="bc-bar" style="height:4px;background:#f0f0f0"></div><div class="bc-label">토</div></div>
+        <div class="bc-wrap"><div class="bc-val">—</div><div class="bc-bar" style="height:4px;background:#f0f0f0"></div><div class="bc-label">일</div></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;margin-top:10px;padding:8px 4px;background:var(--light);border-radius:8px">
+        <span style="font-size:11px;color:var(--gray)">이번 주 누계</span>
+        <span style="font-size:13px;font-weight:800;color:var(--pk)">377만원</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 디자이너별 실적 -->
+  <div style="padding:10px 16px 0">
+    <div class="card">
+      <div class="card-title">디자이너별 이달 실적</div>
+      <div class="designer-stats">
+        <div class="ds-item">
+          <div class="ds-avatar" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">이</div>
+          <div class="ds-info">
+            <div class="ds-name">이지은 <span style="font-size:10px;color:var(--orange)">★4.9</span></div>
+            <div class="ds-bar-bg"><div class="ds-bar-fill" style="width:92%"></div></div>
+          </div>
+          <div class="ds-right"><div class="ds-sales">168만</div><div class="ds-cnt">47건</div></div>
+        </div>
+        <div class="ds-item">
+          <div class="ds-avatar" style="background:linear-gradient(135deg,#9c1239,#e11d48)">김</div>
+          <div class="ds-info">
+            <div class="ds-name">김소희 <span style="font-size:10px;color:var(--orange)">★5.0</span></div>
+            <div class="ds-bar-bg"><div class="ds-bar-fill" style="width:78%"></div></div>
+          </div>
+          <div class="ds-right"><div class="ds-sales">142만</div><div class="ds-cnt">38건</div></div>
+        </div>
+        <div class="ds-item">
+          <div class="ds-avatar" style="background:linear-gradient(135deg,#be185d,#db2777)">박</div>
+          <div class="ds-info">
+            <div class="ds-name">박나연 <span style="font-size:10px;color:var(--orange)">★4.8</span></div>
+            <div class="ds-bar-bg"><div class="ds-bar-fill" style="width:64%"></div></div>
+          </div>
+          <div class="ds-right"><div class="ds-sales">115만</div><div class="ds-cnt">31건</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 노쇼 & 단골 -->
+  <div style="padding:10px 16px 0">
+    <div class="card">
+      <div class="card-title">이달 노쇼 현황 <span style="font-size:12px;color:var(--red);font-weight:700">3건</span></div>
+      <div class="noshew-list">
+        <div class="ns-item"><div><div class="ns-name">한서현</div><div class="ns-detail">매직스트레이트 · 박나연</div></div><div class="ns-time">4.24 12:00</div></div>
+        <div class="ns-item"><div><div class="ns-name">정태준</div><div class="ns-detail">커트 · 이지은</div></div><div class="ns-time">4.18 14:00</div></div>
+        <div class="ns-item"><div><div class="ns-name">유승아</div><div class="ns-detail">염색 전체 · 김소희</div></div><div class="ns-time">4.10 11:00</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 단골 TOP 5 -->
+  <div style="padding:10px 16px 14px">
+    <div class="card">
+      <div class="card-title">단골 고객 TOP 5</div>
+      <div style="display:grid;gap:6px">
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="width:22px;height:22px;border-radius:50%;background:#fef3c7;color:#d97706;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">1</span><span style="flex:1;font-size:13px;font-weight:700">김민지</span><span style="font-size:11px;color:var(--gray)">이달 4회</span><span style="font-size:13px;font-weight:800;color:var(--pk)">142,000원</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="width:22px;height:22px;border-radius:50%;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">2</span><span style="flex:1;font-size:13px;font-weight:700">이하은</span><span style="font-size:11px;color:var(--gray)">이달 3회</span><span style="font-size:13px;font-weight:800;color:var(--pk)">320,000원</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="width:22px;height:22px;border-radius:50%;background:#fef3e2;color:#d97706;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">3</span><span style="flex:1;font-size:13px;font-weight:700">박수연</span><span style="font-size:11px;color:var(--gray)">이달 3회</span><span style="font-size:13px;font-weight:800;color:var(--pk)">255,000원</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)"><span style="width:22px;height:22px;border-radius:50%;background:var(--pk-bg);color:var(--pk);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">4</span><span style="flex:1;font-size:13px;font-weight:700">최유리</span><span style="font-size:11px;color:var(--gray)">이달 2회</span><span style="font-size:13px;font-weight:800;color:var(--pk)">110,000원</span></div>
+        <div style="display:flex;align-items:center;gap:10px;padding:7px 0"><span style="width:22px;height:22px;border-radius:50%;background:var(--pk-bg);color:var(--pk);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center">5</span><span style="flex:1;font-size:13px;font-weight:700">강지민</span><span style="font-size:11px;color:var(--gray)">이달 2회</span><span style="font-size:13px;font-weight:800;color:var(--pk)">190,000원</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== PAGE: 고객 관리 ====== -->
+<div class="page" id="pg-customers">
+  <div class="book-header" style="background:#fff;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50;display:flex;justify-content:space-between;align-items:center">
+    <div style="font-size:18px;font-weight:800;color:var(--dark)">고객 관리</div>
+    <div style="font-size:12px;color:var(--gray)">총 127명</div>
+  </div>
+
+  <div style="padding:14px 16px 0">
+    <div class="search-bar"><span>🔍</span><input type="text" placeholder="이름·연락처 검색"></div>
+  </div>
+
+  <div class="customer-tabs">
+    <div class="ct active" onclick="switchCustTab(this,0)">전체</div>
+    <div class="ct" onclick="switchCustTab(this,1)">VIP</div>
+    <div class="ct" onclick="switchCustTab(this,2)">신규</div>
+    <div class="ct" onclick="switchCustTab(this,3)">이탈위험</div>
+  </div>
+
+  <div style="padding:12px 16px;display:grid;gap:8px">
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#c9184a,#ff4d8d)">김</div><div><div class="cust-name-c">김민지</div><div class="cust-detail-c">이달 4회 방문 · 마지막: 오늘</div></div><div class="cust-right"><div class="cust-label-c">등급</div><span class="cust-badge cb-vip">VIP</span><div class="cust-visit">총 28회</div></div></div>
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#9c1239,#e11d48)">이</div><div><div class="cust-name-c">이하은</div><div class="cust-detail-c">이달 3회 방문 · 마지막: 오늘</div></div><div class="cust-right"><div class="cust-label-c">등급</div><span class="cust-badge cb-vip">VIP</span><div class="cust-visit">총 22회</div></div></div>
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#16a34a,#22c55e)">최</div><div><div class="cust-name-c">최유리</div><div class="cust-detail-c">이달 2회 방문 · 오늘 예약</div></div><div class="cust-right"><div class="cust-label-c">등급</div><span class="cust-badge cb-normal">일반</span><div class="cust-visit">총 8회</div></div></div>
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#3b82f6,#60a5fa)">강</div><div><div class="cust-name-c">강지민</div><div class="cust-detail-c">신규 가입 · 4월 10일 첫 방문</div></div><div class="cust-right"><div class="cust-label-c">등급</div><span class="cust-badge cb-new">신규</span><div class="cust-visit">총 2회</div></div></div>
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#d97706,#f59e0b)">한</div><div><div class="cust-name-c">한서현</div><div class="cust-detail-c">노쇼 1회 · 마지막: 3월 5일</div></div><div class="cust-right"><div class="cust-label-c">상태</div><span class="cust-badge cb-risk">이탈위험</span><div class="cust-visit">총 5회</div></div></div>
+    <div class="cust-card"><div class="cust-avatar-c" style="background:linear-gradient(135deg,#8b5cf6,#a78bfa)">박</div><div><div class="cust-name-c">박수연</div><div class="cust-detail-c">이달 3회 방문 · 마지막: 오늘</div></div><div class="cust-right"><div class="cust-label-c">등급</div><span class="cust-badge cb-vip">VIP</span><div class="cust-visit">총 17회</div></div></div>
+  </div>
+</div>
+
+<!-- ====== PAGE: 설정 ====== -->
+<div class="page" id="pg-settings">
+  <div style="background:#fff;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50">
+    <div style="font-size:18px;font-weight:800;color:var(--dark)">샵 설정</div>
+    <div style="font-size:11px;color:var(--gray);margin-top:2px">러브헤어 홍대점</div>
+  </div>
+
+  <div class="setting-section">
+    <div class="ss-title">기본 정보</div>
+    <div class="setting-list">
+      <div class="setting-item" onclick="alert('샵 정보 수정')">
+        <div class="si-left"><div class="si-icon" style="background:#fff0f6">🏠</div><div><div class="si-text">샵 정보</div><div class="si-sub">이름·주소·연락처</div></div></div>
+        <div class="si-right"><span class="si-arrow">›</span></div>
+      </div>
+      <div class="setting-item" onclick="alert('메뉴 관리')">
+        <div class="si-left"><div class="si-icon" style="background:#fff0f6">✂️</div><div><div class="si-text">메뉴·가격 관리</div><div class="si-sub">8개 메뉴 등록됨</div></div></div>
+        <div class="si-right"><span class="si-arrow">›</span></div>
+      </div>
+      <div class="setting-item" onclick="alert('디자이너 관리')">
+        <div class="si-left"><div class="si-icon" style="background:#fff0f6">👥</div><div><div class="si-text">디자이너 관리</div><div class="si-sub">3명 활성</div></div></div>
+        <div class="si-right"><span class="si-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="setting-section">
+    <div class="ss-title">예약 설정</div>
+    <div class="setting-list">
+      <div class="setting-item">
+        <div class="si-left"><div class="si-icon" style="background:#f0fdf4">🔔</div><div><div class="si-text">예약 알림</div><div class="si-sub">카카오 / 문자 발송</div></div></div>
+        <div class="si-right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <div class="setting-item">
+        <div class="si-left"><div class="si-icon" style="background:#fef3c7">⏰</div><div><div class="si-text">리마인더 발송</div><div class="si-sub">예약 1일 전 자동 발송</div></div></div>
+        <div class="si-right"><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+      <div class="setting-item">
+        <div class="si-left"><div class="si-icon" style="background:#fee2e2">❌</div><div><div class="si-text">취소 정책</div><div class="si-sub">24시간 전까지 무료</div></div></div>
+        <div class="si-right"><span class="si-value">수정</span><span class="si-arrow">›</span></div>
+      </div>
+      <div class="setting-item" onclick="alert('예약 간격 설정')">
+        <div class="si-left"><div class="si-icon" style="background:var(--pk-bg)">📅</div><div><div class="si-text">예약 슬롯 간격</div><div class="si-sub">현재: 30분</div></div></div>
+        <div class="si-right"><span class="si-value">30분</span><span class="si-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="setting-section">
+    <div class="ss-title">운영 시간</div>
+    <div style="background:#fff;border-radius:14px;overflow:hidden;padding:10px 14px">
+      <div class="hours-grid">
+        <div class="hour-row"><span class="hour-day">월</span><span class="hour-time">정기 휴무</span><span class="hour-toggle closed">휴무</span></div>
+        <div class="hour-row"><span class="hour-day">화</span><span class="hour-time">10:00 – 20:00</span><span class="hour-toggle open">영업</span></div>
+        <div class="hour-row"><span class="hour-day">수</span><span class="hour-time">10:00 – 20:00</span><span class="hour-toggle open">영업</span></div>
+        <div class="hour-row"><span class="hour-day">목</span><span class="hour-time">10:00 – 20:00</span><span class="hour-toggle open">영업</span></div>
+        <div class="hour-row"><span class="hour-day">금</span><span class="hour-time">10:00 – 20:00</span><span class="hour-toggle open">영업</span></div>
+        <div class="hour-row"><span class="hour-day">토</span><span class="hour-time">10:00 – 19:00</span><span class="hour-toggle open">영업</span></div>
+        <div class="hour-row"><span class="hour-day">일</span><span class="hour-time">10:00 – 18:00</span><span class="hour-toggle open">영업</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="setting-section">
+    <div class="ss-title">채널 연동</div>
+    <div class="setting-list">
+      <div class="setting-item">
+        <div class="si-left"><div class="si-icon" style="background:#e8f5e9">N</div><div><div class="si-text">네이버 예약</div><div class="si-sub">연동 완료</div></div></div>
+        <div class="si-right"><span style="font-size:11px;font-weight:700;color:var(--green)">연결됨</span><span class="si-arrow">›</span></div>
+      </div>
+      <div class="setting-item">
+        <div class="si-left"><div class="si-icon" style="background:#fffde7">K</div><div><div class="si-text">카카오 예약</div><div class="si-sub">연동 완료</div></div></div>
+        <div class="si-right"><span style="font-size:11px;font-weight:700;color:var(--green)">연결됨</span><span class="si-arrow">›</span></div>
+      </div>
+      <div class="setting-item" onclick="alert('인스타그램 연동')">
+        <div class="si-left"><div class="si-icon" style="background:#fce4ec">📸</div><div><div class="si-text">인스타그램</div><div class="si-sub">미연동</div></div></div>
+        <div class="si-right"><span style="font-size:11px;font-weight:700;color:var(--gray)">연결하기</span><span class="si-arrow">›</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:16px;text-align:center">
+    <button onclick="window.open('beauty-site.html','_self')" style="border:1.5px solid var(--pk);background:#fff;color:var(--pk);border-radius:12px;padding:12px 24px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-bottom:8px">🌐 샵 홈페이지 보기</button>
+    <button onclick="window.open('beauty-customer.html','_self')" style="border:1.5px solid var(--border);background:#fff;color:var(--gray);border-radius:12px;padding:12px 24px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;width:100%">📱 고객 앱 미리보기</button>
+  </div>
+  <div style="height:16px"></div>
+</div>
+
+<!-- ====== BOTTOM NAV ====== -->
+<nav class="bottom-nav">
+  <button class="bnav-item active" id="bn-today" onclick="goPage('today')">
+    <span class="bnav-icon">📅</span>
+    <span class="bnav-label">오늘예약</span>
+  </button>
+  <button class="bnav-item" id="bn-dash" onclick="goPage('dash')">
+    <span class="bnav-icon">📊</span>
+    <span class="bnav-label">대시보드</span>
+  </button>
+  <button class="bnav-item" id="bn-customers" onclick="goPage('customers')">
+    <span class="bnav-icon">👥</span>
+    <span class="bnav-label">고객관리</span>
+  </button>
+  <button class="bnav-item" id="bn-settings" onclick="goPage('settings')">
+    <span class="bnav-icon">⚙️</span>
+    <span class="bnav-label">설정</span>
+  </button>
+</nav>
+
+<script>
+const pages = ['today','dash','customers','settings'];
+function goPage(name) {
+  pages.forEach(p => {
+    document.getElementById('pg-'+p).classList.toggle('active', p===name);
+    const bn = document.getElementById('bn-'+p);
+    if(bn) bn.classList.toggle('active', p===name);
+  });
+  window.scrollTo(0,0);
+}
+
+function selDay(el) {
+  document.querySelectorAll('.wday').forEach(d=>d.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function filterDesigner(el, name) {
+  document.querySelectorAll('.df-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.appt-card').forEach(card => {
+    if(card.classList.contains('empty')) return;
+    if(name==='all') { card.style.display='flex'; return; }
+    card.style.display = card.dataset.designer===name ? 'flex' : 'none';
+  });
+}
+
+function switchCustTab(btn, idx) {
+  document.querySelectorAll('.ct').forEach((b,i)=>b.classList.toggle('active',i===idx));
+}
+</script>
+</body>
+</html>
