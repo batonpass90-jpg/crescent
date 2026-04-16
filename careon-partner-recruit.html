@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareOn 파트너 모집 — Crescent Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--teal:#0D9488;--teal2:#0F766E;--tl:#F0FDFA;--w:#FFFFFF;--g50:#F8F9FA;--g100:#F1F3F5;--g300:#DEE2E6;--g500:#868E96;--g700:#495057;--green:#2ECC71;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Pretendard',-apple-system,sans-serif;background:var(--g50);color:#111827;line-height:1.6;}
+
+  .hd{background:linear-gradient(135deg,#0d1f2d,#0d4a45);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(0,0,0,.3);}
+  .hd-logo{display:flex;align-items:center;gap:9px;}
+  .hd-icon{width:30px;height:30px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+  .hd-text{color:#fff;font-size:14px;font-weight:700;}
+  .hd-text span{color:#5eead4;}
+  .hd-badge{background:var(--teal);color:#fff;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+  .tabs{background:#fff;border-bottom:2px solid var(--g100);display:flex;overflow-x:auto;position:sticky;top:56px;z-index:99;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tab{padding:13px 18px;font-size:12px;font-weight:600;color:var(--g500);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .2s;}
+  .tab.active{color:var(--teal2);border-bottom-color:var(--teal);}
+
+  .wrap{max-width:720px;margin:0 auto;padding:20px 14px 60px;}
+  .sec{display:none;}
+  .sec.active{display:block;}
+
+  .card{background:#fff;border-radius:16px;padding:20px;margin-bottom:12px;border:1px solid var(--g100);}
+  .card-ttl{font-size:12px;font-weight:700;color:var(--g500);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+  .card-ttl::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;}
+
+  .hero{background:linear-gradient(135deg,#0d1f2d,#0d4a45);border-radius:18px;padding:24px;margin-bottom:14px;color:#fff;}
+  .hero-tag{display:inline-block;background:rgba(13,148,136,.25);border:1px solid rgba(13,148,136,.4);color:#5eead4;font-size:10px;font-weight:800;padding:3px 10px;border-radius:20px;margin-bottom:12px;}
+  .hero-ttl{font-size:22px;font-weight:800;line-height:1.3;letter-spacing:-.4px;}
+  .hero-ttl span{color:#5eead4;}
+  .hero-desc{font-size:13px;color:rgba(255,255,255,.65);margin-top:10px;line-height:1.7;}
+
+  .copy-box{background:var(--g50);border:1px solid var(--g300);border-radius:10px;padding:16px;font-size:13px;line-height:1.9;color:#111827;white-space:pre-wrap;position:relative;margin-bottom:10px;}
+  .copy-btn{position:absolute;top:10px;right:10px;background:var(--teal2);color:#fff;border:none;border-radius:7px;padding:5px 12px;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;}
+  .copy-btn:hover{background:var(--teal);}
+  .copy-btn.copied{background:var(--green);}
+  .tlabel{font-size:11px;font-weight:700;color:var(--g500);margin-bottom:6px;margin-top:14px;display:flex;align-items:center;gap:5px;}
+  .tlabel .dot{width:5px;height:5px;background:var(--teal);border-radius:50%;}
+
+  .alert{background:var(--tl);border:1.5px solid #99f6e4;border-radius:10px;padding:11px 13px;font-size:12px;color:var(--teal2);margin-bottom:12px;display:flex;gap:8px;}
+
+  .steps{list-style:none;}
+  .step{display:flex;gap:12px;padding:11px 0;border-bottom:1px solid var(--g100);}
+  .step:last-child{border-bottom:none;}
+  .step-n{width:24px;height:24px;background:var(--teal);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex-shrink:0;margin-top:2px;}
+  .step-ttl{font-size:13px;font-weight:700;margin-bottom:2px;}
+  .step-desc{font-size:12px;color:var(--g700);line-height:1.6;}
+
+  .obj-item{padding:12px 0;border-bottom:1px solid var(--g100);}
+  .obj-item:last-child{border-bottom:none;}
+  .obj-q{font-size:13px;font-weight:700;margin-bottom:5px;display:flex;gap:8px;align-items:flex-start;}
+  .obj-badge{background:var(--g100);color:var(--g700);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;flex-shrink:0;margin-top:1px;}
+  .obj-a{font-size:13px;color:var(--g700);line-height:1.7;}
+  .obj-a strong{color:#111827;}
+
+  .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;}
+  .scard{background:linear-gradient(135deg,#0d1f2d,#0d4a45);border-radius:10px;padding:12px 8px;text-align:center;color:#fff;}
+  .snum{font-size:18px;font-weight:800;color:#5eead4;}
+  .slbl{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;line-height:1.4;}
+
+  .link-item{display:flex;align-items:center;gap:10px;padding:11px;background:var(--g50);border-radius:10px;margin-bottom:8px;}
+  .link-icon{width:32px;height:32px;background:var(--tl);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+  .link-name{font-size:13px;font-weight:700;margin-bottom:1px;}
+  .link-url{font-size:11px;color:var(--g500);}
+
+  .comm-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .comm-card{background:var(--tl);border:1px solid #99f6e4;border-radius:12px;padding:14px;text-align:center;}
+  .comm-amt{font-size:20px;font-weight:800;color:var(--teal2);margin-bottom:3px;}
+  .comm-lbl{font-size:11px;color:var(--teal2);line-height:1.5;}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-logo">
+    <div class="hd-icon">🌿</div>
+    <div class="hd-text">Crescent <span>Studio</span> · <span>CareOn</span> 파트너 모집</div>
+  </div>
+  <div class="hd-badge">Partner Only</div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('intro',this)">📋 파트너 개요</div>
+  <div class="tab" onclick="switchTab('script',this)">💬 영업 스크립트</div>
+  <div class="tab" onclick="switchTab('objection',this)">🛡️ 거절 처리</div>
+  <div class="tab" onclick="switchTab('commission',this)">💰 수수료 안내</div>
+  <div class="tab" onclick="switchTab('links',this)">🔗 공유 자료</div>
+</div>
+
+<div class="wrap">
+
+  <!-- ── 탭 1: 개요 ── -->
+  <div class="sec active" id="tab-intro">
+    <div class="hero">
+      <div class="hero-tag">🌿 CareOn 파트너 프로그램</div>
+      <div class="hero-ttl">요양기관에 CareOn을 소개하고<br><span>매달 수수료를 받으세요</span></div>
+      <div class="hero-desc">계약 성사 시 초기 제작비의 20% + 구독 유지 기간 동안 월 수수료. 요양기관 원장님과 이미 연결이 있으시다면 바로 시작하실 수 있습니다.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">CareOn이란?</div>
+      <div class="alert">🌿 요양원·방문요양 기관 원장님을 위한 운영 자동화 솔루션</div>
+      <p style="font-size:13px;color:var(--g700);line-height:1.8;margin-bottom:14px;">크레센트 스튜디오가 만든 <strong style="color:#111827">요양기관 전용 SaaS</strong>입니다. 보호사 GPS 출퇴근, 케어일지 자동 공유, 수납 자동 알림, 운영 대시보드를 하나로 묶어 원장님의 서류·행정 업무를 대폭 줄여줍니다.</p>
+      <div class="sgrid">
+        <div class="scard"><div class="snum">80%</div><div class="slbl">가족 문의<br>전화 감소</div></div>
+        <div class="scard"><div class="snum">50%</div><div class="slbl">서류 작업<br>시간 절감</div></div>
+        <div class="scard"><div class="snum">2주</div><div class="slbl">도입 완료<br>기간</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">파트너에게 맞는 고객</div>
+      <ul class="steps">
+        <li class="step"><div class="step-n">①</div><div><div class="step-ttl">요양원 원장님</div><div class="step-desc">10~100명 규모. 서류 관리에 시간을 많이 쓰고 있고 보호사 관리가 어려운 원장님.</div></div></li>
+        <li class="step"><div class="step-n">②</div><div><div class="step-ttl">방문요양 센터 관리자</div><div class="step-desc">방문 보호사를 5명 이상 운용하는 센터. GPS 출퇴근·일지 자동화 수요가 큼.</div></div></li>
+        <li class="step"><div class="step-n">③</div><div><div class="step-ttl">노인주거시설 운영자</div><div class="step-desc">가족 소통·수납 관리·입소자 현황 파악이 필요한 소규모 시설.</div></div></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── 탭 2: 스크립트 ── -->
+  <div class="sec" id="tab-script">
+    <div class="card">
+      <div class="card-ttl">첫 접촉 문자 (카카오·문자)</div>
+      <div class="tlabel"><span class="dot"></span> 원장님 지인 루트</div>
+      <div class="copy-box" id="msg1">원장님, 안녕하세요 😊
+저 [이름]이에요. 요즘 요양원 운영하시면서 보호사 출퇴근 확인이나 서류 작업에 시간 많이 쓰시죠?
+
+제가 요즘 요양기관 원장님들한테 반응 좋은 시스템 하나 알게 됐는데, 관심 있으시면 잠깐 설명드려도 될까요? 부담 없이 보내드리는 거예요 🙏
+<button class="copy-btn" onclick="copyBox('msg1',this)">복사</button></div>
+
+      <div class="tlabel"><span class="dot"></span> 콜드 문자 (시설 연락처)</div>
+      <div class="copy-box" id="msg2">안녕하세요, [시설명] 원장님께
+
+요양기관 운영 자동화 솔루션 CareOn을 소개드리고 싶어 연락드렸습니다.
+
+✅ 보호사 GPS 출퇴근 자동 기록
+✅ 케어일지 → 가족 자동 공유
+✅ 수납 미납자 자동 안내
+
+월 5.9만원으로 서류 작업 절반을 줄여드립니다. 2주 내 세팅 완료, 담당자가 직접 교육해드려요.
+
+무료 상담 자료 보내드려도 될까요?
+<button class="copy-btn" onclick="copyBox('msg2',this)">복사</button></div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">첫 미팅 오프닝 (방문/화상)</div>
+      <div class="copy-box" id="msg3">원장님, 오늘 시간 내주셔서 감사합니다.
+
+요양기관 운영하시면서 보호사 출퇴근 확인이나 케어일지 정리에 하루에 얼마나 시간 쓰세요?
+
+(잠깐 듣기)
+
+맞아요, 대부분 원장님들이 그 부분에서 하루 2~3시간씩 쓰고 계세요. 저희 CareOn을 쓰시면 그 시간의 절반 이상을 줄여드릴 수 있고요, 가족들한테 오는 "오늘 어르신 식사는요?" 전화도 80%까지 줄어들거든요.
+
+오늘 딱 세 가지만 보여드리면 돼요.
+<button class="copy-btn" onclick="copyBox('msg3',this)">복사</button></div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">핵심 기능 설명 (3분)</div>
+      <div class="tlabel"><span class="dot"></span> 포인트 1 — GPS 출퇴근</div>
+      <div class="copy-box" id="msg4">지금 보호사 선생님들 출퇴근을 어떻게 확인하세요? 전화? 카카오?
+
+CareOn은 보호사가 방문지에서 앱으로 체크하면 GPS 위치 자동 인증이 돼요. 원장님은 대시보드에서 지금 누가 어디 있는지 실시간으로 확인하실 수 있고요. 허위 출근이 자동으로 차단됩니다.
+<button class="copy-btn" onclick="copyBox('msg4',this)">복사</button></div>
+
+      <div class="tlabel"><span class="dot"></span> 포인트 2 — 케어일지 자동 공유</div>
+      <div class="copy-box" id="msg5">가족분들한테 전화 많이 오시죠? "오늘 식사 어떻게 하셨어요?", "약은 드셨어요?" 이런 거.
+
+CareOn은 보호사가 일지 작성하면 가족분들 핸드폰으로 바로 공유가 돼요. 전화 자체가 안 오게 되는 거죠. 원장님 입장에서도 케어 품질을 증명하는 자료가 자동으로 쌓이는 거고요.
+<button class="copy-btn" onclick="copyBox('msg5',this)">복사</button></div>
+
+      <div class="tlabel"><span class="dot"></span> 포인트 3 — 수납 자동 알림</div>
+      <div class="copy-box" id="msg6">미납 어르신 관리는 어떻게 하세요? 직접 연락하시나요?
+
+CareOn은 납부 기한이 되면 가족분들한테 자동으로 안내 문자가 가요. 원장님이 직접 연락 안 하셔도 되고, 미납자 목록이 대시보드에 자동으로 정리됩니다.
+<button class="copy-btn" onclick="copyBox('msg6',this)">복사</button></div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">클로징 멘트</div>
+      <div class="copy-box" id="msg7">원장님, 세 가지 다 필요하신 기능이죠?
+
+초기 세팅비가 49만원이고, 이후 매달 5.9만원이에요. 2주 안에 세팅 다 해드리고, 교육까지 포함입니다.
+
+서류 작업에 쓰시는 시간이 한 달에 30시간이라 치면, 그게 얼마 짜리 시간인지 생각해보시면 금방 결정이 나실 거예요.
+
+오늘 상담 신청서 작성하시면 제가 담당자 연결해드릴게요.
+<button class="copy-btn" onclick="copyBox('msg7',this)">복사</button></div>
+    </div>
+  </div>
+
+  <!-- ── 탭 3: 거절 처리 ── -->
+  <div class="sec" id="tab-objection">
+    <div class="card">
+      <div class="card-ttl">자주 나오는 거절과 대응</div>
+
+      <div class="obj-item">
+        <div class="obj-q"><span class="obj-badge">가격</span>"5.9만원이 부담돼요"</div>
+        <div class="obj-a">원장님, 서류 작업 하루 1시간만 줄어도 <strong>한 달 22시간</strong>이거든요. 원장님 시간을 시간당 3만원으로만 쳐도 <strong>66만원</strong>이에요. 5.9만원으로 66만원을 버는 구조입니다. 게다가 가족 전화 응대 줄고, 미납 관리도 자동화되니까요.</div>
+      </div>
+
+      <div class="obj-item">
+        <div class="obj-q"><span class="obj-badge">시간</span>"지금 바쁜데 세팅할 시간이 없어요"</div>
+        <div class="obj-a">원장님이 따로 하실 일이 없어요. <strong>저희가 다 세팅</strong>해드리고, 마지막에 30분 교육만 받으시면 됩니다. 바쁘실수록 더 필요한 게 이런 시스템이에요.</div>
+      </div>
+
+      <div class="obj-item">
+        <div class="obj-q"><span class="obj-badge">필요성</span>"지금도 엑셀로 잘 하고 있어요"</div>
+        <div class="obj-a">잘 하고 계신 건데, 그 엑셀 작업에 하루 몇 시간 쓰세요? 보호사가 늘거나 입소자가 늘면 엑셀만으로는 한계가 오거든요. <strong>지금이 가장 좋은 타이밍</strong>이에요, 나중에 복잡해지기 전에.</div>
+      </div>
+
+      <div class="obj-item">
+        <div class="obj-q"><span class="obj-badge">신뢰</span>"처음 듣는 회사인데 믿을 수 있나요?"</div>
+        <div class="obj-a">크레센트 스튜디오는 요양기관 외에도 미용실, 학원 등 여러 분야에 솔루션을 납품하고 있고요. 계약 전에 실제 데모를 직접 보여드릴 수 있어요. 2주 사용해보시고 안 맞으면 해지도 자유롭게 하실 수 있습니다.</div>
+      </div>
+
+      <div class="obj-item">
+        <div class="obj-q"><span class="obj-badge">IT</span>"IT를 잘 몰라서요"</div>
+        <div class="obj-a">원장님이 IT를 아실 필요 없어요. 보호사 선생님들도 스마트폰만 쓸 줄 아시면 돼요. <strong>30분 화상 교육</strong>으로 다 알려드리고, 이후에도 문의하시면 바로 대응해드립니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 탭 4: 수수료 ── -->
+  <div class="sec" id="tab-commission">
+    <div class="card">
+      <div class="card-ttl">수수료 구조</div>
+      <div class="comm-grid">
+        <div class="comm-card">
+          <div class="comm-amt">20%</div>
+          <div class="comm-lbl">계약 성사 시<br>초기 제작비의 20%<br>(최소 9.8만원)</div>
+        </div>
+        <div class="comm-card">
+          <div class="comm-amt">10%</div>
+          <div class="comm-lbl">구독 유지 기간<br>월 구독료의 10%<br>(월 5,900원)</div>
+        </div>
+      </div>
+      <p style="font-size:12px;color:var(--g500);margin-top:12px;line-height:1.7;">예시: 원장님 1명 계약 시 → 초기 9.8만원 + 매달 5,900원 (유지되는 한 계속). 10명 계약 유지 시 월 59,000원 패시브 수입.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">정산 방식</div>
+      <ul class="steps">
+        <li class="step"><div class="step-n">1</div><div><div class="step-ttl">계약 성사 확인</div><div class="step-desc">원장님이 계약서 서명 + 초기 결제 완료 시점에 파트너에게 알림</div></div></li>
+        <li class="step"><div class="step-n">2</div><div><div class="step-ttl">초기 수수료 지급</div><div class="step-desc">계약 완료 후 7영업일 내 파트너 계좌로 이체</div></div></li>
+        <li class="step"><div class="step-n">3</div><div><div class="step-ttl">월 수수료 자동 정산</div><div class="step-desc">매월 말일 기준 유지 중인 계약 수 집계 후 익월 5일 내 지급</div></div></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">예상 수익 시뮬레이션</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:4px;">
+        <div style="background:var(--g50);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:600;">월 1건 계약 유지</div>
+          <div style="font-size:15px;font-weight:800;color:var(--teal2);">초기 9.8만 + 월 0.59만</div>
+        </div>
+        <div style="background:var(--g50);border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:600;">월 5건 계약 유지</div>
+          <div style="font-size:15px;font-weight:800;color:var(--teal2);">초기 49만 + 월 2.95만</div>
+        </div>
+        <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:14px;display:flex;justify-content:space-between;align-items:center;">
+          <div style="font-size:13px;font-weight:700;color:var(--teal2);">월 10건 계약 유지</div>
+          <div style="font-size:15px;font-weight:800;color:var(--teal2);">초기 98만 + 월 5.9만</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── 탭 5: 공유 자료 ── -->
+  <div class="sec" id="tab-links">
+    <div class="card">
+      <div class="card-ttl">고객에게 공유할 자료</div>
+
+      <div class="link-item">
+        <div class="link-icon">🌿</div>
+        <div>
+          <div class="link-name">CareOn 원장님 소개 페이지</div>
+          <div class="link-url">crescentstudio.co.kr/careon-client.html</div>
+        </div>
+      </div>
+      <div class="link-item">
+        <div class="link-icon">📊</div>
+        <div>
+          <div class="link-name">CareOn 데모 (관리자 대시보드)</div>
+          <div class="link-url">crescentstudio.co.kr/demo-09-careon.html</div>
+        </div>
+      </div>
+      <div class="link-item">
+        <div class="link-icon">🌙</div>
+        <div>
+          <div class="link-name">크레센트 스튜디오 소개</div>
+          <div class="link-url">crescentstudio.co.kr</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-ttl">파트너 문의</div>
+      <div class="alert">💬 파트너 전용 카카오채널 또는 이메일로 문의해주세요</div>
+      <div class="link-item">
+        <div class="link-icon">✉️</div>
+        <div>
+          <div class="link-name">파트너 문의 이메일</div>
+          <div class="link-url">batonpass90@gmail.com</div>
+        </div>
+      </div>
+      <div class="link-item">
+        <div class="link-icon">💬</div>
+        <div>
+          <div class="link-name">크레센트 스튜디오 카카오톡</div>
+          <div class="link-url">카카오톡 채널 검색: 크레센트스튜디오</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- wrap -->
+
+<script>
+function switchTab(id,el){
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+}
+function copyBox(id,btn){
+  const box=document.getElementById(id);
+  const txt=box.innerText.replace('복사','').trim();
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='복사됨 ✓';
+    btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='복사';btn.classList.remove('copied');},2000);
+  });
+}
+</script>
+</body>
+</html>
