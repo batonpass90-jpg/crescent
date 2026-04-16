@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareOn — 작업지시서 데모</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0D9488;--teal2:#0F766E;--tl:#F0FDFA;
+  --blue:#2563EB;--blue-l:#EFF6FF;
+  --green:#16A34A;--green-l:#F0FDF4;
+  --amber:#D97706;--amber-l:#FFFBEB;
+  --red:#DC2626;--red-l:#FEF2F2;
+  --purple:#7C3AED;--purple-l:#F5F3FF;
+  --g50:#F9FAFB;--g100:#F3F4F6;--g200:#E5E7EB;--g400:#9CA3AF;--g500:#6B7280;--g700:#374151;--g900:#111827;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Pretendard',-apple-system,sans-serif;background:#f0faf9;color:var(--g900);font-size:14px;line-height:1.5;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes slideIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:none}}
+@keyframes checkPop{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+/* ── 상단 탭 ── */
+.top-bar{background:linear-gradient(135deg,#0d1f2d,#0d4a45);padding:14px 20px;display:flex;align-items:center;gap:10px;}
+.top-icon{width:30px;height:30px;background:var(--teal);border-radius:8px;display:grid;place-items:center;font-size:16px;}
+.top-title{color:#fff;font-size:14px;font-weight:700;}
+.top-title span{color:#5eead4;}
+.top-badge{margin-left:auto;background:rgba(255,255,255,.15);color:#5eead4;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid rgba(94,234,212,.3);}
+
+.view-tabs{background:#fff;border-bottom:1px solid var(--g200);display:flex;overflow-x:auto;scrollbar-width:none;}
+.view-tabs::-webkit-scrollbar{display:none;}
+.vtab{padding:13px 18px;font-size:12px;font-weight:600;color:var(--g400);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;}
+.vtab.active{color:var(--teal);border-bottom-color:var(--teal);}
+.vtab-badge{display:inline-block;background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;margin-left:4px;vertical-align:middle;}
+
+.view{display:none;}
+.view.active{display:block;animation:fadeUp .25s ease;}
+
+/* ── 뷰 1: 관리자 — 지시서 발행 ── */
+.mgr-wrap{max-width:720px;margin:0 auto;padding:20px 16px 60px;}
+.mgr-head{background:#fff;border-radius:14px;padding:18px 20px;margin-bottom:16px;border:1px solid var(--g200);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.mgr-head-info h2{font-size:16px;font-weight:800;margin-bottom:3px;}
+.mgr-head-info p{font-size:12px;color:var(--g500);}
+.btn{padding:9px 18px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;font-family:inherit;transition:all .15s;}
+.btn-teal{background:var(--teal);color:#fff;}
+.btn-teal:hover{background:var(--teal2);}
+.btn-outline{background:#fff;border:1px solid var(--g200);color:var(--g700);}
+.btn-outline:hover{background:var(--g50);}
+
+/* 지시서 카드 */
+.wo-card{background:#fff;border-radius:14px;border:1px solid var(--g200);margin-bottom:12px;overflow:hidden;transition:box-shadow .2s;}
+.wo-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.07);}
+.wo-card-head{padding:14px 18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--g100);cursor:pointer;}
+.wo-num{font-size:10px;font-weight:700;color:var(--g400);min-width:52px;}
+.wo-resident{font-size:14px;font-weight:700;flex:1;}
+.wo-worker-tag{font-size:11px;color:var(--g500);}
+.badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;white-space:nowrap;}
+.badge-green{background:var(--green-l);color:var(--green);}
+.badge-teal{background:var(--tl);color:var(--teal2);}
+.badge-amber{background:var(--amber-l);color:var(--amber);}
+.badge-red{background:var(--red-l);color:var(--red);}
+.badge-blue{background:var(--blue-l);color:var(--blue);}
+.badge-purple{background:var(--purple-l);color:var(--purple);}
+
+.wo-detail{padding:16px 18px;display:none;border-top:1px solid var(--g100);}
+.wo-detail.open{display:block;animation:fadeUp .2s ease;}
+.wo-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.wo-item{background:var(--g50);border-radius:10px;padding:12px;}
+.wo-item-lbl{font-size:10px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;}
+.wo-item-val{font-size:13px;font-weight:600;}
+.checklist{display:flex;flex-direction:column;gap:6px;}
+.chk-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--g50);border-radius:8px;}
+.chk-box{width:18px;height:18px;border-radius:4px;border:2px solid var(--g200);display:grid;place-items:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.chk-box.checked{background:var(--teal);border-color:var(--teal);}
+.chk-box.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:800;}
+.chk-text{font-size:13px;flex:1;}
+.chk-text.done{text-decoration:line-through;color:var(--g400);}
+.wo-note{background:var(--amber-l);border:1px solid #fcd34d;border-radius:8px;padding:10px 12px;font-size:12px;color:var(--amber);margin-top:10px;line-height:1.7;}
+.wo-actions{display:flex;gap:8px;margin-top:14px;}
+
+/* 새 지시서 발행 폼 */
+.new-wo-wrap{background:#fff;border-radius:14px;border:1px solid var(--g200);padding:20px;margin-bottom:12px;}
+.form-row{margin-bottom:14px;}
+.form-label{font-size:11px;font-weight:700;color:var(--g500);margin-bottom:5px;display:block;}
+.form-input{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;transition:border .15s;}
+.form-input:focus{border-color:var(--teal);}
+.form-select{width:100%;background:var(--g50);border:1px solid var(--g200);border-radius:8px;padding:10px 12px;font-size:13px;font-family:inherit;outline:none;cursor:pointer;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.chk-edit{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
+.chk-pill{display:flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--g200);border-radius:20px;font-size:12px;cursor:pointer;transition:all .15s;user-select:none;}
+.chk-pill.sel{background:var(--tl);border-color:var(--teal);color:var(--teal2);font-weight:700;}
+.send-result{background:var(--green-l);border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;font-size:13px;color:var(--green);display:none;animation:fadeUp .3s ease;}
+.send-result.show{display:flex;align-items:center;gap:10px;}
+
+/* ── 뷰 2: 보호사 앱 ── */
+.app-scene{padding:24px 16px;display:flex;justify-content:center;align-items:flex-start;gap:28px;flex-wrap:wrap;}
+.phone-frame{background:#1a1a2e;border-radius:38px;padding:12px;box-shadow:0 32px 80px rgba(0,0,0,.25);flex-shrink:0;}
+.phone-screen{background:#fff;border-radius:28px;overflow:hidden;width:248px;height:530px;display:flex;flex-direction:column;}
+.phone-notch{background:#1a1a2e;height:22px;display:flex;align-items:center;justify-content:center;}
+.phone-notch-bar{width:70px;height:4px;background:#2e2e4e;border-radius:2px;}
+
+.app-header{background:linear-gradient(135deg,var(--teal),#0891b2);padding:14px 14px 16px;color:#fff;}
+.app-h-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.app-h-name{font-size:13px;font-weight:800;}
+.app-h-sub{font-size:9px;opacity:.7;margin-top:1px;}
+.app-h-av{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.25);display:grid;place-items:center;font-size:11px;font-weight:700;}
+.app-status{background:rgba(255,255,255,.15);border-radius:7px;padding:7px 10px;font-size:9px;display:flex;justify-content:space-between;}
+.live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite;vertical-align:middle;margin-right:3px;}
+
+.app-body{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px;}
+.app-body::-webkit-scrollbar{display:none;}
+.app-sec-label{font-size:10px;font-weight:700;color:var(--g700);}
+
+/* 지시서 수신 카드 */
+.wo-recv{background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:10px;}
+.wo-recv-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:7px;}
+.wo-recv-name{font-size:12px;font-weight:800;color:var(--g900);}
+.wo-recv-time{font-size:9px;color:var(--teal2);}
+.wo-recv-worker{font-size:9px;color:var(--teal2);margin-bottom:7px;}
+.mini-checklist{display:flex;flex-direction:column;gap:4px;}
+.mini-chk{display:flex;align-items:center;gap:5px;font-size:10px;}
+.mini-chk-box{width:14px;height:14px;border-radius:3px;border:1.5px solid var(--g200);display:grid;place-items:center;flex-shrink:0;cursor:pointer;transition:all .15s;}
+.mini-chk-box.done{background:var(--teal);border-color:var(--teal);}
+.mini-chk-box.done::after{content:'✓';color:#fff;font-size:8px;font-weight:800;}
+.mini-chk-text.done{text-decoration:line-through;color:var(--g400);}
+.app-submit-btn{background:var(--teal);color:#fff;border:none;border-radius:7px;padding:8px;font-size:10px;font-weight:700;cursor:pointer;font-family:inherit;width:100%;margin-top:8px;transition:all .15s;}
+.app-submit-btn:hover{background:var(--teal2);}
+.app-submit-btn:disabled{background:var(--green);cursor:default;}
+
+.app-note-card{background:var(--amber-l);border-radius:8px;padding:8px 10px;font-size:9px;color:var(--amber);line-height:1.6;}
+
+.app-tabbar{background:#fff;border-top:1px solid var(--g100);display:flex;padding:5px 0 3px;}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;}
+.tab-icon{font-size:16px;}
+.tab-label{font-size:8px;color:var(--g400);}
+.tab-item.active .tab-label{color:var(--teal);}
+
+/* 설명 패널 */
+.desc-panel{background:#fff;border-radius:14px;padding:22px;max-width:300px;box-shadow:0 4px 16px rgba(0,0,0,.06);align-self:center;}
+.desc-panel h3{font-size:15px;font-weight:800;margin-bottom:8px;}
+.desc-panel p{font-size:12px;color:var(--g500);line-height:1.75;margin-bottom:16px;}
+.feat-list2{display:flex;flex-direction:column;gap:10px;}
+.feat2{display:flex;gap:10px;align-items:flex-start;}
+.feat2-icon{width:30px;height:30px;border-radius:7px;display:grid;place-items:center;font-size:14px;flex-shrink:0;}
+.feat2-title{font-size:12px;font-weight:700;margin-bottom:2px;}
+.feat2-desc{font-size:11px;color:var(--g400);line-height:1.5;}
+
+/* ── 뷰 3: 가족 공유 결과 ── */
+.family-wrap{max-width:520px;margin:0 auto;padding:20px 16px 60px;}
+.family-phone-wrap{display:flex;justify-content:center;margin-bottom:24px;}
+.family-phone{background:#f9fafb;border:2px solid var(--g200);border-radius:28px;padding:10px;width:280px;box-shadow:0 8px 32px rgba(0,0,0,.08);}
+.family-phone-top{background:var(--g900);border-radius:20px 20px 0 0;padding:10px 14px 14px;color:#fff;}
+.fam-phone-bar{width:60px;height:3px;background:#333;border-radius:2px;margin:0 auto 10px;}
+.fam-msg-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.fam-av{width:26px;height:26px;border-radius:50%;background:var(--teal);display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0;}
+.fam-sender{font-size:11px;font-weight:700;}
+.fam-sub{font-size:9px;opacity:.6;margin-top:1px;}
+.fam-msg-body{background:rgba(255,255,255,.08);border-radius:10px;padding:10px;font-size:11px;color:rgba(255,255,255,.85);line-height:1.7;}
+.fam-phone-body{background:#fff;border-radius:0 0 20px 20px;padding:14px;}
+.report-sec{margin-bottom:14px;}
+.report-sec-title{font-size:11px;font-weight:700;color:var(--g400);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;}
+.report-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--g100);}
+.report-row:last-child{border-bottom:none;}
+.report-lbl{font-size:12px;color:var(--g700);}
+.report-val{font-size:12px;font-weight:700;}
+.report-chk{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700;}
+.done-icon{width:16px;height:16px;border-radius:4px;background:var(--teal);display:grid;place-items:center;color:#fff;font-size:9px;flex-shrink:0;}
+.report-note{background:var(--amber-l);border-radius:8px;padding:9px 11px;font-size:11px;color:var(--amber);line-height:1.6;}
+.fam-footer{text-align:center;padding:10px 0 0;border-top:1px solid var(--g100);margin-top:10px;}
+.fam-footer-text{font-size:10px;color:var(--g400);}
+.fam-reply-btn{background:var(--teal);color:#fff;border:none;border-radius:7px;padding:8px 16px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;width:100%;}
+
+.share-timeline{background:#fff;border-radius:14px;border:1px solid var(--g200);padding:18px;margin-top:16px;}
+.timeline-title{font-size:13px;font-weight:700;margin-bottom:14px;}
+.tl-item{display:flex;gap:12px;padding-bottom:14px;position:relative;}
+.tl-item:not(:last-child)::before{content:'';position:absolute;left:11px;top:24px;width:2px;height:calc(100% - 10px);background:var(--g100);}
+.tl-dot{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:11px;flex-shrink:0;}
+.tl-content{flex:1;padding-top:2px;}
+.tl-label{font-size:13px;font-weight:700;margin-bottom:2px;}
+.tl-desc{font-size:12px;color:var(--g500);}
+.tl-time{font-size:11px;color:var(--g400);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="top-icon">🌿</div>
+  <div class="top-title">Care<span>On</span> — 작업지시서 데모</div>
+  <div class="top-badge">Demo</div>
+</div>
+
+<div class="view-tabs">
+  <div class="vtab active" onclick="switchView('mgr',this)">📋 관리자 — 지시서 발행</div>
+  <div class="vtab" onclick="switchView('app',this)">📱 보호사 앱 — 수행</div>
+  <div class="vtab" onclick="switchView('family',this)">👨‍👩‍👧 가족 공유 결과 <span class="vtab-badge">NEW</span></div>
+</div>
+
+<!-- ══ 뷰 1: 관리자 ══ -->
+<div class="view active" id="view-mgr">
+  <div class="mgr-wrap">
+
+    <div class="mgr-head">
+      <div class="mgr-head-info">
+        <h2>오늘의 케어 지시서</h2>
+        <p>2026년 4월 16일 · 햇살요양원 성남점 · 총 4건</p>
+      </div>
+      <button class="btn btn-teal" onclick="toggleNewForm()">+ 새 지시서 발행</button>
+    </div>
+
+    <!-- 새 지시서 발행 폼 -->
+    <div class="new-wo-wrap" id="new-wo-form" style="display:none;">
+      <div style="font-size:14px;font-weight:800;margin-bottom:16px;color:var(--g900);">새 작업지시서 발행</div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">입소자 선택</label>
+          <select class="form-select" id="f-resident">
+            <option>이순자 어르신 (304호)</option>
+            <option>박종철 어르신 (201호)</option>
+            <option>최영순 어르신 (108호)</option>
+            <option>정동호 어르신 (215호)</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label class="form-label">담당 보호사</label>
+          <select class="form-select" id="f-worker">
+            <option>김미영 보호사</option>
+            <option>이지현 보호사</option>
+            <option>박수진 보호사</option>
+            <option>최민정 보호사</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">방문 시간</label>
+          <input type="time" class="form-input" value="09:00" id="f-time">
+        </div>
+        <div class="form-row">
+          <label class="form-label">방문 시간 (분)</label>
+          <select class="form-select" id="f-duration">
+            <option>60분</option>
+            <option>90분</option>
+            <option selected>120분</option>
+            <option>180분</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">케어 항목 선택</label>
+        <div class="chk-edit">
+          <div class="chk-pill sel" onclick="this.classList.toggle('sel')">🍚 식사 보조</div>
+          <div class="chk-pill sel" onclick="this.classList.toggle('sel')">💊 투약 관리</div>
+          <div class="chk-pill" onclick="this.classList.toggle('sel')">🛁 목욕·위생</div>
+          <div class="chk-pill sel" onclick="this.classList.toggle('sel')">🚶 이동·보행</div>
+          <div class="chk-pill" onclick="this.classList.toggle('sel')">🩺 활력징후 측정</div>
+          <div class="chk-pill" onclick="this.classList.toggle('sel')">🧠 인지 활동</div>
+          <div class="chk-pill sel" onclick="this.classList.toggle('sel')">📝 케어일지 작성</div>
+          <div class="chk-pill" onclick="this.classList.toggle('sel')">🚗 외출 동행</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">특이사항 / 추가 지시</label>
+        <textarea class="form-input" rows="2" placeholder="예: 혈당 측정 후 기록 필수. 보호자 요청사항 전달." style="resize:none;" id="f-note"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-teal" onclick="submitForm()" style="flex:1;">보호사에게 발송</button>
+        <button class="btn btn-outline" onclick="toggleNewForm()">취소</button>
+      </div>
+      <div class="send-result" id="send-result">
+        <span style="font-size:20px;">✅</span>
+        <div><strong>발송 완료!</strong> 김미영 보호사에게 지시서가 전송됐습니다. 보호사 앱에서 확인할 수 있어요.</div>
+      </div>
+    </div>
+
+    <!-- 기존 지시서 목록 -->
+    <div class="wo-card">
+      <div class="wo-card-head" onclick="toggleDetail('d1')">
+        <span class="wo-num">WO-001</span>
+        <span class="wo-resident">이순자 어르신 <span style="font-size:11px;color:var(--g400);">304호</span></span>
+        <span class="wo-worker-tag">김미영 보호사</span>
+        <span class="badge badge-green" style="margin-left:8px;">완료</span>
+      </div>
+      <div class="wo-detail" id="d1">
+        <div class="wo-grid">
+          <div class="wo-item"><div class="wo-item-lbl">방문 시간</div><div class="wo-item-val">09:00 · 2시간</div></div>
+          <div class="wo-item"><div class="wo-item-lbl">완료 시간</div><div class="wo-item-val">11:04 <span style="font-size:11px;color:var(--green);">✓</span></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:8px;">케어 항목</div>
+        <div class="checklist">
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">🍚 식사 보조 — 죽 3/4 섭취</span></div>
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">💊 투약 관리 — 오전 약 복용 완료</span></div>
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">🚶 이동·보행 — 복도 산책 10분</span></div>
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">📝 케어일지 작성 — 가족 공유 완료</span></div>
+        </div>
+        <div class="wo-note">📋 보호사 메모: 기분 양호하심. 손녀 얘기를 많이 하셨습니다. 혈압 124/78 정상.</div>
+        <div class="wo-actions">
+          <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">일지 보기</button>
+          <button class="btn btn-outline" style="font-size:12px;padding:7px 14px;">가족 공유 확인</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="wo-card">
+      <div class="wo-card-head" onclick="toggleDetail('d2')">
+        <span class="wo-num">WO-002</span>
+        <span class="wo-resident">박종철 어르신 <span style="font-size:11px;color:var(--g400);">201호</span></span>
+        <span class="wo-worker-tag">이지현 보호사</span>
+        <span class="badge badge-teal" style="margin-left:8px;">진행중</span>
+      </div>
+      <div class="wo-detail" id="d2">
+        <div class="wo-grid">
+          <div class="wo-item"><div class="wo-item-lbl">방문 시간</div><div class="wo-item-val">11:00 · 2시간</div></div>
+          <div class="wo-item"><div class="wo-item-lbl">현재 상태</div><div class="wo-item-val"><span class="live-dot" style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite;margin-right:4px;vertical-align:middle;"></span>방문 중</div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:8px;">케어 항목</div>
+        <div class="checklist">
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">🍚 식사 보조 — 완료</span></div>
+          <div class="chk-row"><div class="chk-box checked"></div><span class="chk-text done">🩺 활력징후 측정 — 완료</span></div>
+          <div class="chk-row"><div class="chk-box" id="mgr-chk1" onclick="toggleMgrChk('mgr-chk1','mgr-txt1')"></div><span class="chk-text" id="mgr-txt1">🧠 인지 활동 — 진행중</span></div>
+          <div class="chk-row"><div class="chk-box" id="mgr-chk2" onclick="toggleMgrChk('mgr-chk2','mgr-txt2')"></div><span class="chk-text" id="mgr-txt2">📝 케어일지 작성</span></div>
+        </div>
+        <div class="wo-note">⚠️ 재활 중인 왼쪽 무릎 상태 확인 필수. 통증 호소 시 즉시 보고.</div>
+      </div>
+    </div>
+
+    <div class="wo-card">
+      <div class="wo-card-head" onclick="toggleDetail('d3')">
+        <span class="wo-num">WO-003</span>
+        <span class="wo-resident">최영순 어르신 <span style="font-size:11px;color:var(--g400);">108호</span></span>
+        <span class="wo-worker-tag">박수진 보호사</span>
+        <span class="badge badge-amber" style="margin-left:8px;">대기중</span>
+      </div>
+      <div class="wo-detail" id="d3">
+        <div class="wo-grid">
+          <div class="wo-item"><div class="wo-item-lbl">방문 예정</div><div class="wo-item-val">14:00 · 1시간 30분</div></div>
+          <div class="wo-item"><div class="wo-item-lbl">보호사 상태</div><div class="wo-item-val" style="color:var(--amber);">이동 중</div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:8px;">케어 항목</div>
+        <div class="checklist">
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">🍚 식사 보조</span></div>
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">🛁 목욕·위생</span></div>
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">📝 케어일지 작성</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wo-card">
+      <div class="wo-card-head" onclick="toggleDetail('d4')">
+        <span class="wo-num">WO-004</span>
+        <span class="wo-resident">정동호 어르신 <span style="font-size:11px;color:var(--g400);">215호</span></span>
+        <span class="wo-worker-tag">김미영 보호사</span>
+        <span class="badge badge-red" style="margin-left:8px;">⚠️ 주의</span>
+      </div>
+      <div class="wo-detail" id="d4">
+        <div class="wo-grid">
+          <div class="wo-item"><div class="wo-item-lbl">방문 예정</div><div class="wo-item-val">15:30 · 1시간</div></div>
+          <div class="wo-item"><div class="wo-item-lbl">알림</div><div class="wo-item-val" style="color:var(--red);">혈당 이상</div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;color:var(--g400);margin-bottom:8px;">케어 항목</div>
+        <div class="checklist">
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">🩺 활력징후 측정 (혈당 포함)</span></div>
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">💊 투약 관리</span></div>
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">🍚 식사 보조 (당뇨식)</span></div>
+          <div class="chk-row"><div class="chk-box"></div><span class="chk-text">📝 케어일지 작성</span></div>
+        </div>
+        <div class="wo-note" style="background:var(--red-l);border-color:#fca5a5;color:var(--red);">🚨 오전 혈당 240 측정됨. 방문 즉시 재측정 후 즉시 보고. 보호자(딸 정은지)에게 알림 발송 완료.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ 뷰 2: 보호사 앱 ══ -->
+<div class="view" id="view-app">
+  <div class="app-scene">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="phone-notch"><div class="phone-notch-bar"></div></div>
+        <div class="app-header">
+          <div class="app-h-top">
+            <div>
+              <div class="app-h-sub">요양보호사 👋</div>
+              <div class="app-h-name">김미영 보호사</div>
+            </div>
+            <div class="app-h-av">미</div>
+          </div>
+          <div class="app-status">
+            <span><span class="live-dot"></span>이순자 어르신 방문 중</span>
+            <span>09:00 출근 완료</span>
+          </div>
+        </div>
+
+        <div class="app-body">
+          <div class="app-sec-label">📋 오늘의 케어 지시서</div>
+
+          <!-- WO-001 수행 카드 -->
+          <div class="wo-recv">
+            <div class="wo-recv-top">
+              <span class="wo-recv-name">이순자 어르신 (304호)</span>
+              <span class="wo-recv-time">09:00</span>
+            </div>
+            <div class="wo-recv-worker">WO-001 · 방문 2시간</div>
+            <div class="mini-checklist" id="app-checklist">
+              <div class="mini-chk">
+                <div class="mini-chk-box done" id="ac1" onclick="toggleAppChk('ac1','at1')"></div>
+                <span class="mini-chk-text done" id="at1">🍚 식사 보조</span>
+              </div>
+              <div class="mini-chk">
+                <div class="mini-chk-box done" id="ac2" onclick="toggleAppChk('ac2','at2')"></div>
+                <span class="mini-chk-text done" id="at2">💊 투약 관리</span>
+              </div>
+              <div class="mini-chk">
+                <div class="mini-chk-box done" id="ac3" onclick="toggleAppChk('ac3','at3')"></div>
+                <span class="mini-chk-text done" id="at3">🚶 이동·보행</span>
+              </div>
+              <div class="mini-chk">
+                <div class="mini-chk-box" id="ac4" onclick="toggleAppChk('ac4','at4')"></div>
+                <span class="mini-chk-text" id="at4">📝 케어일지 작성</span>
+              </div>
+            </div>
+            <button class="app-submit-btn" id="app-submit-btn" onclick="submitCare()">케어 완료 보고 및 가족 공유</button>
+          </div>
+
+          <div class="app-note-card">⚠️ 특이사항: 기분·컨디션 상태 일지에 기록 필수</div>
+
+          <div class="app-sec-label">다음 방문</div>
+          <div style="background:#fff;border:1px solid var(--g100);border-radius:8px;padding:8px 10px;font-size:10px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+              <div style="font-weight:700;">정동호 어르신 (215호)</div>
+              <div style="color:var(--red);margin-top:2px;">⚠️ 혈당 주의</div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:var(--g500);">15:30</div>
+          </div>
+        </div>
+
+        <div class="app-tabbar">
+          <div class="tab-item active"><span class="tab-icon">🏠</span><span class="tab-label">홈</span></div>
+          <div class="tab-item"><span class="tab-icon">📅</span><span class="tab-label">일정</span></div>
+          <div class="tab-item"><span class="tab-icon">📝</span><span class="tab-label">일지</span></div>
+          <div class="tab-item"><span class="tab-icon">💬</span><span class="tab-label">메시지</span></div>
+          <div class="tab-item"><span class="tab-icon">👤</span><span class="tab-label">마이</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="desc-panel">
+      <h3>보호사 앱 — 작업지시서 수행</h3>
+      <p>관리자가 발행한 케어 지시서를 보호사 앱에서 바로 받고, 항목을 체크하면서 케어를 진행합니다. 완료 보고 즉시 가족에게 공유됩니다.</p>
+      <div class="feat-list2">
+        <div class="feat2">
+          <div class="feat2-icon" style="background:var(--tl);">📋</div>
+          <div>
+            <div class="feat2-title">지시서 즉시 수신</div>
+            <div class="feat2-desc">관리자 발행 즉시 앱 알림. 케어 항목·특이사항을 미리 확인하고 방문합니다.</div>
+          </div>
+        </div>
+        <div class="feat2">
+          <div class="feat2-icon" style="background:var(--green-l);">✅</div>
+          <div>
+            <div class="feat2-title">항목별 체크 & 메모</div>
+            <div class="feat2-desc">케어 항목을 하나씩 체크하고, 특이사항을 바로 기록합니다.</div>
+          </div>
+        </div>
+        <div class="feat2">
+          <div class="feat2-icon" style="background:var(--blue-l);">👨‍👩‍👧</div>
+          <div>
+            <div class="feat2-title">완료 즉시 가족 공유</div>
+            <div class="feat2-desc">보고 버튼 하나로 케어일지가 가족 핸드폰에 자동 전송됩니다.</div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--g100);font-size:11px;color:var(--g400);">
+        💡 위 항목 체크박스를 눌러보세요. 완료 보고 버튼을 누르면 가족 공유 탭에서 결과를 확인할 수 있습니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 뷰 3: 가족 공유 결과 ══ -->
+<div class="view" id="view-family">
+  <div class="family-wrap">
+    <div style="text-align:center;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:700;margin-bottom:4px;">케어 완료 보고 — 가족에게 공유된 내용</div>
+      <div style="font-size:12px;color:var(--g500);">이순자 어르신 보호자 (딸 이정미) 스마트폰에 전송된 메시지</div>
+    </div>
+
+    <div class="family-phone-wrap">
+      <div class="family-phone">
+        <div class="family-phone-top">
+          <div class="fam-phone-bar"></div>
+          <div class="fam-msg-header">
+            <div class="fam-av">케</div>
+            <div>
+              <div class="fam-sender">CareOn · 햇살요양원</div>
+              <div class="fam-sub">오전 11:05 · 케어 완료 알림</div>
+            </div>
+          </div>
+          <div class="fam-msg-body">
+            이정미 보호자님, 안녕하세요 😊<br>
+            어머님 오늘 오전 케어가 완료됐습니다. 자세한 내용은 아래에서 확인하세요.
+          </div>
+        </div>
+
+        <div class="fam-phone-body">
+          <div class="report-sec">
+            <div class="report-sec-title">케어 정보</div>
+            <div class="report-row">
+              <span class="report-lbl">담당 보호사</span>
+              <span class="report-val">김미영 보호사</span>
+            </div>
+            <div class="report-row">
+              <span class="report-lbl">방문 시간</span>
+              <span class="report-val">09:00 — 11:04</span>
+            </div>
+          </div>
+
+          <div class="report-sec">
+            <div class="report-sec-title">케어 항목</div>
+            <div class="report-row">
+              <span class="report-lbl">🍚 식사 보조</span>
+              <span class="report-chk"><div class="done-icon">✓</div>완료</span>
+            </div>
+            <div class="report-row">
+              <span class="report-lbl">💊 투약 관리</span>
+              <span class="report-chk"><div class="done-icon">✓</div>완료</span>
+            </div>
+            <div class="report-row">
+              <span class="report-lbl">🚶 이동·보행</span>
+              <span class="report-chk"><div class="done-icon">✓</div>완료</span>
+            </div>
+            <div class="report-row">
+              <span class="report-lbl">📝 케어일지</span>
+              <span class="report-chk"><div class="done-icon">✓</div>작성완료</span>
+            </div>
+          </div>
+
+          <div class="report-note" id="fam-note">
+            📋 보호사 메모: 기분 양호하심. 손녀 얘기를 많이 하셨습니다. 혈압 124/78 정상.
+          </div>
+
+          <div class="fam-footer">
+            <div class="fam-footer-text">CareOn · 햇살요양원 성남점</div>
+            <button class="fam-reply-btn" onclick="this.textContent='전달 완료! ✓';this.style.background='var(--green)';setTimeout(()=>{this.textContent=\'보호사에게 전달하기\';this.style.background=\'\'},2000)">보호사에게 전달하기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="share-timeline">
+      <div class="timeline-title">📡 자동 공유 타임라인</div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--blue-l);color:var(--blue);">📋</div>
+        <div class="tl-content">
+          <div class="tl-label">관리자 지시서 발행</div>
+          <div class="tl-desc">원장님이 WO-001 발행 → 김미영 보호사 앱에 즉시 알림</div>
+          <div class="tl-time">08:30</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--tl);color:var(--teal);">📍</div>
+        <div class="tl-content">
+          <div class="tl-label">GPS 방문 인증</div>
+          <div class="tl-desc">304호 위치에서 출근 체크 — 자동 기록</div>
+          <div class="tl-time">09:02</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--green-l);color:var(--green);">✅</div>
+        <div class="tl-content">
+          <div class="tl-label">케어 완료 보고</div>
+          <div class="tl-desc">보호사 앱에서 전체 항목 체크 후 완료 보고</div>
+          <div class="tl-time">11:04</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--blue-l);color:var(--blue);">👨‍👩‍👧</div>
+        <div class="tl-content">
+          <div class="tl-label">가족 자동 공유</div>
+          <div class="tl-desc">이정미 보호자님 문자 수신 · 케어일지 전체 확인 가능</div>
+          <div class="tl-time">11:05</div>
+        </div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-dot" style="background:var(--purple-l);color:var(--purple);">📊</div>
+        <div class="tl-content">
+          <div class="tl-label">관리자 대시보드 자동 업데이트</div>
+          <div class="tl-desc">WO-001 상태 → 완료 전환. 출퇴근·케어 기록 자동 저장.</div>
+          <div class="tl-time">11:05</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchView(id,el){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.vtab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function toggleDetail(id){
+  const d=document.getElementById(id);
+  d.classList.toggle('open');
+}
+
+function toggleNewForm(){
+  const f=document.getElementById('new-wo-form');
+  const r=document.getElementById('send-result');
+  r.classList.remove('show');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+
+function submitForm(){
+  const r=document.getElementById('send-result');
+  const worker=document.getElementById('f-worker').value;
+  r.querySelector('div').innerHTML=`<strong>발송 완료!</strong> ${worker}에게 지시서가 전송됐습니다. 보호사 앱 탭에서 확인하세요.`;
+  r.classList.add('show');
+}
+
+function toggleMgrChk(chkId,txtId){
+  const c=document.getElementById(chkId);
+  const t=document.getElementById(txtId);
+  c.classList.toggle('checked');
+  t.classList.toggle('done');
+}
+
+function toggleAppChk(chkId,txtId){
+  const c=document.getElementById(chkId);
+  const t=document.getElementById(txtId);
+  c.classList.toggle('done');
+  t.classList.toggle('done');
+}
+
+function submitCare(){
+  const btn=document.getElementById('app-submit-btn');
+  // 모든 항목 체크
+  ['ac1','ac2','ac3','ac4'].forEach((id,i)=>{
+    const c=document.getElementById(id);
+    const t=document.getElementById('at'+(i+1));
+    c.classList.add('done');
+    t.classList.add('done');
+  });
+  btn.textContent='가족 공유 완료 ✓';
+  btn.disabled=true;
+
+  // 가족 탭 뱃지 변경
+  document.querySelectorAll('.vtab')[2].innerHTML=
+    '👨‍👩‍👧 가족 공유 결과 <span class="vtab-badge" style="background:var(--green);">완료</span>';
+}
+</script>
+</body>
+</html>
