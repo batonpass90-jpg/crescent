@@ -1538,8 +1538,8 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
 
 // ===== AI 프로모션 =====
 const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE'; // 실제 운영 시 교체
-const SOLAPI_API_KEY = 'YOUR_SOLAPI_KEY';
-const SOLAPI_SECRET  = 'YOUR_SOLAPI_SECRET';
+const SOLAPI_API_KEY = 'NCSGKS93AYA2SIMS';
+const SOLAPI_SECRET  = 'GYMDAPUWW5Y1FXAJT3RBKBDRVZ1C4YCL';
 
 const promoData = {
   empty_slot: {
@@ -1720,23 +1720,47 @@ function sendSMS() {
   btn.disabled = true;
   document.getElementById('send-btn-text').textContent = '발송 중...';
 
-  const useRealSolapi = SOLAPI_API_KEY !== 'YOUR_SOLAPI_KEY';
-  if (useRealSolapi) {
-    // 실제 솔라피 API 호출
-    const smsContent = document.getElementById('modal-sms-content').value;
-    const date = new Date().toISOString();
-    const salt = Math.random().toString(36).substring(2);
-    // HMAC 서명은 서버사이드에서 처리 권장
-    fetch('https://api.solapi.com/messages/v4/send-many', {
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}`},
-      body:JSON.stringify({messages:[{to:'01012345678',from:'01012345678',text:smsContent}]})
-    })
+  const smsContent = document.getElementById('modal-sms-content').value;
+  // 체크된 수신자 번호 수집 (데모 데이터 — 실제는 DB 연동)
+  const demoNumbers = ['01012345678','01023456789','01034567890','01045678901','01056789012'];
+  const checked = document.querySelectorAll('.target-checkbox:checked');
+  const messages = Array.from(checked).map((_, i) => ({
+    to: demoNumbers[i] || demoNumbers[0],
+    from: '0319884481',
+    text: smsContent
+  }));
+
+  solapiSend(messages)
     .then(() => showSendResult(count))
-    .catch(() => showSendResult(count));
-  } else {
-    setTimeout(() => showSendResult(count), 1200);
+    .catch(err => { console.error('솔라피 오류:', err); showSendResult(count); });
+}
+
+// ===== 솔라피 HMAC-SHA256 서명 + 발송 =====
+async function hmacSHA256(secret, message) {
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    'raw', enc.encode(secret), {name:'HMAC',hash:'SHA-256'}, false, ['sign']
+  );
+  const sig = await crypto.subtle.sign('HMAC', key, enc.encode(message));
+  return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function solapiSend(messages) {
+  const date = new Date().toISOString();
+  const salt = Math.random().toString(36).substring(2,18);
+  const signature = await hmacSHA256(SOLAPI_SECRET, date + salt);
+  const auth = `HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}, signature=${signature}`;
+
+  const res = await fetch('https://api.solapi.com/messages/v4/send-many', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json', 'Authorization': auth},
+    body: JSON.stringify({messages})
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    console.warn('솔라피 응답:', err);
   }
+  return res;
 }
 
 function showSendResult(count) {
