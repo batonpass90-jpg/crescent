@@ -464,10 +464,108 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
 .asb-label{font-size:11px;color:var(--gray);margin-top:3px;font-weight:600}
 .asb-trend{font-size:10px;font-weight:700;margin-top:2px}
 
+/* ===== AI 서브탭 ===== */
+.ai-subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;background:#fff;padding:12px;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.ai-subtab{
+  display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:12px;
+  font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:inherit;
+  color:var(--gray);background:var(--light);transition:all .15s;
+}
+.ai-subtab:hover{background:#e5e7eb;color:var(--dark)}
+.ai-subtab.active{background:var(--navy);color:#F5C842}
+.ai-subtab-icon{font-size:16px}
+.ai-subpage{display:none}
+.ai-subpage.active{display:block;animation:fadeUp .2s ease}
+
+/* ===== 생일 메시지 ===== */
+.bday-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+.bday-card{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.bday-today{display:flex;flex-direction:column;gap:10px}
+.bday-item{
+  display:flex;align-items:center;gap:12px;padding:12px;
+  background:linear-gradient(135deg,#fff0f6,#fce7f3);border-radius:12px;
+  border-left:4px solid #ff4d8d;
+}
+.bday-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#ff4d8d,#ff80ab);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex-shrink:0}
+.bday-name{font-size:14px;font-weight:800;color:var(--dark)}
+.bday-sub{font-size:11px;color:var(--gray);margin-top:2px}
+.bday-status{margin-left:auto;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap}
+.bday-sent{background:#f0fdf4;color:#22c55e}
+.bday-pending{background:#fff0f6;color:#ff4d8d}
+.bday-template{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:14px}
+.bday-preview{
+  background:linear-gradient(135deg,#0F1B2D,#1E2E45);border-radius:14px;padding:16px;
+  font-size:13px;color:#fff;line-height:1.7;margin:10px 0;
+}
+.bday-preview .highlight{color:#F5C842;font-weight:700}
+.bday-toggle-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.bday-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bday-stat{background:var(--light);border-radius:12px;padding:14px;text-align:center}
+.bday-stat-num{font-size:22px;font-weight:800;color:var(--dark)}
+.bday-stat-label{font-size:11px;color:var(--gray);margin-top:3px}
+
+/* ===== 업셀링 ===== */
+.upsell-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.upsell-rule{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.05)}
+.upsell-rule-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.upsell-icon{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#0F1B2D,#1E2E45);display:flex;align-items:center;justify-content:center;font-size:20px}
+.upsell-title{font-size:14px;font-weight:800;color:var(--dark)}
+.upsell-sub{font-size:11px;color:var(--gray);margin-top:1px}
+.upsell-flow{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.upsell-step{display:flex;align-items:center;gap:8px;font-size:12px}
+.upsell-step-num{width:20px;height:20px;border-radius:50%;background:var(--navy);color:#F5C842;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.upsell-msg{background:linear-gradient(135deg,#FFFBEB,#fef3c7);border:1px solid #F5C842;border-radius:10px;padding:10px 12px;font-size:12px;color:#0F1B2D;line-height:1.6;margin-bottom:10px}
+.upsell-result{display:flex;gap:8px;margin-top:8px}
+.upsell-result-item{flex:1;background:var(--light);border-radius:10px;padding:10px;text-align:center}
+.upsell-result-num{font-size:18px;font-weight:800;color:var(--dark)}
+.upsell-result-label{font-size:10px;color:var(--gray);margin-top:2px}
+.upsell-history{background:#fff;border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-top:14px}
+
+/* ===== 플레이스 최적화 ===== */
+.place-score-card{
+  background:linear-gradient(135deg,#0F1B2D,#1E2E45);
+  border-radius:20px;padding:24px;margin-bottom:16px;
+  display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px;
+}
+.place-score-big{font-size:56px;font-weight:800;color:#F5C842;line-height:1}
+.place-score-label{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
+.place-score-sub{font-size:12px;color:rgba(255,255,255,.4);margin-top:2px}
+.place-rank-badge{background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.3);border-radius:14px;padding:16px;text-align:center}
+.place-rank-num{font-size:28px;font-weight:800;color:#F5C842}
+.place-rank-label{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px}
+.place-issues{display:flex;flex-direction:column;gap:10px;margin-bottom:16px}
+.place-issue{
+  background:#fff;border-radius:14px;padding:16px;box-shadow:0 2px 8px rgba(0,0,0,.04);
+  display:grid;grid-template-columns:auto 1fr auto;align-items:start;gap:12px;
+}
+.place-issue-icon{font-size:24px}
+.place-issue-title{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:3px}
+.place-issue-desc{font-size:12px;color:var(--gray);line-height:1.5}
+.place-issue-ai{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin-top:6px;display:inline-block}
+.place-impact{font-size:12px;font-weight:700;white-space:nowrap;padding:4px 10px;border-radius:20px}
+.impact-high{background:#fef2f2;color:#ef4444}
+.impact-mid{background:#fff7ed;color:#f59e0b}
+.impact-low{background:#eff6ff;color:#3b82f6}
+.place-fix-btn{
+  width:100%;padding:10px;border-radius:10px;margin-top:8px;
+  background:linear-gradient(135deg,#0F1B2D,#1E2E45);color:#F5C842;
+  border:none;font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;
+  grid-column:1/-1;transition:all .2s;
+}
+.place-fix-btn:hover{opacity:.85}
+.place-keywords{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.place-kw{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700}
+.place-kw.good{background:#f0fdf4;color:#22c55e;border:1px solid #86efac}
+.place-kw.add{background:#fff0f6;color:#ff4d8d;border:1px dashed #ff80ab;cursor:pointer}
+.place-kw.add:hover{background:#ffe4ef}
+
 @media(max-width:900px){
   .trigger-grid{grid-template-columns:1fr}
   .ai-sections{grid-template-columns:1fr}
   .ai-summary-bar{grid-template-columns:repeat(3,1fr)}
+  .bday-grid,.upsell-grid{grid-template-columns:1fr}
+  .ai-subtabs{gap:4px}
+  .ai-subtab{padding:7px 12px;font-size:12px}
 }
 
 /* ===== MOBILE OVERLAY ===== */
@@ -1244,6 +1342,25 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
   <div class="page" id="page-ai">
     <div class="page-content">
 
+      <!-- AI 서브탭 -->
+      <div class="ai-subtabs">
+        <button class="ai-subtab active" onclick="goAISub('promo',this)">
+          <span class="ai-subtab-icon">⚡</span> 프로모션 자동화
+        </button>
+        <button class="ai-subtab" onclick="goAISub('bday',this)">
+          <span class="ai-subtab-icon">🎂</span> 생일 자동 메시지
+        </button>
+        <button class="ai-subtab" onclick="goAISub('upsell',this)">
+          <span class="ai-subtab-icon">💰</span> 업셀링 추천
+        </button>
+        <button class="ai-subtab" onclick="goAISub('place',this)">
+          <span class="ai-subtab-icon">🗺️</span> 플레이스 최적화
+        </button>
+      </div>
+
+      <!-- ── 서브페이지: 프로모션 자동화 ── -->
+      <div class="ai-subpage active" id="sub-promo">
+
       <!-- 요약 바 -->
       <div class="ai-summary-bar">
         <div class="asb-card">
@@ -1400,9 +1517,364 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
           </div>
         </div>
 
-      </div>
-    </div>
-  </div>
+      </div><!-- /hist-list -->
+      </div><!-- /sub-promo -->
+
+      <!-- ── 서브페이지: 생일 자동 메시지 ── -->
+      <div class="ai-subpage" id="sub-bday">
+
+        <div class="bday-grid">
+          <!-- 오늘 생일 고객 -->
+          <div class="bday-card">
+            <div class="card-title">🎂 오늘 생일 고객 <span style="color:#ff4d8d;font-size:12px">2명</span></div>
+            <div class="bday-today">
+              <div class="bday-item">
+                <div class="bday-avatar">김</div>
+                <div>
+                  <div class="bday-name">김민지</div>
+                  <div class="bday-sub">32세 · 단골 4년 · 이하은 담당</div>
+                </div>
+                <span class="bday-status bday-sent">✓ 발송됨</span>
+              </div>
+              <div class="bday-item">
+                <div class="bday-avatar">이</div>
+                <div>
+                  <div class="bday-name">이소연</div>
+                  <div class="bday-sub">28세 · 단골 1년 · 한서현 담당</div>
+                </div>
+                <span class="bday-status bday-pending" style="cursor:pointer" onclick="sendBdayMsg('이소연')">발송하기</span>
+              </div>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+              <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:8px">이번 달 생일 고객</div>
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                  <span style="font-weight:700">박수연</span><span style="color:var(--gray)">1월 25일</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border)">
+                  <span style="font-weight:700">정소희</span><span style="color:var(--gray)">1월 28일</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0">
+                  <span style="font-weight:700">윤서아</span><span style="color:var(--gray)">1월 31일</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 통계 -->
+          <div>
+            <div class="bday-card" style="margin-bottom:12px">
+              <div class="card-title">📊 생일 메시지 효과</div>
+              <div class="bday-stats">
+                <div class="bday-stat">
+                  <div class="bday-stat-num">94%</div>
+                  <div class="bday-stat-label">발송 완료율</div>
+                </div>
+                <div class="bday-stat">
+                  <div class="bday-stat-num">31%</div>
+                  <div class="bday-stat-label">예약 전환율</div>
+                </div>
+                <div class="bday-stat">
+                  <div class="bday-stat-num" style="color:#22c55e">+4.2회</div>
+                  <div class="bday-stat-label">연간 방문 ↑</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 자동화 설정 -->
+            <div class="bday-card">
+              <div class="card-title">⚙️ 자동 발송 설정</div>
+              <div class="bday-toggle-row">
+                <div>
+                  <div style="font-size:14px;font-weight:700">생일 당일 자동 발송</div>
+                  <div style="font-size:11px;color:var(--gray);margin-top:2px">오전 10시 자동 발송</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="bday-toggle-row">
+                <div>
+                  <div style="font-size:14px;font-weight:700">할인 혜택 포함</div>
+                  <div style="font-size:11px;color:var(--gray);margin-top:2px">생일 달 시술 1만원 할인</div>
+                </div>
+                <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+              </div>
+              <div class="bday-toggle-row">
+                <div>
+                  <div style="font-size:14px;font-weight:700">D-3 사전 알림</div>
+                  <div style="font-size:11px;color:var(--gray);margin-top:2px">생일 3일 전 예약 유도</div>
+                </div>
+                <button class="toggle" onclick="this.classList.toggle('on')"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 문자 템플릿 -->
+        <div class="bday-template">
+          <div class="card-title">💬 문자 템플릿 <span style="font-size:11px;color:var(--gray);font-weight:500">AI 작성 · 직접 수정 가능</span></div>
+          <div class="bday-preview" id="bday-tmpl">
+            <span class="highlight">[러브헤어]</span> 안녕하세요, <span class="highlight">김민지</span> 고객님! 🎂<br>
+            오늘 생일이시죠? 축하드려요!<br>
+            생일 기념으로 이번 달 방문 시 <span class="highlight">시술 1만원 할인</span> 드려요 🎁<br>
+            예약: 010-9032-9090
+          </div>
+          <div style="display:flex;gap:8px;margin-top:4px">
+            <button class="ac-btn" onclick="regenerateBdayTmpl()">🔄 AI 재생성</button>
+            <button class="ac-btn primary" onclick="sendBdayModal()">📤 테스트 발송</button>
+          </div>
+        </div>
+
+      </div><!-- /sub-bday -->
+
+      <!-- ── 서브페이지: 업셀링 추천 ── -->
+      <div class="ai-subpage" id="sub-upsell">
+
+        <div style="font-size:13px;color:var(--gray);margin-bottom:16px;background:#fff;padding:14px;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.04)">
+          💡 예약 확정 문자에 AI가 추천 서비스를 자동으로 붙여 발송합니다. 평균 <strong style="color:#0F1B2D">객단가 +18,000원</strong> 상승 효과.
+        </div>
+
+        <div class="upsell-grid">
+
+          <div class="upsell-rule">
+            <div class="upsell-rule-header">
+              <div class="upsell-icon">✂️</div>
+              <div>
+                <div class="upsell-title">컷 예약 → 트리트먼트 추천</div>
+                <div class="upsell-sub">컷 단독 예약 시 자동 추가 제안</div>
+              </div>
+            </div>
+            <div class="upsell-msg">
+              [러브헤어] 예약 확정됐어요! ✂️<br>
+              컷 예약하셨는데, <strong>고보습 트리트먼트 추가</strong>하시면 어때요? 오늘만 +15,000원 (정가 25,000원) 😊<br>
+              원하시면 예약 시 말씀해 주세요!
+            </div>
+            <div class="upsell-result">
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">23%</div>
+                <div class="upsell-result-label">추가 구매율</div>
+              </div>
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">+₩15K</div>
+                <div class="upsell-result-label">평균 추가 매출</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+              <span style="font-size:13px;font-weight:700;color:var(--dark)">자동 실행</span>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+
+          <div class="upsell-rule">
+            <div class="upsell-rule-header">
+              <div class="upsell-icon">🎨</div>
+              <div>
+                <div class="upsell-title">펌 예약 → 탈색·염색 업그레이드</div>
+                <div class="upsell-sub">펌 예약 고객 대상 컬러 제안</div>
+              </div>
+            </div>
+            <div class="upsell-msg">
+              [러브헤어] 볼륨펌 예약 감사해요! 🌸<br>
+              펌이랑 <strong>포인트 염색 같이</strong> 하시면 훨씬 예뻐요! 이번 방문 한정 염색 +20,000원 추가 가능해요.<br>
+              문자 주시면 예약 조정해드릴게요!
+            </div>
+            <div class="upsell-result">
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">18%</div>
+                <div class="upsell-result-label">추가 구매율</div>
+              </div>
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">+₩20K</div>
+                <div class="upsell-result-label">평균 추가 매출</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+              <span style="font-size:13px;font-weight:700;color:var(--dark)">자동 실행</span>
+              <button class="toggle on" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+
+          <div class="upsell-rule">
+            <div class="upsell-rule-header">
+              <div class="upsell-icon">💆</div>
+              <div>
+                <div class="upsell-title">VIP 고객 → 프리미엄 클리닉 제안</div>
+                <div class="upsell-sub">골드 이상 고객 방문 시 업그레이드</div>
+              </div>
+            </div>
+            <div class="upsell-msg">
+              [러브헤어] 오랜만에 오시는군요! 😊<br>
+              이번엔 <strong>프리미엄 케라틴 클리닉</strong> 어떠세요? VIP 고객님만 +30,000원 특가로 진행 가능해요.<br>
+              당일 예약 추가 가능합니다!
+            </div>
+            <div class="upsell-result">
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">34%</div>
+                <div class="upsell-result-label">추가 구매율</div>
+              </div>
+              <div class="upsell-result-item">
+                <div class="upsell-result-num">+₩30K</div>
+                <div class="upsell-result-label">평균 추가 매출</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)">
+              <span style="font-size:13px;font-weight:700;color:var(--dark)">자동 실행</span>
+              <button class="toggle" onclick="this.classList.toggle('on')"></button>
+            </div>
+          </div>
+
+          <div class="upsell-rule" style="background:linear-gradient(135deg,#FFFBEB,#fef9e7);border:2px dashed #F5C842">
+            <div style="text-align:center;padding:20px 0">
+              <div style="font-size:32px;margin-bottom:10px">✨</div>
+              <div style="font-size:15px;font-weight:800;color:#0F1B2D;margin-bottom:6px">AI 새 규칙 추가</div>
+              <div style="font-size:12px;color:var(--gray);margin-bottom:14px">어떤 상황에서 어떤 서비스를<br>추천할지 AI가 자동 설계해줘요</div>
+              <button class="tc-generate" style="max-width:180px;margin:0 auto" onclick="addUpsellRule()">🤖 AI로 규칙 만들기</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- 이번 달 업셀링 성과 -->
+        <div class="upsell-history">
+          <div class="card-title">📊 이번 달 업셀링 성과</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div class="dp-stat">
+              <div class="dp-stat-num">47건</div>
+              <div class="dp-stat-label">추가 구매 발생</div>
+            </div>
+            <div class="dp-stat">
+              <div class="dp-stat-num" style="color:#22c55e">₩846K</div>
+              <div class="dp-stat-label">추가 매출</div>
+            </div>
+            <div class="dp-stat">
+              <div class="dp-stat-num">25%</div>
+              <div class="dp-stat-label">평균 전환율</div>
+            </div>
+            <div class="dp-stat">
+              <div class="dp-stat-num" style="color:#F5C842">+₩18K</div>
+              <div class="dp-stat-label">평균 객단가 ↑</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /sub-upsell -->
+
+      <!-- ── 서브페이지: 플레이스 최적화 ── -->
+      <div class="ai-subpage" id="sub-place">
+
+        <!-- 종합 점수 -->
+        <div class="place-score-card">
+          <div>
+            <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">네이버 플레이스 최적화 점수</div>
+            <div style="display:flex;align-items:flex-end;gap:8px">
+              <div class="place-score-big">72</div>
+              <div style="font-size:18px;font-weight:800;color:rgba(255,255,255,.5);margin-bottom:10px">/ 100</div>
+            </div>
+            <div class="place-score-label">보통 수준 · 개선 시 상위 노출 가능</div>
+            <div class="place-score-sub">마지막 분석: 2025.01.23 · AI 자동 스캔</div>
+          </div>
+          <div>
+            <div class="place-rank-badge">
+              <div class="place-rank-num">#8</div>
+              <div class="place-rank-label">'홍대 헤어샵'<br>검색 순위</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 개선 이슈 목록 -->
+        <div style="font-size:15px;font-weight:800;color:var(--dark);margin-bottom:12px">🔍 AI 발견 개선 항목</div>
+        <div class="place-issues">
+
+          <div class="place-issue">
+            <div class="place-issue-icon">📸</div>
+            <div>
+              <div class="place-issue-title">대표 사진이 6개월 이상 미업데이트</div>
+              <div class="place-issue-desc">최근 시술 사진 업로드 시 노출 점수 +8점 예상. 인스타그램 연동 사진 자동 업로드를 추천합니다.</div>
+              <span class="place-issue-ai" style="background:#fff0f6;color:#ff4d8d">🤖 AI 자동 업로드 가능</span>
+            </div>
+            <div>
+              <span class="place-impact impact-high">높음</span>
+              <button class="place-fix-btn" style="margin-top:8px">자동 업로드 설정</button>
+            </div>
+          </div>
+
+          <div class="place-issue">
+            <div class="place-issue-icon">🔑</div>
+            <div>
+              <div class="place-issue-title">검색 키워드 7개 미등록</div>
+              <div class="place-issue-desc">경쟁 상위 샵 대비 누락된 인기 키워드가 있습니다. 아래 추천 키워드를 추가하면 노출이 늘어납니다.</div>
+              <div class="place-keywords">
+                <span class="place-kw good">#홍대헤어</span>
+                <span class="place-kw good">#홍대미용실</span>
+                <span class="place-kw good">#홍대펌</span>
+                <span class="place-kw add" onclick="addKeyword(this)">#합정헤어 +</span>
+                <span class="place-kw add" onclick="addKeyword(this)">#홍대염색 +</span>
+                <span class="place-kw add" onclick="addKeyword(this)">#홍대볼륨펌 +</span>
+                <span class="place-kw add" onclick="addKeyword(this)">#홍대여성헤어 +</span>
+              </div>
+            </div>
+            <span class="place-impact impact-high">높음</span>
+          </div>
+
+          <div class="place-issue">
+            <div class="place-issue-icon">💬</div>
+            <div>
+              <div class="place-issue-title">리뷰 답글 응답률 38%</div>
+              <div class="place-issue-desc">리뷰 답글 미작성 18건 발견. AI 자동 답글 기능을 켜면 응답률 100% 유지 가능합니다.</div>
+              <span class="place-issue-ai" style="background:#fff0f6;color:#ff4d8d">🤖 AI 자동 답글 가능</span>
+            </div>
+            <div>
+              <span class="place-impact impact-mid">중간</span>
+              <button class="place-fix-btn" style="margin-top:8px">자동 답글 켜기</button>
+            </div>
+          </div>
+
+          <div class="place-issue">
+            <div class="place-issue-icon">🕐</div>
+            <div>
+              <div class="place-issue-title">영업시간 정보 불일치</div>
+              <div class="place-issue-desc">네이버 플레이스 등록 시간(09:00~20:00)과 실제 운영(09:00~21:00)이 다릅니다. 수정이 필요합니다.</div>
+            </div>
+            <div>
+              <span class="place-impact impact-mid">중간</span>
+              <button class="place-fix-btn" style="margin-top:8px">바로 수정하기</button>
+            </div>
+          </div>
+
+          <div class="place-issue">
+            <div class="place-issue-icon">💰</div>
+            <div>
+              <div class="place-issue-title">메뉴 가격 미등록 4개</div>
+              <div class="place-issue-desc">클리닉·트리트먼트 등 4개 메뉴 가격이 미등록 상태입니다. 가격 정보가 있으면 클릭률이 높아집니다.</div>
+            </div>
+            <span class="place-impact impact-low">낮음</span>
+          </div>
+
+        </div>
+
+        <!-- 경쟁사 비교 -->
+        <div class="card">
+          <div class="card-title">🏆 경쟁 샵 비교 <span style="font-size:11px;color:var(--gray);font-weight:500">'홍대 헤어샵' 검색 기준</span></div>
+          <table class="ds-table">
+            <thead>
+              <tr><th>샵명</th><th>순위</th><th>최적화 점수</th><th>리뷰 수</th><th>사진 수</th></tr>
+            </thead>
+            <tbody>
+              <tr style="background:#fff7ed"><td><strong>🥇 홍대헤어갤러리</strong></td><td>#1</td><td><span style="color:#22c55e;font-weight:700">94점</span></td><td>382개</td><td>48장</td></tr>
+              <tr><td>스타일리스트홍대</td><td>#2</td><td>88점</td><td>241개</td><td>32장</td></tr>
+              <tr><td>헤어플러스홍대점</td><td>#5</td><td>81점</td><td>187개</td><td>24장</td></tr>
+              <tr style="background:#fff0f6"><td><strong>✂️ 러브헤어 홍대점 (우리)</strong></td><td>#8</td><td><span style="color:#f59e0b;font-weight:700">72점</span></td><td>124개</td><td>9장</td></tr>
+            </tbody>
+          </table>
+          <div style="margin-top:14px;padding:12px;background:linear-gradient(135deg,#FFFBEB,#fef9e7);border-radius:12px;border:1px solid #F5C842">
+            <div style="font-size:13px;font-weight:800;color:#0F1B2D;margin-bottom:4px">🤖 AI 분석 결론</div>
+            <div style="font-size:12px;color:#92400e;line-height:1.6">사진 추가 (+15장)와 키워드 최적화만으로 <strong>#4~5위</strong>까지 상승 가능합니다. 리뷰 답글 자동화 켜면 응답률 올라가 추가 순위 상승 기대.</div>
+          </div>
+        </div>
+
+      </div><!-- /sub-place -->
+
+    </div><!-- /page-content -->
+  </div><!-- /page-ai -->
 
   <!-- ===== 문자 발송 모달 ===== -->
   <div class="send-modal-backdrop" id="send-modal">
@@ -1535,6 +2007,58 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
     this.classList.add('active');
   });
 });
+
+// ===== AI 서브탭 =====
+function goAISub(name, btn) {
+  document.querySelectorAll('.ai-subpage').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ai-subtab').forEach(b => b.classList.remove('active'));
+  document.getElementById('sub-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+// ===== 생일 메시지 =====
+const bdayTemplates = [
+  `[러브헤어] 안녕하세요! 🎂\n오늘 생일이시죠? 진심으로 축하드려요!\n생일 기념으로 이번 달 방문 시 시술 1만원 할인 드려요 🎁\n예약: 010-9032-9090`,
+  `[러브헤어] {이름} 고객님, 생일 축하해요! 🎉\n특별한 날, 새로운 헤어스타일로 더 빛나세요✨\n이번 달 방문하시면 음료 서비스 + 5% 추가 할인!\n예약: 010-9032-9090`,
+  `[러브헤어] 오늘 생일이신 {이름} 고객님께 💐\n감사한 마음을 담아 생일 할인 쿠폰 드려요!\n이번 달 內 사용 가능 · 예약: 010-9032-9090`
+];
+let bdayTmplIdx = 0;
+function regenerateBdayTmpl() {
+  bdayTmplIdx = (bdayTmplIdx + 1) % bdayTemplates.length;
+  const el = document.getElementById('bday-tmpl');
+  el.innerHTML = bdayTemplates[bdayTmplIdx].replace(/{이름}/g, '<span class="highlight">고객님</span>').replace(/\n/g,'<br>').replace(/\[러브헤어\]/,'<span class="highlight">[러브헤어]</span>');
+}
+function sendBdayMsg(name) {
+  const smsText = `[러브헤어] ${name} 고객님, 생일 축하해요! 🎂 이번 달 방문 시 시술 1만원 할인 드려요. 예약: 010-9032-9090`;
+  document.getElementById('modal-sms-content').value = smsText;
+  document.getElementById('modal-char-count').textContent = `${smsText.length} / 90자`;
+  document.getElementById('send-result-area').style.display = 'none';
+  document.getElementById('send-btn-text').textContent = `${name}님께 발송하기`;
+  document.getElementById('send-confirm-btn').disabled = false;
+  document.getElementById('send-confirm-btn').style.background = '';
+  document.getElementById('send-confirm-btn').style.color = '';
+  // 타겟 리스트 숨기고 단건 발송으로
+  document.getElementById('target-list').style.display = 'none';
+  document.getElementById('target-selected-count').textContent = '1';
+  document.getElementById('send-modal').classList.add('open');
+}
+function sendBdayModal() {
+  document.getElementById('target-list').style.display = '';
+  openSendModal();
+}
+
+// ===== 업셀링 =====
+function addUpsellRule() {
+  alert('🤖 AI 규칙 설계 기능은 준비 중입니다!\n(Claude API 연동으로 맞춤 규칙 자동 생성 예정)');
+}
+
+// ===== 플레이스 최적화 =====
+function addKeyword(el) {
+  el.classList.remove('add');
+  el.classList.add('good');
+  el.textContent = el.textContent.replace(' +', '');
+  el.onclick = null;
+}
 
 // ===== AI 프로모션 =====
 const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE'; // 실제 운영 시 교체
