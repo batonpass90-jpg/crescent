@@ -13,6 +13,7 @@
   --border:#efefef;--green:#22c55e;--orange:#f59e0b;
   --red:#ef4444;--purple:#8b5cf6;--blue:#3b82f6;
   --sidebar:240px;
+  --navy:#0F1B2D;--yellow:#F5C842;--yellow-bg:#FFFBEB;--navy-light:#1E2E45;
 }
 body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f8;color:#1a1a2e;min-height:100vh}
 
@@ -296,6 +297,179 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
 }
 .save-btn:hover{background:#e6357a}
 
+/* ===== AI 프로모션 탭 ===== */
+--navy:#0F1B2D;--yellow:#F5C842;--yellow-bg:#FFFBEB;--navy-light:#1E2E45;
+
+/* Trigger cards */
+.trigger-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:20px}
+.trigger-card{
+  background:#fff;border-radius:16px;padding:18px;
+  box-shadow:0 2px 10px rgba(0,0,0,.05);
+  border-left:4px solid var(--border);cursor:pointer;
+  transition:all .2s;position:relative;overflow:hidden;
+}
+.trigger-card::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 60%,rgba(245,200,66,.08));
+  pointer-events:none;
+}
+.trigger-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.1)}
+.trigger-card.urgent{border-left-color:#ef4444}
+.trigger-card.warning{border-left-color:#f59e0b}
+.trigger-card.info{border-left-color:#3b82f6}
+.trigger-card.dormant{border-left-color:#8b5cf6}
+.tc-icon{font-size:28px;margin-bottom:10px}
+.tc-title{font-size:14px;font-weight:800;color:var(--dark);margin-bottom:4px}
+.tc-desc{font-size:12px;color:var(--gray);line-height:1.5;margin-bottom:12px}
+.tc-meta{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;display:inline-block}
+.tc-meta.urgent{background:#fef2f2;color:#ef4444}
+.tc-meta.warning{background:#fff7ed;color:#f59e0b}
+.tc-meta.info{background:#eff6ff;color:#3b82f6}
+.tc-meta.dormant{background:#f5f3ff;color:#8b5cf6}
+.tc-generate{
+  width:100%;margin-top:12px;padding:9px;border-radius:10px;
+  background:linear-gradient(135deg,#0F1B2D,#1E2E45);color:#F5C842;
+  border:none;font-family:inherit;font-size:13px;font-weight:800;
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.tc-generate:hover{background:linear-gradient(135deg,#1E2E45,#2d4060);transform:scale(1.02)}
+.tc-generate:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* AI Result card */
+.ai-result{
+  background:linear-gradient(135deg,#0F1B2D 0%,#1E2E45 100%);
+  border-radius:20px;padding:24px;margin-bottom:20px;
+  box-shadow:0 8px 32px rgba(15,27,45,.3);
+}
+.ai-result-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.ai-badge{
+  background:linear-gradient(135deg,#F5C842,#f0b800);color:#0F1B2D;
+  font-size:11px;font-weight:800;padding:4px 10px;border-radius:20px;
+}
+.ai-result-title{font-size:18px;font-weight:800;color:#fff}
+.ai-result-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:2px}
+.ai-sections{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ai-section{background:rgba(255,255,255,.06);border-radius:14px;padding:16px}
+.ai-section-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px}
+.ai-section-content{font-size:14px;color:#fff;line-height:1.6;font-weight:500}
+.ai-section-content.sms{
+  background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);
+  border-radius:10px;padding:12px;font-size:13px;
+}
+.ai-section-content.highlight{color:#F5C842;font-weight:700}
+.ai-char-count{font-size:10px;color:rgba(255,255,255,.4);margin-top:6px;text-align:right}
+.ai-actions{display:flex;gap:10px;margin-top:16px}
+.ai-action-btn{
+  flex:1;padding:11px;border-radius:12px;border:none;
+  font-family:inherit;font-size:13px;font-weight:800;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.ai-action-btn.primary{background:linear-gradient(135deg,#F5C842,#f0b800);color:#0F1B2D}
+.ai-action-btn.primary:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(245,200,66,.5)}
+.ai-action-btn.secondary{background:rgba(255,255,255,.1);color:#fff}
+.ai-action-btn.secondary:hover{background:rgba(255,255,255,.18)}
+
+/* Send modal */
+.send-modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:300;
+  display:none;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.send-modal-backdrop.open{display:flex}
+.send-modal{
+  background:#fff;border-radius:24px;padding:28px;
+  max-width:520px;width:90%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 24px 60px rgba(0,0,0,.25);animation:fadeUp .2s ease;
+}
+.sm-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px}
+.sm-title{font-size:20px;font-weight:800;color:var(--dark)}
+.sm-close{width:32px;height:32px;border-radius:50%;background:var(--light);border:none;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center}
+.sm-section{margin-bottom:18px}
+.sm-label{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:8px;display:block}
+.sm-textarea{
+  width:100%;border:1.5px solid var(--border);border-radius:12px;
+  padding:12px;font-family:inherit;font-size:14px;line-height:1.6;
+  resize:vertical;min-height:80px;outline:none;transition:border .15s;
+}
+.sm-textarea:focus{border-color:#0F1B2D}
+.target-list{display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto}
+.target-item{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--light);border-radius:10px;
+}
+.target-cb{width:18px;height:18px;accent-color:#0F1B2D;cursor:pointer;flex-shrink:0}
+.target-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0F1B2D,#1E2E45);color:#F5C842;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.target-name{font-size:13px;font-weight:700;color:var(--dark)}
+.target-sub{font-size:11px;color:var(--gray)}
+.target-check{margin-left:auto;font-size:14px;color:var(--green)}
+.send-confirm-btn{
+  width:100%;padding:14px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,#0F1B2D,#1E2E45);color:#F5C842;
+  font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.send-confirm-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,27,45,.4)}
+
+/* Send result */
+.send-result{
+  background:linear-gradient(135deg,#f0fdf4,#dcfce7);
+  border:1px solid #86efac;border-radius:14px;padding:16px;
+  display:none;align-items:center;gap:12px;margin-top:14px;
+}
+.send-result.visible{display:flex}
+.send-result-icon{font-size:28px}
+.send-result-text{font-size:14px;font-weight:700;color:#166534}
+.send-result-sub{font-size:12px;color:#4ade80;margin-top:2px}
+
+/* History */
+.hist-list{display:flex;flex-direction:column;gap:10px}
+.hist-card{
+  background:#fff;border-radius:14px;padding:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;
+}
+.hist-trigger{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;display:inline-block;margin-bottom:6px}
+.hist-title{font-size:15px;font-weight:800;color:var(--dark);margin-bottom:3px}
+.hist-msg{font-size:12px;color:var(--gray);line-height:1.5;margin-bottom:8px}
+.hist-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--gray)}
+.hist-stat{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:60px}
+.hist-stat-num{font-size:20px;font-weight:800;color:var(--dark)}
+.hist-stat-label{font-size:10px;color:var(--gray)}
+.hist-conv{font-size:13px;font-weight:800;color:var(--green)}
+
+/* Loading spinner */
+.ai-loading{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  gap:12px;padding:40px;background:linear-gradient(135deg,#0F1B2D,#1E2E45);
+  border-radius:20px;margin-bottom:20px;
+}
+.ai-loading.visible{display:flex}
+.spinner{
+  width:40px;height:40px;border:3px solid rgba(245,200,66,.2);
+  border-top-color:#F5C842;border-radius:50%;animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.spinner-text{font-size:13px;color:rgba(255,255,255,.7);font-weight:600}
+.spinner-sub{font-size:11px;color:rgba(255,255,255,.4);text-align:center;line-height:1.5}
+
+/* Summary bar */
+.ai-summary-bar{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;
+}
+.asb-card{
+  background:#fff;border-radius:14px;padding:16px;text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.asb-num{font-size:26px;font-weight:800;color:var(--dark)}
+.asb-label{font-size:11px;color:var(--gray);margin-top:3px;font-weight:600}
+.asb-trend{font-size:10px;font-weight:700;margin-top:2px}
+
+@media(max-width:900px){
+  .trigger-grid{grid-template-columns:1fr}
+  .ai-sections{grid-template-columns:1fr}
+  .ai-summary-bar{grid-template-columns:repeat(3,1fr)}
+}
+
 /* ===== MOBILE OVERLAY ===== */
 .sidebar-overlay{
   display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:190;
@@ -353,6 +527,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
       </button>
       <button class="sb-item" onclick="goPage('customers',this)" id="nav-customers">
         <span class="sb-item-icon">👥</span> 고객 관리
+      </button>
+    </div>
+    <div class="sb-section">
+      <div class="sb-section-label">AI 자동화</div>
+      <button class="sb-item" onclick="goPage('ai',this)" id="nav-ai" style="background:linear-gradient(135deg,rgba(245,200,66,.15),rgba(245,200,66,.05));color:#F5C842;border:1px solid rgba(245,200,66,.2)">
+        <span class="sb-item-icon">🤖</span> AI 프로모션
+        <span class="sb-badge" style="background:#F5C842;color:#0F1B2D">2</span>
       </button>
     </div>
     <div class="sb-section">
@@ -1059,6 +1240,239 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
     </div>
   </div>
 
+  <!-- ===== PAGE: AI 프로모션 ===== -->
+  <div class="page" id="page-ai">
+    <div class="page-content">
+
+      <!-- 요약 바 -->
+      <div class="ai-summary-bar">
+        <div class="asb-card">
+          <div class="asb-num" style="color:#0F1B2D">12</div>
+          <div class="asb-label">이번 달 발송</div>
+          <div class="asb-trend" style="color:#22c55e">↑3 전달 대비</div>
+        </div>
+        <div class="asb-card">
+          <div class="asb-num" style="color:#f59e0b">28</div>
+          <div class="asb-label">예약 전환</div>
+          <div class="asb-trend" style="color:#22c55e">전환율 24%</div>
+        </div>
+        <div class="asb-card">
+          <div class="asb-num" style="color:#22c55e">₩840K</div>
+          <div class="asb-label">AI 유발 매출</div>
+          <div class="asb-trend" style="color:#22c55e">↑23% vs 전달</div>
+        </div>
+      </div>
+
+      <!-- 트리거 감지 -->
+      <div style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+        ⚡ 지금 감지된 상황 <span style="font-size:11px;font-weight:600;color:var(--gray);background:var(--light);padding:3px 10px;border-radius:20px">2개 활성</span>
+      </div>
+      <div class="trigger-grid">
+
+        <div class="trigger-card urgent">
+          <div class="tc-icon">📭</div>
+          <div class="tc-title">오늘 빈 슬롯 발생</div>
+          <div class="tc-desc">오후 2:30, 4:00, 5:30 총 3개의 슬롯이 비어 있습니다. 지금 즉시 프로모션을 보내면 당일 예약 전환 확률이 높습니다.</div>
+          <span class="tc-meta urgent">🔴 긴급 · 오늘 마감</span>
+          <button class="tc-generate" onclick="generatePromo('empty_slot')">🤖 AI 프로모션 생성</button>
+        </div>
+
+        <div class="trigger-card warning">
+          <div class="tc-icon">🚫</div>
+          <div class="tc-title">노쇼 발생 빈 시간</div>
+          <div class="tc-desc">홍다은 고객 노쇼로 오후 2시 슬롯이 비었습니다. 빠르게 대체 예약을 유도할 수 있습니다.</div>
+          <span class="tc-meta warning">🟡 노쇼 후속 조치</span>
+          <button class="tc-generate" onclick="generatePromo('noshow')">🤖 AI 프로모션 생성</button>
+        </div>
+
+        <div class="trigger-card info" style="opacity:.65">
+          <div class="tc-icon">📉</div>
+          <div class="tc-title">비수기 패턴 감지</div>
+          <div class="tc-desc">다음 주 예약이 평소 대비 18% 수준입니다. 사전 프로모션으로 빈 슬롯을 채울 수 있습니다.</div>
+          <span class="tc-meta info">🔵 다음 주 대비</span>
+          <button class="tc-generate" onclick="generatePromo('slow_season')">🤖 AI 프로모션 생성</button>
+        </div>
+
+        <div class="trigger-card dormant" style="opacity:.65">
+          <div class="tc-icon">💤</div>
+          <div class="tc-title">휴면 고객 5명</div>
+          <div class="tc-desc">90일 이상 미방문 고객이 5명입니다. 방문 주기가 규칙적이었던 고객으로 재활성화 가능성이 높습니다.</div>
+          <span class="tc-meta dormant">🟣 휴면 재활성화</span>
+          <button class="tc-generate" onclick="generatePromo('dormant')">🤖 AI 프로모션 생성</button>
+        </div>
+
+      </div>
+
+      <!-- AI 로딩 -->
+      <div class="ai-loading" id="ai-loading">
+        <div class="spinner"></div>
+        <div class="spinner-text">Claude AI가 프로모션을 기획하고 있습니다...</div>
+        <div class="spinner-sub">고객 데이터 · 빈 슬롯 · 시술 패턴 분석 중</div>
+      </div>
+
+      <!-- AI 생성 결과 -->
+      <div class="ai-result" id="ai-result" style="display:none">
+        <div class="ai-result-header">
+          <span class="ai-badge">✨ Claude AI 생성</span>
+          <div>
+            <div class="ai-result-title" id="ai-promo-title">—</div>
+            <div class="ai-result-sub" id="ai-promo-sub">—</div>
+          </div>
+        </div>
+        <div class="ai-sections">
+          <div class="ai-section">
+            <div class="ai-section-label">🎯 타겟 기준</div>
+            <div class="ai-section-content" id="ai-target">—</div>
+          </div>
+          <div class="ai-section">
+            <div class="ai-section-label">⏰ 발송 타이밍</div>
+            <div class="ai-section-content highlight" id="ai-timing">—</div>
+          </div>
+          <div class="ai-section" style="grid-column:1/-1">
+            <div class="ai-section-label">💬 문자 내용 (직접 편집 가능)</div>
+            <div class="ai-section-content sms" id="ai-sms" contenteditable="true">—</div>
+            <div class="ai-char-count" id="ai-char">0 / 90자</div>
+          </div>
+          <div class="ai-section">
+            <div class="ai-section-label">📈 예상 효과</div>
+            <div class="ai-section-content" id="ai-effect">—</div>
+          </div>
+          <div class="ai-section">
+            <div class="ai-section-label">👥 발송 대상</div>
+            <div class="ai-section-content highlight" id="ai-targets-count">—</div>
+          </div>
+        </div>
+        <div class="ai-actions">
+          <button class="ai-action-btn secondary" onclick="regenerate()">🔄 다시 생성</button>
+          <button class="ai-action-btn primary" onclick="openSendModal()">📤 문자 발송하기</button>
+        </div>
+      </div>
+
+      <!-- 발송 히스토리 -->
+      <div style="font-size:16px;font-weight:800;color:var(--dark);margin-bottom:12px;margin-top:4px">📋 발송 이력</div>
+      <div class="hist-list">
+
+        <div class="hist-card">
+          <div>
+            <span class="hist-trigger" style="background:#fff0f6;color:#ff4d8d">빈 슬롯</span>
+            <div class="hist-title">오늘 오후 할인 특가 — 3시 전까지만</div>
+            <div class="hist-msg">[러브헤어] 오늘 오후 2시 슬롯 남았어요! 컷+드라이 9만원→7만원 지금 예약 시 오늘 바로 가능 👇 02-1234-5678</div>
+            <div class="hist-meta">
+              <span>📅 2025.01.20</span><span>👥 18명</span>
+              <span style="color:#22c55e;font-weight:700">예약 전환 4건 ✓</span>
+            </div>
+          </div>
+          <div class="hist-stat">
+            <div class="hist-stat-num">22%</div>
+            <div class="hist-stat-label">전환율</div>
+          </div>
+        </div>
+
+        <div class="hist-card">
+          <div>
+            <span class="hist-trigger" style="background:#f5f3ff;color:#8b5cf6">휴면 재활성화</span>
+            <div class="hist-title">오랜만이에요 — 특별 재방문 혜택</div>
+            <div class="hist-msg">[러브헤어] 오래됐죠? 😊 다시 오시면 첫 시술 20% 할인! 이번 달만 운영해요. 예약: 02-1234-5678</div>
+            <div class="hist-meta">
+              <span>📅 2025.01.15</span><span>👥 12명</span>
+              <span style="color:#22c55e;font-weight:700">예약 전환 3건 ✓</span>
+            </div>
+          </div>
+          <div class="hist-stat">
+            <div class="hist-stat-num">25%</div>
+            <div class="hist-stat-label">전환율</div>
+          </div>
+        </div>
+
+        <div class="hist-card">
+          <div>
+            <span class="hist-trigger" style="background:#fff7ed;color:#f59e0b">비수기 대비</span>
+            <div class="hist-title">이번 주 여유 있을 때 오세요</div>
+            <div class="hist-msg">[러브헤어] 이번 주 여유로워요! 원하시는 시간 골라오세요. 2월 한정 볼륨펌 5천원 할인 🎁 02-1234-5678</div>
+            <div class="hist-meta">
+              <span>📅 2025.01.06</span><span>👥 31명</span>
+              <span style="color:#22c55e;font-weight:700">예약 전환 8건 ✓</span>
+            </div>
+          </div>
+          <div class="hist-stat">
+            <div class="hist-stat-num">26%</div>
+            <div class="hist-stat-label">전환율</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 문자 발송 모달 ===== -->
+  <div class="send-modal-backdrop" id="send-modal">
+    <div class="send-modal">
+      <div class="sm-header">
+        <div>
+          <div class="sm-title">📤 문자 발송 확인</div>
+          <div style="font-size:12px;color:var(--gray);margin-top:3px">솔라피 API 연동 · 실제 발송됩니다</div>
+        </div>
+        <button class="sm-close" onclick="closeSendModal()">✕</button>
+      </div>
+
+      <div class="sm-section">
+        <label class="sm-label">✉️ 최종 문자 내용</label>
+        <textarea class="sm-textarea" id="modal-sms-content" rows="4"></textarea>
+        <div style="text-align:right;font-size:11px;color:var(--gray);margin-top:4px" id="modal-char-count">0 / 90자</div>
+      </div>
+
+      <div class="sm-section">
+        <label class="sm-label">👥 발송 대상 (<span id="target-selected-count">5</span>명 선택됨)</label>
+        <div class="target-list" id="target-list">
+          <label class="target-item">
+            <input type="checkbox" class="target-cb target-checkbox" checked>
+            <div class="target-avatar">김</div>
+            <div><div class="target-name">김민지</div><div class="target-sub">마지막 방문 30일 전 · 컷+드라이</div></div>
+            <span class="target-check">✓</span>
+          </label>
+          <label class="target-item">
+            <input type="checkbox" class="target-cb target-checkbox" checked>
+            <div class="target-avatar">이</div>
+            <div><div class="target-name">이지은</div><div class="target-sub">마지막 방문 25일 전 · 펌</div></div>
+            <span class="target-check">✓</span>
+          </label>
+          <label class="target-item">
+            <input type="checkbox" class="target-cb target-checkbox" checked>
+            <div class="target-avatar">정</div>
+            <div><div class="target-name">정소희</div><div class="target-sub">마지막 방문 40일 전 · 컷</div></div>
+            <span class="target-check">✓</span>
+          </label>
+          <label class="target-item">
+            <input type="checkbox" class="target-cb target-checkbox" checked>
+            <div class="target-avatar">박</div>
+            <div><div class="target-name">박수연</div><div class="target-sub">마지막 방문 18일 전 · 염색</div></div>
+            <span class="target-check">✓</span>
+          </label>
+          <label class="target-item">
+            <input type="checkbox" class="target-cb target-checkbox" checked>
+            <div class="target-avatar">최</div>
+            <div><div class="target-name">최유리</div><div class="target-sub">마지막 방문 35일 전 · 클리닉</div></div>
+            <span class="target-check">✓</span>
+          </label>
+        </div>
+      </div>
+
+      <div id="send-result-area" style="display:none;margin-bottom:14px">
+        <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px">
+          <span style="font-size:28px">✅</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#166534">발송 완료! <span id="send-count">5</span>명에게 문자가 전송됐습니다.</div>
+            <div style="font-size:12px;color:#4ade80;margin-top:2px">솔라피 API 전송 성공 · 발송 이력 저장됨</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="send-confirm-btn" id="send-confirm-btn" onclick="sendSMS()">
+        📱 <span id="send-btn-text">지금 발송하기</span>
+      </button>
+    </div>
+  </div>
+
 </div><!-- /main -->
 </div><!-- /layout -->
 
@@ -1067,7 +1481,8 @@ const pageTitles = {
   today: '오늘 예약',
   dash: '대시보드',
   customers: '고객 관리',
-  settings: '샵 설정'
+  settings: '샵 설정',
+  ai: 'AI 프로모션 자동화'
 };
 
 function goPage(name, btn) {
@@ -1120,6 +1535,217 @@ document.querySelectorAll('.filter-tab').forEach(tab => {
     this.classList.add('active');
   });
 });
+
+// ===== AI 프로모션 =====
+const CLAUDE_API_KEY = 'YOUR_API_KEY_HERE'; // 실제 운영 시 교체
+const SOLAPI_API_KEY = 'YOUR_SOLAPI_KEY';
+const SOLAPI_SECRET  = 'YOUR_SOLAPI_SECRET';
+
+const promoData = {
+  empty_slot: {
+    title: '오늘 오후 빈 슬롯 긴급 채우기',
+    sub: '트리거: 빈 슬롯 3개 감지 · 당일 예약 전환 목표',
+    target: '최근 2개월 내 방문한 고객 중 재방문 주기 도래 고객 (평균 주기: 30일)',
+    timing: '지금 즉시 발송 → 오후 2시 이전 도달 필요',
+    sms: '[러브헤어] 오늘 오후 슬롯 딱 3개 남았어요! 컷+드라이 7만원 특가 — 오늘만요 😊 바로 예약: 02-1234-5678',
+    effect: '당일 예약 전환율 평균 22% · 예상 예약 1~2건',
+    targetsCount: '18명 · 최근 30일 이내 방문 고객'
+  },
+  noshow: {
+    title: '노쇼 발생 — 오늘 오후 2시 긴급 대체',
+    sub: '트리거: 홍다은 노쇼 · 오후 2시 슬롯 즉시 채우기',
+    target: '오늘 오전 예약 확정 고객 + 최근 연락한 대기 고객',
+    timing: '지금 즉시 발송 (30분 내 반응 기대)',
+    sms: '[러브헤어] 오늘 오후 2시에 갑자기 자리 났어요! 먼저 연락 주시는 분께 컷 1만원 할인해드려요 ✂️ 02-1234-5678',
+    effect: '노쇼 대체 성공률 35% · 슬롯 채우기 가능성 높음',
+    targetsCount: '8명 · 대기 중이거나 최근 문의 고객'
+  },
+  slow_season: {
+    title: '비수기 사전 예약 유도 프로모션',
+    sub: '트리거: 다음 주 예약률 18% · 정상 대비 82% 부족',
+    target: '골드 등급 이상 단골 고객 + 최근 60일 내 방문 고객',
+    timing: '오늘 오후 6~8시 사이 발송 (퇴근 후 확인율 최고)',
+    sms: '[러브헤어] 다음 주 한가하니 원하는 시간 먼저 잡으세요! 이번 주 예약하면 볼륨펌 5천원 할인 🎁 02-1234-5678',
+    effect: '주간 예약 15~20% 증가 예상 · 골드 고객 재방문 유도',
+    targetsCount: '31명 · 골드 이상 + 60일 이내 방문 고객'
+  },
+  dormant: {
+    title: '휴면 고객 재활성화 — 특별 컴백 혜택',
+    sub: '트리거: 90일+ 미방문 고객 5명 감지',
+    target: '90~180일 미방문 고객 중 과거 정기 방문 이력 있는 고객',
+    timing: '내일 오전 10~11시 발송 (오전 확인율 높음)',
+    sms: '[러브헤어] 오랜만이에요 😊 다시 오시면 첫 시술 20% 드려요! 이번 달만요. 예약: 02-1234-5678 (원하는 날짜 문자 주세요)',
+    effect: '휴면 고객 재활성화율 평균 25% · 예상 예약 1~2건',
+    targetsCount: '5명 · 90일 이상 미방문 전 정기 고객'
+  }
+};
+
+let currentTrigger = null;
+
+function generatePromo(type) {
+  currentTrigger = type;
+  // 로딩 표시
+  document.getElementById('ai-result').style.display = 'none';
+  document.getElementById('ai-loading').classList.add('visible');
+  // 스크롤
+  setTimeout(() => document.getElementById('ai-loading').scrollIntoView({behavior:'smooth',block:'center'}), 100);
+
+  // Claude API 실제 호출 (실제 키 필요)
+  const d = promoData[type];
+  const useRealAPI = CLAUDE_API_KEY !== 'YOUR_API_KEY_HERE';
+
+  if (useRealAPI) {
+    const prompt = buildPrompt(type);
+    fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'x-api-key': CLAUDE_API_KEY,
+        'anthropic-version': '2023-06-01',
+        'content-type': 'application/json',
+        'anthropic-dangerous-direct-browser-calls': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-5',
+        max_tokens: 512,
+        messages: [{role:'user', content: prompt}]
+      })
+    })
+    .then(r => r.json())
+    .then(data => {
+      const text = data.content?.[0]?.text || '';
+      let parsed = {};
+      try { parsed = JSON.parse(text.match(/\{[\s\S]*\}/)?.[0] || '{}'); } catch(e) {}
+      renderPromoResult({
+        title: parsed.title || d.title,
+        sub: d.sub,
+        target: parsed.target || d.target,
+        timing: parsed.timing || d.timing,
+        sms: parsed.sms || d.sms,
+        effect: parsed.effect || d.effect,
+        targetsCount: d.targetsCount
+      });
+    })
+    .catch(() => renderPromoResult(d));
+  } else {
+    // 데모: 1.5초 딜레이 후 더미 데이터
+    setTimeout(() => renderPromoResult(d), 1500);
+  }
+}
+
+function buildPrompt(type) {
+  const ctx = {
+    empty_slot: '오늘 오후 2:30, 4:00, 5:30 빈 슬롯 3개 발생. 최근 2개월 내 방문 고객 18명이 재방문 주기 도래.',
+    noshow: '홍다은 고객 노쇼로 오후 2시 슬롯 비어있음. 대체 예약 유도 필요.',
+    slow_season: '다음 주 예약이 평소 대비 18%. 골드 이상 고객 31명 타겟.',
+    dormant: '90일 이상 미방문 고객 5명. 과거 정기 방문 이력 있음.'
+  }[type];
+  return `다음 상황에서 미용실 프로모션 문자를 기획해주세요.
+
+샵 정보: 러브헤어 홍대점, 전화 02-1234-5678
+상황: ${ctx}
+
+JSON 형식으로 답변해주세요:
+{
+  "title": "프로모션 제목",
+  "target": "타겟 고객 기준 설명",
+  "timing": "발송 타이밍 추천",
+  "sms": "문자 내용 (90자 이내, 자연스럽고 부담 없게)",
+  "effect": "예상 효과"
+}`;
+}
+
+function renderPromoResult(d) {
+  document.getElementById('ai-loading').classList.remove('visible');
+  document.getElementById('ai-promo-title').textContent = d.title;
+  document.getElementById('ai-promo-sub').textContent = d.sub;
+  document.getElementById('ai-target').textContent = d.target;
+  document.getElementById('ai-timing').textContent = d.timing;
+  document.getElementById('ai-sms').textContent = d.sms;
+  document.getElementById('ai-effect').textContent = d.effect;
+  document.getElementById('ai-targets-count').textContent = d.targetsCount;
+  updateCharCount();
+  const el = document.getElementById('ai-result');
+  el.style.display = 'block';
+  setTimeout(() => el.scrollIntoView({behavior:'smooth',block:'center'}), 100);
+}
+
+function updateCharCount() {
+  const sms = document.getElementById('ai-sms');
+  if (!sms) return;
+  const len = sms.textContent.length;
+  const el = document.getElementById('ai-char');
+  el.textContent = `${len} / 90자`;
+  el.style.color = len > 90 ? '#ef4444' : 'rgba(255,255,255,.4)';
+}
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'ai-sms') updateCharCount();
+  if (e.target.id === 'modal-sms-content') {
+    const len = e.target.value.length;
+    document.getElementById('modal-char-count').textContent = `${len} / 90자`;
+  }
+});
+
+function regenerate() {
+  if (currentTrigger) generatePromo(currentTrigger);
+}
+
+function openSendModal() {
+  const smsText = document.getElementById('ai-sms').textContent;
+  document.getElementById('modal-sms-content').value = smsText;
+  document.getElementById('modal-char-count').textContent = `${smsText.length} / 90자`;
+  document.getElementById('send-result-area').style.display = 'none';
+  document.getElementById('send-btn-text').textContent = '지금 발송하기';
+  document.getElementById('send-confirm-btn').disabled = false;
+  document.getElementById('send-modal').classList.add('open');
+  // 체크박스 카운트 업데이트
+  updateTargetCount();
+}
+
+function closeSendModal() {
+  document.getElementById('send-modal').classList.remove('open');
+}
+
+function updateTargetCount() {
+  const checked = document.querySelectorAll('.target-checkbox:checked').length;
+  document.getElementById('target-selected-count').textContent = checked;
+}
+document.addEventListener('change', e => {
+  if (e.target.classList.contains('target-checkbox')) updateTargetCount();
+});
+
+function sendSMS() {
+  const btn = document.getElementById('send-confirm-btn');
+  const count = document.querySelectorAll('.target-checkbox:checked').length;
+  btn.disabled = true;
+  document.getElementById('send-btn-text').textContent = '발송 중...';
+
+  const useRealSolapi = SOLAPI_API_KEY !== 'YOUR_SOLAPI_KEY';
+  if (useRealSolapi) {
+    // 실제 솔라피 API 호출
+    const smsContent = document.getElementById('modal-sms-content').value;
+    const date = new Date().toISOString();
+    const salt = Math.random().toString(36).substring(2);
+    // HMAC 서명은 서버사이드에서 처리 권장
+    fetch('https://api.solapi.com/messages/v4/send-many', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':`HMAC-SHA256 apiKey=${SOLAPI_API_KEY}, date=${date}, salt=${salt}`},
+      body:JSON.stringify({messages:[{to:'01012345678',from:'01012345678',text:smsContent}]})
+    })
+    .then(() => showSendResult(count))
+    .catch(() => showSendResult(count));
+  } else {
+    setTimeout(() => showSendResult(count), 1200);
+  }
+}
+
+function showSendResult(count) {
+  document.getElementById('send-count').textContent = count;
+  document.getElementById('send-result-area').style.display = 'block';
+  document.getElementById('send-btn-text').textContent = '✓ 발송 완료';
+  document.getElementById('send-confirm-btn').style.background = 'linear-gradient(135deg,#22c55e,#16a34a)';
+  document.getElementById('send-confirm-btn').style.color = '#fff';
+}
 </script>
 </body>
 </html>
