@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareOn 파트너 모집 | 크레센트 스튜디오</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0F1B2D;
+    --yellow: #F5C842;
+    --gray: #6B7280;
+    --light: #F9FAFB;
+    --border: #E5E7EB;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: #fff;
+    color: var(--navy);
+    line-height: 1.6;
+  }
+
+  /* ── 헤더 ── */
+  .header {
+    background: var(--navy);
+    color: #fff;
+    padding: 48px 24px 40px;
+    text-align: center;
+  }
+  .header .badge {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-size: clamp(24px, 5vw, 36px);
+    font-weight: 900;
+    line-height: 1.25;
+    margin-bottom: 12px;
+  }
+  .header h1 span { color: var(--yellow); }
+  .header p {
+    font-size: 15px;
+    color: rgba(255,255,255,.65);
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  /* ── 섹션 공통 ── */
+  .section { padding: 48px 24px; max-width: 680px; margin: 0 auto; }
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--yellow);
+  }
+
+  /* ── 핵심 수익 카드 ── */
+  .earn-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .earn-card {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .earn-card .label { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 6px; }
+  .earn-card .amount { font-size: 24px; font-weight: 900; color: var(--yellow); }
+  .earn-card .sub { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 4px; }
+  .earn-note {
+    background: var(--light);
+    border-radius: 10px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.7;
+  }
+
+  /* ── 시뮬레이션 ── */
+  .sim-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 12px;
+  }
+  .sim-table th {
+    background: var(--navy);
+    color: #fff;
+    padding: 8px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 11px;
+  }
+  .sim-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .sim-table tr:nth-child(even) td { background: var(--light); }
+  .sim-table .highlight { color: var(--navy); font-weight: 800; }
+  .sim-note {
+    font-size: 12px;
+    color: var(--gray);
+    padding: 10px 14px;
+    background: #FFFBEA;
+    border-left: 3px solid var(--yellow);
+    border-radius: 0 6px 6px 0;
+  }
+
+  /* ── 타겟 대상 ── */
+  .target-list { list-style: none; }
+  .target-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+  }
+  .target-list li:last-child { border-bottom: none; }
+  .target-list .icon {
+    width: 36px;
+    height: 36px;
+    background: var(--yellow);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .target-list .desc { font-size: 13px; color: var(--gray); margin-top: 2px; }
+
+  /* ── CareOn 소개 ── */
+  .product-card {
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .product-card .pc-header {
+    background: var(--navy);
+    color: #fff;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: background .15s;
+  }
+  .product-card a.pc-header:hover { background: #1a2a42; }
+  .product-card a.pc-header::after {
+    content: '↗';
+    margin-left: auto;
+    color: var(--yellow);
+    font-size: 14px;
+  }
+  .product-card .pc-body { padding: 16px 18px; }
+  .product-card .feature-list { list-style: none; font-size: 14px; }
+  .product-card .feature-list li {
+    padding: 6px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #374151;
+  }
+  .product-card .feature-list li::before {
+    content: '✓';
+    color: var(--yellow);
+    font-weight: 900;
+    font-size: 16px;
+  }
+  .price-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+    color: var(--gray);
+  }
+  .price-row strong { font-size: 16px; color: var(--navy); font-weight: 800; }
+
+  /* ── 진행 프로세스 ── */
+  .process-list { list-style: none; counter-reset: step; }
+  .process-list li {
+    counter-increment: step;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px dashed var(--border);
+    font-size: 14px;
+  }
+  .process-list li:last-child { border-bottom: none; }
+  .process-list li::before {
+    content: counter(step);
+    min-width: 28px;
+    height: 28px;
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 900;
+    font-size: 14px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* ── DM 템플릿 ── */
+  .dm-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .dm-tab {
+    padding: 7px 14px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    background: #fff;
+    color: var(--gray);
+    transition: all .15s;
+  }
+  .dm-tab.active {
+    background: var(--navy);
+    color: #fff;
+    border-color: var(--navy);
+  }
+  .dm-box {
+    background: var(--light);
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    display: none;
+    position: relative;
+  }
+  .dm-box.active { display: block; }
+  .copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .copy-btn:active { opacity: .7; }
+
+  /* ── CTA ── */
+  .cta {
+    background: var(--navy);
+    color: #fff;
+    text-align: center;
+    padding: 48px 24px;
+    margin-top: 32px;
+  }
+  .cta h2 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  .cta p { font-size: 14px; color: rgba(255,255,255,.6); margin-bottom: 24px; }
+  .cta-btn {
+    display: inline-block;
+    background: var(--yellow);
+    color: var(--navy);
+    font-weight: 800;
+    font-size: 15px;
+    padding: 14px 32px;
+    border-radius: 99px;
+    text-decoration: none;
+    margin: 4px;
+  }
+
+  /* ── 공고문 섹션 ── */
+  .notice-box {
+    border: 2px solid var(--navy);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 16px;
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.9;
+    position: relative;
+  }
+  .notice-box .copy-btn { top: 14px; right: 14px; }
+
+  @media (max-width: 480px) {
+    .earn-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div class="badge">PARTNER RECRUIT 2026</div>
+  <h1>CareOn <span>파트너 모집</span><br>월 수익 100만원+</h1>
+  <p>방문요양 센터에 디지털 솔루션을 공급하는<br>크레센트 스튜디오 영업 파트너가 되세요</p>
+</div>
+
+<!-- 수익 구조 -->
+<div class="section">
+  <div class="section-title">💰 수익 구조</div>
+  <div class="earn-grid">
+    <div class="earn-card">
+      <div class="label">계약 1건당</div>
+      <div class="amount">35만원</div>
+      <div class="sub">정상가 기준 수수료</div>
+    </div>
+    <div class="earn-card">
+      <div class="label">구독 MRR 10%</div>
+      <div class="amount">1만원/월</div>
+      <div class="sub">계약당 잔류 수익</div>
+    </div>
+  </div>
+  <div class="earn-note">
+    ✦ 누적 30건 이상 달성 시 → 담당 MRR 전체의 10% 잔류 수익 발생<br>
+    ✦ 계약 후 매달 자동으로 들어오는 구조 (추가 영업 불필요)
+  </div>
+</div>
+
+<!-- 수익 시뮬레이션 -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">📊 월 수익 시뮬레이션</div>
+  <table class="sim-table">
+    <thead>
+      <tr><th style="white-space:nowrap">기간</th><th style="white-space:nowrap">월/누적</th><th style="white-space:nowrap">계약수수료</th><th style="white-space:nowrap">구독잔류</th><th style="white-space:nowrap">월수익</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1개월</td><td>3/3건</td><td>105만원</td><td>3만원</td><td class="highlight">108만원</td></tr>
+      <tr><td>2개월</td><td>3/6건</td><td>105만원</td><td>6만원</td><td class="highlight">111만원</td></tr>
+      <tr><td>3개월</td><td>5/11건</td><td>175만원</td><td>11만원</td><td class="highlight">186만원</td></tr>
+      <tr><td>6개월</td><td>8/26건</td><td>280만원</td><td>26만원</td><td class="highlight">306만원</td></tr>
+    </tbody>
+  </table>
+  <div class="sim-note">* 구독 잔류 수익은 계약 누적될수록 매달 증가 (복리 구조)</div>
+</div>
+
+<!-- 이런 분께 딱! -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">🎯 이런 분께 딱 맞아요</div>
+  <ul class="target-list">
+    <li>
+      <div class="icon">👩‍⚕️</div>
+      <div>
+        <strong>사회복지사 / 사회복지 관련 종사자</strong>
+        <div class="desc">방문요양 센터와 이미 연결된 네트워크로 빠른 영업 가능</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">🏫</div>
+      <div>
+        <strong>요양보호사 교육원 운영자 / 강사</strong>
+        <div class="desc">센터장·원장님과 직접 연결된 인脈 보유</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">📋</div>
+      <div>
+        <strong>장기요양 컨설턴트 / 센터 개원 컨설턴트</strong>
+        <div class="desc">이미 원장님 신뢰 보유 → 끼워팔기 구조로 최고 전환율</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">💼</div>
+      <div>
+        <strong>부업·프리랜서 영업 경험자</strong>
+        <div class="desc">복지·의료·헬스케어 업계 경험 있으면 더욱 유리</div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- 소구 포인트 -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">💡 왜 원장님이 선택하는가</div>
+  <div style="display:grid;grid-template-columns:1fr;gap:12px;">
+    <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
+      <div style="font-size:12px;color:var(--gray);margin-bottom:4px">💰 가격 합리성</div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:4px">외주 개발 최소 500만원 → CareOn 199만원</div>
+      <div style="font-size:13px;color:var(--gray)">유지보수·서버·업데이트 전부 포함. 추가 비용 없음.</div>
+    </div>
+    <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
+      <div style="font-size:12px;color:var(--gray);margin-bottom:4px">📋 업무 직결</div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:4px">방문 기록 누락 → 행정처분 리스크 제로</div>
+      <div style="font-size:13px;color:var(--gray)">보호자 전화 문의·수기 기록·일정 관리를 앱 하나로 해결.</div>
+    </div>
+    <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
+      <div style="font-size:12px;color:var(--gray);margin-bottom:4px">🔒 지속 지원</div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:4px">도입 후 운영·업데이트 크레센트가 전담</div>
+      <div style="font-size:13px;color:var(--gray)">원장님은 쓰기만 하면 됨. 기술 문제는 저희가 다 처리.</div>
+    </div>
+  </div>
+</div>
+
+<!-- CareOn 소개 -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">📦 팔게 되는 제품 — CareOn 3종</div>
+  <div class="product-card">
+    <a class="pc-header" href="care-site.html" target="_blank" rel="noopener">🌐 센터 홈페이지</a>
+    <div class="pc-body">
+      <ul class="feature-list">
+        <li>센터 소개·서비스 안내·상담 신청</li>
+        <li>보호자 대상 신뢰 구축용 랜딩</li>
+        <li>카카오 상담 연결 버튼</li>
+      </ul>
+    </div>
+  </div>
+  <div class="product-card">
+    <a class="pc-header" href="care-customer.html" target="_blank" rel="noopener">📱 보호자 앱</a>
+    <div class="pc-body">
+      <ul class="feature-list">
+        <li>방문 일정·기록 실시간 확인</li>
+        <li>요양보호사 체크인/체크아웃 알림</li>
+        <li>공지사항·케어 사진 열람</li>
+      </ul>
+    </div>
+  </div>
+  <div class="product-card">
+    <a class="pc-header" href="care-admin.html" target="_blank" rel="noopener">⚙️ 센터장 대시보드</a>
+    <div class="pc-body">
+      <ul class="feature-list">
+        <li>이용자·요양보호사 통합 관리</li>
+        <li>방문 기록·매칭·일정 전체 조회</li>
+        <li>상담 목록·공지사항 관리</li>
+      </ul>
+      <div class="price-row">
+        <span>제작비 + 구독 Pro</span>
+        <strong>199만원 + 월 9.9만원</strong>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 진행 프로세스 -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">🚀 파트너 진행 프로세스</div>
+  <ol class="process-list">
+    <li>
+      <div>
+        <strong>파트너 등록</strong>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px">간단한 정보 제출 → 크레센트 스튜디오 확인 후 승인 (1~2일)</div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>영업 자료 수령</strong>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px">세일즈덱 PPT + 고객용 소개 링크 + 데모 사이트 제공</div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>고객 발굴·상담</strong>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px">방문요양 센터 원장님께 소개 → 데모 시연 → 계약 진행</div>
+      </div>
+    </li>
+    <li>
+      <div>
+        <strong>계약 완료 → 수수료 지급</strong>
+        <div style="font-size:13px;color:#6B7280;margin-top:2px">계약 확인 즉시 35만원 지급 + 구독료 매월 자동 정산</div>
+      </div>
+    </li>
+  </ol>
+</div>
+
+
+
+<!-- 파트너 혜택 -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">✅ 파트너 혜택</div>
+  <ul class="target-list">
+    <li>
+      <div class="icon">📂</div>
+      <div>
+        <strong>영업 자료 전체 제공</strong>
+        <div class="desc">세일즈덱 PPT · 고객용 소개 링크 · 데모 사이트 즉시 지급</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">🔧</div>
+      <div>
+        <strong>기술 지식 불필요</strong>
+        <div class="desc">개발·운영·유지보수 100% 크레센트 스튜디오 담당</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">💳</div>
+      <div>
+        <strong>재고·초기 투자 0원</strong>
+        <div class="desc">선투자 없이 소개만 해도 수수료 발생</div>
+      </div>
+    </li>
+    <li>
+      <div class="icon">📈</div>
+      <div>
+        <strong>누적될수록 늘어나는 잔류 수익</strong>
+        <div class="desc">계약 건수가 쌓일수록 매달 자동으로 들어오는 구독 수익 증가</div>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <h2>파트너 신청하기</h2>
+  <p>지금 바로 연락주시면 영업 자료 전체를 보내드립니다</p>
+  <a href="tel:010-9032-9090" class="cta-btn">📞 010-9032-9090</a>
+  <a href="http://pf.kakao.com/_BaxbxdX" target="_blank" rel="noopener" class="cta-btn">💬 카카오 채널 문의</a>
+</div>
+
+<script>
+function switchTab(idx) {
+  document.querySelectorAll('.dm-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  document.querySelectorAll('.dm-box').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function copyText(id, btn) {
+  const el = document.getElementById(id);
+  const text = el.innerText.replace('복사','').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '복사됨 ✓';
+    setTimeout(() => btn.textContent = '복사', 1500);
+  });
+}
+</script>
+</body>
+</html>
