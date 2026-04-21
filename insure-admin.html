@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InsureOn 설계사 대시보드</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --navy:#0F1B2D;
+    --navy-2:#1b2940;
+    --yellow:#F5C842;
+    --text:#1a2233;
+    --muted:#6b7384;
+    --line:#e8ebf2;
+    --bg:#f5f7fb;
+    --card:#ffffff;
+    --ok:#16a34a;
+    --warn:#dc2626;
+    --info:#2563eb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  input,select,textarea{font-family:inherit}
+  a{color:inherit;text-decoration:none}
+
+  .layout{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+
+  /* Sidebar */
+  aside{background:var(--navy);color:#c5cddb;padding:24px 16px;position:sticky;top:0;height:100vh;overflow-y:auto}
+  aside .brand{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;padding:0 8px 20px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:20px}
+  aside .brand .logo{width:32px;height:32px;border-radius:8px;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900}
+  aside nav{display:flex;flex-direction:column;gap:4px}
+  aside nav button{display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;color:#c5cddb;font-size:14px;font-weight:500;text-align:left;transition:all .15s}
+  aside nav button:hover{background:rgba(255,255,255,.06);color:#fff}
+  aside nav button.active{background:var(--yellow);color:var(--navy);font-weight:700}
+  aside nav button .ico{width:20px;height:20px;display:grid;place-items:center;font-size:15px}
+  aside .profile{margin-top:auto;padding:16px 8px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;align-items:center}
+  aside .profile .ava{width:38px;height:38px;border-radius:50%;background:var(--yellow);color:var(--navy);display:grid;place-items:center;font-weight:900}
+  aside .profile .nm{color:#fff;font-size:13px;font-weight:700}
+  aside .profile .rl{color:#9aa6bc;font-size:11px}
+
+  /* Main */
+  main{padding:28px 32px;max-width:100%;overflow-x:hidden}
+  .page-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;gap:16px;flex-wrap:wrap}
+  .page-head h1{color:var(--navy);font-size:22px;font-weight:800;letter-spacing:-.01em}
+  .page-head .sub{color:var(--muted);font-size:13px;margin-top:2px}
+  .head-actions{display:flex;gap:8px;flex-shrink:0}
+
+  /* Cards & Grids */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{color:var(--navy);font-size:15px;margin-bottom:14px;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between;font-weight:800}
+  .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
+  .stat-card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;position:relative;overflow:hidden}
+  .stat-card .l{color:var(--muted);font-size:12px;font-weight:600}
+  .stat-card .n{color:var(--navy);font-size:26px;font-weight:800;letter-spacing:-.02em;margin:4px 0 2px}
+  .stat-card .d{color:var(--ok);font-size:12px;font-weight:600}
+  .stat-card .d.down{color:var(--warn)}
+  .stat-card .ico{position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:10px;background:var(--navy);color:var(--yellow);display:grid;place-items:center;font-size:16px}
+
+  .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+  .grid-2-eq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;gap:6px;padding:10px 14px;border-radius:10px;font-weight:700;font-size:13px;transition:all .15s;white-space:nowrap}
+  .btn-primary{background:var(--yellow);color:var(--navy)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 14px rgba(245,200,66,.4)}
+  .btn-navy{background:var(--navy);color:#fff}
+  .btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--navy)}
+  .btn-sm{padding:7px 12px;font-size:12px}
+  .btn-danger{background:#fee2e2;color:var(--warn)}
+
+  /* Table */
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{text-align:left;color:var(--muted);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:10px 12px;border-bottom:1px solid var(--line);background:var(--bg)}
+  td{padding:14px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tbody tr:hover{background:var(--bg)}
+  .pill{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700}
+  .pill-ok{background:rgba(22,163,74,.12);color:var(--ok)}
+  .pill-warn{background:rgba(220,38,38,.1);color:var(--warn)}
+  .pill-info{background:rgba(37,99,235,.1);color:var(--info)}
+  .pill-gray{background:#eef1f7;color:var(--muted)}
+
+  /* Field */
+  .field{margin-bottom:12px}
+  .field label{display:block;font-size:12px;color:var(--navy);font-weight:700;margin-bottom:5px}
+  .field input,.field textarea,.field select{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;background:#fff;transition:border-color .15s}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,27,45,.06)}
+  .field textarea{min-height:80px;resize:vertical}
+  .row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  /* Page */
+  .page{display:none}
+  .page.active{display:block}
+
+  /* Link Box */
+  .link-box{background:var(--bg);border:1px dashed var(--line);border-radius:10px;padding:14px;display:flex;gap:10px;align-items:center;margin-bottom:14px}
+  .link-box .u{flex:1;font-family:'Menlo','Consolas',monospace;font-size:12px;color:var(--navy);word-break:break-all}
+
+  /* Content Gen */
+  .gen-output{background:var(--navy);color:#fff;border-radius:12px;padding:18px;margin-top:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;min-height:140px;position:relative}
+  .gen-output.placeholder{color:#6b7384;display:flex;align-items:center;justify-content:center;text-align:center;white-space:normal}
+  .gen-output .copy{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.1);color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600}
+  .gen-output .copy:hover{background:rgba(255,255,255,.2)}
+
+  /* Topic chips */
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .chip{padding:8px 14px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-size:12px;font-weight:600;color:var(--navy);transition:all .15s}
+  .chip.active{background:var(--navy);color:var(--yellow);border-color:var(--navy)}
+
+  /* AI output */
+  .ai-block{background:var(--bg);border-left:3px solid var(--yellow);padding:14px 16px;border-radius:0 10px 10px 0;margin-bottom:10px;font-size:13px;line-height:1.7}
+  .ai-block h5{color:var(--navy);font-size:13px;margin-bottom:6px;font-weight:800}
+
+  /* Customer Detail Panel */
+  .detail-panel{position:fixed;top:0;right:0;width:480px;max-width:95vw;height:100%;background:#fff;box-shadow:-30px 0 60px rgba(15,27,45,.18);z-index:70;transform:translateX(100%);transition:transform .25s ease;display:flex;flex-direction:column}
+  .detail-panel.open{transform:translateX(0)}
+  .detail-panel header.dph{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:2}
+  .detail-panel .body{padding:22px;overflow-y:auto;flex:1}
+  .detail-panel .close{font-size:22px;color:var(--muted);background:none}
+
+  .pol-item{padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;font-size:13px;display:flex;justify-content:space-between}
+  .pol-item .co{color:var(--navy);font-weight:700}
+  .pol-item .am{color:var(--muted);font-size:12px}
+
+  /* Calendar */
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:10px}
+  .cal-cell{aspect-ratio:1/.8;background:var(--bg);border-radius:6px;padding:6px;font-size:11px;position:relative;overflow:hidden}
+  .cal-cell .day{color:var(--muted);font-weight:600}
+  .cal-cell.has{background:rgba(245,200,66,.2)}
+  .cal-cell .val{position:absolute;bottom:4px;right:6px;color:var(--navy);font-weight:800;font-size:11px}
+  .cal-head{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;font-size:10px;color:var(--muted);font-weight:700;text-align:center;margin-top:10px}
+
+  /* Commission totals */
+  .total-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .total-row .card{text-align:center}
+  .total-row .l{color:var(--muted);font-size:12px;font-weight:600}
+  .total-row .n{color:var(--navy);font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
+  .total-row .yellow{color:#b8890a}
+
+  /* Toast & Modal */
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;z-index:100;opacity:0;transition:all .2s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  .modal{position:fixed;inset:0;background:rgba(15,27,45,.45);z-index:80;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .modal .box{background:#fff;border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:24px}
+
+  .empty{text-align:center;padding:30px;color:var(--muted);font-size:13px}
+
+  .mb-12{margin-bottom:12px}
+
+  @media (max-width:1024px){
+    .layout{grid-template-columns:1fr}
+    aside{position:fixed;top:0;left:0;width:240px;transform:translateX(-100%);transition:transform .2s;z-index:50}
+    aside.open{transform:translateX(0)}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .grid-2,.grid-2-eq{grid-template-columns:1fr}
+    main{padding:20px}
+    .mobile-menu{display:inline-flex !important}
+  }
+  .mobile-menu{display:none;background:var(--navy);color:#fff;padding:8px 12px;border-radius:8px;font-weight:700;font-size:13px}
+</style>
+</head>
+<body>
+
+<div class="layout">
+  <aside id="sidebar">
+    <div class="brand">
+      <span class="logo">C</span>
+      <div>
+        <div>InsureOn</div>
+        <div style="font-size:11px;color:#9aa6bc;font-weight:500">Admin</div>
+      </div>
+    </div>
+    <nav>
+      <button class="active" data-page="today"><span class="ico">📊</span>오늘 현황</button>
+      <button data-page="inflow"><span class="ico">🎯</span>신규 유입 관리</button>
+      <button data-page="ai"><span class="ico">🤖</span>AI 상담 도우미</button>
+      <button data-page="portfolio"><span class="ico">👥</span>고객 포트폴리오</button>
+      <button data-page="sms"><span class="ico">📱</span>자동 문자 발송</button>
+      <button data-page="comm"><span class="ico">💰</span>수당 계산</button>
+    </nav>
+    <div class="profile">
+      <div class="ava" id="sidebarAva">신</div>
+      <div>
+        <div class="nm" id="sidebarNm">신현주 매니저</div>
+        <div class="rl" id="sidebarRl">더 피플</div>
+      </div>
+    </div>
+  </aside>
+
+  <main>
+    <!-- PAGE: TODAY -->
+    <div class="page active" id="page-today">
+      <div class="page-head">
+        <div>
+          <h1>오늘 현황</h1>
+          <div class="sub">2026-04-20 월요일 · 어서 오세요, <span id="todayNm">신현주</span> 매니저님</div>
+        </div>
+        <div class="head-actions">
+          <button class="mobile-menu" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+          <button class="btn btn-ghost" onclick="openSettings()">⚙ 설정</button>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="ico">🎯</div>
+          <div class="l">이번 달 신규 리드</div>
+          <div class="n" id="stNewLeads">24</div>
+          <div class="d">▲ 지난달 대비 +33%</div>
+        </div>
+        <div class="stat-card">
+          <div class="ico">⏰</div>
+          <div class="l">갱신 임박 고객</div>
+          <div class="n" id="stRenew">7</div>
+          <div class="d down">D-7 이내 3명</div>
+        </div>
+        <div class="stat-card">
+          <div class="ico">💰</div>
+          <div class="l">이번 달 수당 예상</div>
+          <div class="n" id="stComm">382만원</div>
+          <div class="d">▲ 전월 대비 +12%</div>
+        </div>
+        <div class="stat-card">
+          <div class="ico">📈</div>
+          <div class="l">분석 → 상담 전환율</div>
+          <div class="n">38%</div>
+          <div class="d">벤치마크 25%</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>최근 분석 요청 고객 <button class="btn btn-ghost btn-sm" onclick="goPage('portfolio')">전체 보기</button></h3>
+          <table>
+            <thead><tr><th>고객</th><th>요청일</th><th>공백</th><th>상태</th><th></th></tr></thead>
+            <tbody id="recentTbody"></tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h3>오늘의 할 일</h3>
+          <div id="todoList"></div>
+          <div class="field" style="margin-top:12px">
+            <input id="todoInput" placeholder="할 일 추가... (Enter)" onkeydown="if(event.key==='Enter'){addTodo();}">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: INFLOW -->
+    <div class="page" id="page-inflow">
+      <div class="page-head">
+        <div><h1>신규 유입 관리</h1><div class="sub">공유 링크 · SNS 콘텐츠 · 지인 추천 자동화</div></div>
+      </div>
+
+      <div class="card mb-12">
+        <h3>📎 공유 링크 관리</h3>
+        <div class="link-box">
+          <div class="u" id="shareUrl">https://crescentstudio.co.kr/insure-customer.html?ref=shin&utm=kakao</div>
+          <button class="btn btn-ghost btn-sm" onclick="copyShare()">복사</button>
+          <button class="btn btn-navy btn-sm" onclick="newLink()">새 링크</button>
+        </div>
+        <table>
+          <thead><tr><th>링크명</th><th>생성일</th><th>클릭</th><th>분석 완료</th><th>상담 전환</th><th>전환율</th></tr></thead>
+          <tbody id="linkTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="grid-2-eq">
+        <div class="card">
+          <h3>🎨 SNS 콘텐츠 자동 생성</h3>
+          <div class="chips" id="topicChips">
+            <button class="chip active" data-topic="보장 공백">보장 공백</button>
+            <button class="chip" data-topic="갱신 주의">갱신 주의</button>
+            <button class="chip" data-topic="보험금 청구 팁">청구 팁</button>
+            <button class="chip" data-topic="절세 보험">절세 보험</button>
+          </div>
+          <div class="field">
+            <label>타겟 독자</label>
+            <select id="genAudience">
+              <option>30-40대 직장인</option>
+              <option>40-50대 자영업자</option>
+              <option>20대 사회 초년생</option>
+              <option>50-60대 은퇴 전후</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>포맷</label>
+            <select id="genFormat">
+              <option value="card">카드뉴스 (인스타)</option>
+              <option value="kakao">카카오 채널 공지</option>
+              <option value="blog">블로그 포스트</option>
+            </select>
+          </div>
+          <button class="btn btn-primary" style="width:100%" onclick="generateContent()">AI 콘텐츠 생성 →</button>
+          <div class="gen-output placeholder" id="genOutput">주제를 선택하고 생성 버튼을 눌러주세요</div>
+        </div>
+
+        <div class="card">
+          <h3>💌 지인 추천 자동 문자</h3>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">기존 고객에게 지인 소개 요청 문자를 발송합니다.</div>
+          <div class="field">
+            <label>발송 대상</label>
+            <select id="refTarget">
+              <option value="vip">우수 고객 (VIP · 12명)</option>
+              <option value="renewed">최근 갱신 완료 (8명)</option>
+              <option value="longterm">3년 이상 유지 (24명)</option>
+              <option value="custom">직접 선택</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>혜택 내용</label>
+            <input id="refBenefit" value="소개해주신 지인 상담 완료 시 5만원 스벅 기프티콘">
+          </div>
+          <div class="field">
+            <label>메시지 (자동 생성 가능)</label>
+            <textarea id="refMsg">안녕하세요, [고객명]님 :) 더 피플 신현주 매니저입니다. 보험 분석이 필요한 지인을 소개해주시면 5만원 기프티콘을 드려요. 아래 링크 한 번 봐주시겠어요? [링크]</textarea>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-ghost" style="flex:1" onclick="autoWriteRef()">AI로 다시 쓰기</button>
+            <button class="btn btn-primary" style="flex:1" onclick="sendReferral()">솔라피 발송</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: AI -->
+    <div class="page" id="page-ai">
+      <div class="page-head">
+        <div><h1>AI 상담 도우미</h1><div class="sub">고객 정보를 입력하면 맞춤 소구 포인트를 생성합니다</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>고객 정보 입력</h3>
+          <div class="row-2">
+            <div class="field"><label>나이</label><input id="aiAge" type="number" value="42"></div>
+            <div class="field"><label>성별</label><select id="aiGender"><option>남</option><option>여</option></select></div>
+          </div>
+          <div class="field"><label>가족 구성</label><input id="aiFamily" value="배우자 · 자녀 2명 (초등 · 유치)"></div>
+          <div class="row-2">
+            <div class="field"><label>직업</label><input id="aiJob" value="중견기업 과장"></div>
+            <div class="field"><label>월 소득</label><input id="aiIncome" value="550만원"></div>
+          </div>
+          <div class="field"><label>현재 보유 보험</label><textarea id="aiCurrent">삼성생명 종신보험 (월 13만원, 사망 1억, 암진단 3천)
+실손의료비 없음
+자녀 어린이보험 2건</textarea></div>
+          <div class="field"><label>주요 관심사 / 우려</label><textarea id="aiConcern">부모님이 뇌졸중 가족력 있어서 걱정. 자녀 교육비도 준비하고 싶음.</textarea></div>
+          <button class="btn btn-primary" style="width:100%" onclick="runAiAssist()">상담 가이드 생성 →</button>
+        </div>
+
+        <div class="card">
+          <h3>AI 상담 가이드</h3>
+          <div id="aiOutput">
+            <div class="empty">왼쪽에서 고객 정보를 입력하고 생성 버튼을 눌러주세요</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: PORTFOLIO -->
+    <div class="page" id="page-portfolio">
+      <div class="page-head">
+        <div><h1>고객 포트폴리오</h1><div class="sub">전체 고객 · <span id="cusCount">0</span>명</div></div>
+        <div class="head-actions">
+          <button class="btn btn-ghost" onclick="exportCustomers()">📥 내보내기</button>
+          <button class="btn btn-primary" onclick="openCustomerModal()">+ 고객 추가</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <input id="cusSearch" placeholder="이름·연락처 검색" style="flex:1;min-width:200px;padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px" oninput="renderCustomers()">
+          <select id="cusFilter" onchange="renderCustomers()" style="padding:9px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px">
+            <option value="all">전체</option>
+            <option value="gap">보장 공백</option>
+            <option value="renew">갱신 임박</option>
+            <option value="vip">VIP</option>
+            <option value="dormant">휴면</option>
+          </select>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>고객명</th><th>나이</th><th>보유</th><th>갱신일</th><th>공백</th><th>마지막 상담</th><th>우선도</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="cusTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: SMS -->
+    <div class="page" id="page-sms">
+      <div class="page-head">
+        <div><h1>자동 문자 발송</h1><div class="sub">갱신·휴면·공백 메시지를 솔라피로 자동 발송</div></div>
+      </div>
+
+      <div class="grid-2-eq">
+        <div class="card">
+          <h3>⏰ 갱신 임박 알림 (D-30/D-7/D-1)</h3>
+          <table>
+            <thead><tr><th>고객</th><th>갱신일</th><th>D-</th><th>상태</th><th></th></tr></thead>
+            <tbody id="renewTbody"></tbody>
+          </table>
+          <button class="btn btn-navy" style="width:100%;margin-top:10px" onclick="sendAllRenewals()">모두 자동 발송</button>
+        </div>
+
+        <div class="card">
+          <h3>😴 휴면 고객 재접촉</h3>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">6개월 이상 미접촉 고객을 자동 감지합니다.</div>
+          <table>
+            <thead><tr><th>고객</th><th>마지막 접촉</th><th></th></tr></thead>
+            <tbody id="dormantTbody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>🎯 보장 공백 — 추가 계약 유도</h3>
+        <div style="font-size:13px;color:var(--muted);margin-bottom:12px">AI 분석 결과 공백이 확인된 고객만 자동 필터링됩니다.</div>
+        <table>
+          <thead><tr><th>고객</th><th>공백 항목</th><th>제안 보장</th><th>예상 월 보험료</th><th></th></tr></thead>
+          <tbody id="gapTbody"></tbody>
+        </table>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>📬 발송 이력</h3>
+        <table>
+          <thead><tr><th>일시</th><th>고객</th><th>유형</th><th>내용</th><th>상태</th></tr></thead>
+          <tbody id="smsHistoryTbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PAGE: COMMISSION -->
+    <div class="page" id="page-comm">
+      <div class="page-head">
+        <div><h1>수당 계산</h1><div class="sub">계약 입력 · 초회/유지 수당 자동 계산 · 월별·연간 추이</div></div>
+        <div class="head-actions">
+          <button class="btn btn-primary" onclick="openContractModal()">+ 계약 입력</button>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <div class="card">
+          <div class="l">이번 달 예상 수당</div>
+          <div class="n yellow" id="thisMonthComm">0원</div>
+        </div>
+        <div class="card">
+          <div class="l">연초 누적 수당</div>
+          <div class="n" id="ytdComm">0원</div>
+        </div>
+        <div class="card">
+          <div class="l">유지 수당 (연간)</div>
+          <div class="n" id="maintainComm">0원</div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>월별 수당 추이</h3>
+          <canvas id="commChart" height="140"></canvas>
+        </div>
+        <div class="card">
+          <h3>이번 달 수당 캘린더</h3>
+          <div class="cal-head"><div>일</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div><div>토</div></div>
+          <div class="cal-grid" id="calGrid"></div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <h3>계약 내역</h3>
+        <table>
+          <thead><tr><th>계약일</th><th>고객</th><th>보험사</th><th>상품</th><th>월 보험료</th><th>수수료율</th><th>초회</th><th>유지(연)</th><th></th></tr></thead>
+          <tbody id="contractTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Customer Detail Panel -->
+<div class="detail-panel" id="cusPanel">
+  <header class="dph">
+    <div>
+      <div id="dpName" style="font-size:16px;font-weight:800;color:var(--navy)">-</div>
+      <div id="dpMeta" style="font-size:12px;color:var(--muted)">-</div>
+    </div>
+    <button class="close" onclick="closeDetail()">×</button>
+  </header>
+  <div class="body" id="dpBody"></div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+  <div class="box">
+    <h3 style="color:var(--navy);margin-bottom:8px">⚙ 설정</h3>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px">API 키와 프로필 정보를 입력하세요. 브라우저에만 저장됩니다.</div>
+    <div class="field"><label>Claude API Key</label><input id="setApiKey" placeholder="sk-ant-..." type="password"></div>
+    <div class="field"><label>Claude 모델</label><input id="setModel" value="claude-sonnet-4-20250514"></div>
+    <div class="field"><label>솔라피 API Key</label><input id="setSolapiKey" placeholder="NCS..." type="password"></div>
+    <div class="field"><label>솔라피 발신번호</label><input id="setSolapiSender" placeholder="01000000000"></div>
+    <div class="field"><label>설계사명</label><input id="setName"></div>
+    <div class="field"><label>소속</label><input id="setCompany"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeSettings()">취소</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveSettings()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Customer Modal -->
+<div class="modal" id="cusModal">
+  <div class="box">
+    <h3 style="color:var(--navy);margin-bottom:14px" id="cusModalTitle">고객 추가</h3>
+    <div class="row-2">
+      <div class="field"><label>이름</label><input id="cusName"></div>
+      <div class="field"><label>나이</label><input id="cusAge" type="number"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>연락처</label><input id="cusPhone" placeholder="010-0000-0000"></div>
+      <div class="field"><label>성별</label><select id="cusGender"><option>남</option><option>여</option></select></div>
+    </div>
+    <div class="field"><label>우선도</label><select id="cusPriority"><option value="high">상 (VIP)</option><option value="mid" selected>중</option><option value="low">하</option></select></div>
+    <div class="field"><label>갱신일</label><input id="cusRenew" type="date"></div>
+    <div class="field"><label>보유 보험 (쉼표로 구분)</label><textarea id="cusPolicies" placeholder="삼성생명 종신, DB손보 실손"></textarea></div>
+    <div class="field"><label>보장 공백 (쉼표로 구분)</label><input id="cusGaps" placeholder="뇌졸중 진단비, 치매"></div>
+    <div class="field"><label>메모</label><textarea id="cusMemo"></textarea></div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeCustomerModal()">취소</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveCustomer()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contract Modal -->
+<div class="modal" id="contractModal">
+  <div class="box">
+    <h3 style="color:var(--navy);margin-bottom:14px">계약 입력</h3>
+    <div class="row-2">
+      <div class="field"><label>고객명</label><input id="ctrName"></div>
+      <div class="field"><label>계약일</label><input id="ctrDate" type="date"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>보험사</label><input id="ctrCompany" placeholder="삼성생명"></div>
+      <div class="field"><label>상품명</label><input id="ctrProduct"></div>
+    </div>
+    <div class="row-2">
+      <div class="field"><label>월 보험료(원)</label><input id="ctrPremium" type="number" value="100000"></div>
+      <div class="field"><label>수수료율 (%)</label><input id="ctrRate" type="number" value="300" step="10"></div>
+    </div>
+    <div class="field"><label>상품 유형</label>
+      <select id="ctrType">
+        <option value="life">종신·CI (초회 300%, 유지 10%/월)</option>
+        <option value="health">건강·실손 (초회 150%, 유지 15%/월)</option>
+        <option value="saving">연금·저축 (초회 50%, 유지 5%/월)</option>
+        <option value="custom">직접 입력</option>
+      </select>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btn-ghost" style="flex:1" onclick="closeContractModal()">취소</button>
+      <button class="btn btn-primary" style="flex:1" onclick="saveContract()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  /* ============================================================
+     더미 데이터 (전부 수정 가능하게 변수로 분리)
+  ============================================================ */
+  const DEMO_CUSTOMERS = [
+    {id:1,name:'김민수',age:42,gender:'남',phone:'010-1111-1111',priority:'high',renewDate:'2026-05-15',policies:['삼성생명 스마트케어 종신','DB 실손'],gaps:['뇌졸중 진단비','치매보장'],lastContact:'2026-04-10',memo:'자녀 2명, 뇌졸중 가족력'},
+    {id:2,name:'박지영',age:35,gender:'여',phone:'010-2222-2222',priority:'mid',renewDate:'2026-04-28',policies:['한화 시그니처 건강'],gaps:['실손의료비','암 재진단비'],lastContact:'2026-04-15',memo:'프리랜서, 보험료 부담 호소'},
+    {id:3,name:'이상호',age:55,gender:'남',phone:'010-3333-3333',priority:'high',renewDate:'2026-06-02',policies:['교보 평생건강','메리츠 실손','현대해상 운전자'],gaps:['간병보험'],lastContact:'2026-03-22',memo:'은퇴 5년 남음, 자녀 결혼 임박'},
+    {id:4,name:'정하나',age:29,gender:'여',phone:'010-4444-4444',priority:'low',renewDate:'2026-09-12',policies:['신한라이프 미니건강'],gaps:['실손의료비','3대 진단비'],lastContact:'2025-10-05',memo:'사회 초년생, 실손 필수'},
+    {id:5,name:'최준혁',age:48,gender:'남',phone:'010-5555-5555',priority:'mid',renewDate:'2026-04-22',policies:['삼성화재 운전자','KB 건강'],gaps:[],lastContact:'2026-04-18',memo:'자영업, 소득 불안정'},
+    {id:6,name:'윤소영',age:38,gender:'여',phone:'010-6666-6666',priority:'mid',renewDate:'2026-07-30',policies:['라이나 치매케어'],gaps:['실손의료비','수술비'],lastContact:'2025-08-11',memo:'휴면 고객'},
+    {id:7,name:'한도윤',age:33,gender:'남',phone:'010-7777-7777',priority:'mid',renewDate:'2026-05-03',policies:['NH농협 종합'],gaps:['뇌졸중 진단비'],lastContact:'2026-04-02',memo:'신규 리드'},
+    {id:8,name:'강민지',age:44,gender:'여',phone:'010-8888-8888',priority:'high',renewDate:'2026-04-26',policies:['삼성생명','현대해상 실손'],gaps:[],lastContact:'2026-04-16',memo:'VIP, 추천 다수'}
+  ];
+
+  const DEMO_SHARE_LINKS = [
+    {name:'카카오 프로필 링크',date:'2026-03-01',clicks:342,analyses:87,consults:33,url:'?ref=shin-kakao'},
+    {name:'인스타 bio',date:'2026-03-10',clicks:187,analyses:42,consults:15,url:'?ref=shin-insta'},
+    {name:'지인 추천',date:'2026-04-01',clicks:64,analyses:28,consults:19,url:'?ref=shin-ref'}
+  ];
+
+  const DEMO_SMS_HISTORY = [
+    {at:'2026-04-19 10:12',who:'김민수',type:'갱신 D-30',msg:'갱신일이 다가옵니다. 조정 검토 어떠세요?',status:'발송 완료'},
+    {at:'2026-04-18 16:40',who:'박지영',type:'보장 공백',msg:'실손 보완 제안드립니다.',status:'발송 완료'},
+    {at:'2026-04-15 09:02',who:'윤소영',type:'휴면 재접촉',msg:'오랜만입니다. 보험 점검 어떠세요?',status:'발송 완료'}
+  ];
+
+  const DEMO_CONTRACTS = [
+    {id:1,date:'2026-03-05',name:'김민수',company:'삼성생명',product:'스마트케어 종신',premium:130000,rate:300,type:'life'},
+    {id:2,date:'2026-03-18',name:'박지영',company:'한화생명',product:'시그니처 건강',premium:85000,rate:150,type:'health'},
+    {id:3,date:'2026-04-02',name:'이상호',company:'교보생명',product:'평생건강',premium:160000,rate:300,type:'life'},
+    {id:4,date:'2026-04-10',name:'한도윤',company:'NH농협',product:'종합건강',premium:72000,rate:150,type:'health'},
+    {id:5,date:'2026-04-15',name:'강민지',company:'현대해상',product:'실손의료비',premium:48000,rate:150,type:'health'}
+  ];
+
+  /* ============================================================
+     Storage Helpers
+  ============================================================ */
+  function getData(){
+    return {
+      customers: JSON.parse(localStorage.getItem('insureon_customers')||'null') || DEMO_CUSTOMERS,
+      links: JSON.parse(localStorage.getItem('insureon_links')||'null') || DEMO_SHARE_LINKS,
+      smsHistory: JSON.parse(localStorage.getItem('insureon_sms')||'null') || DEMO_SMS_HISTORY,
+      contracts: JSON.parse(localStorage.getItem('insureon_contracts')||'null') || DEMO_CONTRACTS,
+      todos: JSON.parse(localStorage.getItem('insureon_todos')||'null') || [
+        {id:1,text:'김민수님 갱신 상담 (D-25)',done:false},
+        {id:2,text:'박지영님 실손 제안서 준비',done:false},
+        {id:3,text:'주간 SNS 카드뉴스 2건 업로드',done:true}
+      ]
+    };
+  }
+  function save(key, value){ localStorage.setItem('insureon_'+key, JSON.stringify(value)); }
+  function getSettings(){ try { return JSON.parse(localStorage.getItem('insureon_settings')||'{}'); } catch(e){ return {}; } }
+
+  /* ============================================================
+     Navigation
+  ============================================================ */
+  document.querySelectorAll('aside nav button').forEach(b=>{
+    b.addEventListener('click',()=>goPage(b.dataset.page));
+  });
+  function goPage(p){
+    document.querySelectorAll('aside nav button').forEach(b=>b.classList.toggle('active', b.dataset.page===p));
+    document.querySelectorAll('.page').forEach(pg=>pg.classList.toggle('active', pg.id==='page-'+p));
+    if(p==='portfolio') renderCustomers();
+    if(p==='sms') renderSmsPage();
+    if(p==='comm') renderCommPage();
+    if(p==='today') renderTodayPage();
+    if(p==='inflow') renderInflowPage();
+    if(window.innerWidth<=1024) document.getElementById('sidebar').classList.remove('open');
+  }
+
+  /* ============================================================
+     TODAY
+  ============================================================ */
+  function renderTodayPage(){
+    const d = getData();
+    // 최근 분석
+    const recent = d.customers.slice().sort((a,b)=>b.lastContact.localeCompare(a.lastContact)).slice(0,5);
+    document.getElementById('recentTbody').innerHTML = recent.map(c=>`
+      <tr>
+        <td><b>${c.name}</b><div style="color:var(--muted);font-size:11px">${c.age}세 · ${c.gender}</div></td>
+        <td style="color:var(--muted)">${c.lastContact}</td>
+        <td>${c.gaps.length? '<span class="pill pill-warn">'+c.gaps.length+'개</span>':'<span class="pill pill-ok">없음</span>'}</td>
+        <td><span class="pill pill-${c.priority==='high'?'warn':c.priority==='mid'?'info':'gray'}">${c.priority==='high'?'VIP':c.priority==='mid'?'일반':'관심'}</span></td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openDetail(${c.id})">열기</button></td>
+      </tr>`).join('');
+
+    // Todos
+    renderTodos();
+
+    // 통계: 실제 데이터로 재계산
+    const leadsThisMonth = d.customers.filter(c=>c.lastContact.startsWith('2026-04')).length;
+    const renewSoon = d.customers.filter(c=>{
+      const diff = (new Date(c.renewDate)-new Date('2026-04-20'))/86400000;
+      return diff>=0 && diff<=30;
+    }).length;
+    const thisMonth = calcThisMonthCommission(d.contracts);
+    document.getElementById('stNewLeads').textContent = leadsThisMonth || 24;
+    document.getElementById('stRenew').textContent = renewSoon;
+    document.getElementById('stComm').textContent = fmtWon(thisMonth);
+
+    const s = getSettings();
+    document.getElementById('todayNm').textContent = (s.name||'신현주').replace(' 매니저','');
+  }
+
+  function renderTodos(){
+    const d = getData();
+    document.getElementById('todoList').innerHTML = d.todos.map(t=>`
+      <div style="display:flex;gap:10px;padding:10px 12px;background:var(--bg);border-radius:10px;margin-bottom:6px;align-items:center">
+        <input type="checkbox" ${t.done?'checked':''} onchange="toggleTodo(${t.id})">
+        <div style="flex:1;font-size:13px;${t.done?'text-decoration:line-through;color:var(--muted)':''}">${t.text}</div>
+        <button class="btn btn-sm btn-danger" onclick="delTodo(${t.id})">삭제</button>
+      </div>`).join('') || '<div class="empty">오늘 할 일이 없습니다</div>';
+  }
+  function addTodo(){
+    const inp = document.getElementById('todoInput');
+    if(!inp.value.trim()) return;
+    const d = getData();
+    d.todos.push({id:Date.now(),text:inp.value.trim(),done:false});
+    save('todos', d.todos);
+    inp.value = '';
+    renderTodos();
+  }
+  function toggleTodo(id){
+    const d = getData();
+    const t = d.todos.find(x=>x.id===id);
+    if(t) t.done = !t.done;
+    save('todos', d.todos);
+    renderTodos();
+  }
+  function delTodo(id){
+    const d = getData();
+    save('todos', d.todos.filter(x=>x.id!==id));
+    renderTodos();
+  }
+
+  /* ============================================================
+     INFLOW
+  ============================================================ */
+  function renderInflowPage(){
+    const d = getData();
+    document.getElementById('linkTbody').innerHTML = d.links.map(l=>{
+      const rate = l.clicks ? Math.round(l.consults/l.clicks*100) : 0;
+      return `<tr>
+        <td><b>${l.name}</b></td>
+        <td style="color:var(--muted)">${l.date}</td>
+        <td>${l.clicks}</td>
+        <td>${l.analyses}</td>
+        <td>${l.consults}</td>
+        <td><span class="pill pill-${rate>=10?'ok':rate>=5?'info':'gray'}">${rate}%</span></td>
+      </tr>`;
+    }).join('');
+
+    document.querySelectorAll('#topicChips .chip').forEach(c=>{
+      c.onclick = () => {
+        document.querySelectorAll('#topicChips .chip').forEach(x=>x.classList.remove('active'));
+        c.classList.add('active');
+      };
+    });
+  }
+  function copyShare(){
+    navigator.clipboard.writeText(document.getElementById('shareUrl').textContent);
+    toast('링크가 복사되었습니다');
+  }
+  function newLink(){
+    const name = prompt('링크 이름 (예: 트위터 프로필)');
+    if(!name) return;
+    const d = getData();
+    const ref = 'shin-' + Math.random().toString(36).substr(2,6);
+    d.links.unshift({name,date:new Date().toISOString().slice(0,10),clicks:0,analyses:0,consults:0,url:'?ref='+ref});
+    save('links', d.links);
+    renderInflowPage();
+    toast('새 링크가 생성되었습니다');
+  }
+
+  async function generateContent(){
+    const topic = document.querySelector('#topicChips .chip.active').dataset.topic;
+    const audience = document.getElementById('genAudience').value;
+    const format = document.getElementById('genFormat').value;
+    const out = document.getElementById('genOutput');
+    out.classList.remove('placeholder');
+    out.textContent = '생성 중...';
+
+    const s = getSettings();
+    if(!s.apiKey){
+      out.textContent = demoContent(topic, audience, format);
+      addCopyBtn(out);
+      return;
+    }
+    try {
+      const res = await callClaude(`한국 보험 설계사가 SNS에 올릴 콘텐츠를 만들어주세요.
+주제: ${topic}
+타겟: ${audience}
+포맷: ${format==='card'?'인스타 카드뉴스 5장 (각 장 2-3줄, 이모지 활용)':format==='kakao'?'카카오 채널 공지 (4-5문단, 이모지, 친근한 톤)':'블로그 포스트 (800자 내외, 소제목 포함)'}
+설계사: 신현주 매니저 (더 피플)
+톤: 팔기 위한 글이 아니라, 정보를 알려주는 톤. 자연스럽게 상담으로 연결되게.`);
+      out.textContent = res;
+      addCopyBtn(out);
+    } catch(e){
+      out.textContent = demoContent(topic, audience, format);
+      addCopyBtn(out);
+    }
+  }
+  function addCopyBtn(el){
+    if(el.querySelector('.copy')) return;
+    const b = document.createElement('button');
+    b.className = 'copy'; b.textContent = '📋 복사';
+    b.onclick = () => { navigator.clipboard.writeText(el.textContent); toast('복사되었습니다'); };
+    el.appendChild(b);
+  }
+  function demoContent(topic, audience, format){
+    return `[${format==='card'?'카드뉴스 (인스타)':format==='kakao'?'카카오 채널 공지':'블로그 포스트'}]
+주제: ${topic} / 타겟: ${audience}
+
+📌 1장
+"암진단비 있는데 왜 진단금이 안 나왔어요?"
+많은 분들이 겪는 혼란. 정답은 '특약 약관'에 있어요.
+
+📌 2장
+2대 진단비 (뇌졸중·심근경색)는 별도 특약.
+종신보험만으로는 커버가 안 됩니다.
+
+📌 3장
+실손이 있어도 진단비는 '진단' 자체에 대한 보상.
+둘은 성격이 다르기에 '중복'이 아니라 '보완' 관계예요.
+
+📌 4장
+체크 포인트 3가지:
+① 뇌졸중·심근경색 진단비 가입 여부
+② 보장 금액이 치료비 대비 적정한지
+③ 갱신형인지 비갱신형인지
+
+📌 5장
+사진 한 장이면 AI가 10초 만에 분석합니다.
+댓글 or DM 주세요 💬 — 신현주 매니저
+
+#보험분석 #보장공백 #보험설계사 #더피플`;
+  }
+
+  async function autoWriteRef(){
+    const benefit = document.getElementById('refBenefit').value;
+    const s = getSettings();
+    const target = document.getElementById('refMsg');
+    target.value = '생성 중...';
+    if(!s.apiKey){
+      target.value = `안녕하세요, [고객명]님 :)\n더 피플 신현주 매니저입니다.\n\n[고객명]님 주변에 보험 점검이 필요한 분이 계시다면 소개 부탁드려요. 상담 진행 시 ${benefit}를 드립니다.\n\nAI로 10초만에 증권 분석이 가능한 링크예요. 부담 없이 봐 주시면 감사하겠습니다 🙏\n[링크]`;
+      return;
+    }
+    try {
+      const res = await callClaude(`기존 고객에게 지인 추천을 부탁하는 친근한 문자를 작성해주세요.
+혜택: ${benefit}
+톤: 부담 안 주고, 감사 표현 포함, 2-3문단, 이모지 1-2개
+설계사: 더 피플 신현주 매니저
+마지막에 [링크] 자리 비워두기, [고객명] 변수 포함`);
+      target.value = res;
+    } catch(e){ toast('생성 실패'); }
+  }
+
+  function sendReferral(){
+    const s = getSettings();
+    if(!s.solapiKey){
+      if(!confirm('솔라피 API 키가 설정되지 않았습니다. 데모 발송을 진행할까요?')) return;
+    }
+    const d = getData();
+    const msg = document.getElementById('refMsg').value;
+    const target = document.getElementById('refTarget').value;
+    const targetName = {vip:'VIP 고객', renewed:'최근 갱신 고객', longterm:'장기 유지 고객', custom:'선택된 고객'}[target];
+    // Solapi API 연동 자리
+    d.smsHistory.unshift({
+      at: new Date().toISOString().replace('T',' ').slice(0,16),
+      who: targetName + ' 그룹',
+      type: '지인 추천',
+      msg: msg.slice(0,40)+'...',
+      status: '발송 완료'
+    });
+    save('smsHistory', d.smsHistory);
+    toast('솔라피로 발송되었습니다 (데모)');
+  }
+
+  /* ============================================================
+     AI ASSIST
+  ============================================================ */
+  async function runAiAssist(){
+    const out = document.getElementById('aiOutput');
+    out.innerHTML = '<div class="empty">생성 중...</div>';
+
+    const info = {
+      age: document.getElementById('aiAge').value,
+      gender: document.getElementById('aiGender').value,
+      family: document.getElementById('aiFamily').value,
+      job: document.getElementById('aiJob').value,
+      income: document.getElementById('aiIncome').value,
+      current: document.getElementById('aiCurrent').value,
+      concern: document.getElementById('aiConcern').value
+    };
+
+    const s = getSettings();
+    if(!s.apiKey){
+      out.innerHTML = renderAiResult(demoAiResult(info));
+      return;
+    }
+    try {
+      const prompt = `아래 고객 정보를 바탕으로, 설계사가 상담 시 활용할 맞춤 가이드를 JSON으로 반환하세요.
+
+고객 정보:
+- 나이/성별: ${info.age}세 ${info.gender}
+- 가족: ${info.family}
+- 직업/소득: ${info.job} / ${info.income}
+- 현재 보험: ${info.current}
+- 관심사: ${info.concern}
+
+반환 JSON 구조(이 형식만, 추가 설명 금지):
+{
+  "explainer": "이 고객에게 이렇게 설명하세요 (2-3문장)",
+  "pitches": ["핵심 소구 포인트 1", "포인트 2", "포인트 3"],
+  "objections": [{"q":"예상 반론","a":"대응 멘트"}, ...],
+  "recommend": "추천 보험 상품 방향 (1-2문장)"
+}`;
+      const text = await callClaude(prompt);
+      const m = text.match(/\{[\s\S]*\}/);
+      const data = JSON.parse(m[0]);
+      out.innerHTML = renderAiResult(data);
+    } catch(e){
+      out.innerHTML = renderAiResult(demoAiResult(info));
+    }
+  }
+  function renderAiResult(r){
+    return `
+      <div class="ai-block"><h5>🗣 이 고객에게 이렇게 설명하세요</h5>${r.explainer}</div>
+      <div class="ai-block"><h5>🎯 핵심 소구 포인트</h5>
+        <ol style="padding-left:20px;margin:0">${r.pitches.map(p=>`<li style="margin-bottom:4px">${p}</li>`).join('')}</ol>
+      </div>
+      <div class="ai-block"><h5>⚡ 예상 반론 & 대응</h5>
+        ${r.objections.map(o=>`<div style="margin-bottom:8px"><b style="color:var(--warn)">Q.</b> ${o.q}<br><b style="color:var(--ok)">A.</b> ${o.a}</div>`).join('')}
+      </div>
+      <div class="ai-block"><h5>💡 추천 방향</h5>${r.recommend}</div>`;
+  }
+  function demoAiResult(info){
+    return {
+      explainer: `${info.age}세 ${info.gender} 고객으로 ${info.family.split(',')[0]} 구성. 뇌졸중 가족력 우려가 있어 2대 진단비와 자녀 교육자금 준비가 우선순위입니다. 기존 종신보험의 보장 공백을 먼저 보여드리세요.`,
+      pitches: [
+        '가족력이 있다면 2대 진단비(뇌졸중·심근경색)는 선택이 아닌 필수입니다.',
+        '실손의료비가 없으셔서 통원·입원비 전액 자부담이 됩니다. 월 3-5만원대로 메울 수 있어요.',
+        '자녀 학자금은 저축성보다 세제혜택 있는 연금저축+어린이 CI 조합이 효율적입니다.'
+      ],
+      objections: [
+        {q:'보험료가 너무 많이 나가는 것 아닌가요?', a:'현재 월 13만원 대비 추가 7-9만원이면 공백을 모두 메울 수 있습니다. 뇌졸중 한 번이면 수천만원 자부담이라 오히려 리스크 대비 저렴합니다.'},
+        {q:'이미 가입한 보험이 있는데 또 가입이 필요한가요?', a:'지금 보험은 사망 중심이라 살아있을 때 받는 진단비·실손이 약합니다. 추가가 아니라 보완 개념으로 보시면 됩니다.'},
+        {q:'조금 더 생각해보겠습니다.', a:'가족력 리스크는 시간이 걸리지 않아요. 이번 달만 특약료 5% 할인 중이니 일단 설계서로 비교만 해보시죠.'}
+      ],
+      recommend: '2대 진단비 3천만원 + 실손(표준형) + 자녀 어린이CI 각 1천만원 조합. 월 추가 부담 약 8만원선.'
+    };
+  }
+
+  /* ============================================================
+     PORTFOLIO
+  ============================================================ */
+  function renderCustomers(){
+    const d = getData();
+    const q = (document.getElementById('cusSearch')?.value||'').toLowerCase();
+    const f = document.getElementById('cusFilter')?.value||'all';
+    const today = new Date('2026-04-20');
+
+    let list = d.customers.filter(c=>{
+      if(q && !(c.name.toLowerCase().includes(q) || c.phone.includes(q))) return false;
+      if(f==='gap' && c.gaps.length===0) return false;
+      if(f==='renew'){ const diff = (new Date(c.renewDate)-today)/86400000; if(diff<0 || diff>30) return false; }
+      if(f==='vip' && c.priority!=='high') return false;
+      if(f==='dormant'){ const ago = (today-new Date(c.lastContact))/86400000; if(ago<180) return false; }
+      return true;
+    });
+
+    document.getElementById('cusCount').textContent = list.length;
+    document.getElementById('cusTbody').innerHTML = list.length ? list.map(c=>{
+      const diff = Math.round((new Date(c.renewDate)-today)/86400000);
+      const renewPill = diff<0 ? '<span class="pill pill-gray">경과</span>' : diff<=7 ? `<span class="pill pill-warn">D-${diff}</span>` : diff<=30 ? `<span class="pill pill-info">D-${diff}</span>` : c.renewDate;
+      const prioPill = {high:'<span class="pill pill-warn">VIP</span>',mid:'<span class="pill pill-info">일반</span>',low:'<span class="pill pill-gray">관심</span>'}[c.priority];
+      return `<tr>
+        <td><b>${c.name}</b><div style="color:var(--muted);font-size:11px">${c.phone}</div></td>
+        <td>${c.age}세 · ${c.gender}</td>
+        <td>${c.policies.length}건</td>
+        <td>${renewPill}</td>
+        <td>${c.gaps.length?'<span class="pill pill-warn">'+c.gaps.length+'개</span>':'<span class="pill pill-ok">없음</span>'}</td>
+        <td style="color:var(--muted)">${c.lastContact}</td>
+        <td>${prioPill}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openDetail(${c.id})">상세</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="8"><div class="empty">검색 결과가 없습니다</div></td></tr>';
+  }
+
+  function openDetail(id){
+    const d = getData();
+    const c = d.customers.find(x=>x.id===id);
+    if(!c) return;
+    document.getElementById('dpName').textContent = c.name;
+    document.getElementById('dpMeta').textContent = `${c.age}세 · ${c.gender} · ${c.phone}`;
+    const body = document.getElementById('dpBody');
+    body.innerHTML = `
+      <div style="margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">보유 보험</div>
+        ${c.policies.length? c.policies.map(p=>`<div class="pol-item"><div class="co">${p}</div></div>`).join('') : '<div class="empty">가입된 보험 없음</div>'}
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">보장 공백</div>
+        ${c.gaps.length? c.gaps.map(g=>`<div style="background:rgba(220,38,38,.08);color:var(--warn);padding:8px 12px;border-radius:8px;margin-bottom:4px;font-size:13px">⚠ ${g}</div>`).join('') : '<div style="color:var(--ok);font-size:13px">✓ 주요 보장 공백 없음</div>'}
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">상담 메모</div>
+        <textarea id="dpMemo" style="width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;font-size:13px;min-height:80px">${c.memo||''}</textarea>
+        <button class="btn btn-ghost btn-sm" style="margin-top:6px" onclick="saveMemo(${id})">메모 저장</button>
+      </div>
+      <div style="margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px">갱신일 · 마지막 접촉</div>
+        <div style="font-size:13px">갱신: ${c.renewDate} / 마지막: ${c.lastContact}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="btn btn-navy" onclick="sendSmsTo(${id},'general')">📱 문자 발송</button>
+        <button class="btn btn-primary" onclick="sendSmsTo(${id},'gap')">🎯 공백 제안 발송</button>
+        <button class="btn btn-ghost" onclick="window.location.href='tel:${c.phone}'">📞 전화</button>
+        <button class="btn btn-ghost" onclick="editCustomer(${id})">수정</button>
+      </div>`;
+    document.getElementById('cusPanel').classList.add('open');
+  }
+  function closeDetail(){ document.getElementById('cusPanel').classList.remove('open'); }
+  function saveMemo(id){
+    const d = getData();
+    const c = d.customers.find(x=>x.id===id);
+    c.memo = document.getElementById('dpMemo').value;
+    save('customers', d.customers);
+    toast('메모가 저장되었습니다');
+  }
+  function sendSmsTo(id, type){
+    const d = getData();
+    const c = d.customers.find(x=>x.id===id);
+    const msg = type==='gap' ? `${c.name}님, 지난번 분석 결과 ${c.gaps[0]||'보장'} 부분이 비어있어 말씀드립니다. 보완 제안서 간략히 정리했어요 :)`
+                              : `${c.name}님, 신현주 매니저입니다. 잠시 통화 가능하실까요?`;
+    d.smsHistory.unshift({at:new Date().toISOString().replace('T',' ').slice(0,16),who:c.name,type:type==='gap'?'보장 공백':'일반',msg,status:'발송 완료'});
+    save('smsHistory', d.smsHistory);
+    toast(`${c.name}님에게 발송되었습니다`);
+  }
+  function openCustomerModal(){
+    document.getElementById('cusModalTitle').textContent = '고객 추가';
+    ['cusName','cusAge','cusPhone','cusPolicies','cusGaps','cusMemo'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('cusRenew').value = '';
+    document.getElementById('cusModal').dataset.editId = '';
+    document.getElementById('cusModal').classList.add('open');
+  }
+  function editCustomer(id){
+    const d = getData();
+    const c = d.customers.find(x=>x.id===id);
+    document.getElementById('cusModalTitle').textContent = '고객 수정';
+    document.getElementById('cusName').value = c.name;
+    document.getElementById('cusAge').value = c.age;
+    document.getElementById('cusPhone').value = c.phone;
+    document.getElementById('cusGender').value = c.gender;
+    document.getElementById('cusPriority').value = c.priority;
+    document.getElementById('cusRenew').value = c.renewDate;
+    document.getElementById('cusPolicies').value = c.policies.join(', ');
+    document.getElementById('cusGaps').value = c.gaps.join(', ');
+    document.getElementById('cusMemo').value = c.memo||'';
+    document.getElementById('cusModal').dataset.editId = id;
+    document.getElementById('cusModal').classList.add('open');
+  }
+  function closeCustomerModal(){ document.getElementById('cusModal').classList.remove('open'); }
+  function saveCustomer(){
+    const d = getData();
+    const editId = document.getElementById('cusModal').dataset.editId;
+    const data = {
+      name: document.getElementById('cusName').value,
+      age: +document.getElementById('cusAge').value,
+      gender: document.getElementById('cusGender').value,
+      phone: document.getElementById('cusPhone').value,
+      priority: document.getElementById('cusPriority').value,
+      renewDate: document.getElementById('cusRenew').value,
+      policies: document.getElementById('cusPolicies').value.split(',').map(s=>s.trim()).filter(Boolean),
+      gaps: document.getElementById('cusGaps').value.split(',').map(s=>s.trim()).filter(Boolean),
+      memo: document.getElementById('cusMemo').value
+    };
+    if(!data.name){ toast('이름을 입력하세요'); return; }
+    if(editId){
+      const c = d.customers.find(x=>x.id==editId);
+      Object.assign(c, data);
+    } else {
+      d.customers.push({id:Date.now(), lastContact:new Date().toISOString().slice(0,10), ...data});
+    }
+    save('customers', d.customers);
+    closeCustomerModal();
+    renderCustomers();
+    toast('저장되었습니다');
+  }
+  function exportCustomers(){
+    const d = getData();
+    const csv = 'name,age,gender,phone,renewDate,policies,gaps,lastContact,priority\n' +
+      d.customers.map(c=>[c.name,c.age,c.gender,c.phone,c.renewDate,'"'+c.policies.join(';')+'"','"'+c.gaps.join(';')+'"',c.lastContact,c.priority].join(',')).join('\n');
+    const blob = new Blob(['\ufeff'+csv],{type:'text/csv'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'insureon_customers.csv';
+    a.click();
+  }
+
+  /* ============================================================
+     SMS
+  ============================================================ */
+  function renderSmsPage(){
+    const d = getData();
+    const today = new Date('2026-04-20');
+    const renewing = d.customers.filter(c=>{
+      const diff = (new Date(c.renewDate)-today)/86400000;
+      return diff>=0 && diff<=30;
+    }).map(c=>({...c, dDay: Math.round((new Date(c.renewDate)-today)/86400000)}));
+
+    document.getElementById('renewTbody').innerHTML = renewing.length ? renewing.map(c=>{
+      const tag = c.dDay<=1 ? 'D-1 긴급' : c.dDay<=7 ? 'D-7' : 'D-30';
+      const pill = c.dDay<=1 ? 'pill-warn' : c.dDay<=7 ? 'pill-info' : 'pill-gray';
+      return `<tr>
+        <td><b>${c.name}</b></td>
+        <td>${c.renewDate}</td>
+        <td><span class="pill ${pill}">${tag}</span></td>
+        <td><span class="pill pill-gray">미발송</span></td>
+        <td><button class="btn btn-primary btn-sm" onclick="sendSmsTo(${c.id},'renew')">발송</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5"><div class="empty">갱신 임박 고객 없음</div></td></tr>';
+
+    const dormant = d.customers.filter(c=>{
+      const ago = (today-new Date(c.lastContact))/86400000;
+      return ago>=180;
+    });
+    document.getElementById('dormantTbody').innerHTML = dormant.length ? dormant.map(c=>{
+      const ago = Math.round((today-new Date(c.lastContact))/86400000);
+      return `<tr>
+        <td><b>${c.name}</b></td>
+        <td style="color:var(--muted)">${c.lastContact} (${ago}일 전)</td>
+        <td><button class="btn btn-primary btn-sm" onclick="sendSmsTo(${c.id},'dormant')">AI 생성 발송</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="3"><div class="empty">휴면 고객 없음</div></td></tr>';
+
+    const gapped = d.customers.filter(c=>c.gaps.length>0);
+    document.getElementById('gapTbody').innerHTML = gapped.length ? gapped.map(c=>{
+      const gap = c.gaps[0];
+      const price = Math.floor(Math.random()*3+3)*10000;
+      return `<tr>
+        <td><b>${c.name}</b></td>
+        <td>${gap}</td>
+        <td>월 ${price.toLocaleString()}원대로 보완 가능</td>
+        <td><b>${price.toLocaleString()}원</b></td>
+        <td><button class="btn btn-primary btn-sm" onclick="sendSmsTo(${c.id},'gap')">제안 발송</button></td>
+      </tr>`;
+    }).join('') : '<tr><td colspan="5"><div class="empty">공백 있는 고객 없음</div></td></tr>';
+
+    document.getElementById('smsHistoryTbody').innerHTML = d.smsHistory.map(s=>`
+      <tr>
+        <td style="color:var(--muted)">${s.at}</td>
+        <td><b>${s.who}</b></td>
+        <td><span class="pill pill-info">${s.type}</span></td>
+        <td style="color:var(--muted);font-size:12px">${s.msg}</td>
+        <td><span class="pill pill-ok">${s.status}</span></td>
+      </tr>`).join('');
+  }
+  function sendAllRenewals(){
+    const d = getData();
+    const today = new Date('2026-04-20');
+    const renewing = d.customers.filter(c=>{
+      const diff = (new Date(c.renewDate)-today)/86400000;
+      return diff>=0 && diff<=30;
+    });
+    renewing.forEach(c=>{
+      d.smsHistory.unshift({at:new Date().toISOString().replace('T',' ').slice(0,16),who:c.name,type:'갱신 임박',msg:`${c.name}님 갱신일(${c.renewDate}) 다가옵니다. 조정 검토 어떠세요?`,status:'발송 완료'});
+    });
+    save('smsHistory', d.smsHistory);
+    renderSmsPage();
+    toast(`${renewing.length}명에게 일괄 발송되었습니다`);
+  }
+
+  /* ============================================================
+     COMMISSION
+  ============================================================ */
+  const COMM_PRESETS = {
+    life: {initial:3.0, maintain:0.10},
+    health: {initial:1.5, maintain:0.15},
+    saving: {initial:0.5, maintain:0.05}
+  };
+  function calcContract(c){
+    const preset = COMM_PRESETS[c.type] || {initial:c.rate/100, maintain:0.1};
+    return {
+      initial: Math.round(c.premium * preset.initial * 12),
+      maintainYear: Math.round(c.premium * preset.maintain * 12)
+    };
+  }
+  function calcThisMonthCommission(contracts){
+    const month = '2026-04';
+    let t = 0;
+    contracts.forEach(c=>{
+      const calc = calcContract(c);
+      if(c.date.startsWith(month)) t += calc.initial;
+      if(c.date < month) t += Math.round(calc.maintainYear / 12);
+    });
+    return t;
+  }
+  function renderCommPage(){
+    const d = getData();
+    const ytd = d.contracts.filter(c=>c.date.startsWith('2026')).reduce((s,c)=>s+calcContract(c).initial, 0);
+    const maintain = d.contracts.reduce((s,c)=>s+calcContract(c).maintainYear, 0);
+    const thisM = calcThisMonthCommission(d.contracts);
+    document.getElementById('thisMonthComm').textContent = fmtWon(thisM);
+    document.getElementById('ytdComm').textContent = fmtWon(ytd);
+    document.getElementById('maintainComm').textContent = fmtWon(maintain);
+
+    document.getElementById('contractTbody').innerHTML = d.contracts.map(c=>{
+      const calc = calcContract(c);
+      return `<tr>
+        <td>${c.date}</td><td><b>${c.name}</b></td><td>${c.company}</td><td>${c.product}</td>
+        <td>${c.premium.toLocaleString()}원</td>
+        <td>${COMM_PRESETS[c.type]?Math.round(COMM_PRESETS[c.type].initial*100)+'%':(c.rate+'%')}</td>
+        <td><b style="color:#b8890a">${fmtWon(calc.initial)}</b></td>
+        <td style="color:var(--muted)">${fmtWon(calc.maintainYear)}/년</td>
+        <td><button class="btn btn-danger btn-sm" onclick="delContract(${c.id})">삭제</button></td>
+      </tr>`;
+    }).join('') || '<tr><td colspan="9"><div class="empty">계약 내역이 없습니다</div></td></tr>';
+
+    renderCommChart(d.contracts);
+    renderCalendar(d.contracts);
+  }
+  let commChartInstance = null;
+  function renderCommChart(contracts){
+    const months = [];
+    for(let m=1;m<=12;m++){
+      const mm = String(m).padStart(2,'0');
+      const key = '2026-'+mm;
+      let v = 0;
+      contracts.forEach(c=>{
+        const calc = calcContract(c);
+        if(c.date.startsWith(key)) v += calc.initial;
+        if(c.date < key && c.date.startsWith('2026')) v += Math.round(calc.maintainYear/12);
+      });
+      months.push(v);
+    }
+    const ctx = document.getElementById('commChart');
+    if(commChartInstance) commChartInstance.destroy();
+    commChartInstance = new Chart(ctx, {
+      type:'bar',
+      data:{
+        labels:['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
+        datasets:[{label:'수당 (원)', data:months, backgroundColor:'#F5C842', borderRadius:6}]
+      },
+      options:{
+        plugins:{legend:{display:false}},
+        scales:{y:{ticks:{callback:v=>fmtWon(v)}}}
+      }
+    });
+  }
+  function renderCalendar(contracts){
+    const grid = document.getElementById('calGrid');
+    const year = 2026, month = 4;
+    const first = new Date(year, month-1, 1);
+    const lastDate = new Date(year, month, 0).getDate();
+    const startDay = first.getDay();
+    let html = '';
+    for(let i=0;i<startDay;i++) html += '<div class="cal-cell"></div>';
+    for(let d=1;d<=lastDate;d++){
+      const dateStr = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const dayContracts = contracts.filter(c=>c.date===dateStr);
+      const sum = dayContracts.reduce((s,c)=>s+calcContract(c).initial, 0);
+      html += `<div class="cal-cell ${sum>0?'has':''}"><div class="day">${d}</div>${sum>0?`<div class="val">${fmtWon(sum)}</div>`:''}</div>`;
+    }
+    grid.innerHTML = html;
+  }
+
+  function openContractModal(){
+    document.getElementById('ctrDate').value = '2026-04-20';
+    ['ctrName','ctrCompany','ctrProduct'].forEach(i=>document.getElementById(i).value='');
+    document.getElementById('contractModal').classList.add('open');
+  }
+  function closeContractModal(){ document.getElementById('contractModal').classList.remove('open'); }
+  function saveContract(){
+    const d = getData();
+    const c = {
+      id: Date.now(),
+      date: document.getElementById('ctrDate').value,
+      name: document.getElementById('ctrName').value,
+      company: document.getElementById('ctrCompany').value,
+      product: document.getElementById('ctrProduct').value,
+      premium: +document.getElementById('ctrPremium').value,
+      rate: +document.getElementById('ctrRate').value,
+      type: document.getElementById('ctrType').value
+    };
+    if(!c.name || !c.company){ toast('필수 항목을 입력하세요'); return; }
+    d.contracts.unshift(c);
+    save('contracts', d.contracts);
+    closeContractModal();
+    renderCommPage();
+    toast('계약이 저장되었습니다');
+  }
+  function delContract(id){
+    if(!confirm('삭제하시겠습니까?')) return;
+    const d = getData();
+    save('contracts', d.contracts.filter(c=>c.id!==id));
+    renderCommPage();
+  }
+
+  /* ============================================================
+     Settings
+  ============================================================ */
+  function openSettings(){
+    const s = getSettings();
+    document.getElementById('setApiKey').value = s.apiKey||'';
+    document.getElementById('setModel').value = s.model||'claude-sonnet-4-20250514';
+    document.getElementById('setSolapiKey').value = s.solapiKey||'';
+    document.getElementById('setSolapiSender').value = s.solapiSender||'';
+    document.getElementById('setName').value = s.name||'신현주 매니저';
+    document.getElementById('setCompany').value = s.company||'더 피플';
+    document.getElementById('settingsModal').classList.add('open');
+  }
+  function closeSettings(){ document.getElementById('settingsModal').classList.remove('open'); }
+  function saveSettings(){
+    const s = {
+      apiKey: document.getElementById('setApiKey').value.trim(),
+      model: document.getElementById('setModel').value.trim(),
+      solapiKey: document.getElementById('setSolapiKey').value.trim(),
+      solapiSender: document.getElementById('setSolapiSender').value.trim(),
+      name: document.getElementById('setName').value.trim(),
+      company: document.getElementById('setCompany').value.trim()
+    };
+    localStorage.setItem('insureon_settings', JSON.stringify(s));
+    closeSettings();
+    applySettings();
+    toast('저장되었습니다');
+  }
+  function applySettings(){
+    const s = getSettings();
+    const nm = s.name||'신현주 매니저';
+    const co = s.company||'더 피플';
+    document.getElementById('sidebarNm').textContent = nm;
+    document.getElementById('sidebarRl').textContent = co;
+    document.getElementById('sidebarAva').textContent = nm.substring(0,1);
+    document.getElementById('todayNm').textContent = nm.replace(' 매니저','');
+  }
+
+  /* ============================================================
+     Claude API
+  ============================================================ */
+  async function callClaude(prompt){
+    const s = getSettings();
+    if(!s.apiKey) throw new Error('no api key');
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': s.apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model: s.model||'claude-sonnet-4-20250514',
+        max_tokens: 2000,
+        messages:[{role:'user', content: prompt}]
+      })
+    });
+    if(!res.ok) throw new Error('API error '+res.status);
+    const j = await res.json();
+    return j.content?.[0]?.text || '';
+  }
+
+  /* ============================================================
+     Utils
+  ============================================================ */
+  function fmtWon(v){
+    if(!v) return '0원';
+    if(v>=100000000) return (v/100000000).toFixed(v%100000000===0?0:2).replace(/\.?0+$/,'')+'억원';
+    if(v>=10000) return Math.round(v/10000).toLocaleString()+'만원';
+    return v.toLocaleString()+'원';
+  }
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2400);
+  }
+
+  /* ============================================================
+     Init
+  ============================================================ */
+  applySettings();
+  renderTodayPage();
+</script>
+</body>
+</html>
