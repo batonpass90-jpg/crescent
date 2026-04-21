@@ -1062,12 +1062,12 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
             <button class="ac-btn" style="white-space:nowrap;padding:0 16px">검색</button>
           </div>
           <div class="filter-tabs">
-            <button class="filter-tab active">전체 (284)</button>
-            <button class="filter-tab">VIP (18)</button>
-            <button class="filter-tab">골드 (52)</button>
-            <button class="filter-tab">신규 (34)</button>
-            <button class="filter-tab">휴면 (21)</button>
-            <button class="filter-tab">노쇼이력 (9)</button>
+            <button class="filter-tab active" onclick="filterCustomers('all',this)">전체 (284)</button>
+            <button class="filter-tab" onclick="filterCustomers('vip',this)">VIP (18)</button>
+            <button class="filter-tab" onclick="filterCustomers('gold',this)">골드 (52)</button>
+            <button class="filter-tab" onclick="filterCustomers('new',this)">신규 (34)</button>
+            <button class="filter-tab" onclick="filterCustomers('dormant',this)">휴면 (21)</button>
+            <button class="filter-tab" onclick="filterCustomers('noshow',this)">노쇼이력 (9)</button>
           </div>
           <div class="card" style="padding:0;overflow:hidden">
             <table class="cust-table">
@@ -1082,7 +1082,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                 </tr>
               </thead>
               <tbody>
-                <tr class="selected" onclick="selectCustomer(this,'김민지','VIP')">
+                <tr class="selected" data-filter="vip" onclick="selectCustomer(this,'김민지','VIP')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">김</div><span>김민지</span></div></td>
                   <td><span class="tier-badge tier-vip">VIP</span></td>
                   <td>42회</td>
@@ -1090,7 +1090,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/23</td>
                   <td>이하은</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'박수연','골드')">
+                <tr data-filter="gold" onclick="selectCustomer(this,'박수연','골드')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">박</div><span>박수연</span></div></td>
                   <td><span class="tier-badge tier-gold">골드</span></td>
                   <td>18회</td>
@@ -1098,7 +1098,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/23</td>
                   <td>한서현</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'이지은','VIP')">
+                <tr data-filter="vip" onclick="selectCustomer(this,'이지은','VIP')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">이</div><span>이지은</span></div></td>
                   <td><span class="tier-badge tier-vip">VIP</span></td>
                   <td>31회</td>
@@ -1106,7 +1106,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/21</td>
                   <td>박나연</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'최유리','골드')">
+                <tr data-filter="gold" onclick="selectCustomer(this,'최유리','골드')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">최</div><span>최유리</span></div></td>
                   <td><span class="tier-badge tier-gold">골드</span></td>
                   <td>14회</td>
@@ -1114,7 +1114,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/18</td>
                   <td>김하나</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'홍다은','일반')">
+                <tr data-filter="noshow new" onclick="selectCustomer(this,'홍다은','일반')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">홍</div><span>홍다은</span></div></td>
                   <td><span class="tier-badge tier-silver">일반</span></td>
                   <td>3회</td>
@@ -1122,7 +1122,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/23 <span style="color:var(--red);font-size:10px">노쇼</span></td>
                   <td>이하은</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'정소희','골드')">
+                <tr data-filter="gold" onclick="selectCustomer(this,'정소희','골드')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">정</div><span>정소희</span></div></td>
                   <td><span class="tier-badge tier-gold">골드</span></td>
                   <td>22회</td>
@@ -1130,7 +1130,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/17</td>
                   <td>한서현</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'윤서아','일반')">
+                <tr data-filter="new dormant" onclick="selectCustomer(this,'윤서아','일반')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">윤</div><span>윤서아</span></div></td>
                   <td><span class="tier-badge tier-silver">일반</span></td>
                   <td>6회</td>
@@ -1138,7 +1138,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f4f4f
                   <td>1/15</td>
                   <td>박나연</td>
                 </tr>
-                <tr onclick="selectCustomer(this,'오민아','일반')">
+                <tr data-filter="noshow new" onclick="selectCustomer(this,'오민아','일반')">
                   <td><div class="cust-name-cell"><div class="cust-avatar-sm">오</div><span>오민아</span></div></td>
                   <td><span class="tier-badge tier-silver">일반</span></td>
                   <td>2회</td>
@@ -2001,12 +2001,35 @@ document.querySelectorAll('.wday').forEach(d => {
 });
 
 // Filter tabs
-document.querySelectorAll('.filter-tab').forEach(tab => {
-  tab.addEventListener('click', function() {
-    this.closest('.filter-tabs').querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-    this.classList.add('active');
+function filterCustomers(type, btn) {
+  // 탭 활성화
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // 행 필터링
+  const rows = document.querySelectorAll('.cust-table tbody tr');
+  let visibleCount = 0;
+  rows.forEach(row => {
+    const filters = (row.dataset.filter || '').split(' ');
+    const show = type === 'all' || filters.includes(type);
+    row.style.display = show ? '' : 'none';
+    if (show) visibleCount++;
   });
-});
+
+  // 결과 없을 때 빈 행 처리
+  const tbody = document.querySelector('.cust-table tbody');
+  const emptyRow = tbody.querySelector('.empty-row');
+  if (visibleCount === 0) {
+    if (!emptyRow) {
+      const tr = document.createElement('tr');
+      tr.className = 'empty-row';
+      tr.innerHTML = '<td colspan="6" style="text-align:center;padding:32px;color:var(--gray);font-size:13px">해당하는 고객이 없습니다</td>';
+      tbody.appendChild(tr);
+    }
+  } else {
+    if (emptyRow) emptyRow.remove();
+  }
+}
 
 // ===== AI 서브탭 =====
 function goAISub(name, btn) {
