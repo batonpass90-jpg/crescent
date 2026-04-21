@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 보험 AI 분석 — InsureOn</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<style>
+  :root{
+    --navy:#0F1B2D;
+    --navy-2:#1b2940;
+    --yellow:#F5C842;
+    --text:#1a2233;
+    --muted:#6b7384;
+    --line:#e8ebf2;
+    --bg:#ffffff;
+    --soft:#f7f8fb;
+    --ok:#16a34a;
+    --warn:#dc2626;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--soft);color:var(--text);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  button{font-family:inherit;cursor:pointer;border:none}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  .container{max-width:720px;margin:0 auto;padding:0 20px}
+
+  /* Header */
+  header{background:#fff;border-bottom:1px solid var(--line);padding:14px 0;position:sticky;top:0;z-index:20}
+  .nav{display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy)}
+  .brand .logo{width:32px;height:32px;border-radius:8px;background:var(--navy);color:var(--yellow);display:grid;place-items:center;font-weight:900}
+  .back-btn{color:var(--muted);font-size:14px;font-weight:600;background:none}
+
+  /* Hero */
+  .hero{background:linear-gradient(180deg,#fff,var(--soft));padding:32px 0 24px;text-align:center}
+  .hero .kicker{background:rgba(245,200,66,.25);color:#8a6a00;display:inline-block;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:12px}
+  .hero h1{font-size:28px;color:var(--navy);letter-spacing:-.02em;line-height:1.3;font-weight:800}
+  .hero h1 em{font-style:normal;background:linear-gradient(transparent 60%,rgba(245,200,66,.55) 60%);padding:0 2px}
+  .hero p{color:var(--muted);margin-top:8px;font-size:14px}
+
+  /* Tab */
+  .tabs{background:#fff;display:flex;border:1px solid var(--line);border-radius:14px;padding:4px;margin:20px 0 16px}
+  .tab{flex:1;text-align:center;padding:12px;border-radius:10px;font-weight:700;font-size:14px;color:var(--muted);transition:all .15s;background:none}
+  .tab.active{background:var(--navy);color:var(--yellow)}
+
+  /* Card */
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:24px;margin-bottom:16px}
+  .card h3{color:var(--navy);font-size:17px;margin-bottom:6px;letter-spacing:-.01em;font-weight:800}
+  .card .desc{color:var(--muted);font-size:13px;margin-bottom:18px}
+
+  /* Upload */
+  .drop{border:2px dashed var(--line);border-radius:16px;padding:36px 20px;text-align:center;background:var(--soft);cursor:pointer;transition:all .2s}
+  .drop:hover,.drop.drag{border-color:var(--yellow);background:#fff}
+  .drop .ico{font-size:42px;margin-bottom:10px}
+  .drop .t{color:var(--navy);font-weight:700;margin-bottom:4px}
+  .drop .s{color:var(--muted);font-size:13px}
+  .drop input{display:none}
+  .preview{margin-top:14px;position:relative;display:none}
+  .preview img{border-radius:12px;max-height:280px;margin:0 auto;border:1px solid var(--line)}
+  .preview button.rm{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.7);color:#fff;width:30px;height:30px;border-radius:50%;font-weight:800}
+
+  /* Security notice */
+  .sec{display:flex;gap:12px;background:rgba(22,163,74,.08);border:1px solid rgba(22,163,74,.3);padding:14px;border-radius:12px;margin-top:14px}
+  .sec .ico{color:var(--ok);font-size:20px;flex-shrink:0}
+  .sec .t{color:#166534;font-weight:700;font-size:13px}
+  .sec .s{color:#166534;font-size:12px;margin-top:2px;opacity:.85}
+
+  /* Buttons */
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:14px 20px;border-radius:12px;font-weight:700;font-size:15px;transition:all .15s;border:1px solid transparent;width:100%}
+  .btn-primary{background:var(--yellow);color:var(--navy);box-shadow:0 6px 18px rgba(245,200,66,.35)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 22px rgba(245,200,66,.45)}
+  .btn-primary:disabled{background:#e0e3eb;color:#a3aab8;box-shadow:none;cursor:not-allowed;transform:none}
+  .btn-ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+  .btn-navy{background:var(--navy);color:#fff}
+
+  /* Progress */
+  .progress{display:none;margin-top:18px}
+  .progress.show{display:block}
+  .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+  .bar .fill{height:100%;background:linear-gradient(90deg,var(--yellow),#ffb800);transition:width .3s;width:0}
+  .progress .t{font-size:13px;color:var(--navy);font-weight:600;margin-bottom:8px;display:flex;justify-content:space-between}
+
+  /* Result */
+  .result{display:none;margin-top:16px}
+  .result.show{display:block;animation:fadeIn .4s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  .result-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:14px}
+  .result-head .p{color:var(--muted);font-size:12px;font-weight:600}
+  .result-head .co{color:var(--navy);font-size:18px;font-weight:800}
+  .result-head .pr{text-align:right}
+  .result-head .pr .n{color:var(--navy);font-size:20px;font-weight:800}
+  .result-head .pr .l{color:var(--muted);font-size:12px}
+
+  .coverages{margin-top:12px}
+  .cov{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .cov:last-child{border-bottom:0}
+  .cov .ok{color:var(--ok);font-weight:700}
+  .cov .no{color:var(--warn);font-weight:700}
+  .cov .amt{color:var(--navy);font-weight:700}
+  .gap-alert{background:rgba(220,38,38,.07);border:1px solid rgba(220,38,38,.3);border-radius:14px;padding:16px;margin-top:14px}
+  .gap-alert h4{color:var(--warn);font-size:14px;margin-bottom:8px;display:flex;gap:8px;align-items:center}
+  .gap-alert ul{list-style:none;padding-left:0}
+  .gap-alert li{padding:6px 0;font-size:13px;color:var(--text);display:flex;gap:8px}
+  .gap-alert li::before{content:"•";color:var(--warn);font-weight:800}
+
+  .total-box{background:var(--navy);color:#fff;border-radius:14px;padding:20px;margin-top:14px;text-align:center}
+  .total-box .l{color:#c5cddb;font-size:13px}
+  .total-box .n{color:var(--yellow);font-size:28px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
+
+  /* Simulator */
+  .sim-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+  .sim-grid button{padding:14px 6px;border-radius:12px;background:var(--soft);color:var(--navy);font-weight:700;font-size:12px;transition:all .15s;border:1.5px solid transparent}
+  .sim-grid button .ico{font-size:22px;display:block;margin-bottom:4px}
+  .sim-grid button.active{background:var(--navy);color:var(--yellow);border-color:var(--navy)}
+  .sim-grid button:hover:not(.active){border-color:var(--navy)}
+
+  .sim-field{margin-top:14px}
+  .sim-field label{font-size:13px;color:var(--navy);font-weight:700;margin-bottom:6px;display:block}
+  .sim-field input,.sim-field select{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;background:#fff}
+
+  .sim-result{display:none;margin-top:16px}
+  .sim-result.show{display:block;animation:fadeIn .4s ease}
+  .sim-total{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;border-radius:16px;padding:22px;text-align:center}
+  .sim-total .l{color:#c5cddb;font-size:13px}
+  .sim-total .n{color:var(--yellow);font-size:32px;font-weight:800;letter-spacing:-.02em;margin-top:4px}
+  .sim-total .s{color:#c5cddb;font-size:12px;margin-top:6px}
+  .breakdown{margin-top:16px}
+  .break-row{display:flex;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px}
+  .break-row:last-child{border-bottom:0}
+  .break-row .k{color:var(--text)}
+  .break-row .v{color:var(--navy);font-weight:700}
+  .extra{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.5);border-radius:14px;padding:16px;margin-top:14px}
+  .extra h4{color:#8a6a00;font-size:14px;margin-bottom:6px;display:flex;gap:8px;align-items:center}
+  .extra p{color:#8a6a00;font-size:13px;line-height:1.6}
+  .extra .n{color:var(--navy);font-weight:800}
+
+  /* Consultant Footer */
+  .consultant{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px;z-index:30;box-shadow:0 -8px 24px rgba(15,27,45,.08)}
+  .consultant-inner{max-width:720px;margin:0 auto;display:flex;align-items:center;gap:12px}
+  .cs-avatar{width:44px;height:44px;border-radius:50%;background:var(--navy);color:var(--yellow);display:grid;place-items:center;font-weight:900;flex-shrink:0}
+  .cs-info{flex:1;min-width:0}
+  .cs-info .nm{color:var(--navy);font-weight:800;font-size:14px}
+  .cs-info .rl{color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cs-actions{display:flex;gap:6px}
+  .cs-btn{padding:10px 12px;border-radius:10px;font-size:12px;font-weight:700}
+  .cs-btn.call{background:var(--navy);color:var(--yellow)}
+  .cs-btn.kakao{background:#FEE500;color:#3c1e1e}
+  body{padding-bottom:80px}
+
+  /* Config panel */
+  .cfg-fab{position:fixed;right:16px;bottom:88px;z-index:40;background:var(--navy);color:var(--yellow);width:44px;height:44px;border-radius:50%;font-size:18px;box-shadow:0 8px 18px rgba(15,27,45,.25)}
+  .modal{position:fixed;inset:0;background:rgba(15,27,45,.4);display:none;align-items:center;justify-content:center;z-index:80;padding:20px}
+  .modal.open{display:flex}
+  .modal .box{background:#fff;border-radius:18px;max-width:440px;width:100%;max-height:85vh;overflow-y:auto;padding:24px}
+  .modal h3{color:var(--navy);margin-bottom:8px}
+  .modal .desc{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .modal .field{margin-bottom:12px}
+  .modal .field label{color:var(--navy);font-size:12px;font-weight:700;margin-bottom:4px;display:block}
+  .modal .field input{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:inherit}
+  .modal-actions{display:flex;gap:8px;margin-top:12px}
+
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--navy);color:#fff;padding:12px 18px;border-radius:12px;font-size:13px;z-index:100;opacity:0;transition:all .2s;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* CTA box */
+  .cta-box{background:var(--navy);color:#fff;border-radius:16px;padding:20px;margin-top:16px;text-align:center}
+  .cta-box .l{color:#c5cddb;font-size:13px;margin-bottom:4px}
+  .cta-box .n{color:var(--yellow);font-weight:800;font-size:18px;margin-bottom:12px}
+  .cta-box .btn{background:var(--yellow);color:var(--navy)}
+
+  .tab-panel{display:none}
+  .tab-panel.active{display:block}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="insure-site.html" class="brand"><span class="logo">C</span>InsureOn</a>
+    <a href="insure-site.html" class="back-btn">← 사이트로</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="kicker">AI 보험 분석 · 무료</div>
+    <h1><em>내 보험</em>, 제대로<br>커버하고 있을까요?</h1>
+    <p>증권 사진 한 장이면 AI가 10초 안에 분석합니다</p>
+  </div>
+</section>
+
+<main class="container">
+  <div class="tabs">
+    <button class="tab active" data-tab="analyze">📷 증권 AI 분석</button>
+    <button class="tab" data-tab="simulate">🧮 진단·치료비 시뮬레이터</button>
+  </div>
+
+  <!-- TAB 1: Analyze -->
+  <div class="tab-panel active" id="tab-analyze">
+    <div class="card">
+      <h3>1. 보험증권 업로드</h3>
+      <p class="desc">사진 또는 PDF 파일을 업로드하세요</p>
+      <label class="drop" id="drop">
+        <div class="ico">📄</div>
+        <div class="t">클릭 또는 드래그하여 업로드</div>
+        <div class="s">JPG · PNG · PDF · 최대 10MB</div>
+        <input type="file" id="file" accept="image/*,.pdf">
+      </label>
+      <div class="preview" id="preview">
+        <button class="rm" onclick="removeFile()">×</button>
+        <img id="previewImg" alt="preview">
+      </div>
+      <div class="sec">
+        <div class="ico">🔒</div>
+        <div>
+          <div class="t">보안 3중 처리</div>
+          <div class="s">① 브라우저 내 OCR · 서버 전송 없음<br>② 주민번호·계좌번호 자동 마스킹<br>③ 분석 후 원본 즉시 삭제</div>
+        </div>
+      </div>
+      <div class="progress" id="progress">
+        <div class="t"><span id="progStep">준비 중...</span><span id="progPct">0%</span></div>
+        <div class="bar"><div class="fill" id="progFill"></div></div>
+      </div>
+      <button class="btn btn-primary" id="analyzeBtn" disabled onclick="runAnalysis()" style="margin-top:14px">AI 분석 시작 →</button>
+    </div>
+
+    <div class="result" id="result">
+      <div class="card">
+        <div class="result-head">
+          <div>
+            <div class="p">보험사 · 상품</div>
+            <div class="co" id="rCo">-</div>
+          </div>
+          <div class="pr">
+            <div class="n" id="rPr">-</div>
+            <div class="l">월 보험료</div>
+          </div>
+        </div>
+        <div style="margin-bottom:4px;font-size:13px;font-weight:700;color:var(--navy)">주요 보장 항목</div>
+        <div class="coverages" id="rCov"></div>
+        <div class="gap-alert" id="rGap" style="display:none">
+          <h4>⚠ 이 부분이 빠져있어요</h4>
+          <ul id="rGapList"></ul>
+        </div>
+        <div class="total-box">
+          <div class="l">총 보장 금액 (추정)</div>
+          <div class="n" id="rTotal">-</div>
+        </div>
+        <div class="cta-box">
+          <div class="l">보장 공백을 확인했어요</div>
+          <div class="n" id="ctaMsg">부족한 부분, 어떻게 채울까요?</div>
+          <button class="btn" onclick="scrollToConsultant()">신현주 매니저에게 상담받기 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: Simulate -->
+  <div class="tab-panel" id="tab-simulate">
+    <div class="card">
+      <h3>어떤 상황인가요?</h3>
+      <p class="desc">상황을 선택하면 지금 보험으로 얼마 받을 수 있는지 계산합니다</p>
+      <div class="sim-grid">
+        <button data-sit="cancer" class="active"><span class="ico">🎗️</span>암 진단</button>
+        <button data-sit="stroke"><span class="ico">🧠</span>뇌졸중</button>
+        <button data-sit="heart"><span class="ico">❤️</span>심근경색</button>
+        <button data-sit="hospital"><span class="ico">🏥</span>입원</button>
+        <button data-sit="surgery"><span class="ico">⚕️</span>수술</button>
+      </div>
+      <div class="sim-field" id="simExtraField" style="display:none">
+        <label id="simExtraLabel">입원 일수</label>
+        <input type="number" id="simExtraInput" value="7" min="1" max="365">
+      </div>
+      <div class="sim-field">
+        <label>내 보험 가입 기준</label>
+        <select id="simBase">
+          <option value="basic">기본형 (실손만)</option>
+          <option value="general" selected>일반형 (실손+진단비)</option>
+          <option value="premium">종합형 (실손+진단비+특약)</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" onclick="runSimulation()" style="margin-top:14px">얼마 받을지 계산하기 →</button>
+    </div>
+
+    <div class="sim-result" id="simResult">
+      <div class="card">
+        <div class="sim-total">
+          <div class="l" id="simTitle">암 진단 시 예상 수령액</div>
+          <div class="n" id="simTotal">-</div>
+          <div class="s">아래 항목 합산 · 실제 수령은 약관 따라 다를 수 있어요</div>
+        </div>
+        <div class="breakdown" id="simBreak"></div>
+        <div class="extra" id="simExtra"></div>
+        <div class="cta-box">
+          <div class="l">더 받을 수 있는 방법</div>
+          <div class="n">공백 채우면 <span id="simExtraAmt">-</span> 더 받을 수 있어요</div>
+          <button class="btn" onclick="scrollToConsultant()">상담 요청 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Consultant Footer -->
+<div class="consultant" id="consultant">
+  <div class="consultant-inner">
+    <div class="cs-avatar" id="csAvatar">신</div>
+    <div class="cs-info">
+      <div class="nm" id="csName">신현주 매니저</div>
+      <div class="rl"><span id="csCompany">더 피플</span> · <span id="csYears">10년 경력</span></div>
+    </div>
+    <div class="cs-actions">
+      <button class="cs-btn call" onclick="callConsultant()">📞 전화</button>
+      <button class="cs-btn kakao" onclick="openKakao()">💬 카톡</button>
+    </div>
+  </div>
+</div>
+
+<button class="cfg-fab" onclick="openCfg()" title="API 설정">⚙</button>
+
+<div class="modal" id="cfgModal">
+  <div class="box">
+    <h3>API 설정</h3>
+    <p class="desc">Claude API 키를 입력하면 AI 분석이 활성화됩니다. 키는 브라우저에만 저장됩니다 (실제 배포 시 서버 프록시 사용 권장).</p>
+    <div class="field"><label>Claude API Key</label><input id="cfgApiKey" placeholder="sk-ant-..." type="password"></div>
+    <div class="field"><label>모델</label><input id="cfgModel" value="claude-sonnet-4-20250514"></div>
+    <div class="field"><label>설계사 이름</label><input id="cfgCsName"></div>
+    <div class="field"><label>소속</label><input id="cfgCsCompany"></div>
+    <div class="field"><label>전화번호</label><input id="cfgCsPhone"></div>
+    <div class="field"><label>카카오톡 URL</label><input id="cfgCsKakao"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeCfg()">취소</button>
+      <button class="btn btn-primary" onclick="saveCfg()">저장</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---- Config ----
+  const CFG_KEY = 'insureon_cfg';
+  function getCfg(){
+    try { return JSON.parse(localStorage.getItem(CFG_KEY)||'{}'); } catch(e){ return {}; }
+  }
+  function getConsultant(){
+    const cfg = getCfg();
+    let p = {};
+    try { p = JSON.parse(localStorage.getItem('insureon_profile')||'{}'); } catch(e){}
+    return {
+      name: cfg.csName || p.name || '신현주 매니저',
+      company: cfg.csCompany || p.company || '더 피플',
+      years: p.years || '10년 경력',
+      phone: cfg.csPhone || p.phone || '010-0000-0000',
+      kakao: cfg.csKakao || p.kakaoUrl || 'https://pf.kakao.com/',
+      initial: (cfg.csName || p.name || '신').substring(0,1)
+    };
+  }
+  function renderConsultant(){
+    const c = getConsultant();
+    document.getElementById('csName').textContent = c.name;
+    document.getElementById('csCompany').textContent = c.company;
+    document.getElementById('csYears').textContent = c.years;
+    document.getElementById('csAvatar').textContent = c.initial;
+  }
+  function openCfg(){
+    const cfg = getCfg();
+    const c = getConsultant();
+    document.getElementById('cfgApiKey').value = cfg.apiKey||'';
+    document.getElementById('cfgModel').value = cfg.model||'claude-sonnet-4-20250514';
+    document.getElementById('cfgCsName').value = c.name;
+    document.getElementById('cfgCsCompany').value = c.company;
+    document.getElementById('cfgCsPhone').value = c.phone;
+    document.getElementById('cfgCsKakao').value = c.kakao;
+    document.getElementById('cfgModal').classList.add('open');
+  }
+  function closeCfg(){ document.getElementById('cfgModal').classList.remove('open'); }
+  function saveCfg(){
+    const cfg = getCfg();
+    cfg.apiKey = document.getElementById('cfgApiKey').value.trim();
+    cfg.model = document.getElementById('cfgModel').value.trim();
+    cfg.csName = document.getElementById('cfgCsName').value.trim();
+    cfg.csCompany = document.getElementById('cfgCsCompany').value.trim();
+    cfg.csPhone = document.getElementById('cfgCsPhone').value.trim();
+    cfg.csKakao = document.getElementById('cfgCsKakao').value.trim();
+    localStorage.setItem(CFG_KEY, JSON.stringify(cfg));
+    renderConsultant();
+    closeCfg();
+    toast('저장되었습니다');
+  }
+
+  // ---- Tabs ----
+  document.querySelectorAll('.tab').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  // ---- File Upload ----
+  let selectedFile = null;
+  const drop = document.getElementById('drop');
+  const fileInput = document.getElementById('file');
+  const preview = document.getElementById('preview');
+  const previewImg = document.getElementById('previewImg');
+
+  fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+  ['dragover','dragenter'].forEach(ev => drop.addEventListener(ev, e=>{e.preventDefault();drop.classList.add('drag')}));
+  ['dragleave','dragend','drop'].forEach(ev => drop.addEventListener(ev, e=>{e.preventDefault();drop.classList.remove('drag')}));
+  drop.addEventListener('drop', e => handleFile(e.dataTransfer.files[0]));
+
+  function handleFile(f){
+    if(!f) return;
+    if(f.size > 10*1024*1024){ toast('10MB 이하 파일만 가능합니다'); return; }
+    selectedFile = f;
+    if(f.type.startsWith('image/')){
+      const r = new FileReader();
+      r.onload = e => { previewImg.src = e.target.result; preview.style.display='block'; };
+      r.readAsDataURL(f);
+    } else {
+      previewImg.src = '';
+      preview.style.display='none';
+    }
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+  function removeFile(){
+    selectedFile = null;
+    fileInput.value = '';
+    preview.style.display='none';
+    previewImg.src = '';
+    document.getElementById('analyzeBtn').disabled = true;
+  }
+
+  // ---- Progress ----
+  function setProgress(step, pct){
+    document.getElementById('progress').classList.add('show');
+    document.getElementById('progStep').textContent = step;
+    document.getElementById('progPct').textContent = Math.round(pct)+'%';
+    document.getElementById('progFill').style.width = pct+'%';
+  }
+  function hideProgress(){ document.getElementById('progress').classList.remove('show'); }
+
+  // ---- 민감정보 마스킹 ----
+  function maskSensitive(text){
+    return text
+      .replace(/\d{6}[-\s]?[1-4]\d{6}/g,'******-*******')
+      .replace(/\b\d{3,5}[-\s]?\d{2,6}[-\s]?\d{3,8}\b/g, m => {
+        if(m.replace(/[^0-9]/g,'').length >= 10) return '***-***-***';
+        return m;
+      })
+      .replace(/계좌[:\s]*[\d-]+/g,'계좌: ***');
+  }
+
+  // ---- Analysis ----
+  async function runAnalysis(){
+    if(!selectedFile){ toast('파일을 먼저 업로드해주세요'); return; }
+    document.getElementById('analyzeBtn').disabled = true;
+    document.getElementById('result').classList.remove('show');
+
+    try {
+      let ocrText = '';
+      if(selectedFile.type.startsWith('image/')){
+        setProgress('OCR 실행 중 (브라우저 내부)', 5);
+        const { data } = await Tesseract.recognize(selectedFile, 'kor+eng', {
+          logger: m => { if(m.status==='recognizing text') setProgress('OCR 실행 중', 5 + m.progress*55); }
+        });
+        ocrText = data.text;
+      } else {
+        setProgress('PDF 처리 중', 30);
+        ocrText = '[PDF 파일 - Tesseract.js는 이미지만 처리합니다. 사진으로 업로드해주세요]';
+      }
+
+      setProgress('민감정보 마스킹', 65);
+      const masked = maskSensitive(ocrText);
+
+      setProgress('AI 분석 요청', 75);
+      const result = await analyzeWithClaude(masked);
+
+      setProgress('결과 정리', 95);
+      renderResult(result);
+
+      setProgress('완료', 100);
+      setTimeout(()=>{ hideProgress(); }, 600);
+
+      // 원본 즉시 삭제
+      selectedFile = null;
+      fileInput.value = '';
+      previewImg.src = '';
+    } catch(err){
+      console.error(err);
+      toast('분석 중 오류가 발생했어요: '+(err.message||''));
+      hideProgress();
+    } finally {
+      document.getElementById('analyzeBtn').disabled = false;
+    }
+  }
+
+  async function analyzeWithClaude(maskedText){
+    const cfg = getCfg();
+    if(!cfg.apiKey){
+      // API 키 없으면 데모 결과 반환
+      return DEMO_ANALYSIS;
+    }
+    const prompt = `아래는 한국 보험증권의 OCR 결과입니다. 민감정보는 이미 마스킹되어 있습니다.
+이 내용을 분석하여 JSON으로 반환하세요.
+
+반환 형식 (반드시 이 JSON 구조만 반환, 추가 설명 금지):
+{
+  "company": "보험사명",
+  "product": "상품명",
+  "monthlyPremium": "월 보험료 (예: 12만원)",
+  "coverages": [{"name":"보장 항목명","amount":"보장 금액","has":true}, ...],
+  "gaps": ["없는 보장1","없는 보장2"],
+  "totalCoverage": "총 보장금액 추정",
+  "cta": "이 고객에게 해줄 한 줄 조언"
+}
+
+반드시 포함할 coverage 항목: 사망보험금, 암진단비, 뇌졸중진단비, 심근경색진단비, 입원일당, 수술비, 실손 통원, 실손 입원
+있으면 has:true, 없으면 has:false.
+
+OCR 텍스트:
+${maskedText.substring(0, 4000)}`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key': cfg.apiKey,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body: JSON.stringify({
+        model: cfg.model || 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        messages: [{role:'user', content: prompt}]
+      })
+    });
+    if(!res.ok) throw new Error('API 호출 실패 ('+res.status+')');
+    const j = await res.json();
+    const text = j.content?.[0]?.text || '';
+    const m = text.match(/\{[\s\S]*\}/);
+    if(!m) throw new Error('응답 파싱 실패');
+    return JSON.parse(m[0]);
+  }
+
+  const DEMO_ANALYSIS = {
+    company: '삼성생명',
+    product: '(무) 스마트케어 종합보험',
+    monthlyPremium: '월 132,400원',
+    coverages: [
+      {name:'사망보험금', amount:'1억원', has:true},
+      {name:'암 진단비', amount:'3,000만원', has:true},
+      {name:'뇌졸중 진단비', amount:'-', has:false},
+      {name:'심근경색 진단비', amount:'-', has:false},
+      {name:'입원일당', amount:'5만원/일', has:true},
+      {name:'수술비', amount:'200만원', has:true},
+      {name:'실손 통원', amount:'-', has:false},
+      {name:'실손 입원', amount:'-', has:false}
+    ],
+    gaps: [
+      '뇌졸중·심근경색 진단비 (2대 질환 급증 추세)',
+      '실손의료비 (병원 통원·입원 실비 보장 없음)',
+      '치매·간병 보장 (평균 수명 증가로 필수화)'
+    ],
+    totalCoverage: '약 1억 3,200만원 + 입원일당',
+    cta: '2대 질환 진단비와 실손이 빠져있어 공백이 큽니다. 보완 설계를 추천합니다.'
+  };
+
+  function renderResult(r){
+    document.getElementById('rCo').textContent = r.company + ' · ' + (r.product||'');
+    document.getElementById('rPr').textContent = r.monthlyPremium || '-';
+    document.getElementById('rTotal').textContent = r.totalCoverage || '-';
+    document.getElementById('ctaMsg').textContent = r.cta || '부족한 부분, 어떻게 채울까요?';
+
+    const covWrap = document.getElementById('rCov');
+    covWrap.innerHTML = (r.coverages||[]).map(c=>`
+      <div class="cov">
+        <div>${c.has?'<span class="ok">✓</span>':'<span class="no">✗</span>'} ${c.name}</div>
+        <div class="amt">${c.has?(c.amount||'포함'):'미가입'}</div>
+      </div>`).join('');
+
+    const gapBox = document.getElementById('rGap');
+    const gapList = document.getElementById('rGapList');
+    if(r.gaps && r.gaps.length){
+      gapBox.style.display='block';
+      gapList.innerHTML = r.gaps.map(g=>`<li>${g}</li>`).join('');
+    } else { gapBox.style.display='none'; }
+
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({behavior:'smooth', block:'start'});
+
+    // Save lead
+    const leads = JSON.parse(localStorage.getItem('insureon_analyses')||'[]');
+    leads.push({...r, at:new Date().toISOString()});
+    localStorage.setItem('insureon_analyses', JSON.stringify(leads));
+  }
+
+  // ---- Simulator ----
+  const SIT_CONFIG = {
+    cancer:{title:'암 진단 시 예상 수령액', showExtra:false, items:(b)=>{
+      const base = { 진단비:{basic:0,general:30000000,premium:50000000}[b],
+                     실손입원:{basic:5000000,general:5000000,premium:5000000}[b],
+                     치료특약:{basic:0,general:0,premium:10000000}[b] };
+      return [
+        {k:'암 진단비', v:base.진단비},
+        {k:'실손의료비 (입원 30일 기준)', v:base.실손입원},
+        {k:'항암치료 특약', v:base.치료특약}
+      ];
+    }, missing:(b)=>{
+      if(b==='basic') return {text:'암 진단비와 항암치료 특약이 빠져 진단 시 치료비 부담이 큽니다.', extra:40000000};
+      if(b==='general') return {text:'항암치료 특약이 없어 표적치료·면역치료 시 자부담이 커집니다.', extra:10000000};
+      return null;
+    }},
+    stroke:{title:'뇌졸중 진단 시 예상 수령액', showExtra:false, items:(b)=>[
+      {k:'뇌졸중 진단비', v:{basic:0,general:20000000,premium:30000000}[b]},
+      {k:'실손의료비 (입원 14일)', v:2100000},
+      {k:'후유장해 특약', v:{basic:0,general:0,premium:10000000}[b]}
+    ], missing:(b)=>{
+      if(b==='basic') return {text:'뇌졸중 진단비가 없어 재활·후유장해 대응이 어렵습니다.', extra:30000000};
+      if(b==='general') return {text:'후유장해 특약이 없어 재활 기간 소득 공백이 큽니다.', extra:10000000};
+      return null;
+    }},
+    heart:{title:'심근경색 진단 시 예상 수령액', showExtra:false, items:(b)=>[
+      {k:'심근경색 진단비', v:{basic:0,general:20000000,premium:30000000}[b]},
+      {k:'실손의료비 (입원 7일)', v:1400000},
+      {k:'수술비 특약', v:{basic:0,general:3000000,premium:5000000}[b]}
+    ], missing:(b)=>{
+      if(b==='basic') return {text:'심근경색 진단비가 없어 응급 대응 후 치료비 부담이 큽니다.', extra:25000000};
+      return null;
+    }},
+    hospital:{title:'입원 시 예상 수령액', showExtra:true, extraLabel:'입원 일수', items:(b, days)=>[
+      {k:'입원일당 ('+days+'일)', v:{basic:0,general:50000*days,premium:100000*days}[b]},
+      {k:'실손 입원의료비', v:Math.round(200000*days*0.9)},
+      {k:'종합입원 특약', v:{basic:0,general:0,premium:500000}[b]}
+    ], missing:(b,days)=>{
+      if(b==='basic') return {text:'입원일당이 없어 휴업 손실 보전이 불가능합니다.', extra:50000*days};
+      return null;
+    }},
+    surgery:{title:'수술 시 예상 수령액', showExtra:true, extraLabel:'수술 종류', extraType:'select', extraOptions:[['1','1종 (간단 수술)'],['2','2종 (중간)'],['3','3종 (중대)'],['4','4종 (최고 난이도)']], items:(b, grade)=>{
+      const g = parseInt(grade||'2');
+      const factor = [0, 0.5, 1, 2, 5][g];
+      return [
+        {k:g+'종 수술비 특약', v:{basic:0,general:2000000,premium:3000000}[b]*factor},
+        {k:'실손 수술비', v:3000000*factor*0.9},
+        {k:'입원일당 (7일 가정)', v:{basic:0,general:350000,premium:700000}[b]}
+      ];
+    }, missing:(b,grade)=>{
+      if(b==='basic') return {text:'수술비 특약이 없어 비급여 수술 시 전액 자부담입니다.', extra:5000000};
+      return null;
+    }}
+  };
+
+  let currentSit = 'cancer';
+  document.querySelectorAll('[data-sit]').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('[data-sit]').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      currentSit = b.dataset.sit;
+      renderSitExtra();
+    });
+  });
+
+  function renderSitExtra(){
+    const cfg = SIT_CONFIG[currentSit];
+    const field = document.getElementById('simExtraField');
+    const label = document.getElementById('simExtraLabel');
+    const inputWrap = field;
+    if(!cfg.showExtra){ field.style.display='none'; return; }
+    field.style.display='block';
+    label.textContent = cfg.extraLabel;
+    if(cfg.extraType==='select'){
+      const sel = document.createElement('select');
+      sel.id = 'simExtraInput';
+      sel.innerHTML = cfg.extraOptions.map(o=>`<option value="${o[0]}">${o[1]}</option>`).join('');
+      const old = document.getElementById('simExtraInput');
+      old.replaceWith(sel);
+    } else {
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.id = 'simExtraInput'; inp.value = 7; inp.min=1; inp.max=365;
+      const old = document.getElementById('simExtraInput');
+      old.replaceWith(inp);
+    }
+  }
+
+  function runSimulation(){
+    const cfg = SIT_CONFIG[currentSit];
+    const base = document.getElementById('simBase').value;
+    const extraVal = cfg.showExtra ? (document.getElementById('simExtraInput').value || '1') : null;
+    const items = cfg.items(base, extraVal);
+    const total = items.reduce((s,i)=>s+i.v, 0);
+    const missing = cfg.missing(base, extraVal);
+
+    document.getElementById('simTitle').textContent = cfg.title;
+    document.getElementById('simTotal').textContent = fmt(total);
+    document.getElementById('simBreak').innerHTML = items.map(i=>`
+      <div class="break-row"><div class="k">${i.k}</div><div class="v">${i.v>0?fmt(i.v):'미가입'}</div></div>
+    `).join('');
+
+    const extraBox = document.getElementById('simExtra');
+    const extraAmt = document.getElementById('simExtraAmt');
+    if(missing){
+      extraBox.innerHTML = `<h4>💡 공백이 보입니다</h4><p>${missing.text}<br>보완 시 <span class="n">${fmt(missing.extra)}</span>을 더 받을 수 있어요.</p>`;
+      extraBox.style.display='block';
+      extraAmt.textContent = fmt(missing.extra);
+    } else {
+      extraBox.style.display='none';
+      extraAmt.textContent = '0원';
+    }
+
+    document.getElementById('simResult').classList.add('show');
+    document.getElementById('simResult').scrollIntoView({behavior:'smooth'});
+  }
+
+  function fmt(v){
+    if(v>=100000000) return (v/100000000).toFixed(v%100000000===0?0:1)+'억원';
+    if(v>=10000) return Math.round(v/10000).toLocaleString()+'만원';
+    if(v===0) return '0원';
+    return v.toLocaleString()+'원';
+  }
+
+  // ---- Consultant Actions ----
+  function callConsultant(){ const c = getConsultant(); window.location.href = 'tel:'+c.phone; }
+  function openKakao(){ const c = getConsultant(); window.open(c.kakao,'_blank'); }
+  function scrollToConsultant(){ document.getElementById('consultant').scrollIntoView({behavior:'smooth'}); document.getElementById('consultant').animate([{transform:'translateY(0)'},{transform:'translateY(-6px)'},{transform:'translateY(0)'}],{duration:500}); }
+
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2400);
+  }
+
+  renderConsultant();
+</script>
+</body>
+</html>

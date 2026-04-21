@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신현주 매니저 | 더 피플 — 투명한 보험 분석</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+  :root{
+    --navy:#0F1B2D;
+    --navy-2:#1b2940;
+    --yellow:#F5C842;
+    --yellow-2:#ffd65a;
+    --text:#1a2233;
+    --muted:#6b7384;
+    --line:#e8ebf2;
+    --bg:#ffffff;
+    --soft:#f7f8fb;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--text);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%;display:block}
+  button{font-family:inherit;cursor:pointer;border:none;background:none}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(140%) blur(10px);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;color:var(--navy);letter-spacing:-.01em}
+  .brand .logo{width:32px;height:32px;border-radius:8px;background:var(--navy);display:grid;place-items:center;color:var(--yellow);font-weight:900}
+  .nav ul{display:flex;gap:28px;list-style:none}
+  .nav ul a{color:var(--muted);font-weight:500;font-size:14px}
+  .nav ul a:hover{color:var(--navy)}
+  .nav .cta{background:var(--yellow);color:var(--navy);padding:10px 16px;border-radius:10px;font-weight:700;font-size:14px}
+
+  /* Hero */
+  .hero{position:relative;background:linear-gradient(180deg,#fff 0%,#fafbff 100%);padding:80px 0 60px;overflow:hidden}
+  .hero::before{content:"";position:absolute;inset:auto -10% -60% auto;width:640px;height:640px;background:radial-gradient(closest-side,rgba(245,200,66,.25),transparent 70%);filter:blur(10px)}
+  .hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;position:relative}
+  .badge{display:inline-flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line);color:var(--navy);padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600}
+  .badge .dot{width:8px;height:8px;border-radius:50%;background:var(--yellow)}
+  h1.title{font-size:clamp(30px,4vw,48px);line-height:1.18;letter-spacing:-.02em;color:var(--navy);font-weight:800;margin:18px 0 16px}
+  h1.title em{color:var(--navy);background:linear-gradient(transparent 60%,rgba(245,200,66,.55) 60%);font-style:normal;padding:0 2px}
+  .hero p.lead{color:var(--muted);font-size:17px;max-width:520px;margin-bottom:28px}
+  .hero-ctas{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 22px;border-radius:12px;font-weight:700;font-size:15px;transition:transform .15s ease, box-shadow .15s ease;border:1px solid transparent}
+  .btn-primary{background:var(--yellow);color:var(--navy);box-shadow:0 8px 20px rgba(245,200,66,.4)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 12px 24px rgba(245,200,66,.5)}
+  .btn-ghost{background:#fff;color:var(--navy);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--navy)}
+  .hero-card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 30px 60px -20px rgba(15,27,45,.18)}
+  .profile{display:flex;gap:16px;align-items:center}
+  .avatar{width:72px;height:72px;border-radius:16px;background:linear-gradient(135deg,var(--navy),var(--navy-2));display:grid;place-items:center;color:var(--yellow);font-weight:900;font-size:26px;flex-shrink:0}
+  .profile h3{font-size:20px;color:var(--navy);letter-spacing:-.01em}
+  .profile .role{color:var(--muted);font-size:14px;margin-top:2px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+  .stat{background:var(--soft);border-radius:14px;padding:14px;text-align:center}
+  .stat .n{color:var(--navy);font-weight:800;font-size:22px;letter-spacing:-.02em}
+  .stat .l{color:var(--muted);font-size:12px;margin-top:2px}
+  .highlight-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .tag{background:rgba(245,200,66,.2);color:#8a6a00;border:1px solid rgba(245,200,66,.5);padding:6px 10px;border-radius:999px;font-size:12px;font-weight:600}
+
+  /* Sections */
+  section{padding:80px 0}
+  .section-head{text-align:center;margin-bottom:48px}
+  .section-head .kicker{color:var(--muted);font-size:13px;letter-spacing:.2em;text-transform:uppercase;font-weight:700}
+  .section-head h2{font-size:clamp(26px,3vw,36px);color:var(--navy);letter-spacing:-.02em;margin-top:10px;font-weight:800}
+  .section-head p{color:var(--muted);margin-top:10px;max-width:620px;margin-left:auto;margin-right:auto}
+
+  /* Difference */
+  .diff-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .diff{background:#fff;border:1px solid var(--line);border-radius:20px;padding:28px;transition:all .2s}
+  .diff:hover{border-color:var(--navy);transform:translateY(-4px);box-shadow:0 20px 40px -20px rgba(15,27,45,.2)}
+  .diff .ico{width:44px;height:44px;border-radius:12px;background:var(--navy);color:var(--yellow);display:grid;place-items:center;font-weight:800;font-size:18px;margin-bottom:16px}
+  .diff h4{color:var(--navy);font-size:18px;margin-bottom:8px;letter-spacing:-.01em}
+  .diff p{color:var(--muted);font-size:14px}
+
+  /* Companies */
+  #companies{background:var(--soft)}
+  .co-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+  .co{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 12px;text-align:center;font-weight:700;color:var(--navy-2);font-size:14px;transition:all .2s}
+  .co:hover{border-color:var(--yellow);color:var(--navy)}
+
+  /* About */
+  .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:40px;align-items:center}
+  .about-img{background:linear-gradient(135deg,var(--navy),var(--navy-2));aspect-ratio:4/5;border-radius:24px;position:relative;overflow:hidden;display:grid;place-items:center;color:var(--yellow)}
+  .about-img .big{font-size:120px;font-weight:900;letter-spacing:-.06em;opacity:.95}
+  .about-img::after{content:"";position:absolute;inset:auto -30% -30% auto;width:300px;height:300px;background:radial-gradient(closest-side,rgba(245,200,66,.3),transparent 70%)}
+  .about h3{color:var(--navy);font-size:28px;letter-spacing:-.02em;margin-bottom:18px;font-weight:800}
+  .about .row{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .about .row:last-child{border-bottom:0}
+  .about .row .k{width:120px;color:var(--muted);font-size:14px;font-weight:600}
+  .about .row .v{color:var(--text);font-size:15px;flex:1}
+
+  /* Reviews */
+  #reviews{background:var(--soft)}
+  .rev-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .rev{background:#fff;border:1px solid var(--line);border-radius:20px;padding:26px;transition:all .2s}
+  .rev:hover{transform:translateY(-2px);box-shadow:0 16px 30px -20px rgba(15,27,45,.15)}
+  .stars{color:var(--yellow);font-size:16px;margin-bottom:12px;letter-spacing:2px}
+  .rev .q{color:var(--text);font-size:15px;line-height:1.65;margin-bottom:18px}
+  .rev .who{display:flex;align-items:center;gap:10px}
+  .rev .avatar-sm{width:36px;height:36px;border-radius:50%;background:var(--navy);color:var(--yellow);display:grid;place-items:center;font-weight:800;font-size:13px}
+  .rev .who .nm{font-weight:700;font-size:14px;color:var(--navy)}
+  .rev .who .meta{color:var(--muted);font-size:12px}
+
+  /* CTA banner */
+  .cta-banner{background:var(--navy);border-radius:28px;padding:56px 48px;text-align:center;color:#fff;position:relative;overflow:hidden}
+  .cta-banner::before{content:"";position:absolute;inset:auto auto -40% -10%;width:420px;height:420px;background:radial-gradient(closest-side,rgba(245,200,66,.25),transparent 70%)}
+  .cta-banner::after{content:"";position:absolute;inset:auto -10% auto auto;top:-40%;width:420px;height:420px;background:radial-gradient(closest-side,rgba(245,200,66,.2),transparent 70%)}
+  .cta-banner h2{font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin-bottom:12px;font-weight:800;position:relative}
+  .cta-banner p{color:#c5cddb;margin-bottom:26px;position:relative}
+  .cta-banner .btn-primary{position:relative}
+
+  /* Contact Form */
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .contact-info{background:var(--navy);color:#fff;border-radius:24px;padding:40px;position:relative;overflow:hidden}
+  .contact-info::after{content:"";position:absolute;inset:auto -30% -30% auto;width:360px;height:360px;background:radial-gradient(closest-side,rgba(245,200,66,.2),transparent 70%)}
+  .contact-info h3{color:#fff;font-size:22px;margin-bottom:8px;position:relative}
+  .contact-info p{color:#c5cddb;margin-bottom:26px;position:relative}
+  .contact-info .line{display:flex;gap:12px;align-items:center;padding:12px 0;position:relative}
+  .contact-info .line .ico{width:36px;height:36px;border-radius:10px;background:rgba(245,200,66,.2);color:var(--yellow);display:grid;place-items:center;font-weight:800}
+  .kakao-btn{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:22px;background:#FEE500;color:#3c1e1e;padding:14px;border-radius:12px;font-weight:800;width:100%;position:relative}
+  .form{background:#fff;border:1px solid var(--line);border-radius:24px;padding:36px}
+  .field{margin-bottom:16px}
+  .field label{display:block;font-size:13px;color:var(--navy);font-weight:700;margin-bottom:6px}
+  .field input,.field textarea,.field select{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font-family:inherit;font-size:14px;background:#fff;transition:border-color .15s}
+  .field input:focus,.field textarea:focus,.field select:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(15,27,45,.08)}
+  .field textarea{min-height:96px;resize:vertical}
+  .form .btn-primary{width:100%;justify-content:center;margin-top:8px}
+  .consent{font-size:12px;color:var(--muted);margin-top:10px}
+  .consent a{text-decoration:underline}
+
+  /* Footer */
+  footer{background:var(--navy);color:#9aa6bc;padding:40px 0;font-size:13px}
+  .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+  .foot-row a{color:#c5cddb}
+
+  /* Edit Panel */
+  .edit-fab{position:fixed;right:20px;bottom:20px;z-index:60;background:var(--navy);color:var(--yellow);padding:12px 18px;border-radius:999px;font-weight:700;font-size:13px;box-shadow:0 12px 28px rgba(15,27,45,.3);cursor:pointer}
+  .edit-panel{position:fixed;top:0;right:0;height:100%;width:380px;max-width:90vw;background:#fff;border-left:1px solid var(--line);box-shadow:-30px 0 60px rgba(15,27,45,.15);z-index:70;overflow-y:auto;transform:translateX(100%);transition:transform .25s ease}
+  .edit-panel.open{transform:translateX(0)}
+  .edit-panel header.eph{position:sticky;top:0;background:#fff;border-bottom:1px solid var(--line);padding:16px 20px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+  .edit-panel h3{color:var(--navy);font-size:16px}
+  .edit-panel .body{padding:20px}
+  .edit-panel .body .field input,.edit-panel .body .field textarea{font-size:13px;padding:10px 12px}
+  .edit-panel .closebtn{font-size:22px;color:var(--muted);background:none;border:none}
+  .save-hint{background:rgba(245,200,66,.15);border:1px solid rgba(245,200,66,.4);color:#8a6a00;padding:10px 12px;border-radius:10px;font-size:12px;margin-bottom:16px}
+
+  /* Toast */
+  .toast{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:14px;z-index:100;opacity:0;transition:all .2s ease;pointer-events:none}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  @media (max-width:900px){
+    .hero-grid,.about-grid,.contact-grid{grid-template-columns:1fr}
+    .diff-grid,.rev-grid{grid-template-columns:1fr}
+    .co-grid{grid-template-columns:repeat(3,1fr)}
+    .nav ul{display:none}
+    section{padding:60px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav">
+    <a href="#" class="brand"><span class="logo">C</span><span>InsureOn</span></a>
+    <ul>
+      <li><a href="#about">소개</a></li>
+      <li><a href="#companies">취급 보험사</a></li>
+      <li><a href="#reviews">고객 후기</a></li>
+      <li><a href="#contact">상담 문의</a></li>
+    </ul>
+    <a href="insure-customer.html" class="cta">내 보험 무료 분석</a>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="badge"><span class="dot"></span><span>더 피플 공식 설계사</span></span>
+      <h1 class="title">보험, 파는 사람 말고<br><em data-k="heroEm">투명하게 분석해주는<br>사람</em>이 필요합니다.</h1>
+      <p class="lead" data-k="heroLead">복잡한 증권, 사진 한 장 보내주시면 설계사가 직접 분석해드립니다. 상품 추천보다 <b>지금 내 보장이 맞는지</b>가 먼저입니다.</p>
+      <div class="hero-ctas">
+        <a href="insure-customer.html" class="btn btn-primary">내 보험 무료 분석받기 →</a>
+        <a href="#contact" class="btn btn-ghost">상담 신청하기</a>
+      </div>
+    </div>
+    <div class="hero-card">
+      <div class="profile">
+        <div class="avatar" data-k="avatarInitial">신</div>
+        <div>
+          <h3 data-k="name">신현주 매니저</h3>
+          <div class="role"><span data-k="company">더 피플</span> · <span data-k="years">10년 경력</span></div>
+        </div>
+      </div>
+      <div class="highlight-tags">
+        <span class="tag" data-k="tag1">종신보험</span>
+        <span class="tag" data-k="tag2">건강보험</span>
+        <span class="tag" data-k="tag3">CI보험</span>
+      </div>
+      <div class="stats">
+        <div class="stat"><div class="n" data-k="stat1n">1,240+</div><div class="l">누적 고객</div></div>
+        <div class="stat"><div class="n" data-k="stat2n">98%</div><div class="l">만족도</div></div>
+        <div class="stat"><div class="n" data-k="stat3n">10년</div><div class="l">상담 경력</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Difference -->
+<section id="about">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Why 신현주</div>
+      <h2>왜 <em style="background:linear-gradient(transparent 60%,rgba(245,200,66,.55) 60%);font-style:normal">투명한 분석</em>이 먼저일까요?</h2>
+      <p>설계사가 상품부터 권하는 시대는 끝났습니다. 지금 내 보장을 AI가 먼저 분석하고, 필요한 부분만 상담합니다.</p>
+    </div>
+    <div class="diff-grid">
+      <div class="diff">
+        <div class="ico">01</div>
+        <h4>상품 추천 전 AI 분석</h4>
+        <p>보험증권 사진 한 장이면 AI가 보장 공백을 자동으로 찾아냅니다. 팔려는 상품 없이 객관적으로.</p>
+      </div>
+      <div class="diff">
+        <div class="ico">02</div>
+        <h4>보험사 제한 없는 비교</h4>
+        <p>대형·중소 보험사 20+개를 모두 취급합니다. 설계사의 소속에 얽매이지 않는 설계.</p>
+      </div>
+      <div class="diff">
+        <div class="ico">03</div>
+        <h4>가입 이후가 진짜 시작</h4>
+        <p>갱신 임박, 청구 팁, 보장 공백 알림까지. 계약으로 끝나지 않고 평생 파트너로 함께합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Companies -->
+<section id="companies">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Partners</div>
+      <h2>취급 보험사</h2>
+      <p>생명·손해·CI·실손까지 주요 보험사를 비교 설계합니다.</p>
+    </div>
+    <div class="co-grid" id="coGrid"></div>
+  </div>
+</section>
+
+<!-- About Detail -->
+<section>
+  <div class="container about">
+    <div class="about-grid">
+      <div class="about-img"><div class="big" data-k="avatarInitial2">신</div></div>
+      <div>
+        <div class="kicker" style="color:var(--muted);font-size:12px;letter-spacing:.2em">PROFILE</div>
+        <h3 data-k="aboutTitle">10년을 보험만 봤습니다.<br>이제는 분석으로 돌려드릴 차례입니다.</h3>
+        <div class="row"><div class="k">성함</div><div class="v" data-k="name2">신현주</div></div>
+        <div class="row"><div class="k">소속</div><div class="v"><span data-k="company2">더 피플</span> 종합금융서비스</div></div>
+        <div class="row"><div class="k">경력</div><div class="v" data-k="years2">10년 (보험설계사 FP / 종합재무설계)</div></div>
+        <div class="row"><div class="k">전문 분야</div><div class="v" data-k="expertise">종신보험 · 건강보험 · CI보험 · 연금저축</div></div>
+        <div class="row"><div class="k">연락처</div><div class="v"><a data-k="phone" href="tel:010-0000-0000">010-0000-0000</a></div></div>
+        <div class="row"><div class="k">이메일</div><div class="v"><a data-k="email" href="mailto:example@email.com">example@email.com</a></div></div>
+        <div class="row"><div class="k">자격</div><div class="v" data-k="license">생·손보 설계사, 변액보험 판매자격, AFPK</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Reviews -->
+<section id="reviews">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Reviews</div>
+      <h2>고객 후기</h2>
+      <p>1,240명이 넘는 고객들이 남긴 솔직한 이야기입니다.</p>
+    </div>
+    <div class="rev-grid" id="revGrid"></div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section>
+  <div class="container">
+    <div class="cta-banner">
+      <h2>지금 가진 보험, <span style="color:var(--yellow)">정말 괜찮을까요?</span></h2>
+      <p>사진 한 장으로 10초 만에 AI 분석이 끝납니다. 무료, 가입 없이.</p>
+      <a href="insure-customer.html" class="btn btn-primary">내 보험 무료 분석받기 →</a>
+    </div>
+  </div>
+</section>
+
+<!-- Contact -->
+<section id="contact">
+  <div class="container">
+    <div class="section-head">
+      <div class="kicker">Contact</div>
+      <h2>상담 신청</h2>
+      <p>1영업일 이내에 직접 연락드립니다. 편하게 남겨주세요.</p>
+    </div>
+    <div class="contact-grid">
+      <div class="contact-info">
+        <h3>편하게 연락주세요</h3>
+        <p>전화·카카오·문자 모두 열려 있습니다.</p>
+        <div class="line"><div class="ico">📞</div><div><div style="font-weight:700" data-k="phone3">010-0000-0000</div><div style="color:#c5cddb;font-size:13px">평일 09:00 - 20:00 / 주말 협의</div></div></div>
+        <div class="line"><div class="ico">✉</div><div><div style="font-weight:700" data-k="email3">example@email.com</div><div style="color:#c5cddb;font-size:13px">언제든 편하게</div></div></div>
+        <div class="line"><div class="ico">📍</div><div><div style="font-weight:700" data-k="addr">서울시 강남구 테헤란로</div><div style="color:#c5cddb;font-size:13px">방문 상담 가능</div></div></div>
+        <button class="kakao-btn" onclick="openKakao()">💬 카카오톡 1:1 상담</button>
+      </div>
+      <form class="form" onsubmit="submitForm(event)">
+        <div class="field"><label>성함 *</label><input required name="name" placeholder="홍길동"></div>
+        <div class="field"><label>연락처 *</label><input required name="phone" placeholder="010-0000-0000" inputmode="numeric"></div>
+        <div class="field"><label>관심 분야</label>
+          <select name="topic">
+            <option>내 보험 분석 요청</option>
+            <option>신규 보험 가입 상담</option>
+            <option>갱신·환급 검토</option>
+            <option>보험금 청구 지원</option>
+            <option>기타 문의</option>
+          </select>
+        </div>
+        <div class="field"><label>문의 내용</label><textarea name="message" placeholder="궁금하신 내용을 편하게 적어주세요"></textarea></div>
+        <button class="btn btn-primary" type="submit">상담 신청하기 →</button>
+        <div class="consent">제출 시 <a href="#">개인정보 수집·이용</a>에 동의합니다. 상담 외 용도로 사용되지 않습니다.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container foot-row">
+    <div>
+      <div style="color:#fff;font-weight:800;margin-bottom:6px">InsureOn · 신현주 매니저</div>
+      <div>© Crescent Studio · 모든 상담은 비용 없이 진행됩니다.</div>
+    </div>
+    <div style="display:flex;gap:18px">
+      <a href="#">개인정보처리방침</a>
+      <a href="#">이용약관</a>
+    </div>
+  </div>
+</footer>
+
+<button class="edit-fab" onclick="toggleEdit()">✎ 정보 수정</button>
+
+<div class="edit-panel" id="editPanel">
+  <header class="eph">
+    <h3>설계사 정보 수정</h3>
+    <button class="closebtn" onclick="toggleEdit()">×</button>
+  </header>
+  <div class="body">
+    <div class="save-hint">변경사항은 이 브라우저에만 저장됩니다 (localStorage). 실제 배포 시 Supabase와 연동됩니다.</div>
+    <div id="editFields"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="saveProfile()">저장하기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---- 더미 데이터 (수정 가능) ----
+  const DEFAULT_PROFILE = {
+    name: '신현주 매니저',
+    company: '더 피플',
+    years: '10년 경력',
+    phone: '010-0000-0000',
+    email: 'example@email.com',
+    expertise: '종신보험 · 건강보험 · CI보험 · 연금저축',
+    license: '생·손보 설계사, 변액보험 판매자격, AFPK',
+    addr: '서울시 강남구 테헤란로',
+    heroEm: '투명하게 분석해주는 사람',
+    heroLead: '복잡한 증권, 사진 한 장 보내주시면 설계사가 직접 분석해드립니다. 상품 추천보다 지금 내 보장이 맞는지가 먼저입니다.',
+    aboutTitle: '10년을 보험만 봤습니다. 이제는 분석으로 돌려드릴 차례입니다.',
+    kakaoUrl: 'https://pf.kakao.com/_xxxxxx',
+    tag1: '종신보험', tag2: '건강보험', tag3: 'CI보험',
+    stat1n: '1,240+', stat2n: '98%', stat3n: '10년',
+    avatarInitial: '신'
+  };
+
+  const COMPANIES = ['삼성생명','한화생명','교보생명','신한라이프','NH농협생명','DB손해보험','삼성화재','현대해상','메리츠화재','KB손해보험','라이나생명','동양생명'];
+
+  const REVIEWS = [
+    {nm:'김**', meta:'40대 / 직장인', s:'★★★★★', q:'증권 사진 올렸더니 10초만에 "암진단비 빠져있다"고 정확하게 잡아줬어요. 다른 데선 가입하자는 얘기부터 했는데 여기는 제 보장부터 봐줘서 신뢰감이 다릅니다.'},
+    {nm:'박**', meta:'30대 / 자영업', s:'★★★★★', q:'갱신 D-30 알림 받고 미리 조정했어요. 다른 설계사들은 가입 후 연락 한 번 없었는데, 신현주 매니저님은 계약 후가 더 꼼꼼해요.'},
+    {nm:'이**', meta:'50대 / 주부', s:'★★★★★', q:'엄마 보험 정리하는데 어려워했더니 AI로 싹 분석해주고 뭐가 부족한지 설명해주셨어요. 설계사 분 설명이 너무 쉬웠습니다.'}
+  ];
+
+  // ---- 렌더 ----
+  function renderAll(){
+    const p = getProfile();
+    document.querySelectorAll('[data-k]').forEach(el=>{
+      const k = el.dataset.k;
+      if(k==='name2') el.textContent = p.name.replace(' 매니저','');
+      else if(k==='company2') el.textContent = p.company;
+      else if(k==='years2') el.textContent = p.years + ' (보험설계사 FP / 종합재무설계)';
+      else if(k==='phone3') el.textContent = p.phone;
+      else if(k==='email3') el.textContent = p.email;
+      else if(k==='avatarInitial2') el.textContent = (p.avatarInitial||p.name).substring(0,1);
+      else if(k in p) el.textContent = p[k];
+    });
+    document.querySelectorAll('[data-k="phone"]').forEach(a=>a.href='tel:'+p.phone);
+    document.querySelectorAll('[data-k="email"]').forEach(a=>a.href='mailto:'+p.email);
+    document.title = p.name + ' | ' + p.company + ' — 투명한 보험 분석';
+
+    // Companies
+    document.getElementById('coGrid').innerHTML = COMPANIES.map(c=>`<div class="co">${c}</div>`).join('');
+    // Reviews
+    document.getElementById('revGrid').innerHTML = REVIEWS.map(r=>`
+      <div class="rev">
+        <div class="stars">${r.s}</div>
+        <div class="q">"${r.q}"</div>
+        <div class="who">
+          <div class="avatar-sm">${r.nm.substring(0,1)}</div>
+          <div><div class="nm">${r.nm}</div><div class="meta">${r.meta}</div></div>
+        </div>
+      </div>`).join('');
+  }
+
+  function getProfile(){
+    try {
+      const saved = JSON.parse(localStorage.getItem('insureon_profile')||'null');
+      return {...DEFAULT_PROFILE, ...(saved||{})};
+    } catch(e){ return DEFAULT_PROFILE; }
+  }
+
+  // ---- 수정 패널 ----
+  function buildEditFields(){
+    const p = getProfile();
+    const labels = {name:'설계사명', company:'소속', years:'경력', phone:'연락처', email:'이메일', expertise:'전문분야', license:'자격', addr:'주소', kakaoUrl:'카카오톡 URL', avatarInitial:'이니셜 (아바타 표시용)', heroEm:'상단 강조 문구', heroLead:'상단 설명 문구', aboutTitle:'프로필 섹션 제목'};
+    const wrap = document.getElementById('editFields');
+    wrap.innerHTML = Object.keys(labels).map(k=>{
+      const isLong = k==='heroLead'||k==='aboutTitle';
+      return `<div class="field"><label>${labels[k]}</label>${isLong?`<textarea data-ek="${k}">${p[k]||''}</textarea>`:`<input data-ek="${k}" value="${(p[k]||'').replace(/"/g,'&quot;')}">`}</div>`;
+    }).join('');
+  }
+  function saveProfile(){
+    const p = getProfile();
+    document.querySelectorAll('[data-ek]').forEach(f=>{ p[f.dataset.ek] = f.value; });
+    localStorage.setItem('insureon_profile', JSON.stringify(p));
+    renderAll();
+    toast('저장되었습니다');
+  }
+  function toggleEdit(){
+    const panel = document.getElementById('editPanel');
+    if(!panel.classList.contains('open')) buildEditFields();
+    panel.classList.toggle('open');
+  }
+  function openKakao(){
+    const p = getProfile();
+    window.open(p.kakaoUrl||'https://pf.kakao.com/','_blank');
+  }
+  function submitForm(e){
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(e.target).entries());
+    // TODO: Supabase insert('leads', data) 연동
+    const leads = JSON.parse(localStorage.getItem('insureon_leads')||'[]');
+    leads.push({...data, at: new Date().toISOString(), source:'site'});
+    localStorage.setItem('insureon_leads', JSON.stringify(leads));
+    toast('상담 신청이 접수되었습니다. 1영업일 내 연락드립니다.');
+    e.target.reset();
+  }
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2600);
+  }
+
+  renderAll();
+</script>
+</body>
+</html>
