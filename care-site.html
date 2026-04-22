@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>햇살요양센터 — 방문요양 전문</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;color:#0F1B2D;max-width:430px;margin:0 auto;overflow-x:hidden}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--teal-dark:#0F766E;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e}
+
+.nav{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav-logo{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--navy)}
+.nav-logo span{color:var(--teal)}
+.nav-badge{background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #99f6e4;margin-left:6px}
+.nav-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+
+.hero{margin-top:56px;background:linear-gradient(160deg,#042f2e 0%,#134e4a 45%,#0f766e 80%,var(--teal2) 100%);min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 40px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;font-family:'Noto Serif KR',serif;font-size:110px;color:rgba(255,255,255,.04);top:20px;right:-10px;line-height:1;pointer-events:none;white-space:nowrap}
+.hero-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:600;padding:5px 14px;border-radius:50px;display:inline-flex;align-items:center;gap:6px;margin:0 24px 16px;width:fit-content}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'Noto Serif KR',serif;font-size:32px;font-weight:700;color:#fff;line-height:1.25;padding:0 24px;margin-bottom:10px;letter-spacing:-.5px}
+.hero-title span{color:#5eead4}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.65);padding:0 24px;margin-bottom:24px;line-height:1.7}
+.hero-cta{display:flex;gap:10px;padding:0 24px}
+.btn-white{background:#fff;color:var(--teal);border:none;border-radius:50px;padding:13px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;flex:1}
+.btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:50px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.hero-stats{display:flex;gap:0;padding:24px 24px 0;border-top:1px solid rgba(255,255,255,.1);margin-top:28px}
+.hero-stat{flex:1;text-align:center}
+.hero-stat+.hero-stat{border-left:1px solid rgba(255,255,255,.15)}
+.hs-num{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;color:#ccfbf1}
+.hs-label{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+
+.marquee{background:var(--tl);padding:12px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teal);font-weight:600;overflow:hidden;white-space:nowrap}
+.marquee-inner{display:flex;gap:40px;animation:marquee 18s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.section{padding:40px 24px}
+.sec-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:24px}
+.divider{height:1px;background:var(--border);margin:0 24px}
+
+.svc-card{background:#fff;border-radius:20px;border:1px solid var(--border);padding:22px;margin-bottom:12px;display:flex;align-items:flex-start;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.svc-icon{width:48px;height:48px;border-radius:14px;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.svc-ttl{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.svc-desc{font-size:13px;color:var(--gray);line-height:1.6}
+.svc-tag{display:inline-block;background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:8px}
+
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat-card{background:var(--tl);border-radius:18px;padding:18px;border:1px solid #99f6e4}
+.feat-icon{font-size:26px;margin-bottom:10px}
+.feat-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.feat-desc{font-size:12px;color:var(--gray);line-height:1.5}
+
+.steps{position:relative;padding-left:32px}
+.steps::before{content:'';position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--teal),var(--teal2));border-radius:2px}
+.step{position:relative;margin-bottom:24px}
+.step:last-child{margin-bottom:0}
+.step-dot{position:absolute;left:-32px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;border:2px solid #fff;box-shadow:0 0 0 2px var(--teal)}
+.step-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.step-desc{font-size:12px;color:var(--gray);line-height:1.5}
+
+.cta-sec{background:linear-gradient(135deg,#042f2e,#0f766e);padding:44px 24px;text-align:center}
+.cta-tag{display:inline-block;background:rgba(255,255,255,.15);color:#5eead4;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px}
+.cta-ttl{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:24px;line-height:1.6}
+.cta-btns{display:flex;flex-direction:column;gap:10px}
+.btn-teal{background:var(--teal2);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-kakao{background:#FEE500;color:#1B1B1B;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.footer{background:#f8fafc;padding:24px;font-size:12px;color:var(--gray);line-height:1.8;border-top:1px solid var(--border)}
+.footer strong{color:var(--navy);font-weight:700}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div>
+    <span class="nav-logo">햇살<span>요양</span>센터</span>
+    <span class="nav-badge">CareOn</span>
+  </div>
+  <button class="nav-btn">입소 문의</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg">요양</div>
+  <div class="hero-badge"><span class="hero-dot"></span> 지금 방문요양 진행 중</div>
+  <div class="hero-title">어르신의<br>편안한 일상을<br><span>함께합니다</span></div>
+  <div class="hero-sub">24시간 전문 요양보호사가 함께합니다.<br>GPS 실시간 확인으로 가족도 안심하세요.</div>
+  <div class="hero-cta">
+    <button class="btn-white">입소 상담 신청</button>
+    <button class="btn-ghost">센터 둘러보기</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hs-num">8년</div><div class="hs-label">운영 경력</div></div>
+    <div class="hero-stat"><div class="hs-num">24명</div><div class="hs-label">전문 보호사</div></div>
+    <div class="hero-stat"><div class="hs-num">186명</div><div class="hs-label">현재 수급자</div></div>
+  </div>
+</div>
+
+<div class="marquee">
+  <div class="marquee-inner">
+    <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
+    <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-label">Services</div>
+  <div class="sec-title">제공 서비스</div>
+  <div class="sec-sub">어르신의 상황에 맞는 맞춤 케어를 제공합니다</div>
+
+  <div class="svc-card">
+    <div class="svc-icon">🏠</div>
+    <div>
+      <div class="svc-ttl">방문요양</div>
+      <div class="svc-desc">전문 요양보호사가 가정을 직접 방문하여 신체활동, 가사활동, 인지활동을 지원합니다.</div>
+      <span class="svc-tag">장기요양 1~5등급</span>
+    </div>
+  </div>
+  <div class="svc-card">
+    <div class="svc-icon">🚿</div>
+    <div>
+      <div class="svc-ttl">방문목욕</div>
+      <div class="svc-desc">목욕 장비를 갖춘 전문 인력이 가정을 방문하여 입욕 서비스를 제공합니다.</div>
+      <span class="svc-tag">장기요양 1~5등급</span>
+    </div>
+  </div>
+  <div class="svc-card">
+    <div class="svc-icon">💉</div>
+    <div>
+      <div class="svc-ttl">방문간호</div>
+      <div class="svc-desc">간호사 또는 간호조무사가 가정을 방문하여 건강 상태 체크, 투약 지도를 합니다.</div>
+      <span class="svc-tag">의사 지시서 필요</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Why Us</div>
+  <div class="sec-title">왜 햇살요양센터인가요?</div>
+  <div class="sec-sub">다른 센터와 다른 이유가 있어요</div>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🛰️</div>
+      <div class="feat-ttl">GPS 케어 확인</div>
+      <div class="feat-desc">보호사 방문·출발을 가족 앱으로 실시간 알림</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📲</div>
+      <div class="feat-ttl">가족 실시간 공유</div>
+      <div class="feat-desc">케어일지·사진을 앱으로 바로 확인</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">👩‍⚕️</div>
+      <div class="feat-ttl">검증된 보호사</div>
+      <div class="feat-desc">국가자격증 보유, 센터 직고용 보호사만 배치</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-ttl">빠른 매칭</div>
+      <div class="feat-desc">신청 후 평균 3일 내 서비스 시작 가능</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Process</div>
+  <div class="sec-title">이용 절차</div>
+  <div class="sec-sub">5단계로 쉽게 시작하세요</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-dot">1</div>
+      <div class="step-ttl">상담 신청</div>
+      <div class="step-desc">전화 또는 카카오톡으로 간단히 상담 신청</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">2</div>
+      <div class="step-ttl">등급 판정 확인</div>
+      <div class="step-desc">장기요양 등급 없으시면 신청 방법 안내 드려요</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">3</div>
+      <div class="step-ttl">케어 계획 수립</div>
+      <div class="step-desc">어르신 상태에 맞는 서비스 계획 함께 작성</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">4</div>
+      <div class="step-ttl">보호사 매칭</div>
+      <div class="step-desc">어르신과 가장 잘 맞는 보호사를 배치해 드려요</div>
+    </div>
+    <div class="step">
+      <div class="step-dot">5</div>
+      <div class="step-ttl">케어 시작</div>
+      <div class="step-desc">첫 방문부터 가족 앱으로 실시간 확인 가능</div>
+    </div>
+  </div>
+</div>
+
+<div class="cta-sec">
+  <div class="cta-tag">✨ 지금 바로 시작하세요</div>
+  <div class="cta-ttl">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
+  <div class="cta-sub">평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00<br>긴급 상황은 24시간 대응합니다</div>
+  <div class="cta-btns">
+    <button class="btn-teal">📞 전화 상담 031-000-0000</button>
+    <button class="btn-kakao">💬 카카오톡 상담하기</button>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>햇살요양센터</strong><br>
+  경기도 성남시 분당구 정자동 123-45<br>
+  대표자: 홍길동 · 사업자번호: 123-45-67890<br>
+  장기요양기관 지정번호: 12345678<br>
+  TEL: 031-000-0000
+</div>
+
+</body>
+</html>

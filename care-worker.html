@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CareOn 요양보호사 앱</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8fafc;color:var(--navy);max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+
+.hd{background:var(--teal);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hd-left{display:flex;align-items:center;gap:10px}
+.hd-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid rgba(255,255,255,.4)}
+.hd-name{font-size:15px;font-weight:800;color:#fff}
+.hd-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:1px}
+.hd-right{display:flex;align-items:center;gap:8px}
+.hd-bell{font-size:20px;cursor:pointer}
+.hd-badge{background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
+
+.wrap{padding:16px}
+
+/* ROUTE BAR */
+.route-card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.route-ttl{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.route-ttl-txt{display:flex;align-items:center;gap:6px}
+.route-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
+.route-date{font-size:11px;color:var(--teal);font-weight:700}
+.route-list{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.route-list::-webkit-scrollbar{display:none}
+.route-stop{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.rs-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--border);background:#fff;position:relative}
+.rs-circle.done{border-color:var(--green);background:#f0fdf4}
+.rs-circle.active{border-color:var(--teal);background:var(--tl);box-shadow:0 0 0 4px rgba(13,148,136,.15)}
+.rs-circle.wait{border-color:var(--border);background:#f8fafc}
+.rs-name{font-size:10px;font-weight:600;color:var(--navy);margin-top:5px;text-align:center;white-space:nowrap}
+.rs-time{font-size:10px;color:var(--gray);margin-top:1px}
+.route-line{width:28px;height:2px;background:var(--border);flex-shrink:0;margin-bottom:20px}
+.route-line.done{background:var(--green)}
+
+/* CURRENT VISIT */
+.visit-card{background:linear-gradient(135deg,#042f2e,#0f766e);border-radius:22px;padding:22px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.visit-card::after{content:'🏠';position:absolute;right:-10px;bottom:-15px;font-size:90px;opacity:.08}
+.visit-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.visit-name{font-size:18px;font-weight:800}
+.visit-status{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);padding:5px 12px;border-radius:50px;font-size:12px;font-weight:700}
+.v-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.visit-addr{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+.visit-time{display:flex;gap:0;margin-bottom:16px}
+.vt-item{flex:1;text-align:center}
+.vt-item+.vt-item{border-left:1px solid rgba(255,255,255,.2)}
+.vt-lbl{font-size:10px;color:rgba(255,255,255,.6);margin-bottom:3px}
+.vt-val{font-size:16px;font-weight:800}
+
+.gps-btn{background:#fff;color:var(--teal);border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.gps-btn.checked{background:var(--green);color:#fff}
+.navi-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:12px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+
+/* CHECKLIST */
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.card-ttl{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-ttl-txt{display:flex;align-items:center;gap:6px}
+.card-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
+.progress-bar{height:6px;background:var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:10px;width:60%;transition:width .4s}
+
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-box{width:24px;height:24px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .2s;background:#fff}
+.check-box.checked{background:var(--teal);border-color:var(--teal);color:#fff}
+.check-box.locked{background:var(--border);border-color:var(--border);color:var(--gray)}
+.check-content{flex:1}
+.check-ttl{font-size:14px;font-weight:700;color:var(--navy)}
+.check-sub{font-size:11px;color:var(--gray);margin-top:2px}
+.check-time{font-size:11px;color:var(--teal);font-weight:700}
+
+/* MEMO */
+.memo-box{background:var(--tl);border-radius:12px;padding:14px;border:1px solid #99f6e4;margin-bottom:14px}
+.memo-lbl{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px}
+.memo-input{width:100%;background:transparent;border:none;font-family:inherit;font-size:13px;color:var(--navy);line-height:1.7;resize:none;outline:none}
+
+.complete-btn{background:var(--teal);color:#fff;border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(13,148,136,.4)}
+
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:10px;color:var(--gray);font-weight:600;padding:4px 0}
+.bnav-item.active{color:var(--teal)}
+.bnav-icon{font-size:22px}
+
+/* LOCKED STATE */
+.locked-msg{background:#fff8f0;border:1px solid #fed7aa;border-radius:12px;padding:14px;text-align:center;font-size:13px;color:#92400e;margin-bottom:14px;display:none}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-left">
+    <div class="hd-avatar">👩‍⚕️</div>
+    <div>
+      <div class="hd-name">김미영 보호사님</div>
+      <div class="hd-sub">오늘 4건 방문 예정</div>
+    </div>
+  </div>
+  <div class="hd-right">
+    <div class="hd-bell">🔔</div>
+    <div class="hd-badge">CareOn</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 오늘 루트 -->
+  <div class="route-card">
+    <div class="route-ttl">
+      <span class="route-ttl-txt">오늘 방문 루트</span>
+      <span class="route-date">4월 23일 · 총 4곳</span>
+    </div>
+    <div class="route-list">
+      <div class="route-stop">
+        <div class="rs-circle done">✅</div>
+        <div class="rs-name">이순자<br>어르신</div>
+        <div class="rs-time">09:00</div>
+      </div>
+      <div class="route-line done"></div>
+      <div class="route-stop">
+        <div class="rs-circle active">🏠</div>
+        <div class="rs-name">박종철<br>어르신</div>
+        <div class="rs-time">11:30</div>
+      </div>
+      <div class="route-line"></div>
+      <div class="route-stop">
+        <div class="rs-circle wait">⏳</div>
+        <div class="rs-name">최영순<br>어르신</div>
+        <div class="rs-time">14:00</div>
+      </div>
+      <div class="route-line"></div>
+      <div class="route-stop">
+        <div class="rs-circle wait">⏳</div>
+        <div class="rs-name">정동호<br>어르신</div>
+        <div class="rs-time">16:30</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현재 방문지 -->
+  <div class="visit-card">
+    <div class="visit-top">
+      <div class="visit-name">박종철 어르신</div>
+      <div class="visit-status"><span class="v-dot"></span>방문중</div>
+    </div>
+    <div class="visit-addr">📍 성남시 수정구 태평동 88-12 (대평빌라 205호)</div>
+    <div class="visit-time">
+      <div class="vt-item"><div class="vt-lbl">방문 시작</div><div class="vt-val">11:30</div></div>
+      <div class="vt-item"><div class="vt-lbl">예정 종료</div><div class="vt-val">13:00</div></div>
+      <div class="vt-item"><div class="vt-lbl">경과</div><div class="vt-val" id="elapsed">43분</div></div>
+    </div>
+    <button class="gps-btn checked" id="gpsBtn" onclick="toggleGps()">✅ GPS 체크인 완료</button>
+    <button class="navi-btn">🗺️ 네비게이션 열기</button>
+  </div>
+
+  <!-- 케어 체크리스트 -->
+  <div class="card">
+    <div class="card-ttl">
+      <span class="card-ttl-txt">케어 체크리스트</span>
+      <span style="font-size:11px;color:var(--teal);font-weight:700;">3/5 완료</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="check-item" onclick="toggle(this)">
+      <div class="check-box checked">✓</div>
+      <div class="check-content">
+        <div class="check-ttl">🍚 식사 보조</div>
+        <div class="check-sub">식사량 확인 및 보조</div>
+      </div>
+      <span class="check-time">11:45</span>
+    </div>
+    <div class="check-item" onclick="toggle(this)">
+      <div class="check-box checked">✓</div>
+      <div class="check-content">
+        <div class="check-ttl">🤸 체위 변경</div>
+        <div class="check-sub">2시간마다 자세 변경</div>
+      </div>
+      <span class="check-time">12:05</span>
+    </div>
+    <div class="check-item" onclick="toggle(this)">
+      <div class="check-box checked">✓</div>
+      <div class="check-content">
+        <div class="check-ttl">🧘 스트레칭</div>
+        <div class="check-sub">관절 운동 및 스트레칭</div>
+      </div>
+      <span class="check-time">12:20</span>
+    </div>
+    <div class="check-item" onclick="toggle(this)">
+      <div class="check-box">○</div>
+      <div class="check-content">
+        <div class="check-ttl">💊 투약 확인</div>
+        <div class="check-sub">처방약 복용 확인</div>
+      </div>
+      <span class="check-time" style="color:var(--gray)">미완료</span>
+    </div>
+    <div class="check-item" onclick="toggle(this)">
+      <div class="check-box">○</div>
+      <div class="check-content">
+        <div class="check-ttl">🛁 청결 케어</div>
+        <div class="check-sub">구강 청결 및 세면</div>
+      </div>
+      <span class="check-time" style="color:var(--gray)">미완료</span>
+    </div>
+  </div>
+
+  <!-- 특이사항 메모 -->
+  <div class="memo-box">
+    <div class="memo-lbl">📝 오늘 특이사항 메모</div>
+    <textarea class="memo-input" rows="3" placeholder="어르신 상태, 특이사항 등을 입력해주세요...">오늘 식사량 평소보다 좋음. 기분 양호. 무릎 통증 호소 — 연고 도포함.</textarea>
+  </div>
+
+  <!-- 완료 버튼 -->
+  <button class="complete-btn" onclick="complete()">✅ 케어 완료 전송</button>
+
+</div>
+
+<div class="bnav">
+  <div class="bnav-item active"><span class="bnav-icon">🏠</span>오늘일정</div>
+  <div class="bnav-item"><span class="bnav-icon">📋</span>케어일지</div>
+  <div class="bnav-item"><span class="bnav-icon">👴</span>수급자</div>
+  <div class="bnav-item"><span class="bnav-icon">👤</span>내정보</div>
+</div>
+
+<script>
+let gpsChecked = true;
+
+function toggleGps() {
+  gpsChecked = !gpsChecked;
+  const btn = document.getElementById('gpsBtn');
+  if(gpsChecked) {
+    btn.className = 'gps-btn checked';
+    btn.innerHTML = '✅ GPS 체크인 완료';
+  } else {
+    btn.className = 'gps-btn';
+    btn.innerHTML = '🛰️ GPS 체크인';
+  }
+}
+
+function toggle(item) {
+  const box = item.querySelector('.check-box');
+  const timeEl = item.querySelector('.check-time');
+  if(box.classList.contains('checked')) {
+    box.classList.remove('checked');
+    box.textContent = '○';
+    timeEl.style.color = 'var(--gray)';
+    timeEl.textContent = '미완료';
+  } else {
+    box.classList.add('checked');
+    box.textContent = '✓';
+    timeEl.style.color = 'var(--teal)';
+    const now = new Date();
+    timeEl.textContent = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  }
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = document.querySelectorAll('.check-item').length;
+  const done = document.querySelectorAll('.check-box.checked').length;
+  const pct = (done/total)*100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.querySelector('.card-ttl span:last-child').textContent = done + '/' + total + ' 완료';
+}
+
+function complete() {
+  const done = document.querySelectorAll('.check-box.checked').length;
+  const total = document.querySelectorAll('.check-item').length;
+  if(done < total) {
+    if(!confirm('아직 ' + (total-done) + '개 항목이 미완료예요. 그래도 전송하시겠어요?')) return;
+  }
+  const btn = document.querySelector('.complete-btn');
+  btn.innerHTML = '⏳ 전송 중...';
+  btn.style.background = '#64748b';
+  setTimeout(() => {
+    btn.innerHTML = '✅ 전송 완료! 센터장님께 알림 전송됨';
+    btn.style.background = 'var(--green)';
+  }, 1200);
+}
+</script>
+</body>
+</html>

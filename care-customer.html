@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CareOn 보호자 앱</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8fafc;color:var(--navy);max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+
+.hd{background:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border)}
+.hd-logo{font-size:16px;font-weight:800;color:var(--navy)}
+.hd-logo span{color:var(--teal)}
+.hd-right{display:flex;align-items:center;gap:12px}
+.hd-bell{font-size:20px;cursor:pointer;position:relative}
+.hd-bell-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
+.hd-avatar{width:32px;height:32px;border-radius:50%;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:14px;border:2px solid var(--teal2)}
+
+.wrap{padding:16px}
+
+.care-card{background:linear-gradient(135deg,#042f2e,#0f766e);border-radius:22px;padding:22px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.care-card::after{content:'🏠';position:absolute;right:-10px;bottom:-15px;font-size:90px;opacity:.08}
+.care-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.care-name{font-size:18px;font-weight:800;letter-spacing:-.3px}
+.care-status{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);padding:5px 12px;border-radius:50px;font-size:12px;font-weight:700}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.care-worker{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.12);border-radius:14px;padding:12px 14px;margin-bottom:14px}
+.worker-avatar{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px}
+.worker-name{font-size:14px;font-weight:700}
+.worker-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:1px}
+.worker-call{margin-left:auto;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer}
+.care-time{display:flex;align-items:center;justify-content:space-between}
+.time-item{text-align:center}
+.time-label{font-size:10px;color:rgba(255,255,255,.6);margin-bottom:2px}
+.time-val{font-size:16px;font-weight:800}
+.time-div{font-size:20px;color:rgba(255,255,255,.3)}
+.gps-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:50px;padding:8px 16px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;margin-top:14px;width:100%;justify-content:center}
+
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.card-ttl{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;gap:6px}
+.card-ttl::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px}
+
+.check-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)}
+.check-item:last-child{border-bottom:none}
+.check-left{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600}
+.check-icon{font-size:18px}
+.check-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px}
+.badge-done{background:#dcfce7;color:#16a34a}
+.badge-ing{background:#dbeafe;color:#1d4ed8}
+.badge-wait{background:var(--border);color:var(--gray)}
+
+.photo-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.photo-row::-webkit-scrollbar{display:none}
+.photo-item{flex:0 0 90px;border-radius:14px;overflow:hidden;position:relative}
+.photo-bg{height:80px;display:flex;align-items:center;justify-content:center;font-size:34px;border-radius:14px}
+.photo-time{font-size:10px;color:var(--gray);margin-top:4px;text-align:center}
+.photo-label{font-size:11px;font-weight:600;color:var(--navy);text-align:center}
+
+.status-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.status-item{background:var(--tl);border-radius:14px;padding:14px 10px;text-align:center}
+.status-icon{font-size:22px;margin-bottom:6px}
+.status-label{font-size:10px;color:var(--gray);margin-bottom:3px}
+.status-val{font-size:13px;font-weight:700;color:var(--navy)}
+
+.next-card{background:var(--tl);border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid #99f6e4;display:flex;align-items:center;gap:14px}
+.next-icon{width:44px;height:44px;background:var(--teal);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.next-label{font-size:11px;color:var(--teal);font-weight:700;margin-bottom:3px}
+.next-ttl{font-size:15px;font-weight:800;color:var(--navy)}
+.next-sub{font-size:12px;color:var(--gray);margin-top:2px}
+
+.btn-row{display:flex;gap:10px;margin-bottom:14px}
+.btn-call{flex:1;background:var(--teal);color:#fff;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-center{flex:1;background:#fff;color:var(--navy);border:1.5px solid var(--border);border-radius:14px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:10px;color:var(--gray);font-weight:600;padding:4px 0}
+.bnav-item.active{color:var(--teal)}
+.bnav-icon{font-size:22px}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-logo">햇살<span>요양</span>센터</div>
+  <div class="hd-right">
+    <div class="hd-bell">🔔<span class="hd-bell-dot"></span></div>
+    <div class="hd-avatar">👤</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- 현재 케어 상태 -->
+  <div class="care-card">
+    <div class="care-top">
+      <div class="care-name">박종철 어르신</div>
+      <div class="care-status"><span class="status-dot"></span>방문중</div>
+    </div>
+    <div class="care-worker">
+      <div class="worker-avatar">👩‍⚕️</div>
+      <div>
+        <div class="worker-name">김미영 보호사</div>
+        <div class="worker-sub">담당 보호사 · 경력 5년</div>
+      </div>
+      <button class="worker-call">📞</button>
+    </div>
+    <div class="care-time">
+      <div class="time-item"><div class="time-label">방문 시작</div><div class="time-val">11:30</div></div>
+      <div class="time-div">→</div>
+      <div class="time-item"><div class="time-label">예정 종료</div><div class="time-val">13:00</div></div>
+      <div class="time-div">·</div>
+      <div class="time-item"><div class="time-label">진행</div><div class="time-val">43분</div></div>
+    </div>
+    <button class="gps-btn">🛰️ 현재 위치 확인하기</button>
+  </div>
+
+  <!-- 케어 체크리스트 -->
+  <div class="card">
+    <div class="card-ttl">오늘 케어 현황</div>
+    <div class="check-item">
+      <div class="check-left"><span class="check-icon">🍚</span>식사 보조</div>
+      <span class="check-badge badge-done">✓ 완료</span>
+    </div>
+    <div class="check-item">
+      <div class="check-left"><span class="check-icon">🤸</span>체위 변경</div>
+      <span class="check-badge badge-done">✓ 완료</span>
+    </div>
+    <div class="check-item">
+      <div class="check-left"><span class="check-icon">🧘</span>스트레칭</div>
+      <span class="check-badge badge-done">✓ 완료</span>
+    </div>
+    <div class="check-item">
+      <div class="check-left"><span class="check-icon">💊</span>투약 확인</div>
+      <span class="check-badge badge-ing">진행중</span>
+    </div>
+    <div class="check-item">
+      <div class="check-left"><span class="check-icon">🛁</span>청결 케어</div>
+      <span class="check-badge badge-wait">대기</span>
+    </div>
+  </div>
+
+  <!-- 오늘의 활동 사진 -->
+  <div class="card">
+    <div class="card-ttl">오늘의 활동</div>
+    <div class="photo-row">
+      <div class="photo-item">
+        <div class="photo-bg" style="background:#fef9c3;">🍱</div>
+        <div class="photo-time">11:45</div>
+        <div class="photo-label">식사</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-bg" style="background:#dcfce7;">🤸</div>
+        <div class="photo-time">12:10</div>
+        <div class="photo-label">체조</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-bg" style="background:#dbeafe;">🪑</div>
+        <div class="photo-time">12:30</div>
+        <div class="photo-label">휴식</div>
+      </div>
+      <div class="photo-item">
+        <div class="photo-bg" style="background:#fce7f3;">📚</div>
+        <div class="photo-time">12:45</div>
+        <div class="photo-label">인지활동</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 어르신 오늘 상태 -->
+  <div class="card">
+    <div class="card-ttl">어르신 오늘 상태</div>
+    <div class="status-row">
+      <div class="status-item">
+        <div class="status-icon">😊</div>
+        <div class="status-label">컨디션</div>
+        <div class="status-val">좋음</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">🍽️</div>
+        <div class="status-label">식사량</div>
+        <div class="status-val">100%</div>
+      </div>
+      <div class="status-item">
+        <div class="status-icon">✅</div>
+        <div class="status-label">특이사항</div>
+        <div class="status-val">없음</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 다음 방문 -->
+  <div class="next-card">
+    <div class="next-icon">📅</div>
+    <div>
+      <div class="next-label">다음 방문 예정</div>
+      <div class="next-ttl">목요일 오후 2:00</div>
+      <div class="next-sub">김미영 보호사 · 방문요양 90분</div>
+    </div>
+  </div>
+
+  <!-- 버튼 -->
+  <div class="btn-row">
+    <button class="btn-call">📞 보호사 연락</button>
+    <button class="btn-center">🏠 센터 문의</button>
+  </div>
+
+</div>
+
+<div class="bnav">
+  <div class="bnav-item active"><span class="bnav-icon">🏠</span>홈</div>
+  <div class="bnav-item"><span class="bnav-icon">📋</span>일지</div>
+  <div class="bnav-item"><span class="bnav-icon">📷</span>사진</div>
+  <div class="bnav-item"><span class="bnav-icon">💬</span>문의</div>
+</div>
+
+</body>
+</html>
