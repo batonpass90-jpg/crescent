@@ -312,6 +312,98 @@
   }
   .notice-box .copy-btn { top: 14px; right: 14px; }
 
+  /* ── FAQ ── */
+  .faq-list { list-style: none; }
+  .faq-item {
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    padding: 16px 18px;
+    font-weight: 700;
+    font-size: 14px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    transition: background .15s;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    color: var(--yellow);
+    font-size: 22px;
+    font-weight: 900;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .faq-item[open] summary { background: var(--light); }
+  .faq-item[open] summary::after { content: '−'; }
+  .faq-answer {
+    padding: 14px 18px 16px;
+    font-size: 13px;
+    color: var(--gray);
+    line-height: 1.8;
+    border-top: 1px solid var(--border);
+    background: var(--light);
+  }
+
+  /* ── 신청 폼 ── */
+  .apply-form {
+    background: rgba(255,255,255,.06);
+    border: 1.5px solid rgba(245,200,66,.3);
+    border-radius: 14px;
+    padding: 20px;
+    max-width: 380px;
+    margin: 0 auto 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+  }
+  .apply-form input,
+  .apply-form textarea {
+    width: 100%;
+    background: rgba(255,255,255,.08);
+    border: 1.5px solid rgba(255,255,255,.15);
+    border-radius: 8px;
+    padding: 11px 14px;
+    font-size: 14px;
+    color: #fff;
+    font-family: inherit;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .apply-form input::placeholder,
+  .apply-form textarea::placeholder { color: rgba(255,255,255,.4); }
+  .apply-form input:focus,
+  .apply-form textarea:focus { border-color: var(--yellow); }
+  .apply-form textarea { resize: vertical; min-height: 60px; font-family: inherit; }
+  .apply-submit {
+    background: var(--yellow);
+    color: var(--navy);
+    border: none;
+    border-radius: 99px;
+    padding: 13px 20px;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    font-family: inherit;
+    margin-top: 4px;
+    transition: opacity .15s;
+  }
+  .apply-submit:hover { opacity: .85; }
+  .cta-divider {
+    font-size: 12px;
+    color: rgba(255,255,255,.4);
+    margin-bottom: 16px;
+  }
+
   @media (max-width: 480px) {
     .earn-grid { grid-template-columns: 1fr; }
   }
@@ -528,10 +620,43 @@
   </ul>
 </div>
 
+<!-- FAQ -->
+<div class="section" style="padding-top:0">
+  <div class="section-title">❓ 자주 묻는 질문</div>
+  <ul class="faq-list">
+    <li><details class="faq-item">
+      <summary>전업으로 해야 하나요?</summary>
+      <div class="faq-answer">아니요, 부업으로도 충분히 가능합니다. 대부분의 파트너님이 본업과 병행하며 월 3~8건 수준으로 영업 중이며, 네트워크만 있다면 시간 투자 대비 수익이 매우 높은 구조입니다.</div>
+    </details></li>
+    <li><details class="faq-item">
+      <summary>영업 경험이 없어도 되나요?</summary>
+      <div class="faq-answer">네, 가능합니다. 세일즈덱 PPT · 고객용 소개 링크 · 데모 사이트까지 영업 자료 전체를 제공해드리므로, 원장님께 데모만 보여드리면 제품 자체가 설득력을 만들어냅니다.</div>
+    </details></li>
+    <li><details class="faq-item">
+      <summary>수수료는 언제 지급되나요?</summary>
+      <div class="faq-answer">계약 확인 즉시 35만원을 지급해드립니다. 구독료 잔류 수익(월 1만원/계약)은 매달 자동 정산되며, 누적 30건 달성 시 담당 MRR 전체의 10%로 확대됩니다.</div>
+    </details></li>
+    <li><details class="faq-item">
+      <summary>제품 관련 질문은 누가 답하나요?</summary>
+      <div class="faq-answer">크레센트 스튜디오 기술팀이 모든 문의를 전담합니다. 파트너님은 소개와 연결만 해주시면 되고, 도입 후 운영·업데이트·기술 이슈는 저희가 100% 처리합니다.</div>
+    </details></li>
+  </ul>
+</div>
+
 <!-- CTA -->
 <div class="cta">
   <h2>파트너 신청하기</h2>
-  <p>지금 바로 연락주시면 영업 자료 전체를 보내드립니다</p>
+  <p>아래 정보를 남겨주시면 영업 자료 전체를 보내드립니다</p>
+
+  <!-- TODO: action URL을 실제 Google Form URL로 교체, name 속성을 Google Form entry ID(entry.XXXXXX)로 교체 -->
+  <form class="apply-form" method="POST" action="GOOGLE_FORM_PLACEHOLDER_URL" target="_blank">
+    <input type="text" name="entry.NAME_ID" placeholder="이름" required>
+    <input type="tel" name="entry.PHONE_ID" placeholder="연락처 (010-1234-5678)" required>
+    <textarea name="entry.INTRO_ID" placeholder="한 줄 자기소개 (예: 사회복지사 5년차, 방문요양 센터 10곳 네트워크 보유)" rows="2" required></textarea>
+    <button type="submit" class="apply-submit">📝 파트너 신청서 제출</button>
+  </form>
+
+  <div class="cta-divider">또는 아래로 직접 문의하세요</div>
   <a href="tel:010-9032-9090" class="cta-btn">📞 010-9032-9090</a>
   <a href="http://pf.kakao.com/_BaxbxdX" target="_blank" rel="noopener" class="cta-btn">💬 카카오 채널 문의</a>
 </div>
