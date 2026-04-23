@@ -198,7 +198,21 @@
     font-size: 13px;
     color: var(--gray);
   }
-  .price-row strong { font-size: 16px; color: var(--navy); font-weight: 800; }
+  .price-row strong { font-size: 20px; color: var(--navy); font-weight: 900; }
+  .price-box { text-align: right; }
+  .price-old-line { display: flex; gap: 8px; justify-content: flex-end; align-items: baseline; margin-bottom: 2px; flex-wrap: wrap; }
+  .price-strike { text-decoration: line-through; color: var(--gray); font-size: 12px; }
+  .price-now-line { display: flex; gap: 6px; justify-content: flex-end; align-items: center; }
+  .price-badge {
+    font-size: 10px;
+    background: var(--yellow);
+    color: var(--navy);
+    padding: 3px 8px;
+    border-radius: 99px;
+    font-weight: 800;
+    letter-spacing: .05em;
+  }
+  .price-sub { font-size: 12px; color: var(--gray); margin-top: 4px; }
 
   /* ── 진행 프로세스 ── */
   .process-list { list-style: none; counter-reset: step; }
@@ -497,7 +511,7 @@
   <div style="display:grid;grid-template-columns:1fr;gap:12px;">
     <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
       <div style="font-size:12px;color:var(--gray);margin-bottom:4px">💰 가격 합리성</div>
-      <div style="font-weight:800;font-size:15px;margin-bottom:4px">외주 500만원 + 월 유지비 → CareOn 199만원 + 월 9.9만원</div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:4px">외주 500만원 + 월 유지비 → CareOn <span style="text-decoration:line-through;color:var(--gray);font-weight:500">299만원</span> <span style="background:var(--yellow);color:var(--navy);padding:2px 8px;border-radius:99px;font-size:13px">149만원 PROMO</span> + 월 9.9만원</div>
       <div style="font-size:13px;color:var(--gray)">월 구독료에 유지보수·서버·업데이트 전부 포함. 별도 청구 없음.</div>
     </div>
     <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
@@ -556,7 +570,17 @@
       </ul>
       <div class="price-row">
         <span>제작비 + 구독 Pro</span>
-        <strong>199만원 + 월 9.9만원</strong>
+        <div class="price-box">
+          <div class="price-old-line">
+            <span class="price-strike">299만원</span>
+            <span class="price-strike">199만원</span>
+          </div>
+          <div class="price-now-line">
+            <strong>149만원</strong>
+            <span class="price-badge">PROMO</span>
+          </div>
+          <div class="price-sub">+ 월 9.9만원 (구독 Pro)</div>
+        </div>
       </div>
     </div>
   </div>
