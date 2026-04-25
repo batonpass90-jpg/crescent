@@ -104,7 +104,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
   </div>
   <div class="hd-right">
     <div class="hd-bell">🔔</div>
-    <div class="hd-badge">CareOn</div>
+    <div id="liveClock" style="font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:20px;letter-spacing:.5px"></div>
   </div>
 </div>
 
@@ -227,6 +227,26 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 </div>
 
 <script>
+// 실시간 시계 + 경과 시간
+(function tick() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const ss = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('liveClock').textContent = hh+':'+mm+':'+ss;
+
+  // 방문 시작 11:30 기준 경과
+  const start = new Date();
+  start.setHours(11,30,0,0);
+  const diff = Math.max(0, Math.floor((now - start)/60000));
+  const elEl = document.getElementById('elapsed');
+  if(elEl) {
+    if(diff < 60) elEl.textContent = diff+'분';
+    else elEl.textContent = Math.floor(diff/60)+'시간 '+(diff%60)+'분';
+  }
+  setTimeout(tick, 1000);
+})();
+
 let gpsChecked = true;
 
 // 네비 버튼
