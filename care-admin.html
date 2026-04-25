@@ -299,8 +299,11 @@ document.querySelectorAll('.sb-item').forEach(item=>{
   item.onclick=()=>{
     document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
     item.classList.add('active');
-    const txt=item.textContent.trim().replace(/\d+$/,'').trim();
-    document.querySelector('.topbar-title').textContent='📊 '+txt;
+    const iconTxt=item.querySelector('.sb-icon')?item.querySelector('.sb-icon').textContent:'';
+    const txt=item.textContent.replace(iconTxt,'').replace(/\d+$/,'').trim();
+    const icons={'대시보드':'📊','방문 현황':'🏠','일정 관리':'📅','수급자 관리':'👴','보호사 관리':'👩‍⚕️','케어일지':'📝','미납금 관리':'💰','매출 현황':'📈','급여 정산':'🧾'};
+    const icon=Object.keys(icons).find(k=>txt.includes(k));
+    document.querySelector('.topbar-title').textContent=(icons[icon]||'📊')+' '+txt;
     toast('✅ '+txt+' 화면으로 이동합니다');
   };
 });
