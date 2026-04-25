@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CareOn · 로그인</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#e2e8f0;--red:#ef4444}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:linear-gradient(135deg,#042f2e 0%,#0f766e 50%,#134e4a 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+
+.container{width:100%;max-width:420px}
+
+.logo-wrap{text-align:center;margin-bottom:32px}
+.logo-icon{width:56px;height:56px;background:rgba(255,255,255,.15);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px;backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2)}
+.logo-name{font-size:24px;font-weight:800;color:#fff;letter-spacing:-.5px}
+.logo-sub{font-size:13px;color:rgba(255,255,255,.6);margin-top:4px}
+
+.card{background:#fff;border-radius:20px;padding:32px;box-shadow:0 24px 60px rgba(0,0,0,.25)}
+
+/* 탭 */
+.tabs{display:flex;background:#f1f5f9;border-radius:10px;padding:3px;margin-bottom:28px}
+.tab{flex:1;padding:8px;border:none;background:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;color:#6b7280;font-family:inherit;transition:all .2s}
+.tab.active{background:#fff;color:var(--navy);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+
+/* 폼 */
+.form-section{display:none}
+.form-section.active{display:block}
+
+.form-group{margin-bottom:16px}
+.form-label{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;display:block}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:14px;font-family:inherit;outline:none;color:var(--navy);transition:border-color .15s}
+.form-input:focus{border-color:var(--teal)}
+.form-input::placeholder{color:#9ca3af}
+
+.btn-submit{width:100%;background:var(--teal);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:4px}
+.btn-submit:hover{background:#0f766e}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed}
+
+.divider{display:flex;align-items:center;gap:10px;margin:20px 0;color:#9ca3af;font-size:12px}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.role-select{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px}
+.role-btn{padding:10px 6px;border:1.5px solid var(--border);border-radius:10px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;background:#fff;color:var(--gray);transition:all .15s;text-align:center}
+.role-btn.sel{border-color:var(--teal);background:var(--tl);color:var(--teal)}
+.role-icon{font-size:20px;display:block;margin-bottom:4px}
+
+.msg{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.msg.error{background:#fee2e2;color:#dc2626;display:block}
+.msg.success{background:#dcfce7;color:#15803d;display:block}
+
+.footer-note{text-align:center;font-size:12px;color:#9ca3af;margin-top:20px;line-height:1.6}
+.footer-note a{color:var(--teal);text-decoration:none;font-weight:600}
+
+/* 로딩 스피너 */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:8px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="logo-wrap">
+    <div class="logo-icon">🏥</div>
+    <div class="logo-name">CareOn</div>
+    <div class="logo-sub">방문요양 스마트 관리 시스템</div>
+  </div>
+
+  <div class="card">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">로그인</button>
+      <button class="tab" onclick="switchTab('signup')">센터 신규 등록</button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div class="form-section active" id="loginForm">
+      <div id="loginMsg" class="msg"></div>
+      <div class="form-group">
+        <label class="form-label">이메일</label>
+        <input type="email" class="form-input" id="loginEmail" placeholder="이메일 주소 입력">
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input type="password" class="form-input" id="loginPw" placeholder="비밀번호 입력" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn-submit" id="loginBtn" onclick="doLogin()">로그인</button>
+      <div class="footer-note" style="margin-top:16px">
+        비밀번호를 잊으셨나요? <a href="#" onclick="doReset()">재설정 링크 받기</a>
+      </div>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div class="form-section" id="signupForm">
+      <div id="signupMsg" class="msg"></div>
+
+      <div class="form-group">
+        <label class="form-label">가입 유형</label>
+        <div class="role-select">
+          <button class="role-btn sel" id="role-admin" onclick="selectRole('admin')">
+            <span class="role-icon">🏢</span>센터장
+          </button>
+          <button class="role-btn" id="role-worker" onclick="selectRole('worker')">
+            <span class="role-icon">👩‍⚕️</span>보호사
+          </button>
+          <button class="role-btn" id="role-guardian" onclick="selectRole('guardian')">
+            <span class="role-icon">👨‍👩‍👧</span>보호자
+          </button>
+        </div>
+      </div>
+
+      <!-- 센터장 전용 -->
+      <div id="adminFields">
+        <div class="form-group">
+          <label class="form-label">센터명</label>
+          <input type="text" class="form-input" id="centerName" placeholder="예: 햇살요양센터">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">이름</label>
+        <input type="text" class="form-input" id="signupName" placeholder="이름 입력">
+      </div>
+      <div class="form-group">
+        <label class="form-label">연락처</label>
+        <input type="tel" class="form-input" id="signupPhone" placeholder="010-0000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">이메일</label>
+        <input type="email" class="form-input" id="signupEmail" placeholder="이메일 주소 입력">
+      </div>
+      <div class="form-group">
+        <label class="form-label">비밀번호</label>
+        <input type="password" class="form-input" id="signupPw" placeholder="6자 이상">
+      </div>
+      <button class="btn-submit" id="signupBtn" onclick="doSignup()">등록하기</button>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    CareOn은 방문요양센터의 현장 운영을 돕는 서비스입니다.<br>
+    문의: <a href="mailto:hello@careon.kr">hello@careon.kr</a>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://swsemxzgcwwrhowuaqz.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let selectedRole = 'admin';
+
+// ===== 탭 전환 =====
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', (tab==='login'&&i===0)||(tab==='signup'&&i===1));
+  });
+  document.getElementById('loginForm').classList.toggle('active', tab==='login');
+  document.getElementById('signupForm').classList.toggle('active', tab==='signup');
+}
+
+// ===== 역할 선택 =====
+function selectRole(role) {
+  selectedRole = role;
+  ['admin','worker','guardian'].forEach(r => {
+    document.getElementById('role-'+r).classList.toggle('sel', r===role);
+  });
+  document.getElementById('adminFields').style.display = role==='admin' ? 'block' : 'none';
+}
+
+// ===== 메시지 =====
+function showMsg(id, text, type='error') {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'msg ' + type;
+}
+function hideMsg(id) {
+  document.getElementById(id).className = 'msg';
+}
+
+// ===== 로딩 =====
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner"></span>처리 중...'
+    : (btnId==='loginBtn' ? '로그인' : '등록하기');
+}
+
+// ===== 로그인 =====
+async function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  if (!email || !pw) return showMsg('loginMsg','이메일과 비밀번호를 입력하세요.');
+  hideMsg('loginMsg');
+  setLoading('loginBtn', true);
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pw });
+  if (error) {
+    setLoading('loginBtn', false);
+    return showMsg('loginMsg', '이메일 또는 비밀번호가 올바르지 않습니다.');
+  }
+
+  // 프로필에서 역할 확인
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role, center_id')
+    .eq('id', data.user.id)
+    .single();
+
+  const role = profile?.role || 'admin';
+  if (role === 'worker') {
+    location.href = 'care-worker.html';
+  } else if (role === 'guardian') {
+    location.href = 'care-customer.html';
+  } else {
+    location.href = 'care-admin.html';
+  }
+}
+
+// ===== 회원가입 =====
+async function doSignup() {
+  const name = document.getElementById('signupName').value.trim();
+  const phone = document.getElementById('signupPhone').value.trim();
+  const email = document.getElementById('signupEmail').value.trim();
+  const pw = document.getElementById('signupPw').value;
+  const centerName = document.getElementById('centerName').value.trim();
+
+  if (!name || !email || !pw) return showMsg('signupMsg','필수 항목을 모두 입력하세요.');
+  if (selectedRole === 'admin' && !centerName) return showMsg('signupMsg','센터명을 입력하세요.');
+  if (pw.length < 6) return showMsg('signupMsg','비밀번호는 6자 이상이어야 합니다.');
+  hideMsg('signupMsg');
+  setLoading('signupBtn', true);
+
+  // 1. 회원가입
+  const { data, error } = await supabase.auth.signUp({
+    email, password: pw,
+    options: { data: { name, phone } }
+  });
+
+  if (error) {
+    setLoading('signupBtn', false);
+    return showMsg('signupMsg', error.message);
+  }
+
+  const userId = data.user.id;
+
+  // 2. 센터장이면 센터 생성
+  if (selectedRole === 'admin') {
+    const { data: center, error: cErr } = await supabase
+      .from('centers')
+      .insert({ name: centerName, owner_id: userId, phone })
+      .select()
+      .single();
+
+    if (cErr) {
+      setLoading('signupBtn', false);
+      return showMsg('signupMsg', '센터 생성 중 오류가 발생했습니다.');
+    }
+
+    // 3. 프로필에 role + center_id 업데이트
+    await supabase.from('profiles').upsert({
+      id: userId,
+      name,
+      phone,
+      role: 'admin',
+      center_id: center.id
+    });
+  } else {
+    // 보호사/보호자는 role만 저장 (center_id는 센터장이 나중에 연결)
+    await supabase.from('profiles').upsert({
+      id: userId,
+      name,
+      phone,
+      role: selectedRole
+    });
+  }
+
+  setLoading('signupBtn', false);
+  showMsg('signupMsg',
+    selectedRole === 'admin'
+      ? `✅ ${centerName} 등록 완료! 이메일 인증 후 로그인하세요.`
+      : '✅ 등록 완료! 이메일 인증 후 로그인하세요.',
+    'success'
+  );
+}
+
+// ===== 비밀번호 재설정 =====
+async function doReset() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return showMsg('loginMsg','이메일을 먼저 입력하세요.');
+  await supabase.auth.resetPasswordForEmail(email);
+  showMsg('loginMsg','재설정 링크를 이메일로 발송했습니다.','success');
+}
+
+// ===== 이미 로그인된 경우 자동 이동 =====
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single();
+    const role = profile?.role || 'admin';
+    if (role === 'worker') location.href = 'care-worker.html';
+    else if (role === 'guardian') location.href = 'care-customer.html';
+    else location.href = 'care-admin.html';
+  }
+})();
+</script>
+</body>
+</html>
