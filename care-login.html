@@ -145,11 +145,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:linear
 </div>
 
 <script>
-const SUPABASE_URL = 'https://swsemxzgcwwrhowuaqz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
+// ===== UI 함수 먼저 정의 (Supabase 없어도 동작) =====
 let selectedRole = 'admin';
+let sb = null; // Supabase 클라이언트
 
 // ===== 탭 전환 =====
 function switchTab(tab) {
@@ -188,127 +186,83 @@ function setLoading(btnId, loading) {
     : (btnId==='loginBtn' ? '로그인' : '등록하기');
 }
 
-// ===== 로그인 =====
+
+// ===== 비밀번호 재설정 =====
+async function doReset() {
+  const email = document.getElementById('loginEmail').value.trim();
+  if (!email) return showMsg('loginMsg','이메일을 먼저 입력하세요.');
+  if (!sb) return;
+  await sb.auth.resetPasswordForEmail(email);
+  showMsg('loginMsg','재설정 링크를 이메일로 발송했습니다.','success');
+}
+
+// ===== 역할별 이동 =====
+async function redirectByRole(userId) {
+  const { data: profile } = await sb.from('profiles').select('role').eq('id', userId).single();
+  const role = profile?.role || 'admin';
+  if (role === 'worker') location.href = 'care-worker.html';
+  else if (role === 'guardian') location.href = 'care-customer.html';
+  else location.href = 'care-admin.html';
+}
+
+// ===== Supabase 초기화 (CDN 로드 후 실행) =====
+window.addEventListener('load', async () => {
+  try {
+    sb = window.supabase.createClient(
+      'https://swsemxzgcwwrhowuaqz.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
+    );
+    // 이미 로그인된 경우 자동 이동
+    const { data: { session } } = await sb.auth.getSession();
+    if (session) await redirectByRole(session.user.id);
+  } catch(e) {
+    console.error('Supabase 초기화 실패:', e);
+  }
+});
+
+// ===== 로그인 (sb 참조 수정) =====
 async function doLogin() {
+  if (!sb) return showMsg('loginMsg','서버 연결 중입니다. 잠시 후 다시 시도하세요.');
   const email = document.getElementById('loginEmail').value.trim();
   const pw = document.getElementById('loginPw').value;
   if (!email || !pw) return showMsg('loginMsg','이메일과 비밀번호를 입력하세요.');
   hideMsg('loginMsg');
   setLoading('loginBtn', true);
-
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pw });
-  if (error) {
-    setLoading('loginBtn', false);
-    return showMsg('loginMsg', '이메일 또는 비밀번호가 올바르지 않습니다.');
-  }
-
-  // 프로필에서 역할 확인
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role, center_id')
-    .eq('id', data.user.id)
-    .single();
-
-  const role = profile?.role || 'admin';
-  if (role === 'worker') {
-    location.href = 'care-worker.html';
-  } else if (role === 'guardian') {
-    location.href = 'care-customer.html';
-  } else {
-    location.href = 'care-admin.html';
-  }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+  if (error) { setLoading('loginBtn', false); return showMsg('loginMsg','이메일 또는 비밀번호가 올바르지 않습니다.'); }
+  await redirectByRole(data.user.id);
 }
 
-// ===== 회원가입 =====
+// ===== 회원가입 (sb 참조 수정) =====
 async function doSignup() {
+  if (!sb) return showMsg('signupMsg','서버 연결 중입니다. 잠시 후 다시 시도하세요.');
   const name = document.getElementById('signupName').value.trim();
   const phone = document.getElementById('signupPhone').value.trim();
   const email = document.getElementById('signupEmail').value.trim();
   const pw = document.getElementById('signupPw').value;
   const centerName = document.getElementById('centerName').value.trim();
-
   if (!name || !email || !pw) return showMsg('signupMsg','필수 항목을 모두 입력하세요.');
   if (selectedRole === 'admin' && !centerName) return showMsg('signupMsg','센터명을 입력하세요.');
   if (pw.length < 6) return showMsg('signupMsg','비밀번호는 6자 이상이어야 합니다.');
   hideMsg('signupMsg');
   setLoading('signupBtn', true);
 
-  // 1. 회원가입
-  const { data, error } = await supabase.auth.signUp({
-    email, password: pw,
-    options: { data: { name, phone } }
-  });
-
-  if (error) {
-    setLoading('signupBtn', false);
-    return showMsg('signupMsg', error.message);
-  }
+  const { data, error } = await sb.auth.signUp({ email, password: pw, options: { data: { name, phone } } });
+  if (error) { setLoading('signupBtn', false); return showMsg('signupMsg', error.message); }
 
   const userId = data.user.id;
 
-  // 2. 센터장이면 센터 생성
   if (selectedRole === 'admin') {
-    const { data: center, error: cErr } = await supabase
-      .from('centers')
-      .insert({ name: centerName, owner_id: userId, phone })
-      .select()
-      .single();
-
-    if (cErr) {
-      setLoading('signupBtn', false);
-      return showMsg('signupMsg', '센터 생성 중 오류가 발생했습니다.');
-    }
-
-    // 3. 프로필에 role + center_id 업데이트
-    await supabase.from('profiles').upsert({
-      id: userId,
-      name,
-      phone,
-      role: 'admin',
-      center_id: center.id
-    });
+    const { data: center, error: cErr } = await sb.from('centers').insert({ name: centerName, owner_id: userId, phone }).select().single();
+    if (cErr) { setLoading('signupBtn', false); return showMsg('signupMsg','센터 생성 중 오류가 발생했습니다.'); }
+    await sb.from('profiles').upsert({ id: userId, name, phone, role: 'admin', center_id: center.id });
   } else {
-    // 보호사/보호자는 role만 저장 (center_id는 센터장이 나중에 연결)
-    await supabase.from('profiles').upsert({
-      id: userId,
-      name,
-      phone,
-      role: selectedRole
-    });
+    await sb.from('profiles').upsert({ id: userId, name, phone, role: selectedRole });
   }
 
   setLoading('signupBtn', false);
-  showMsg('signupMsg',
-    selectedRole === 'admin'
-      ? `✅ ${centerName} 등록 완료! 이메일 인증 후 로그인하세요.`
-      : '✅ 등록 완료! 이메일 인증 후 로그인하세요.',
-    'success'
-  );
+  showMsg('signupMsg', selectedRole==='admin' ? `✅ ${centerName} 등록 완료! 이메일 인증 후 로그인하세요.` : '✅ 등록 완료! 이메일 인증 후 로그인하세요.', 'success');
 }
-
-// ===== 비밀번호 재설정 =====
-async function doReset() {
-  const email = document.getElementById('loginEmail').value.trim();
-  if (!email) return showMsg('loginMsg','이메일을 먼저 입력하세요.');
-  await supabase.auth.resetPasswordForEmail(email);
-  showMsg('loginMsg','재설정 링크를 이메일로 발송했습니다.','success');
-}
-
-// ===== 이미 로그인된 경우 자동 이동 =====
-(async () => {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
-    const role = profile?.role || 'admin';
-    if (role === 'worker') location.href = 'care-worker.html';
-    else if (role === 'guardian') location.href = 'care-customer.html';
-    else location.href = 'care-admin.html';
-  }
-})();
 </script>
 </body>
 </html>
