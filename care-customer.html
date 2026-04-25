@@ -210,11 +210,59 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 </div>
 
 <div class="bnav">
-  <div class="bnav-item active"><span class="bnav-icon">🏠</span>홈</div>
-  <div class="bnav-item"><span class="bnav-icon">📋</span>일지</div>
-  <div class="bnav-item"><span class="bnav-icon">📷</span>사진</div>
-  <div class="bnav-item"><span class="bnav-icon">💬</span>문의</div>
+  <div class="bnav-item active" onclick="switchTab(0)"><span class="bnav-icon">🏠</span>홈</div>
+  <div class="bnav-item" onclick="switchTab(1)"><span class="bnav-icon">📋</span>일지</div>
+  <div class="bnav-item" onclick="switchTab(2)"><span class="bnav-icon">📷</span>사진</div>
+  <div class="bnav-item" onclick="switchTab(3)"><span class="bnav-icon">💬</span>문의</div>
 </div>
 
+<div id="notifPanel" style="display:none;position:fixed;top:57px;right:0;width:100%;max-width:430px;background:#fff;border-bottom:1px solid var(--border);z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.1)">
+  <div style="padding:14px 18px;font-size:12px;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border)">새 알림</div>
+  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border)">
+    <span style="font-size:22px">✅</span>
+    <div><div style="font-size:13px;font-weight:700;color:var(--navy)">식사 보조 완료</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 11:45 · 방금 전</div></div>
+  </div>
+  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start">
+    <span style="font-size:22px">🛰️</span>
+    <div><div style="font-size:13px;font-weight:700;color:var(--navy)">보호사 도착</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 11:30 · GPS 체크인 완료</div></div>
+  </div>
+</div>
+
+<script>
+function toast(msg, duration=2200) {
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el = document.createElement('div');
+  el.className = 't-msg';
+  el.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), duration);
+}
+function switchTab(i) {
+  document.querySelectorAll('.bnav-item').forEach((b,j)=>b.classList.toggle('active',i===j));
+  const msgs=['홈 화면','케어일지 목록','활동 사진 모아보기','센터 문의하기'];
+  toast('📋 '+msgs[i]);
+}
+document.querySelector('.hd-bell').onclick=function(){
+  const p=document.getElementById('notifPanel');
+  p.style.display=p.style.display==='none'?'block':'none';
+};
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.hd-bell')&&!e.target.closest('#notifPanel'))
+    document.getElementById('notifPanel').style.display='none';
+});
+document.querySelector('.worker-call').onclick=()=>toast('📞 김미영 보호사에게 전화 연결 중...');
+document.querySelector('.gps-btn').onclick=()=>toast('🛰️ 현재 위치: 성남시 수정구 태평동 88-12');
+document.querySelector('.btn-call').onclick=()=>toast('📞 김미영 보호사 연결 중...');
+document.querySelector('.btn-center').onclick=()=>toast('🏠 햇살요양센터 031-000-0000');
+document.querySelectorAll('.photo-item').forEach(item=>{
+  item.style.cursor='pointer';
+  item.onclick=()=>toast('📷 '+item.querySelector('.photo-label').textContent+' · '+item.querySelector('.photo-time').textContent);
+});
+document.querySelectorAll('.status-item').forEach(item=>{
+  item.style.cursor='pointer';
+  item.onclick=()=>toast(item.querySelector('.status-label').textContent+': '+item.querySelector('.status-val').textContent);
+});
+</script>
 </body>
 </html>

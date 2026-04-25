@@ -285,5 +285,54 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
   </div>
 
 </div>
+<script>
+function toast(msg,duration=2500){
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el=document.createElement('div');
+  el.className='t-msg';
+  el.style.cssText='position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:700;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.2);max-width:280px;line-height:1.5;white-space:pre-line';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),duration);
+}
+document.querySelectorAll('.sb-item').forEach(item=>{
+  item.onclick=()=>{
+    document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+    item.classList.add('active');
+    const txt=item.textContent.trim().replace(/\d+$/,'').trim();
+    document.querySelector('.topbar-title').textContent='📊 '+txt;
+    toast('✅ '+txt+' 화면으로 이동합니다');
+  };
+});
+document.querySelectorAll('.tbl tbody tr').forEach(row=>{
+  row.style.cursor='pointer';
+  row.onclick=()=>{
+    const name=row.querySelector('b').textContent;
+    const worker=row.querySelectorAll('td')[1].textContent;
+    const time=row.querySelectorAll('td')[2].textContent;
+    const status=row.querySelector('.badge').textContent.trim();
+    toast('👴 '+name+' 어르신\n보호사: '+worker+' · '+time+'\n상태: '+status,3000);
+  };
+});
+document.querySelectorAll('.worker-item').forEach(item=>{
+  item.style.cursor='pointer';
+  item.onclick=()=>toast('👩‍⚕️ '+item.querySelector('.w-name').textContent+' · '+item.querySelector('.w-sub').textContent);
+});
+document.querySelectorAll('.unpaid-item').forEach(item=>{
+  item.style.cursor='pointer';
+  item.onclick=()=>toast('💰 '+item.querySelector('.unpaid-name').textContent+'\n미납금: '+item.querySelector('.unpaid-amt').textContent+' — 정산 처리',3000);
+});
+document.querySelectorAll('.bar').forEach(bar=>{
+  bar.style.cursor='pointer';
+  bar.onclick=()=>toast('📊 '+bar.parentElement.querySelector('.bar-lbl').textContent+' 방문 현황 상세보기');
+});
+document.querySelector('.topbar-btn').onclick=()=>toast('➕ 수급자 등록 화면으로 이동합니다');
+document.querySelector('.topbar-bell').onclick=()=>toast('🔔 새 알림 3건\n박종철 어르신 케어 완료\n정동호 어르신 일정 확인 요청',3000);
+document.querySelectorAll('.card-more').forEach(btn=>btn.onclick=()=>toast('📋 전체 목록 불러오는 중...'));
+document.querySelectorAll('.stat-card').forEach(card=>{
+  card.style.cursor='pointer';
+  card.onclick=()=>toast('📊 '+card.querySelector('.stat-lbl').textContent+' 상세보기');
+});
+</script>
 </body>
 </html>

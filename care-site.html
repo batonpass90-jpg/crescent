@@ -223,5 +223,57 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
   TEL: 031-000-0000
 </div>
 
+<script>
+function toast(msg,duration=2500){
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el=document.createElement('div');
+  el.className='t-msg';
+  el.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#0F1B2D;color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25)';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),duration);
+}
+function showModal(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML=`<div style="background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:430px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:800;color:#0F1B2D;margin-bottom:4px">입소 상담 신청</div>
+      <div style="font-size:13px;color:#6b7280">24시간 이내 연락드립니다</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <input placeholder="어르신 성함" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <input placeholder="보호자 연락처" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <select style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#6b7280;background:#fff">
+        <option value="">장기요양 등급 선택</option>
+        <option>1등급</option><option>2등급</option><option>3등급</option><option>4등급</option><option>5등급</option><option>등급 미신청 (신청 방법 안내 원함)</option>
+      </select>
+    </div>
+    <button id="submitBtn" style="background:#0D9488;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;width:100%;cursor:pointer;font-family:inherit;margin-bottom:10px">상담 신청하기</button>
+    <button id="cancelBtn" style="background:#f8fafc;color:#6b7280;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:600;width:100%;cursor:pointer;font-family:inherit">취소</button>
+  </div>`;
+  ov.querySelector('#submitBtn').onclick=()=>{ov.remove();toast('📞 상담 신청 완료! 곧 연락드릴게요.',3000);};
+  ov.querySelector('#cancelBtn').onclick=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+}
+document.querySelector('.nav-btn').onclick=()=>showModal();
+document.querySelector('.btn-white').onclick=()=>showModal();
+document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
+document.querySelector('.btn-teal').onclick=()=>toast('📞 031-000-0000 전화 연결 중...');
+document.querySelector('.btn-kakao').onclick=()=>toast('💬 카카오톡 채널로 이동합니다');
+document.querySelectorAll('.svc-card').forEach(card=>{
+  card.style.cursor='pointer';
+  card.onclick=()=>toast('🏠 '+card.querySelector('.svc-ttl').textContent+' 자세히 알아보기');
+});
+document.querySelectorAll('.feat-card').forEach(card=>{
+  card.style.cursor='pointer';
+  card.onclick=()=>toast('✨ '+card.querySelector('.feat-ttl').textContent);
+});
+document.querySelectorAll('.step').forEach(step=>{
+  step.style.cursor='pointer';
+  step.onclick=()=>toast('👣 '+step.querySelector('.step-ttl').textContent);
+});
+</script>
 </body>
 </html>

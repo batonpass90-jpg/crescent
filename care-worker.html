@@ -229,6 +229,28 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 <script>
 let gpsChecked = true;
 
+// 네비 버튼
+document.querySelector('.navi-btn').onclick=()=>toast('🗺️ 카카오맵 네비게이션 연결 중...');
+
+// 벨
+document.querySelector('.hd-bell').onclick=()=>toast('🔔 센터장: 오후 방문 전 전화 부탁드려요');
+
+// 하단 탭
+document.querySelectorAll('.bnav-item').forEach((item,i)=>{
+  item.onclick=()=>{
+    document.querySelectorAll('.bnav-item').forEach((b,j)=>b.classList.toggle('active',i===j));
+    const msgs=['오늘 일정','케어일지 목록','수급자 목록','내 정보'];
+    toast('📋 '+msgs[i]);
+  };
+});
+
+// 루트 정류장 클릭
+const routeNames=['이순자 어르신 · 완료 ✅','박종철 어르신 · 방문중 🏠','최영순 어르신 · 14:00 예정','정동호 어르신 · 16:30 예정'];
+document.querySelectorAll('.route-stop').forEach((stop,i)=>{
+  stop.style.cursor='pointer';
+  stop.onclick=()=>toast('📍 '+routeNames[i]);
+});
+
 function toggleGps() {
   gpsChecked = !gpsChecked;
   const btn = document.getElementById('gpsBtn');
@@ -265,6 +287,16 @@ function updateProgress() {
   const pct = (done/total)*100;
   document.getElementById('progressFill').style.width = pct + '%';
   document.querySelector('.card-ttl span:last-child').textContent = done + '/' + total + ' 완료';
+}
+
+function toast(msg, duration=2200) {
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el = document.createElement('div');
+  el.className = 't-msg';
+  el.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), duration);
 }
 
 function complete() {
