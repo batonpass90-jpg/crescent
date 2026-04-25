@@ -233,7 +233,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     </div>
     <div class="sb-sec">
       <div class="sb-sec-lbl">정산</div>
-      <button class="sb-item" data-view="unpaid"><span class="sb-icon">💰</span>미납금 관리 <span class="sb-badge">4</span></button>
+      <button class="sb-item" data-view="unpaid"><span class="sb-icon">💰</span>미납금 관리 <span class="sb-badge">3</span></button>
       <button class="sb-item" data-view="revenue"><span class="sb-icon">📈</span>매출 현황</button>
       <button class="sb-item" data-view="salary"><span class="sb-icon">🧾</span>급여 정산</button>
     </div>
@@ -263,7 +263,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view active" id="view-dashboard">
       <div class="stat-grid">
         <div class="stat-card" onclick="showView('visits')">
-          <div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">🏠</div><span class="stat-change stat-up">+2 오늘</span></div>
+          <div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">🏠</div><span class="stat-change stat-up">+1 추가</span></div>
           <div class="stat-num">12건</div><div class="stat-lbl">오늘 방문 예정</div>
         </div>
         <div class="stat-card" onclick="showView('visits')">
@@ -272,11 +272,11 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         </div>
         <div class="stat-card" onclick="showView('unpaid')">
           <div class="stat-top"><div class="stat-icon" style="background:#fef9c3;">⚠️</div><span class="stat-change stat-down">주의</span></div>
-          <div class="stat-num">4건</div><div class="stat-lbl">미납금 발생</div>
+          <div class="stat-num">3건</div><div class="stat-lbl">미납금 발생</div>
         </div>
         <div class="stat-card" onclick="showView('patients')">
-          <div class="stat-top"><div class="stat-icon" style="background:#dbeafe;">👴</div><span class="stat-change stat-up">+3 이번달</span></div>
-          <div class="stat-num">186명</div><div class="stat-lbl">전체 수급자</div>
+          <div class="stat-top"><div class="stat-icon" style="background:#dbeafe;">👴</div><span class="stat-change stat-up">+2 이번달</span></div>
+          <div class="stat-num">28명</div><div class="stat-lbl">전체 수급자</div>
         </div>
       </div>
 
@@ -326,15 +326,15 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <div class="card">
           <div class="card-ttl"><span class="card-ttl-txt">이번달 방문 현황</span></div>
           <div class="chart-bars">
-            <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 17일 · 방문 18건')"></div><span class="bar-lbl">17일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:75%;" onclick="toast('📊 18일 · 방문 23건')"></div><span class="bar-lbl">18일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 19일 · 방문 17건')"></div><span class="bar-lbl">19일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:80%;" onclick="toast('📊 20일 · 방문 25건')"></div><span class="bar-lbl">20일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:45%;" onclick="toast('📊 21일 · 방문 14건')"></div><span class="bar-lbl">21일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:30%;background:#94a3b8;" onclick="toast('📊 22일 · 방문 9건')"></div><span class="bar-lbl">22일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:90%;background:var(--teal2);" onclick="toast('📊 오늘 · 방문 28건 (진행중)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">오늘</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 17일 · 방문 8건')"></div><span class="bar-lbl">17일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:75%;" onclick="toast('📊 18일 · 방문 10건')"></div><span class="bar-lbl">18일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 19일 · 방문 7건')"></div><span class="bar-lbl">19일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:80%;" onclick="toast('📊 20일 · 방문 11건')"></div><span class="bar-lbl">20일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:45%;" onclick="toast('📊 21일 · 방문 6건')"></div><span class="bar-lbl">21일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:30%;background:#94a3b8;" onclick="toast('📊 22일 · 방문 4건')"></div><span class="bar-lbl">22일</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:90%;background:var(--teal2);" onclick="toast('📊 오늘 · 방문 12건 (진행중)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">오늘</span></div>
           </div>
-          <div style="font-size:12px;color:var(--gray);text-align:center;">이번달 누계 <strong style="color:var(--teal);">247건</strong> 방문 완료</div>
+          <div style="font-size:12px;color:var(--gray);text-align:center;">이번달 누계 <strong style="color:var(--teal);">143건</strong> 방문 완료</div>
         </div>
         <div class="card">
           <div class="card-ttl"><span class="card-ttl-txt">미납금 현황</span><button class="card-more" onclick="showView('unpaid')">정산하기 →</button></div>
@@ -361,7 +361,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <!-- ===== 오늘 방문 현황 ===== -->
     <div class="view" id="view-visits">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">🏠 오늘 방문 현황</div><div class="sec-hd-sub">2026년 4월 23일 · 총 12건 예정</div></div>
+        <div><div class="sec-hd-title">🏠 오늘 방문 현황</div><div class="sec-hd-sub" id="visitSubtitle">총 12건 예정</div></div>
         <button class="btn btn-primary" onclick="openNewWoModal()">+ 작업지시 발송</button>
       </div>
       <div class="card">
@@ -428,7 +428,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <!-- ===== 수급자 관리 ===== -->
     <div class="view" id="view-patients">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 186명 등록</div></div>
+        <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 28명 등록</div></div>
         <button class="btn btn-primary" onclick="toast('➕ 수급자 등록 화면으로 이동합니다')">+ 수급자 등록</button>
       </div>
       <div class="card">
@@ -461,7 +461,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           <table class="tbl"><tbody>
             <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">4건</td></tr>
             <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-1111-2222</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">68건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">48건</td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('김미영')">작업지시 발송</span>
@@ -477,7 +477,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           <table class="tbl"><tbody>
             <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">3건</td></tr>
             <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-2222-3333</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">51건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">36건</td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('박민정')">작업지시 발송</span>
@@ -493,7 +493,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           <table class="tbl"><tbody>
             <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">2건</td></tr>
             <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-3333-4444</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">44건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">31건</td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('이지현')">작업지시 발송</span>
@@ -509,7 +509,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           <table class="tbl"><tbody>
             <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">3건</td></tr>
             <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-4444-5555</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">38건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">28건</td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('최수진')">작업지시 발송</span>
@@ -545,7 +545,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <!-- ===== 미납금 관리 ===== -->
     <div class="view" id="view-unpaid">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 104,000원 · 4건</div></div>
+        <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 104,000원 · 3건</div></div>
         <button class="btn btn-primary" onclick="toast('📨 전체 미납 안내 문자 발송 중...',2500)">전체 문자 발송</button>
       </div>
       <div class="card">
@@ -571,31 +571,51 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-revenue">
       <div class="sec-hd"><div><div class="sec-hd-title">📈 매출 현황</div><div class="sec-hd-sub">2026년 4월 기준</div></div></div>
       <div class="grid2">
-        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">💰</div><span class="stat-change stat-up">+12% 전월比</span></div><div class="stat-num">2,847만원</div><div class="stat-lbl">이번달 예상 매출</div></div>
-        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#dcfce7;">✅</div><span class="stat-change stat-up">247건</span></div><div class="stat-num">1,923만원</div><div class="stat-lbl">청구 확정 금액</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">💰</div><span class="stat-change stat-up">+9% 전월比</span></div><div class="stat-num">847만원</div><div class="stat-lbl">이번달 예상 매출</div></div>
+        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#dcfce7;">✅</div><span class="stat-change stat-up">143건</span></div><div class="stat-num">521만원</div><div class="stat-lbl">청구 확정 금액</div></div>
       </div>
       <div class="card">
         <div class="card-ttl"><span class="card-ttl-txt">월별 매출 추이</span></div>
         <div class="chart-bars" style="height:120px">
-          <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 1월 · 2,210만원')"></div><span class="bar-lbl">1월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 2월 · 2,380만원')"></div><span class="bar-lbl">2월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:65%;" onclick="toast('📊 3월 · 2,520만원')"></div><span class="bar-lbl">3월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:72%;background:var(--teal2);" onclick="toast('📊 4월 · 2,847만원 (예상)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">4월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 1월 · 612만원')"></div><span class="bar-lbl">1월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 2월 · 668만원')"></div><span class="bar-lbl">2월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:65%;" onclick="toast('📊 3월 · 776만원')"></div><span class="bar-lbl">3월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:72%;background:var(--teal2);" onclick="toast('📊 4월 · 847만원 (예상)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">4월</span></div>
         </div>
       </div>
     </div>
 
     <!-- ===== 일정 관리 ===== -->
     <div class="view" id="view-schedule">
-      <div class="sec-hd"><div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub">주간 방문 일정</div></div><button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button></div>
+      <div class="sec-hd"><div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub">이번주 방문 일정 · 총 52건</div></div><button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button></div>
       <div class="notice">💡 일정을 클릭하면 해당 수급자의 작업지시를 바로 발송할 수 있습니다.</div>
+      <!-- 요일 탭 -->
+      <div style="display:flex;gap:6px;margin-bottom:14px">
+        <button class="btn btn-primary" id="daybtn-mon" style="padding:7px 14px;font-size:12px" onclick="filterDay('mon',this)">월요일</button>
+        <button class="btn btn-ghost-sm" id="daybtn-tue" style="padding:7px 14px;font-size:12px" onclick="filterDay('tue',this)">화요일</button>
+        <button class="btn btn-ghost-sm" id="daybtn-wed" style="padding:7px 14px;font-size:12px" onclick="filterDay('wed',this)">수요일</button>
+        <button class="btn btn-ghost-sm" id="daybtn-thu" style="padding:7px 14px;font-size:12px" onclick="filterDay('thu',this)">목요일</button>
+        <button class="btn btn-ghost-sm" id="daybtn-fri" style="padding:7px 14px;font-size:12px" onclick="filterDay('fri',this)">금요일</button>
+        <button class="btn btn-ghost-sm" id="daybtn-all" style="padding:7px 14px;font-size:12px;margin-left:auto" onclick="filterDay('all',this)">전체 보기</button>
+      </div>
       <div class="card">
         <table class="tbl">
-          <thead><tr><th>날짜</th><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>작업지시</th></tr></thead>
-          <tbody>
-            <tr onclick="toast('📅 오늘 · 박종철 어르신')"><td style="color:var(--teal);font-weight:700;">오늘</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('박종철','김미영','11:30','방문중')">작업지시</span></td></tr>
-            <tr onclick="toast('📅 내일 · 이순자 어르신')"><td>내일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="act-btn" onclick="event.stopPropagation();openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr onclick="toast('📅 목요일 · 정동호 어르신')"><td>목요일</td><td><b>정동호</b></td><td>김미영</td><td>14:00~15:00</td><td>방문요양 60분</td><td><span class="act-btn" onclick="event.stopPropagation();openNewWoModal('김미영')">발송하기</span></td></tr>
+          <thead><tr><th>요일</th><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
+          <tbody id="scheduleTbody">
+            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('이순자','박민정','09:00','완료')">일지 보기</span></td></tr>
+            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('강복순','박민정','10:00','완료')">일지 보기</span></td></tr>
+            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoEditModal('박종철','김미영','11:30','방문중')">수정 발송</span></td></tr>
+            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoEditModal('최영순','이지현','14:00','대기')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>정동호</b></td><td>김미영</td><td>16:30~17:30</td><td>방문요양 60분</td><td><span class="badge b-warn">⚠주의</span></td><td><span class="act-btn red" onclick="openWoEditModal('정동호','김미영','16:30','주의')">긴급 수정</span></td></tr>
+            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>김영자</b></td><td>최수진</td><td>13:00~14:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('이지현')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>정동호</b></td><td>김미영</td><td>14:00~15:00</td><td>방문요양 60분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
+            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -608,10 +628,10 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <table class="tbl">
           <thead><tr><th>보호사</th><th>이번달 근무</th><th>기본급</th><th>수당</th><th>실수령액</th><th>명세서</th></tr></thead>
           <tbody>
-            <tr onclick="toast('🧾 김미영 급여 명세서 상세보기')"><td><b>김미영</b></td><td>68건</td><td>2,100,000원</td><td>340,000원</td><td style="font-weight:800;color:var(--teal)">2,112,000원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 김미영 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 박민정 급여 명세서 상세보기')"><td><b>박민정</b></td><td>51건</td><td>1,800,000원</td><td>255,000원</td><td style="font-weight:800;color:var(--teal)">1,831,000원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 박민정 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 이지현 급여 명세서 상세보기')"><td><b>이지현</b></td><td>44건</td><td>1,600,000원</td><td>220,000원</td><td style="font-weight:800;color:var(--teal)">1,598,000원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 이지현 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 최수진 급여 명세서 상세보기')"><td><b>최수진</b></td><td>38건</td><td>1,500,000원</td><td>190,000원</td><td style="font-weight:800;color:var(--teal)">1,511,000원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 최수진 보호사에게 명세서 발송 완료')">발송</span></td></tr>
+            <tr onclick="toast('🧾 김미영 급여 명세서 상세보기')"><td><b>김미영</b></td><td>48건 · 48시간</td><td>1,920,000원</td><td>96,000원</td><td style="font-weight:800;color:var(--teal)">1,779,520원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 김미영 보호사에게 명세서 발송 완료')">발송</span></td></tr>
+            <tr onclick="toast('🧾 박민정 급여 명세서 상세보기')"><td><b>박민정</b></td><td>36건 · 36시간</td><td>1,440,000원</td><td>72,000원</td><td style="font-weight:800;color:var(--teal)">1,334,640원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 박민정 보호사에게 명세서 발송 완료')">발송</span></td></tr>
+            <tr onclick="toast('🧾 이지현 급여 명세서 상세보기')"><td><b>이지현</b></td><td>31건 · 31시간</td><td>1,240,000원</td><td>62,000원</td><td style="font-weight:800;color:var(--teal)">1,148,280원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 이지현 보호사에게 명세서 발송 완료')">발송</span></td></tr>
+            <tr onclick="toast('🧾 최수진 급여 명세서 상세보기')"><td><b>최수진</b></td><td>28건 · 28시간</td><td>1,120,000원</td><td>56,000원</td><td style="font-weight:800;color:var(--teal)">1,037,040원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 최수진 보호사에게 명세서 발송 완료')">발송</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -750,7 +770,10 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 (function(){
   const d=new Date();
   const days=['일','월','화','수','목','금','토'];
-  document.getElementById('topbarDate').textContent=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  const dateStr=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  document.getElementById('topbarDate').textContent=dateStr;
+  const vsub=document.getElementById('visitSubtitle');
+  if(vsub)vsub.textContent=dateStr+' · 총 12건 예정';
   const dt=document.getElementById('wo-date');
   if(dt)dt.value=d.toISOString().split('T')[0];
 })();
@@ -842,11 +865,22 @@ function sendWorkOrder(){
 }
 
 function setUrgency(btn,level){
-  document.querySelectorAll('.urgency-btn').forEach(b=>{
-    b.classList.remove('sel');
-    b.classList.remove('u-normal','u-important','u-urgent');
+  document.querySelectorAll('.urgency-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+}
+
+// ===== 일정 필터 =====
+function filterDay(day,clickedBtn){
+  document.querySelectorAll('[id^="daybtn-"]').forEach(b=>{
+    b.className='btn btn-ghost-sm';
+    b.style.cssText='padding:7px 14px;font-size:12px';
   });
-  btn.classList.add('sel','u-'+level);
+  clickedBtn.className='btn btn-primary';
+  clickedBtn.style.cssText='padding:7px 14px;font-size:12px';
+  if(clickedBtn.id==='daybtn-all') clickedBtn.style.marginLeft='auto';
+  document.querySelectorAll('.sch-row').forEach(row=>{
+    row.style.display=(day==='all'||row.dataset.day===day)?'':'none';
+  });
 }
 function setSendMethod(method){
   ['app','sms','both'].forEach(m=>{
@@ -900,10 +934,10 @@ function openJournalModal(patient,worker){
 // 보호사 모달
 function openWorkerModal(name){
   const data={
-    '김미영':{emoji:'👩‍⚕️',exp:'5년',cert:'요양보호사 1급',phone:'010-1111-2222',today:4,month:68,status:'방문중'},
-    '박민정':{emoji:'👩',exp:'3년',cert:'요양보호사 1급',phone:'010-2222-3333',today:3,month:51,status:'이동중'},
-    '이지현':{emoji:'👩‍🦳',exp:'7년',cert:'요양보호사 1급',phone:'010-3333-4444',today:2,month:44,status:'대기중'},
-    '최수진':{emoji:'👩‍🦱',exp:'2년',cert:'요양보호사 1급',phone:'010-4444-5555',today:3,month:38,status:'방문중'}
+    '김미영':{emoji:'👩‍⚕️',exp:'5년',cert:'요양보호사 1급',phone:'010-1111-2222',today:4,month:48,status:'방문중'},
+    '박민정':{emoji:'👩',exp:'3년',cert:'요양보호사 1급',phone:'010-2222-3333',today:3,month:36,status:'이동중'},
+    '이지현':{emoji:'👩‍🦳',exp:'7년',cert:'요양보호사 1급',phone:'010-3333-4444',today:2,month:31,status:'대기중'},
+    '최수진':{emoji:'👩‍🦱',exp:'2년',cert:'요양보호사 1급',phone:'010-4444-5555',today:3,month:28,status:'방문중'}
   };
   const d=data[name];if(!d)return;
   document.getElementById('workerModalTitle').textContent=d.emoji+' '+name+' 보호사';
