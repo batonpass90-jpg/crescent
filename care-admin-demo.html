@@ -3,13 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>햇살요양센터 · 센터장 대시보드</title>
+<title>CareOn · 센터장 대시보드 (데모)</title>
+<meta name="description" content="CareOn 데모 — 방문요양센터 스마트 관리 시스템. 실제 데이터 없이 기능을 둘러볼 수 있습니다.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="요양 통합 플랫폼 · CareOn">
+<meta property="og:description" content="센터장 대시보드 데모 — 수급자·보호사·케어일지·문자발송 통합 관리">
+<meta property="og:image" content="https://crescentstudio.co.kr/careon-icon.svg">
+<meta property="og:url" content="https://crescentstudio.co.kr/care-admin-demo.html">
+<meta property="og:site_name" content="CareOn">
+<meta name="twitter:card" content="summary">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<meta name="theme-color" content="#0D9488">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--border:#e2e8f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--sidebar:220px}
+html,body{overflow-x:hidden;max-width:100vw}
 body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--g50);color:var(--navy);min-height:100vh}
-.layout{display:flex;min-height:100vh}
+.layout{display:flex;min-height:100vh;max-width:100vw;overflow-x:hidden}
+.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh;max-width:100vw;min-width:0}
 
 /* SIDEBAR */
 .sidebar{width:var(--sidebar);background:linear-gradient(180deg,#042f2e 0%,#0f766e 100%);position:fixed;top:0;left:0;height:100vh;z-index:200;display:flex;flex-direction:column}
@@ -35,33 +47,26 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .sb-pname{font-size:12px;font-weight:700;color:#fff}
 .sb-prole{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
 
-/* MAIN */
-.main{margin-left:var(--sidebar);flex:1;display:flex;flex-direction:column;min-height:100vh}
-.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+/* TOPBAR */
+.topbar{background:#fff;border-bottom:1px solid var(--border);padding:0 24px;height:54px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;overflow:hidden}
 .topbar-title{font-size:17px;font-weight:800;display:none}
+.topbar-center{display:flex;align-items:center;gap:16px}
 .topbar-right{display:flex;align-items:center;gap:12px}
 .topbar-date{font-size:12px;color:var(--gray)}
 .topbar-bell{font-size:19px;cursor:pointer;position:relative}
 .bell-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
-.topbar-btn{display:none}
-.day-tab{background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;font-family:inherit;transition:all .15s}
-.day-tab:hover{border-color:var(--teal);color:var(--teal)}
-.day-tab.active{background:var(--teal);border-color:var(--teal);color:#fff}
-@media print{
-  .sidebar,.topbar,.modal-overlay{display:none!important}
-  .main{margin-left:0!important}
-  .view{display:block!important}
-  #view-journal .sec-hd button{display:none}
-}
+.topbar-btn{background:var(--teal);border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;white-space:nowrap}
 .tnav-btn{background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--gray);padding:5px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
 .tnav-btn:hover{background:var(--g100);color:var(--navy)}
 .tnav-btn.active{background:var(--tl);color:var(--teal)}
 
-.content{padding:22px 24px;flex:1}
-
-/* VIEW */
-.view{display:none}
+.content{padding:22px 24px;flex:1;max-width:100%;overflow-x:hidden}
+.view{display:none;max-width:100%}
 .view.active{display:block}
+
+/* DEMO BANNER */
+.demo-banner{background:linear-gradient(90deg,#fef3c7,#fde68a);border:1px solid #fcd34d;color:#78350f;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.demo-banner .pulse{width:8px;height:8px;border-radius:50%;background:var(--amber);animation:blink 1.2s infinite}
 
 /* STAT CARDS */
 .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px}
@@ -72,6 +77,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .stat-change{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px}
 .stat-up{background:#dcfce7;color:#16a34a}
 .stat-down{background:#fee2e2;color:#dc2626}
+.stat-neutral{background:#dbeafe;color:#1d4ed8}
 .stat-num{font-size:26px;font-weight:800;letter-spacing:-.5px}
 .stat-lbl{font-size:11px;color:var(--gray);margin-top:3px}
 
@@ -79,24 +85,24 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
 .grid3{display:grid;grid-template-columns:2fr 1fr;gap:14px;margin-bottom:14px}
 
-.card{background:#fff;border-radius:14px;padding:18px;border:1px solid var(--border);margin-bottom:14px}
+.card{background:#fff;border-radius:14px;padding:18px;border:1px solid var(--border);margin-bottom:14px;max-width:100%}
 .card-ttl{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .card-ttl-txt{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--navy)}
 .card-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
 .card-more{font-size:11px;color:var(--teal);cursor:pointer;font-weight:600;background:none;border:none;font-family:inherit;padding:0}
 
 /* TABLE */
-.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;min-width:480px}
 .tbl th{text-align:left;padding:8px 10px;font-size:11px;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border);white-space:nowrap}
-.tbl td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap}
 .tbl tr:last-child td{border-bottom:none}
-.tbl tr:hover td{background:var(--g50);cursor:pointer}
+.tbl tbody tr:hover td{background:var(--g50);cursor:pointer}
 .badge{display:inline-block;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .b-done{background:#dcfce7;color:#16a34a}
 .b-ing{background:#dbeafe;color:#1d4ed8}
 .b-wait{background:var(--g100);color:var(--gray)}
 .b-warn{background:#fef9c3;color:#92400e}
-.b-urgent{background:#fee2e2;color:#dc2626}
 
 /* WORKER LIST */
 .worker-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
@@ -104,137 +110,113 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .worker-item:hover{background:var(--g50);margin:0 -6px;padding:10px 6px;border-radius:8px}
 .w-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
 .w-name{font-size:13px;font-weight:700}
-.w-sub{font-size:10px;color:var(--gray);margin-top:1px}
-.w-status{margin-left:auto;font-size:11px;font-weight:700;white-space:nowrap}
-.w-online{color:var(--green)}
-.w-off{color:var(--gray)}
-.w-moving{color:var(--amber)}
+.w-sub{font-size:11px;color:var(--gray);margin-top:1px}
+.w-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;margin-left:auto}
+.w-online{background:#dcfce7;color:#16a34a}
+.w-moving{background:#dbeafe;color:#1d4ed8}
+.w-off{background:var(--g100);color:var(--gray)}
 
 /* CHART */
 .chart-bars{display:flex;align-items:flex-end;gap:6px;height:90px;padding:0 4px;margin-bottom:6px}
 .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.bar{border-radius:4px 4px 0 0;width:100%;background:var(--teal);opacity:.75;transition:opacity .2s;cursor:pointer}
-.bar:hover{opacity:1}
-.bar-lbl{font-size:9px;color:var(--gray)}
-.bar-val{font-size:9px;color:var(--teal);font-weight:700;opacity:0;transition:.2s}
-.bar:hover+.bar-val{opacity:1}
+.bar{width:100%;background:var(--teal);border-radius:6px 6px 0 0;cursor:pointer;transition:opacity .15s}
+.bar:hover{opacity:.8}
+.bar-lbl{font-size:10px;color:var(--gray)}
 
 /* UNPAID */
 .unpaid-item{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .unpaid-item:hover{background:var(--g50);margin:0 -6px;padding:10px 6px;border-radius:8px}
 .unpaid-item:last-child{border-bottom:none}
 .unpaid-name{font-size:13px;font-weight:700}
-.unpaid-days{font-size:10px;color:var(--red);margin-top:2px}
+.unpaid-days{font-size:11px;color:var(--red);margin-top:1px}
 .unpaid-amt{font-size:14px;font-weight:800;color:var(--red)}
-
-/* ACTION BTN */
-.act-btn{display:inline-flex;align-items:center;gap:4px;background:var(--tl);color:var(--teal);border:1px solid #99f6e4;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
-.act-btn:hover{background:var(--teal);color:#fff}
-.act-btn.red{background:#fee2e2;color:var(--red);border-color:#fca5a5}
-.act-btn.red:hover{background:var(--red);color:#fff}
-.act-btn.navy{background:var(--navy);color:#fff;border-color:var(--navy)}
-
-/* WORK ORDER LIST */
-.wo-item{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all .15s}
-.wo-item:hover{border-color:var(--teal);box-shadow:0 2px 12px rgba(13,148,136,.1)}
-.wo-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.wo-worker{font-size:13px;font-weight:700;color:var(--navy)}
-.wo-patient{font-size:12px;color:var(--gray);margin-top:1px}
-.wo-content{font-size:12.5px;color:var(--gray);line-height:1.5;margin-bottom:8px;padding:8px 10px;background:var(--g50);border-radius:8px}
-.wo-footer{display:flex;align-items:center;justify-content:space-between}
-.wo-time{font-size:11px;color:var(--gray)}
-.wo-status-chips{display:flex;gap:6px;flex-wrap:wrap}
-.chip{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px}
-.chip-sent{background:#dbeafe;color:#1d4ed8}
-.chip-read{background:#dcfce7;color:#16a34a}
-.chip-done{background:#f0fdf4;color:#15803d}
-.chip-urgent{background:#fee2e2;color:#dc2626}
-.chip-normal{background:var(--g100);color:var(--gray)}
 
 /* SECTION HEADER */
 .sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
 .sec-hd-title{font-size:16px;font-weight:800;color:var(--navy)}
 .sec-hd-sub{font-size:12px;color:var(--gray);margin-top:2px}
 
-/* PATIENT / WORKER TABLE */
-.tbl .avatar-cell{display:flex;align-items:center;gap:8px}
-.tbl .av-sm{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-
-/* CARE JOURNAL */
-.journal-item{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
-.journal-item:hover{border-color:var(--teal)}
-.journal-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.journal-name{font-size:13px;font-weight:700}
-.journal-time{font-size:11px;color:var(--gray)}
-.journal-preview{font-size:12px;color:var(--gray);line-height:1.5}
-.journal-tags{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-primary{background:var(--teal);color:#fff}
+.btn-primary:hover{background:#0f766e}
+.btn-ghost{background:#fff;color:var(--navy);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--g50)}
+.btn-ghost-sm{background:#fff;color:var(--gray);border:1px solid var(--border);font-size:12px;padding:7px 14px}
+.act-btn{display:inline-block;font-size:11px;font-weight:600;color:var(--teal);background:var(--tl);padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid #99f6e4}
+.act-btn:hover{background:#ccfbf1}
+.act-btn.red{color:#dc2626;background:#fee2e2;border-color:#fca5a5}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;display:flex;align-items:center;justify-content:center;padding:20px}
-.modal{background:#fff;border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
-.modal-hd{padding:20px 22px 0;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.modal-hd{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .modal-title{font-size:16px;font-weight:800}
-.modal-close{background:none;border:none;font-size:20px;cursor:pointer;color:var(--gray);line-height:1;padding:4px}
-.modal-body{padding:20px 22px}
-.modal-footer{padding:14px 22px 20px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;position:sticky;bottom:0;background:#fff}
+.modal-close{background:none;border:none;font-size:18px;cursor:pointer;color:var(--gray)}
+.modal-body{padding:22px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
 .form-group{margin-bottom:14px}
-.form-label{font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px;display:block}
-.form-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;font-size:13px;font-family:inherit;outline:none;color:var(--navy);transition:border-color .15s}
+.form-label{display:block;font-size:11px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;color:var(--navy);outline:none}
 .form-input:focus{border-color:var(--teal)}
-.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
-.form-textarea{resize:vertical;min-height:80px;line-height:1.6}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.check-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.check-option{display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:13px;transition:all .15s}
-.check-option input{accent-color:var(--teal)}
-.check-option:has(input:checked){border-color:var(--teal);background:var(--tl)}
-.radio-row{display:flex;gap:8px}
-.radio-option{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s}
-.radio-option input{display:none}
-.radio-option.selected{border-color:var(--teal);background:var(--tl);color:var(--teal)}
-.urgency-row{display:flex;gap:8px}
-.urgency-btn{flex:1;padding:9px;border:1.5px solid var(--border);border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;background:#fff;transition:all .15s}
-.urgency-btn.u-normal.sel{border-color:var(--green);background:#dcfce7;color:#15803d}
-.urgency-btn.u-important.sel{border-color:var(--amber);background:#fef9c3;color:#92400e}
-.urgency-btn.u-urgent.sel{border-color:var(--red);background:#fee2e2;color:#dc2626}
+.form-textarea{resize:vertical;min-height:70px}
+.form-select{appearance:none;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M6 8 0 0h12z'/%3E%3C/svg%3E") no-repeat right 12px center}
 
-/* BTN */
-.btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:all .15s}
-.btn-primary{background:var(--teal);color:#fff}
-.btn-primary:hover{background:var(--teal2)}
-.btn-ghost-sm{background:var(--g100);color:var(--gray)}
+/* Avatar cell */
+.avatar-cell{display:flex;align-items:center;gap:8px}
+.av-sm{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 
-/* TOAST */
-.t-msg{position:fixed;bottom:24px;right:24px;background:var(--navy);color:#fff;padding:11px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:999;box-shadow:0 4px 20px rgba(0,0,0,.2);max-width:300px;line-height:1.5;white-space:pre-line}
+/* HAMBURGER */
+.hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;color:var(--navy);padding:0}
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:150}
+.sb-backdrop.show{display:block}
 
-/* NOTICE BANNER */
-.notice{background:var(--tl);border:1px solid #99f6e4;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--teal);font-weight:600;display:flex;align-items:center;gap:8px}
+@media print{.sidebar,.topbar{display:none!important}.main{margin-left:0!important}}
 
+/* MOBILE */
 @media(max-width:900px){
-  .sidebar{display:none}
-  .main{margin-left:0}
-  .stat-grid{grid-template-columns:1fr 1fr}
+  :root{--sidebar:0px}
+  .hamburger{display:block}
+  .sidebar{transform:translateX(-100%);transition:transform .25s ease}
+  .sidebar.open{transform:translateX(0);width:260px}
+  .main{margin-left:0;width:100%}
+  .topbar{padding:0 10px;gap:8px}
+  .topbar-title{display:block;font-size:15px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .topbar-center{display:none}
+  .topbar-date{display:none}
+  .topbar-btn{display:none}
+  .content{padding:14px}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px}
   .grid2,.grid3{grid-template-columns:1fr}
-  .form-row{grid-template-columns:1fr}
+  .stat-num{font-size:22px}
+  .stat-card{padding:14px}
+  .card{padding:14px 12px;margin-bottom:12px}
+  .card-ttl{font-size:11px;flex-wrap:wrap;gap:6px}
+  .sec-hd{flex-wrap:wrap;gap:10px;align-items:flex-start}
+  .sec-hd-title{display:none}
+  .sec-hd > div:first-child{flex:1;min-width:0}
+  .sec-hd-sub{font-size:13px;color:var(--navy);font-weight:600}
+  .sec-hd .btn{flex-shrink:0;font-size:12px;padding:8px 12px;white-space:nowrap}
+  .modal{width:calc(100vw - 20px);max-height:90vh;margin:10px}
 }
 </style>
 </head>
 <body>
-<div class="layout">
 
 <!-- SIDEBAR -->
-<div class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-brand">햇살요양센터</div>
     <div class="sb-sub">센터장 관리 시스템</div>
-    <div class="sb-live"><span class="sb-dot"></span><span class="sb-live-txt">방문 진행 중 5건</span></div>
+    <div class="sb-live"><span class="sb-dot"></span><span class="sb-live-txt">방문 진행 중 1건</span></div>
   </div>
   <div class="sb-nav">
     <div class="sb-sec">
       <div class="sb-sec-lbl">운영</div>
       <button class="sb-item active" data-view="dashboard"><span class="sb-icon">📊</span>대시보드</button>
-      <button class="sb-item" data-view="visits"><span class="sb-icon">🏠</span>오늘 방문 현황 <span class="sb-badge">3</span></button>
-      <button class="sb-item" data-view="workorders"><span class="sb-icon">📋</span>작업지시 관리 <span class="sb-badge">2</span></button>
+      <button class="sb-item" data-view="visits"><span class="sb-icon">🏠</span>오늘 방문 현황 <span class="sb-badge">8</span></button>
+      <button class="sb-item" data-view="workorders"><span class="sb-icon">📋</span>작업지시 관리</button>
       <button class="sb-item" data-view="schedule"><span class="sb-icon">📅</span>일정 관리</button>
     </div>
     <div class="sb-sec">
@@ -242,6 +224,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
       <button class="sb-item" data-view="patients"><span class="sb-icon">👴</span>수급자 관리</button>
       <button class="sb-item" data-view="workers"><span class="sb-icon">👩‍⚕️</span>보호사 관리</button>
       <button class="sb-item" data-view="journal"><span class="sb-icon">📝</span>케어일지</button>
+      <button class="sb-item" data-view="sms"><span class="sb-icon">💬</span>문자 발송</button>
     </div>
     <div class="sb-sec">
       <div class="sb-sec-lbl">정산</div>
@@ -253,20 +236,25 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
   <div class="sb-foot">
     <div class="sb-profile">
       <div class="sb-av">👤</div>
-      <div><div class="sb-pname">홍길동 센터장</div><div class="sb-prole">햇살요양센터</div></div>
+      <div style="flex:1;min-width:0">
+        <div class="sb-pname">홍길동 센터장</div>
+        <div class="sb-prole">햇살요양센터</div>
+        <span style="display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.85)">베이직</span>
+      </div>
     </div>
-    <button onclick="doLogout()" style="width:100%;margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🚪 로그아웃</button>
   </div>
-</div>
+</aside>
+<div class="sb-backdrop" id="sbBackdrop" onclick="toggleSidebar(false)"></div>
 
 <!-- MAIN -->
-<div class="main">
+<main class="main">
   <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="메뉴">☰</button>
     <div class="topbar-title" id="topbarTitle">📊 대시보드</div>
-    <div style="display:flex;align-items:center;gap:16px">
-      <div style="font-size:14px;font-weight:700;color:var(--navy)" id="topbarCenterName">🏥 센터명</div>
+    <div class="topbar-center">
+      <div style="font-size:14px;font-weight:700">🏥 햇살요양센터</div>
       <div style="width:1px;height:18px;background:var(--border)"></div>
-      <div style="display:flex;gap:4px" id="topbarNav">
+      <div style="display:flex;gap:4px">
         <button class="tnav-btn active" onclick="showView('dashboard')">운영</button>
         <button class="tnav-btn" onclick="showView('patients')">관리</button>
         <button class="tnav-btn" onclick="showView('unpaid')">정산</button>
@@ -274,31 +262,36 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     </div>
     <div class="topbar-right">
       <div class="topbar-date" id="topbarDate"></div>
-      <div class="topbar-bell" onclick="toast('🔔 새 알림이 없습니다')">🔔<span class="bell-dot"></span></div>
-      <button class="topbar-btn" id="topbarMainBtn" onclick="handleMainBtn()">+ 작업지시 발송</button>
+      <div class="topbar-bell" onclick="toast('🔔 작업지시 1건 미확인')">🔔<span class="bell-dot"></span></div>
+      <button class="topbar-btn" onclick="openNewWoModal()">+ 작업지시 발송</button>
     </div>
   </div>
 
   <div class="content">
 
-    <!-- ===== 대시보드 ===== -->
+    <div class="demo-banner">
+      <span class="pulse"></span>
+      <span>🎬 <b>데모 모드</b> — 가상 데이터입니다. 모든 기능을 자유롭게 둘러보세요. 실제 데이터는 저장되지 않습니다.</span>
+    </div>
+
+    <!-- ========== 대시보드 ========== -->
     <div class="view active" id="view-dashboard">
       <div class="stat-grid">
         <div class="stat-card" onclick="showView('visits')">
-          <div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">🏠</div><span class="stat-change stat-up">+1 추가</span></div>
-          <div class="stat-num">12건</div><div class="stat-lbl">오늘 방문 예정</div>
+          <div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">🏠</div><span class="stat-change stat-neutral">진행중</span></div>
+          <div class="stat-num">8건</div><div class="stat-lbl">오늘 방문 예정</div>
         </div>
         <div class="stat-card" onclick="showView('visits')">
-          <div class="stat-top"><div class="stat-icon" style="background:#dcfce7;">✅</div><span class="stat-change stat-up">진행중</span></div>
-          <div class="stat-num">5건</div><div class="stat-lbl">방문 완료</div>
+          <div class="stat-top"><div class="stat-icon" style="background:#dcfce7;">✅</div><span class="stat-change stat-up">37.5%</span></div>
+          <div class="stat-num">3건</div><div class="stat-lbl">방문 완료</div>
         </div>
         <div class="stat-card" onclick="showView('unpaid')">
           <div class="stat-top"><div class="stat-icon" style="background:#fef9c3;">⚠️</div><span class="stat-change stat-down">주의</span></div>
           <div class="stat-num">3건</div><div class="stat-lbl">미납금 발생</div>
         </div>
         <div class="stat-card" onclick="showView('patients')">
-          <div class="stat-top"><div class="stat-icon" style="background:#dbeafe;">👴</div><span class="stat-change stat-up">+2 이번달</span></div>
-          <div class="stat-num">28명</div><div class="stat-lbl">전체 수급자</div>
+          <div class="stat-top"><div class="stat-icon" style="background:#dbeafe;">👴</div><span class="stat-change stat-up">+1 이번달</span></div>
+          <div class="stat-num">8명</div><div class="stat-lbl">전체 수급자</div>
         </div>
       </div>
 
@@ -309,13 +302,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
             <button class="card-more" onclick="showView('visits')">전체보기 →</button>
           </div>
           <table class="tbl">
-            <thead><tr><th>수급자</th><th>보호사</th><th>시간</th><th>상태</th><th>작업지시</th></tr></thead>
+            <thead><tr><th>수급자</th><th>보호사</th><th>시간</th><th>상태</th><th>작업</th></tr></thead>
             <tbody>
-              <tr onclick="openWoEditModal('이순자','박민정','09:00','완료')"><td><b>이순자</b> 어르신</td><td>박민정</td><td>09:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('이순자','박민정','09:00','완료')">보기</span></td></tr>
-              <tr onclick="openWoEditModal('박종철','김미영','11:30','방문중')"><td><b>박종철</b> 어르신</td><td>김미영</td><td>11:30</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('박종철','김미영','11:30','방문중')">수정</span></td></tr>
-              <tr onclick="openWoEditModal('최영순','이지현','14:00','대기')"><td><b>최영순</b> 어르신</td><td>이지현</td><td>14:00</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('최영순','이지현','14:00','대기')">발송</span></td></tr>
-              <tr onclick="openWoEditModal('정동호','김미영','16:30','주의')"><td><b>정동호</b> 어르신</td><td>김미영</td><td>16:30</td><td><span class="badge b-warn">⚠ 주의</span></td><td><span class="act-btn red" onclick="event.stopPropagation();openWoEditModal('정동호','김미영','16:30','주의')">긴급</span></td></tr>
-              <tr onclick="openWoEditModal('강복순','박민정','10:00','완료')"><td><b>강복순</b> 어르신</td><td>박민정</td><td>10:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('강복순','박민정','10:00','완료')">보기</span></td></tr>
+              <tr onclick="openWoModal('이순자','박민정','09:00','완료')"><td><b>이순자</b> 어르신</td><td>박민정</td><td>09:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn">일지</span></td></tr>
+              <tr onclick="openWoModal('강복순','박민정','10:00','완료')"><td><b>강복순</b> 어르신</td><td>박민정</td><td>10:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn">일지</span></td></tr>
+              <tr onclick="openWoModal('김순자','정혜원','10:30','완료')"><td><b>김순자</b> 어르신</td><td>정혜원</td><td>10:30</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn">일지</span></td></tr>
+              <tr onclick="openWoModal('박종철','김미영','11:30','방문중')"><td><b>박종철</b> 어르신</td><td>김미영</td><td>11:30</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn">추적</span></td></tr>
+              <tr onclick="openWoModal('정동호','김미영','13:00','대기')"><td><b>정동호</b> 어르신</td><td>김미영</td><td>13:00</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn">발송</span></td></tr>
             </tbody>
           </table>
         </div>
@@ -323,13 +316,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           <div class="card-ttl"><span class="card-ttl-txt">보호사 현황</span><button class="card-more" onclick="showView('workers')">전체보기 →</button></div>
           <div class="worker-item" onclick="openWorkerModal('김미영')">
             <div class="w-av" style="background:#f0fdfa;">👩‍⚕️</div>
-            <div><div class="w-name">김미영</div><div class="w-sub">오늘 4건 · 현재 방문중</div></div>
+            <div><div class="w-name">김미영</div><div class="w-sub">오늘 2건 · 방문중</div></div>
             <span class="w-status w-online">● 방문중</span>
           </div>
           <div class="worker-item" onclick="openWorkerModal('박민정')">
             <div class="w-av" style="background:#fef9c3;">👩</div>
-            <div><div class="w-name">박민정</div><div class="w-sub">오늘 3건 · 이동중</div></div>
-            <span class="w-status w-moving">● 이동중</span>
+            <div><div class="w-name">박민정</div><div class="w-sub">오늘 2건 · 모두 완료</div></div>
+            <span class="w-status w-online">● 활동중</span>
           </div>
           <div class="worker-item" onclick="openWorkerModal('이지현')">
             <div class="w-av" style="background:#dbeafe;">👩‍🦳</div>
@@ -338,25 +331,30 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           </div>
           <div class="worker-item" onclick="openWorkerModal('최수진')">
             <div class="w-av" style="background:#fce7f3;">👩‍🦱</div>
-            <div><div class="w-name">최수진</div><div class="w-sub">오늘 3건 · 방문중</div></div>
-            <span class="w-status w-online">● 방문중</span>
+            <div><div class="w-name">최수진</div><div class="w-sub">오늘 1건 · 대기중</div></div>
+            <span class="w-status w-off">대기중</span>
+          </div>
+          <div class="worker-item" onclick="openWorkerModal('정혜원')">
+            <div class="w-av" style="background:#e0e7ff;">👩‍⚕️</div>
+            <div><div class="w-name">정혜원</div><div class="w-sub">오늘 1건 · 완료</div></div>
+            <span class="w-status w-online">● 활동중</span>
           </div>
         </div>
       </div>
 
       <div class="grid2">
         <div class="card">
-          <div class="card-ttl"><span class="card-ttl-txt">이번달 방문 현황</span></div>
+          <div class="card-ttl"><span class="card-ttl-txt">이번주 방문 현황</span></div>
           <div class="chart-bars">
-            <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 17일 · 방문 8건')"></div><span class="bar-lbl">17일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:75%;" onclick="toast('📊 18일 · 방문 10건')"></div><span class="bar-lbl">18일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 19일 · 방문 7건')"></div><span class="bar-lbl">19일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:80%;" onclick="toast('📊 20일 · 방문 11건')"></div><span class="bar-lbl">20일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:45%;" onclick="toast('📊 21일 · 방문 6건')"></div><span class="bar-lbl">21일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:30%;background:#94a3b8;" onclick="toast('📊 22일 · 방문 4건')"></div><span class="bar-lbl">22일</span></div>
-            <div class="bar-wrap"><div class="bar" style="height:90%;background:var(--teal2);" onclick="toast('📊 오늘 · 방문 12건 (진행중)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">오늘</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:65%" onclick="toast('📊 월요일 · 방문 7건')"></div><span class="bar-lbl">월</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:75%" onclick="toast('📊 화요일 · 방문 8건')"></div><span class="bar-lbl">화</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:70%" onclick="toast('📊 수요일 · 방문 7건')"></div><span class="bar-lbl">수</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:85%" onclick="toast('📊 목요일 · 방문 9건')"></div><span class="bar-lbl">목</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:80%;background:var(--teal2)" onclick="toast('📊 오늘 (금) · 방문 8건 (진행 중 3/8)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700">오늘</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:30%;background:#94a3b8" onclick="toast('📊 토요일 · 예정 3건')"></div><span class="bar-lbl">토</span></div>
+            <div class="bar-wrap"><div class="bar" style="height:0%" onclick="toast('📊 일요일 · 휴무')"></div><span class="bar-lbl">일</span></div>
           </div>
-          <div style="font-size:12px;color:var(--gray);text-align:center;">이번달 누계 <strong style="color:var(--teal);">143건</strong> 방문 완료</div>
+          <div style="font-size:12px;color:var(--gray);text-align:center">이번주 누계 <strong style="color:var(--teal)">39건</strong> 방문 (목표 47건)</div>
         </div>
         <div class="card">
           <div class="card-ttl"><span class="card-ttl-txt">미납금 현황</span><button class="card-more" onclick="showView('unpaid')">정산하기 →</button></div>
@@ -368,1069 +366,846 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
             <div><div class="unpaid-name">이순자 어르신</div><div class="unpaid-days">15일 경과</div></div>
             <div class="unpaid-amt">32,000원</div>
           </div>
-          <div class="unpaid-item" onclick="openUnpaidModal('정동호','24000','7')">
-            <div><div class="unpaid-name">정동호 어르신</div><div class="unpaid-days">7일 경과</div></div>
-            <div class="unpaid-amt">24,000원</div>
+          <div class="unpaid-item" onclick="openUnpaidModal('김순자','25000','8')">
+            <div><div class="unpaid-name">김순자 어르신</div><div class="unpaid-days">8일 경과</div></div>
+            <div class="unpaid-amt">25,000원</div>
           </div>
           <div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
             <span style="font-size:12px;font-weight:700;color:var(--gray)">총 미납금</span>
-            <span style="font-size:17px;font-weight:800;color:var(--red)">104,000원</span>
+            <span style="font-size:17px;font-weight:800;color:var(--red)">105,000원</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 오늘 방문 현황 ===== -->
+    <!-- ========== 오늘 방문 현황 ========== -->
     <div class="view" id="view-visits">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">🏠 오늘 방문 현황</div><div class="sec-hd-sub" id="visitSubtitle">총 12건 예정</div></div>
+        <div><div class="sec-hd-title">🏠 오늘 방문 현황</div><div class="sec-hd-sub">총 8건 예정 · 3건 완료 · 1건 진행중 · 4건 대기</div></div>
         <button class="btn btn-primary" onclick="openNewWoModal()">+ 작업지시 발송</button>
       </div>
       <div class="card">
         <table class="tbl">
-          <thead><tr><th>수급자</th><th>담당 보호사</th><th>방문 시간</th><th>예정 종료</th><th>상태</th><th>작업지시</th><th>위치</th></tr></thead>
+          <thead><tr><th>수급자</th><th>보호사</th><th>시작</th><th>종료</th><th>상태</th><th>작업</th><th>위치</th></tr></thead>
           <tbody>
-            <tr><td><b>이순자</b> 어르신</td><td>박민정</td><td>09:00</td><td>10:30</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('이순자','박민정','09:00','완료')">내용 보기</span></td><td><span class="act-btn" onclick="toast('📍 성남시 분당구 서현동 123')">GPS</span></td></tr>
-            <tr><td><b>강복순</b> 어르신</td><td>박민정</td><td>10:00</td><td>11:30</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('강복순','박민정','10:00','완료')">내용 보기</span></td><td><span class="act-btn" onclick="toast('📍 성남시 수정구 신흥동 45')">GPS</span></td></tr>
-            <tr><td><b>박종철</b> 어르신</td><td>김미영</td><td>11:30</td><td>13:00</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoEditModal('박종철','김미영','11:30','방문중')">수정 발송</span></td><td><span class="act-btn" onclick="toast('📍 성남시 수정구 태평동 88 · 실시간 추적중')">GPS</span></td></tr>
-            <tr><td><b>최영순</b> 어르신</td><td>이지현</td><td>14:00</td><td>15:30</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoEditModal('최영순','이지현','14:00','대기')">발송하기</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
-            <tr><td><b>정동호</b> 어르신</td><td>김미영</td><td>16:30</td><td>18:00</td><td><span class="badge b-warn">⚠ 주의</span></td><td><span class="act-btn red" onclick="openWoEditModal('정동호','김미영','16:30','주의')">긴급 수정</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
-            <tr><td><b>홍말순</b> 어르신</td><td>최수진</td><td>09:30</td><td>11:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('홍말순','최수진','09:30','완료')">내용 보기</span></td><td><span class="act-btn" onclick="toast('📍 성남시 중원구 중앙동 77')">GPS</span></td></tr>
-            <tr><td><b>김영자</b> 어르신</td><td>최수진</td><td>13:00</td><td>14:30</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoEditModal('김영자','최수진','13:00','방문중')">수정 발송</span></td><td><span class="act-btn" onclick="toast('📍 성남시 분당구 야탑동 32 · 실시간 추적중')">GPS</span></td></tr>
+            <tr><td><b>이순자</b> 어르신</td><td>박민정</td><td>09:00</td><td>10:30</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoModal('이순자','박민정','09:00','완료')">일지</span></td><td><span class="act-btn" onclick="toast('📍 분당구 서현동 · 9.6m 정확도')">GPS</span></td></tr>
+            <tr><td><b>강복순</b> 어르신</td><td>박민정</td><td>10:00</td><td>11:30</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoModal('강복순','박민정','10:00','완료')">일지</span></td><td><span class="act-btn" onclick="toast('📍 수정구 신흥동 · 12m 정확도')">GPS</span></td></tr>
+            <tr><td><b>김순자</b> 어르신</td><td>정혜원</td><td>10:30</td><td>12:00</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoModal('김순자','정혜원','10:30','완료')">일지</span></td><td><span class="act-btn" onclick="toast('📍 중원구 상대원동 · 8m 정확도')">GPS</span></td></tr>
+            <tr><td><b>박종철</b> 어르신</td><td>김미영</td><td>11:30</td><td>13:00</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoModal('박종철','김미영','11:30','방문중')">수정</span></td><td><span class="act-btn" onclick="toast('📍 수정구 태평동 · 실시간 추적중')">GPS</span></td></tr>
+            <tr><td><b>정동호</b> 어르신</td><td>김미영</td><td>13:00</td><td>14:30</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoModal('정동호','김미영','13:00','대기')">발송</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
+            <tr><td><b>최영순</b> 어르신</td><td>이지현</td><td>14:00</td><td>15:30</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoModal('최영순','이지현','14:00','대기')">발송</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
+            <tr><td><b>윤재호</b> 어르신</td><td>최수진</td><td>15:00</td><td>16:30</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoModal('윤재호','최수진','15:00','대기')">발송</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
+            <tr><td><b>한미숙</b> 어르신</td><td>이지현</td><td>16:30</td><td>18:00</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoModal('한미숙','이지현','16:30','대기')">발송</span></td><td><span class="act-btn" onclick="toast('아직 방문 전입니다')">미시작</span></td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ===== 작업지시 관리 ===== -->
+    <!-- ========== 작업지시 관리 ========== -->
     <div class="view" id="view-workorders">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">📋 작업지시 관리</div><div class="sec-hd-sub">보호사에게 발송된 업무지시 현황</div></div>
-        <button class="btn btn-primary" onclick="openNewWoModal()">+ 새 작업지시 작성</button>
+        <div><div class="sec-hd-title">📋 작업지시 관리</div><div class="sec-hd-sub">보호사에게 발송된 작업지시 5건</div></div>
+        <button class="btn btn-primary" onclick="openNewWoModal()">+ 새 작업지시</button>
       </div>
-      <div class="notice">💡 작업지시는 앱 알림 또는 문자로 보호사에게 즉시 전달됩니다.</div>
+      <div style="background:#fef3c7;border:1px solid #fde68a;color:#78350f;padding:10px 14px;border-radius:10px;font-size:12px;margin-bottom:14px">💡 작업지시는 앱 푸시 + 알림톡(또는 SMS)로 보호사에게 즉시 전달됩니다.</div>
 
-      <div class="wo-item" onclick="openWoEditModal('박종철','김미영','11:30','방문중')">
-        <div class="wo-header">
-          <div><div class="wo-worker">👩‍⚕️ 김미영 보호사 → 박종철 어르신</div><div class="wo-patient">오늘 11:30 · 방문중</div></div>
-          <div style="display:flex;gap:6px"><span class="chip chip-read">수신확인</span><span class="chip chip-urgent">긴급</span></div>
+      <div class="card" onclick="openWoModal('박종철','김미영','11:30','방문중')" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><b>👩‍⚕️ 김미영 보호사 → 박종철 어르신</b><div style="font-size:11px;color:var(--gray);margin-top:2px">오늘 11:30 · 방문중</div></div>
+          <div style="display:flex;gap:6px"><span class="badge b-done">수신확인</span><span class="badge b-warn">긴급</span></div>
         </div>
-        <div class="wo-content">오늘 방문 시 혈압 체크 필수. 어르신 무릎 통증 호소 중이므로 스트레칭 강도 줄이고 연고 도포 확인해주세요. 가족분이 저녁 방문 예정이라 정리 상태 확인 부탁드립니다.</div>
-        <div class="wo-footer"><span class="wo-time">오전 10:15 발송</span><div style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('박종철','김미영','11:30','방문중')">수정 재발송</span></div></div>
-      </div>
-
-      <div class="wo-item" onclick="openWoEditModal('정동호','김미영','16:30','주의')">
-        <div class="wo-header">
-          <div><div class="wo-worker">👩‍⚕️ 김미영 보호사 → 정동호 어르신</div><div class="wo-patient">오늘 16:30 · 방문 예정</div></div>
-          <div style="display:flex;gap:6px"><span class="chip chip-sent">발송완료</span><span class="chip chip-normal">일반</span></div>
-        </div>
-        <div class="wo-content">식사 보조 시 연하 곤란 주의. 죽 형태로 제공 확인. 오늘 투약 빠지지 않도록 가족에게도 알림 예정.</div>
-        <div class="wo-footer"><span class="wo-time">오후 2:00 발송 예정</span><div style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('정동호','김미영','16:30','주의')">수정</span></div></div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;background:var(--g50);padding:10px 12px;border-radius:8px">오늘 방문 시 혈압 체크 필수. 어르신 무릎 통증 호소 중이므로 스트레칭 강도 줄이고 연고 도포 확인해주세요.</div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--gray)"><span>오전 10:15 발송</span></div>
       </div>
 
-      <div class="wo-item" onclick="openWoEditModal('최영순','이지현','14:00','대기')">
-        <div class="wo-header">
-          <div><div class="wo-worker">👩‍🦳 이지현 보호사 → 최영순 어르신</div><div class="wo-patient">오늘 14:00 · 대기</div></div>
-          <div style="display:flex;gap:6px"><span class="chip chip-sent">발송완료</span><span class="chip chip-normal">일반</span></div>
+      <div class="card" onclick="openWoModal('정동호','김미영','13:00','대기')" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><b>👩‍⚕️ 김미영 보호사 → 정동호 어르신</b><div style="font-size:11px;color:var(--gray);margin-top:2px">오늘 13:00 · 대기</div></div>
+          <div style="display:flex;gap:6px"><span class="badge b-ing">발송완료</span></div>
         </div>
-        <div class="wo-content">기본 케어 진행. 청결 케어 후 침구 교체 부탁드립니다. 방문 완료 후 일지 사진 첨부 필수.</div>
-        <div class="wo-footer"><span class="wo-time">어제 오후 5:30 발송</span><div style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('최영순','이지현','14:00','대기')">수정</span></div></div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;background:var(--g50);padding:10px 12px;border-radius:8px">식사 보조 시 연하 곤란 주의. 죽 형태로 제공 확인. 오늘 투약 빠지지 않도록 가족에게도 알림 예정.</div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--gray)"><span>오전 11:00 발송</span></div>
       </div>
 
-      <div class="wo-item">
-        <div class="wo-header">
-          <div><div class="wo-worker">👩 박민정 보호사 → 이순자 어르신</div><div class="wo-patient">오늘 09:00 · 완료</div></div>
-          <div style="display:flex;gap:6px"><span class="chip chip-done">수행완료</span><span class="chip chip-normal">일반</span></div>
+      <div class="card" onclick="openWoModal('최영순','이지현','14:00','대기')" style="cursor:pointer">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><b>👩‍🦳 이지현 보호사 → 최영순 어르신</b><div style="font-size:11px;color:var(--gray);margin-top:2px">오늘 14:00 · 대기</div></div>
+          <div style="display:flex;gap:6px"><span class="badge b-ing">발송완료</span></div>
         </div>
-        <div class="wo-content">기본 케어 + 혈압 체크. 어르신 컨디션 양호하시면 인지활동 추가 진행.</div>
-        <div class="wo-footer"><span class="wo-time">어제 오후 6:00 발송 · 오전 10:42 완료</span><div style="display:flex;gap:6px"><span class="act-btn" onclick="toast('📄 케어일지 확인 완료')">일지 보기</span></div></div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;background:var(--g50);padding:10px 12px;border-radius:8px">기본 케어 진행. 청결 케어 후 침구 교체 부탁드립니다. 방문 완료 후 일지 사진 첨부 필수.</div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--gray)"><span>어제 오후 5:30 발송</span></div>
+      </div>
+
+      <div class="card" style="cursor:pointer" onclick="toast('📋 윤재호 어르신 작업지시 상세')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><b>👩‍🦱 최수진 보호사 → 윤재호 어르신</b><div style="font-size:11px;color:var(--gray);margin-top:2px">오늘 15:00 · 대기</div></div>
+          <div style="display:flex;gap:6px"><span class="badge b-ing">발송완료</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;background:var(--g50);padding:10px 12px;border-radius:8px">활동 보조 진행. 야외 산책 30분 (날씨 확인 후 진행). 어르신 기분 상태 일지 기록.</div>
+      </div>
+
+      <div class="card" style="cursor:pointer" onclick="toast('📋 한미숙 어르신 작업지시 상세')">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div><b>👩‍🦳 이지현 보호사 → 한미숙 어르신</b><div style="font-size:11px;color:var(--gray);margin-top:2px">오늘 16:30 · 대기</div></div>
+          <div style="display:flex;gap:6px"><span class="badge b-ing">발송완료</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--navy);line-height:1.7;background:var(--g50);padding:10px 12px;border-radius:8px">방문 목욕 진행. 욕실 안전 점검 우선. 가족분 동석 확인됨.</div>
       </div>
     </div>
 
-    <!-- ===== 수급자 관리 ===== -->
-    <div class="view" id="view-patients">
+    <!-- ========== 일정 관리 ========== -->
+    <div class="view" id="view-schedule">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 28명 등록</div></div>
-        <button class="btn btn-primary" onclick="openModal('patientRegModal')">+ 수급자 등록</button>
+        <div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub">이번주 등록된 방문 일정 39건</div></div>
+        <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
       </div>
       <div class="card">
         <table class="tbl">
-          <thead><tr><th>수급자명</th><th>등급</th><th>담당 보호사</th><th>주소</th><th>연락처(보호자)</th><th>상태</th><th>관리</th></tr></thead>
+          <thead><tr><th>날짜</th><th>시간</th><th>수급자</th><th>보호사</th><th>서비스</th><th>상태</th></tr></thead>
           <tbody>
-            <tr onclick="toast('👴 박종철 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdfa;">👴</div><b>박종철</b></div></td><td>3등급</td><td>김미영</td><td>수정구 태평동</td><td>010-1234-5678</td><td><span class="badge b-ing">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('박종철','김미영','11:30','방문중')">작업지시</span></td></tr>
-            <tr onclick="toast('👴 이순자 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fef9c3;">👵</div><b>이순자</b></div></td><td>2등급</td><td>박민정</td><td>분당구 서현동</td><td>010-2345-6789</td><td><span class="badge b-ing">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('이순자','박민정','09:00','완료')">작업지시</span></td></tr>
-            <tr onclick="toast('👴 최영순 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#dbeafe;">👵</div><b>최영순</b></div></td><td>4등급</td><td>이지현</td><td>중원구 중앙동</td><td>010-3456-7890</td><td><span class="badge b-ing">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('최영순','이지현','14:00','대기')">작업지시</span></td></tr>
-            <tr onclick="toast('👴 정동호 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fce7f3;">👴</div><b>정동호</b></div></td><td>1등급</td><td>김미영</td><td>수정구 신흥동</td><td>010-4567-8901</td><td><span class="badge b-warn">주의 필요</span></td><td><span class="act-btn red" onclick="event.stopPropagation();openWoEditModal('정동호','김미영','16:30','주의')">긴급지시</span></td></tr>
-            <tr onclick="toast('👴 홍말순 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdf4;">👵</div><b>홍말순</b></div></td><td>3등급</td><td>최수진</td><td>중원구 하대원동</td><td>010-5678-9012</td><td><span class="badge b-ing">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openWoEditModal('홍말순','최수진','09:30','완료')">작업지시</span></td></tr>
+            <tr><td>금 (오늘)</td><td>09:00</td><td>이순자</td><td>박민정</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td></tr>
+            <tr><td>금 (오늘)</td><td>10:00</td><td>강복순</td><td>박민정</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td></tr>
+            <tr><td>금 (오늘)</td><td>10:30</td><td>김순자</td><td>정혜원</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td></tr>
+            <tr><td>금 (오늘)</td><td>11:30</td><td>박종철</td><td>김미영</td><td>방문요양 90분</td><td><span class="badge b-ing">방문중</span></td></tr>
+            <tr><td>금 (오늘)</td><td>13:00</td><td>정동호</td><td>김미영</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td></tr>
+            <tr><td>금 (오늘)</td><td>14:00</td><td>최영순</td><td>이지현</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td></tr>
+            <tr><td>금 (오늘)</td><td>15:00</td><td>윤재호</td><td>최수진</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td></tr>
+            <tr><td>금 (오늘)</td><td>16:30</td><td>한미숙</td><td>이지현</td><td>방문목욕 60분</td><td><span class="badge b-wait">대기</span></td></tr>
+            <tr><td>토 (내일)</td><td>10:00</td><td>이순자</td><td>박민정</td><td>방문요양 90분</td><td><span class="badge b-wait">예약</span></td></tr>
+            <tr><td>토 (내일)</td><td>14:00</td><td>박종철</td><td>김미영</td><td>방문요양 90분</td><td><span class="badge b-wait">예약</span></td></tr>
+            <tr><td>토 (내일)</td><td>16:00</td><td>김순자</td><td>정혜원</td><td>방문요양 90분</td><td><span class="badge b-wait">예약</span></td></tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <!-- ===== 보호사 관리 ===== -->
+    <!-- ========== 수급자 관리 ========== -->
+    <div class="view" id="view-patients">
+      <div class="sec-hd">
+        <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 8명 등록 · 모두 이용중</div></div>
+        <button class="btn btn-primary" onclick="openPatientRegModal()">+ 수급자 등록</button>
+      </div>
+      <div class="card">
+        <table class="tbl">
+          <thead><tr><th>수급자명</th><th>등급</th><th>주소</th><th>담당 보호사</th><th>보호자</th><th>상태</th><th>작업</th></tr></thead>
+          <tbody>
+            <tr onclick="toast('👴 이순자 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdfa">👵</div><b>이순자</b></div></td><td>3등급</td><td>분당구 서현동</td><td>박민정</td><td>이상호 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('이순자')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 박종철 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fef9c3">👴</div><b>박종철</b></div></td><td>2등급</td><td>수정구 태평동</td><td>김미영</td><td>박지영 (배우자)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('박종철')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 최영순 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#dbeafe">👵</div><b>최영순</b></div></td><td>4등급</td><td>분당구 정자동</td><td>이지현</td><td>최민철 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('최영순')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 정동호 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fce7f3">👴</div><b>정동호</b></div></td><td>3등급</td><td>분당구 야탑동</td><td>김미영</td><td>정수영 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('정동호')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 강복순 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdf4">👵</div><b>강복순</b></div></td><td>5등급</td><td>수정구 신흥동</td><td>박민정</td><td>강진우 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('강복순')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 김순자 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fef3c7">👵</div><b>김순자</b></div></td><td>3등급</td><td>중원구 상대원동</td><td>정혜원</td><td>김지수 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('김순자')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 윤재호 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#e0e7ff">👴</div><b>윤재호</b></div></td><td>2등급</td><td>분당구 서현동</td><td>최수진</td><td>윤가영 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('윤재호')">📨 보호자초대</span></td></tr>
+            <tr onclick="toast('👴 한미숙 어르신 상세보기')"><td><div class="avatar-cell"><div class="av-sm" style="background:#fce7f3">👵</div><b>한미숙</b></div></td><td>4등급</td><td>수정구 태평동</td><td>이지현</td><td>한정민 (자녀)</td><td><span class="badge b-done">이용중</span></td><td><span class="act-btn" onclick="event.stopPropagation();openInviteModal('한미숙')">📨 보호자초대</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== 보호사 관리 ========== -->
     <div class="view" id="view-workers">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">👩‍⚕️ 보호사 관리</div><div class="sec-hd-sub">총 4명 근무중</div></div>
-        <button class="btn btn-primary" onclick="openModal('workerRegModal')">+ 보호사 등록</button>
+        <div><div class="sec-hd-title">👩‍⚕️ 보호사 관리</div><div class="sec-hd-sub">총 5명 근무중</div></div>
+        <button class="btn btn-primary" onclick="openWorkerRegModal()">+ 보호사 등록</button>
       </div>
       <div class="grid2">
         <div class="card" onclick="openWorkerModal('김미영')" style="cursor:pointer">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
             <div style="width:48px;height:48px;border-radius:50%;background:#f0fdfa;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--teal2)">👩‍⚕️</div>
-            <div><div style="font-size:15px;font-weight:800;">김미영</div><div style="font-size:11px;color:var(--gray);">경력 5년 · 요양보호사 1급</div></div>
+            <div><div style="font-size:15px;font-weight:800">김미영</div><div style="font-size:11px;color:var(--gray)">경력 5년 · 요양보호사 1급</div></div>
             <span class="w-status w-online" style="margin-left:auto">● 방문중</span>
           </div>
           <table class="tbl"><tbody>
-            <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">4건</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-1111-2222</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">48건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td>010-1111-2222</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>수정구</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>2건</b> (박종철, 정동호)</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>26건</b></td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('김미영')">작업지시 발송</span>
-            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-1111-2222 연결 중...')">전화</span>
+            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-1111-2222 통화 연결중')">전화</span>
           </div>
         </div>
         <div class="card" onclick="openWorkerModal('박민정')" style="cursor:pointer">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
             <div style="width:48px;height:48px;border-radius:50%;background:#fef9c3;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--amber)">👩</div>
-            <div><div style="font-size:15px;font-weight:800;">박민정</div><div style="font-size:11px;color:var(--gray);">경력 3년 · 요양보호사 1급</div></div>
-            <span class="w-status w-moving" style="margin-left:auto">● 이동중</span>
+            <div><div style="font-size:15px;font-weight:800">박민정</div><div style="font-size:11px;color:var(--gray)">경력 3년 · 요양보호사 1급</div></div>
+            <span class="w-status w-online" style="margin-left:auto">● 활동중</span>
           </div>
           <table class="tbl"><tbody>
-            <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">3건</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-2222-3333</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">36건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td>010-2222-3333</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>분당구·수정구</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>2건</b> (이순자, 강복순)</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>22건</b></td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('박민정')">작업지시 발송</span>
-            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-2222-3333 연결 중...')">전화</span>
+            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-2222-3333 통화 연결중')">전화</span>
           </div>
         </div>
         <div class="card" onclick="openWorkerModal('이지현')" style="cursor:pointer">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
             <div style="width:48px;height:48px;border-radius:50%;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--blue)">👩‍🦳</div>
-            <div><div style="font-size:15px;font-weight:800;">이지현</div><div style="font-size:11px;color:var(--gray);">경력 7년 · 요양보호사 1급</div></div>
+            <div><div style="font-size:15px;font-weight:800">이지현</div><div style="font-size:11px;color:var(--gray)">경력 7년 · 요양보호사 1급</div></div>
             <span class="w-status w-off" style="margin-left:auto">대기중</span>
           </div>
           <table class="tbl"><tbody>
-            <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">2건</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-3333-4444</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">31건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td>010-3333-4444</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>분당구·수정구</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>2건</b> (최영순, 한미숙)</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>28건</b></td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('이지현')">작업지시 발송</span>
-            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-3333-4444 연결 중...')">전화</span>
+            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-3333-4444 통화 연결중')">전화</span>
           </div>
         </div>
         <div class="card" onclick="openWorkerModal('최수진')" style="cursor:pointer">
           <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
             <div style="width:48px;height:48px;border-radius:50%;background:#fce7f3;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid #ec4899">👩‍🦱</div>
-            <div><div style="font-size:15px;font-weight:800;">최수진</div><div style="font-size:11px;color:var(--gray);">경력 2년 · 요양보호사 1급</div></div>
-            <span class="w-status w-online" style="margin-left:auto">● 방문중</span>
+            <div><div style="font-size:15px;font-weight:800">최수진</div><div style="font-size:11px;color:var(--gray)">경력 2년 · 요양보호사 1급</div></div>
+            <span class="w-status w-off" style="margin-left:auto">대기중</span>
           </div>
           <table class="tbl"><tbody>
-            <tr><td style="color:var(--gray);font-size:11px;width:70px">오늘 담당</td><td style="font-size:13px;font-weight:700;">3건</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">연락처</td><td style="font-size:13px;">010-4444-5555</td></tr>
-            <tr><td style="color:var(--gray);font-size:11px;">이번달 근무</td><td style="font-size:13px;font-weight:700;">28건</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td>010-4444-5555</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>분당구</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>1건</b> (윤재호)</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>14건</b></td></tr>
           </tbody></table>
           <div style="display:flex;gap:8px;margin-top:12px">
             <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('최수진')">작업지시 발송</span>
-            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-4444-5555 연결 중...')">전화</span>
+            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-4444-5555 통화 연결중')">전화</span>
+          </div>
+        </div>
+        <div class="card" onclick="openWorkerModal('정혜원')" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:48px;height:48px;border-radius:50%;background:#e0e7ff;display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid #6366f1">👩‍⚕️</div>
+            <div><div style="font-size:15px;font-weight:800">정혜원</div><div style="font-size:11px;color:var(--gray)">경력 4년 · 요양보호사 1급</div></div>
+            <span class="w-status w-online" style="margin-left:auto">● 활동중</span>
+          </div>
+          <table class="tbl"><tbody>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td>010-5555-6666</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>중원구</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>1건</b> (김순자)</td></tr>
+            <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>18건</b></td></tr>
+          </tbody></table>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <span class="act-btn" onclick="event.stopPropagation();openNewWoModal('정혜원')">작업지시 발송</span>
+            <span class="act-btn" onclick="event.stopPropagation();toast('📞 010-5555-6666 통화 연결중')">전화</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 케어일지 ===== -->
+    <!-- ========== 케어일지 ========== -->
     <div class="view" id="view-journal">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">📝 케어일지</div><div class="sec-hd-sub" id="journalSub">오늘 제출된 일지 3건</div></div>
-        <button class="btn btn-ghost-sm" onclick="downloadJournalPDF()">⬇ PDF 다운로드</button>
+        <div><div class="sec-hd-title">📝 케어일지</div><div class="sec-hd-sub">오늘 제출된 일지 3건</div></div>
+        <button class="btn btn-ghost" onclick="toast('📄 PDF 다운로드 (데모)')">📄 PDF 다운로드</button>
       </div>
-      <!-- 날짜 탭 -->
-      <div style="display:flex;gap:6px;margin-bottom:14px" id="journalTabs">
-        <button class="day-tab active" onclick="filterJournal('today')">오늘</button>
-        <button class="day-tab" onclick="filterJournal('yesterday')">어제</button>
-        <button class="day-tab" onclick="filterJournal('week')">이번주</button>
-        <button class="day-tab" onclick="filterJournal('month')">이번달</button>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <div><b>👵 이순자 어르신</b><span style="font-size:11px;color:var(--gray);margin-left:8px">박민정 · 09:00~10:30</span></div>
+          <span class="badge b-done">완료</span>
+        </div>
+        <div style="font-size:13px;line-height:1.7;background:var(--g50);padding:12px;border-radius:8px">
+          식사 보조 100% 완료. 혈압 130/85로 안정. 무릎 통증 호소 → 연고 도포 + 마사지 15분.<br>
+          기분 상태 양호, 가족 안부 전달 완료. 다음 방문 시 산책 권장.
+        </div>
       </div>
-      <div id="journalList">
-        <!-- 오늘 -->
-        <div class="journal-item" data-period="today" onclick="openJournalModal('박종철','김미영','11:45~13:02','2026-04-26')">
-          <div class="journal-meta"><span class="journal-name">박종철 어르신 · 김미영 보호사</span><span class="journal-time">오전 11:45 ~ 13:02</span></div>
-          <div class="journal-preview">식사량 100% 양호. 무릎 통증 호소하여 스트레칭 강도 조절. 연고 도포 완료. 가족분 방문 예정이라 주변 정리...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">체위변경 ✓</span><span class="badge b-done">스트레칭 ✓</span><span class="badge b-ing">투약확인</span></div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <div><b>👵 강복순 어르신</b><span style="font-size:11px;color:var(--gray);margin-left:8px">박민정 · 10:00~11:30</span></div>
+          <span class="badge b-done">완료</span>
         </div>
-        <div class="journal-item" data-period="today" onclick="openJournalModal('이순자','박민정','09:05~10:28','2026-04-26')">
-          <div class="journal-meta"><span class="journal-name">이순자 어르신 · 박민정 보호사</span><span class="journal-time">오전 09:05 ~ 10:28</span></div>
-          <div class="journal-preview">혈압 130/80 측정. 컨디션 양호. 식사량 80% (식욕 다소 저하). 인지활동 진행, 오늘은 그림 맞추기 게임...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">인지활동 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
+        <div style="font-size:13px;line-height:1.7;background:var(--g50);padding:12px;border-radius:8px">
+          청결 케어 (구강+세면+옷 갈아입기) 완료. 식사량 80% — 평소보다 적음.<br>
+          오후 변비 호소, 수분 섭취 격려. 가족(자녀)에게 알림 전송함.
         </div>
-        <div class="journal-item" data-period="today" onclick="openJournalModal('강복순','박민정','10:05~11:32','2026-04-26')">
-          <div class="journal-meta"><span class="journal-name">강복순 어르신 · 박민정 보호사</span><span class="journal-time">오전 10:05 ~ 11:32</span></div>
-          <div class="journal-preview">기본 케어 전반 진행. 특이사항 없음. 어르신 컨디션 좋으심. 침구 교체 완료...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">체위변경 ✓</span><span class="badge b-done">청결케어 ✓</span><span class="badge b-done">침구교체 ✓</span></div>
+      </div>
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px">
+          <div><b>👵 김순자 어르신</b><span style="font-size:11px;color:var(--gray);margin-left:8px">정혜원 · 10:30~12:00</span></div>
+          <span class="badge b-done">완료</span>
         </div>
-        <!-- 어제 -->
-        <div class="journal-item" data-period="yesterday week month" style="display:none" onclick="openJournalModal('최영순','이지현','14:00~15:28','2026-04-25')">
-          <div class="journal-meta"><span class="journal-name">최영순 어르신 · 이지현 보호사</span><span class="journal-time">오후 14:00 ~ 15:28 · 4월 25일(토)</span></div>
-          <div class="journal-preview">혈압 125/78. 기분 좋으심. 손자 사진 보여드리며 대화. 식사량 100%. 오전에 산책 다녀오셨다고 하심...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">정서지원 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
-        </div>
-        <div class="journal-item" data-period="yesterday week month" style="display:none" onclick="openJournalModal('정동호','김미영','16:30~17:45','2026-04-25')">
-          <div class="journal-meta"><span class="journal-name">정동호 어르신 · 김미영 보호사</span><span class="journal-time">오후 16:30 ~ 17:45 · 4월 25일(토)</span></div>
-          <div class="journal-preview">연하 곤란으로 죽 형태 식사 제공. 투약 확인 완료. 혈압 약간 높음(145/92), 가족에게 문자 전달함...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">투약확인 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-warn">⚠ 혈압주의</span></div>
-        </div>
-        <div class="journal-item" data-period="yesterday week month" style="display:none" onclick="openJournalModal('박종철','김미영','11:30~13:00','2026-04-25')">
-          <div class="journal-meta"><span class="journal-name">박종철 어르신 · 김미영 보호사</span><span class="journal-time">오전 11:30 ~ 13:00 · 4월 25일(토)</span></div>
-          <div class="journal-preview">식사량 90%. 무릎 상태 전일보다 호전. 스트레칭 정상 진행. 침구 교체 및 환기 완료...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">스트레칭 ✓</span><span class="badge b-done">침구교체 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
-        </div>
-        <!-- 이번주 (어제 이전) -->
-        <div class="journal-item" data-period="week month" style="display:none" onclick="openJournalModal('홍말순','최수진','09:30~11:00','2026-04-24')">
-          <div class="journal-meta"><span class="journal-name">홍말순 어르신 · 최수진 보호사</span><span class="journal-time">오전 09:30 ~ 11:00 · 4월 24일(금)</span></div>
-          <div class="journal-preview">전반적 컨디션 양호. 혈압 128/80 정상. 가벼운 인지활동(퍼즐) 진행. 식사량 95%...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">인지활동 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
-        </div>
-        <div class="journal-item" data-period="week month" style="display:none" onclick="openJournalModal('이순자','박민정','09:00~10:30','2026-04-24')">
-          <div class="journal-meta"><span class="journal-name">이순자 어르신 · 박민정 보호사</span><span class="journal-time">오전 09:00 ~ 10:30 · 4월 24일(금)</span></div>
-          <div class="journal-preview">식욕 회복됨, 식사량 100%. 혈압 122/76 양호. 좋아하시는 노래 틀어드리며 정서 지원. 매우 좋아하심...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">정서지원 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
-        </div>
-        <div class="journal-item" data-period="week month" style="display:none" onclick="openJournalModal('김영자','최수진','13:00~14:30','2026-04-23')">
-          <div class="journal-meta"><span class="journal-name">김영자 어르신 · 최수진 보호사</span><span class="journal-time">오후 13:00 ~ 14:30 · 4월 23일(목)</span></div>
-          <div class="journal-preview">체중 측정 52.3kg (전주 대비 -0.5kg). 식사량 85%. 가족에게 체중 감소 보고. 보행 보조 진행...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">체중측정 ✓</span><span class="badge b-done">보행보조 ✓</span><span class="badge b-warn">⚠ 체중감소</span></div>
-        </div>
-        <!-- 이번달 추가 -->
-        <div class="journal-item" data-period="month" style="display:none" onclick="openJournalModal('최영순','이지현','14:00~15:30','2026-04-20')">
-          <div class="journal-meta"><span class="journal-name">최영순 어르신 · 이지현 보호사</span><span class="journal-time">오후 14:00 ~ 15:30 · 4월 20일(일)</span></div>
-          <div class="journal-preview">혈압 132/84. 허리 통증 호소, 자세 교정 도움. 식사량 100%. 딸이 방문하여 함께 대화 진행...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">체위변경 ✓</span><span class="badge b-done">정서지원 ✓</span></div>
-        </div>
-        <div class="journal-item" data-period="month" style="display:none" onclick="openJournalModal('정동호','김미영','16:30~18:00','2026-04-18')">
-          <div class="journal-meta"><span class="journal-name">정동호 어르신 · 김미영 보호사</span><span class="journal-time">오후 16:30 ~ 18:00 · 4월 18일(금)</span></div>
-          <div class="journal-preview">혈압 정상화(135/85). 투약 이행 개선됨. 식사량 100%. 연하 상태 양호. 표정 밝으심...</div>
-          <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">투약확인 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
+        <div style="font-size:13px;line-height:1.7;background:var(--g50);padding:12px;border-radius:8px">
+          체위 변경 + 스트레칭 30분. 인지 활동 (퍼즐, 노래) 활기차게 참여.<br>
+          식사 100%, 컨디션 매우 좋음. 사진 4장 첨부.
         </div>
       </div>
     </div>
 
-    <!-- ===== 미납금 관리 ===== -->
+    <!-- ========== 문자 발송 ========== -->
+    <div class="view" id="view-sms">
+      <div class="sec-hd">
+        <div><div class="sec-hd-title">💬 문자 발송</div><div class="sec-hd-sub">베이직 플랜 · 이번달 사용량</div></div>
+        <button class="btn btn-primary" onclick="openSmsChargeModal()">+ 추가 충전</button>
+      </div>
+
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+          <div>
+            <div style="font-size:13px;color:var(--gray)">이번달 사용</div>
+            <div style="font-size:24px;font-weight:800">42건 <span style="font-size:14px;color:var(--gray);font-weight:600">/ 100건</span></div>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px">잔여 58건 · 기본 100건 + 추가 0건</div>
+          </div>
+          <span style="font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;background:var(--g100);color:var(--gray)">베이직</span>
+        </div>
+        <div style="height:8px;background:var(--g100);border-radius:10px;overflow:hidden;margin-bottom:6px">
+          <div style="height:100%;width:42%;background:var(--teal);border-radius:10px"></div>
+        </div>
+        <div style="font-size:11px;color:var(--gray);text-align:right">42% 사용</div>
+      </div>
+
+      <div class="grid2">
+        <button class="card" style="cursor:pointer;border:none;text-align:left;padding:18px" onclick="openSmsModal()">
+          <div style="font-size:20px;margin-bottom:6px">📨</div>
+          <div style="font-size:14px;font-weight:800;margin-bottom:4px">전체 문자 발송</div>
+          <div style="font-size:11px;color:var(--gray)">수급자 8명 · 보호자 12명 · 보호사 5명</div>
+        </button>
+        <button class="card" style="cursor:pointer;border:none;text-align:left;padding:18px" onclick="openSalaryModal()">
+          <div style="font-size:20px;margin-bottom:6px">💼</div>
+          <div style="font-size:14px;font-weight:800;margin-bottom:4px">급여 명세서 일괄 발송</div>
+          <div style="font-size:11px;color:var(--gray)">보호사 5명 · 이번달 명세서</div>
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-ttl"><span class="card-ttl-txt">발송 내역 (최근 7일)</span></div>
+        <table class="tbl">
+          <thead><tr><th>시각</th><th>유형</th><th>수신자</th><th>내용</th><th>상태</th></tr></thead>
+          <tbody>
+            <tr><td>오늘 11:38</td><td>SMS</td><td>박지영 (박종철 보호자)</td><td>박종철 어르신 댁 도착...</td><td><span class="badge b-done">발송</span></td></tr>
+            <tr><td>오늘 12:00</td><td>SMS</td><td>김지수 (김순자 보호자)</td><td>김순자 어르신 케어 완료...</td><td><span class="badge b-done">발송</span></td></tr>
+            <tr><td>오늘 10:30</td><td>SMS</td><td>이상호 (이순자 보호자)</td><td>이순자 어르신 케어 완료...</td><td><span class="badge b-done">발송</span></td></tr>
+            <tr><td>어제 17:00</td><td>LMS</td><td>보호사 5명 (단체)</td><td>내일 일정 안내...</td><td><span class="badge b-done">5/5 발송</span></td></tr>
+            <tr><td>어제 14:22</td><td>SMS</td><td>강진우 (강복순 보호자)</td><td>강복순 어르신 케어 완료...</td><td><span class="badge b-done">발송</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========== 미납금 ========== -->
     <div class="view" id="view-unpaid">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 104,000원 · 3건</div></div>
-        <button class="btn btn-primary" onclick="openModal('smsModal')">전체 문자 발송</button>
+        <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 105,000원 · 3건</div></div>
+        <button class="btn btn-primary" onclick="toast('📨 미납 안내 일괄 발송 (3명)')">📨 일괄 안내 발송</button>
       </div>
       <div class="card">
         <table class="tbl">
-          <thead><tr><th>수급자명</th><th>담당 보호사</th><th>미납 기간</th><th>미납 금액</th><th>처리</th></tr></thead>
+          <thead><tr><th>수급자</th><th>보호자</th><th>금액</th><th>경과일</th><th>발생일</th><th>작업</th></tr></thead>
           <tbody>
-            <tr onclick="openUnpaidModal('박종철','48000','32')"><td><b>박종철</b> 어르신</td><td>김미영</td><td><span style="color:var(--red);font-weight:700;">32일 경과</span></td><td><span style="font-weight:800;color:var(--red);">48,000원</span></td>
-              <td style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();toast('📨 박종철 어르신 보호자에게 미납 안내 문자 발송 완료')">문자 발송</span><span class="act-btn red" onclick="event.stopPropagation();openUnpaidModal('박종철','48000','32')">정산</span></td></tr>
-            <tr onclick="openUnpaidModal('이순자','32000','15')"><td><b>이순자</b> 어르신</td><td>박민정</td><td><span style="color:var(--amber);font-weight:700;">15일 경과</span></td><td><span style="font-weight:800;color:var(--red);">32,000원</span></td>
-              <td style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();toast('📨 이순자 어르신 보호자에게 미납 안내 문자 발송 완료')">문자 발송</span><span class="act-btn red" onclick="event.stopPropagation();openUnpaidModal('이순자','32000','15')">정산</span></td></tr>
-            <tr onclick="openUnpaidModal('정동호','24000','7')"><td><b>정동호</b> 어르신</td><td>김미영</td><td><span style="color:var(--gray);font-weight:700;">7일 경과</span></td><td><span style="font-weight:800;color:var(--red);">24,000원</span></td>
-              <td style="display:flex;gap:6px"><span class="act-btn" onclick="event.stopPropagation();toast('📨 정동호 어르신 보호자에게 미납 안내 문자 발송 완료')">문자 발송</span><span class="act-btn red" onclick="event.stopPropagation();openUnpaidModal('정동호','24000','7')">정산</span></td></tr>
+            <tr onclick="openUnpaidModal('박종철','48000','32')"><td><b>박종철</b> 어르신</td><td>박지영 (배우자)</td><td style="color:var(--red);font-weight:800">48,000원</td><td><span style="color:var(--red);font-weight:700">32일</span></td><td>3월 26일</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 박지영님께 미납 안내 발송')">안내발송</span></td></tr>
+            <tr onclick="openUnpaidModal('이순자','32000','15')"><td><b>이순자</b> 어르신</td><td>이상호 (자녀)</td><td style="color:var(--red);font-weight:800">32,000원</td><td><span style="color:var(--amber);font-weight:700">15일</span></td><td>4월 12일</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 이상호님께 미납 안내 발송')">안내발송</span></td></tr>
+            <tr onclick="openUnpaidModal('김순자','25000','8')"><td><b>김순자</b> 어르신</td><td>김지수 (자녀)</td><td style="color:var(--red);font-weight:800">25,000원</td><td><span style="color:var(--gray);font-weight:700">8일</span></td><td>4월 19일</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 김지수님께 미납 안내 발송')">안내발송</span></td></tr>
           </tbody>
         </table>
-        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
-          <span style="font-size:13px;font-weight:700;color:var(--gray)">총 미납금</span>
-          <span style="font-size:20px;font-weight:800;color:var(--red)">104,000원</span>
+        <div style="margin-top:14px;padding:12px;background:var(--g50);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:700">합계</span>
+          <span style="font-size:18px;font-weight:800;color:var(--red)">105,000원</span>
         </div>
       </div>
     </div>
 
-    <!-- ===== 매출 현황 ===== -->
+    <!-- ========== 매출 현황 ========== -->
     <div class="view" id="view-revenue">
-      <div class="sec-hd"><div><div class="sec-hd-title">📈 매출 현황</div><div class="sec-hd-sub">2026년 4월 기준</div></div></div>
-      <div class="grid2">
-        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#f0fdfa;">💰</div><span class="stat-change stat-up">+9% 전월比</span></div><div class="stat-num">847만원</div><div class="stat-lbl">이번달 예상 매출</div></div>
-        <div class="stat-card"><div class="stat-top"><div class="stat-icon" style="background:#dcfce7;">✅</div><span class="stat-change stat-up">143건</span></div><div class="stat-num">521만원</div><div class="stat-lbl">청구 확정 금액</div></div>
+      <div class="sec-hd">
+        <div><div class="sec-hd-title">📈 매출 현황</div><div class="sec-hd-sub">2026년 4월 기준</div></div>
       </div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:#f0fdfa">💰</div><span class="stat-change stat-up">+12%</span></div>
+          <div class="stat-num">848만원</div><div class="stat-lbl">이번달 예상 매출</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:#dcfce7">✅</div><span class="stat-change stat-up">108건</span></div>
+          <div class="stat-num">521만원</div><div class="stat-lbl">청구 확정</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:#fef9c3">⏳</div><span class="stat-change stat-neutral">31건</span></div>
+          <div class="stat-num">222만원</div><div class="stat-lbl">청구 예정</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top"><div class="stat-icon" style="background:#fee2e2">⚠️</div><span class="stat-change stat-down">3건</span></div>
+          <div class="stat-num">10.5만원</div><div class="stat-lbl">미수금</div>
+        </div>
+      </div>
+
       <div class="card">
-        <div class="card-ttl"><span class="card-ttl-txt">월별 매출 추이</span></div>
-        <div class="chart-bars" style="height:120px">
-          <div class="bar-wrap"><div class="bar" style="height:55%;" onclick="toast('📊 1월 · 612만원')"></div><span class="bar-lbl">1월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:60%;" onclick="toast('📊 2월 · 668만원')"></div><span class="bar-lbl">2월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:65%;" onclick="toast('📊 3월 · 776만원')"></div><span class="bar-lbl">3월</span></div>
-          <div class="bar-wrap"><div class="bar" style="height:72%;background:var(--teal2);" onclick="toast('📊 4월 · 847만원 (예상)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700;">4월</span></div>
+        <div class="card-ttl"><span class="card-ttl-txt">최근 6개월 매출 추이</span></div>
+        <div class="chart-bars" style="height:140px">
+          <div class="bar-wrap"><div class="bar" style="height:60%" onclick="toast('📊 11월 · 643만원')"></div><span class="bar-lbl">11월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:65%" onclick="toast('📊 12월 · 692만원')"></div><span class="bar-lbl">12월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:70%" onclick="toast('📊 1월 · 745만원')"></div><span class="bar-lbl">1월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:72%" onclick="toast('📊 2월 · 758만원')"></div><span class="bar-lbl">2월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:75%" onclick="toast('📊 3월 · 798만원')"></div><span class="bar-lbl">3월</span></div>
+          <div class="bar-wrap"><div class="bar" style="height:82%;background:var(--teal2)" onclick="toast('📊 4월 · 848만원 (예상)')"></div><span class="bar-lbl" style="color:var(--teal);font-weight:700">4월</span></div>
         </div>
       </div>
     </div>
 
-    <!-- ===== 일정 관리 ===== -->
-    <div class="view" id="view-schedule">
-      <div class="sec-hd"><div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub" id="schedSub">2026년 4월 · 총 52건</div></div>
-        <div style="display:flex;gap:8px">
-          <button class="btn btn-ghost-sm" id="btnCalView" onclick="setSchedView('cal')" style="background:var(--tl);color:var(--teal);border-color:var(--teal)">📅 달력</button>
-          <button class="btn btn-ghost-sm" id="btnListView" onclick="setSchedView('list')">📋 목록</button>
-          <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
-        </div>
-      </div>
-
-      <!-- 달력 뷰 -->
-      <div id="schedCalView">
-        <div class="card" style="padding:16px">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-            <button onclick="moveCalMonth(-1)" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">‹</button>
-            <span style="font-weight:800;font-size:15px" id="calTitle">2026년 4월</span>
-            <button onclick="moveCalMonth(1)" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">›</button>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:6px">
-            <div style="font-size:11px;font-weight:700;color:var(--red);padding:4px">일</div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">월</div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">화</div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">수</div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">목</div>
-            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">금</div>
-            <div style="font-size:11px;font-weight:700;color:#3b82f6;padding:4px">토</div>
-          </div>
-          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px" id="calGrid"></div>
-        </div>
-        <!-- 선택된 날짜 일정 -->
-        <div id="calDayDetail" style="margin-top:14px;display:none">
-          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px" id="calDayTitle"></div>
-          <table class="tbl"><thead><tr><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
-          <tbody id="calDayTbody"></tbody></table>
-        </div>
-      </div>
-
-      <!-- 목록 뷰: 수급자별 반복 스케줄 -->
-      <div id="schedListView" style="display:none">
-        <div class="notice">💡 수급자별 반복 방문 스케줄입니다. 달력에서 날짜를 클릭하면 당일 현황을 확인할 수 있습니다.</div>
-        <div class="card">
-          <table class="tbl">
-            <thead><tr><th>수급자</th><th>담당 보호사</th><th>방문 요일</th><th>방문 시간</th><th>서비스</th><th>시작일</th><th>관리</th></tr></thead>
-            <tbody id="schedListTbody">
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdfa;">👴</div><b>박종철</b></div></td><td>김미영</td><td><span class="badge b-ing">월·수·금</span></td><td>11:30~13:00</td><td>방문요양 90분</td><td>2026.01.05</td><td><span class="act-btn" onclick="toast('✏️ 박종철 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fef9c3;">👵</div><b>이순자</b></div></td><td>박민정</td><td><span class="badge b-ing">월·화·목·금</span></td><td>09:00~10:30</td><td>방문요양 90분</td><td>2026.01.12</td><td><span class="act-btn" onclick="toast('✏️ 이순자 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#dbeafe;">👵</div><b>최영순</b></div></td><td>이지현</td><td><span class="badge b-ing">월·수·금</span></td><td>14:00~15:30</td><td>방문요양 90분</td><td>2026.02.03</td><td><span class="act-btn" onclick="toast('✏️ 최영순 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fce7f3;">👴</div><b>정동호</b></div></td><td>김미영</td><td><span class="badge b-ing">월·목</span></td><td>16:30~17:30</td><td>방문요양 60분</td><td>2026.01.19</td><td><span class="act-btn" onclick="toast('✏️ 정동호 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdf4;">👵</div><b>홍말순</b></div></td><td>최수진</td><td><span class="badge b-ing">화·목·토</span></td><td>09:30~11:00</td><td>방문요양 90분</td><td>2026.02.17</td><td><span class="act-btn" onclick="toast('✏️ 홍말순 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#ede9fe;">👵</div><b>강복순</b></div></td><td>박민정</td><td><span class="badge b-ing">월·수</span></td><td>10:00~11:30</td><td>방문요양 90분</td><td>2026.03.02</td><td><span class="act-btn" onclick="toast('✏️ 강복순 어르신 일정 수정')">수정</span></td></tr>
-              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fef3c7;">👵</div><b>김영자</b></div></td><td>최수진</td><td><span class="badge b-ing">화·금</span></td><td>13:00~14:30</td><td>방문요양 90분</td><td>2026.03.10</td><td><span class="act-btn" onclick="toast('✏️ 김영자 어르신 일정 수정')">수정</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div><!-- /schedListView -->
-    </div>
-
-    <!-- ===== 급여 정산 ===== -->
+    <!-- ========== 급여 정산 ========== -->
     <div class="view" id="view-salary">
-      <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="openModal('salaryModal')">명세서 일괄 발송</button></div>
+      <div class="sec-hd">
+        <div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준 보호사 5명</div></div>
+        <button class="btn btn-primary" onclick="openSalaryModal()">📨 명세서 일괄 발송</button>
+      </div>
       <div class="card">
         <table class="tbl">
-          <thead><tr><th>보호사</th><th>이번달 근무</th><th>기본급</th><th>수당</th><th>실수령액</th><th>명세서</th></tr></thead>
+          <thead><tr><th>보호사</th><th>근무</th><th>기본급</th><th>수당</th><th>공제</th><th>실지급</th><th>상태</th></tr></thead>
           <tbody>
-            <tr onclick="toast('🧾 김미영 급여 명세서 상세보기')"><td><b>김미영</b></td><td>48건 · 48시간</td><td>1,920,000원</td><td>96,000원</td><td style="font-weight:800;color:var(--teal)">1,779,520원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 김미영 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 박민정 급여 명세서 상세보기')"><td><b>박민정</b></td><td>36건 · 36시간</td><td>1,440,000원</td><td>72,000원</td><td style="font-weight:800;color:var(--teal)">1,334,640원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 박민정 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 이지현 급여 명세서 상세보기')"><td><b>이지현</b></td><td>31건 · 31시간</td><td>1,240,000원</td><td>62,000원</td><td style="font-weight:800;color:var(--teal)">1,148,280원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 이지현 보호사에게 명세서 발송 완료')">발송</span></td></tr>
-            <tr onclick="toast('🧾 최수진 급여 명세서 상세보기')"><td><b>최수진</b></td><td>28건 · 28시간</td><td>1,120,000원</td><td>56,000원</td><td style="font-weight:800;color:var(--teal)">1,037,040원</td><td><span class="act-btn" onclick="event.stopPropagation();toast('📨 최수진 보호사에게 명세서 발송 완료')">발송</span></td></tr>
+            <tr><td><b>김미영</b></td><td>26건</td><td>1,820,000원</td><td>180,000원</td><td>168,000원</td><td><b>1,832,000원</b></td><td><span class="badge b-done">정산 완료</span></td></tr>
+            <tr><td><b>박민정</b></td><td>22건</td><td>1,540,000원</td><td>120,000원</td><td>140,000원</td><td><b>1,520,000원</b></td><td><span class="badge b-done">정산 완료</span></td></tr>
+            <tr><td><b>이지현</b></td><td>28건</td><td>1,960,000원</td><td>220,000원</td><td>180,000원</td><td><b>2,000,000원</b></td><td><span class="badge b-done">정산 완료</span></td></tr>
+            <tr><td><b>최수진</b></td><td>14건</td><td>980,000원</td><td>60,000원</td><td>92,000원</td><td><b>948,000원</b></td><td><span class="badge b-ing">검토중</span></td></tr>
+            <tr><td><b>정혜원</b></td><td>18건</td><td>1,260,000원</td><td>90,000원</td><td>116,000원</td><td><b>1,234,000원</b></td><td><span class="badge b-ing">검토중</span></td></tr>
           </tbody>
         </table>
+        <div style="margin-top:14px;padding:12px;background:var(--g50);border-radius:10px;display:flex;justify-content:space-between;align-items:center">
+          <span style="font-size:13px;font-weight:700">총 지급 예정</span>
+          <span style="font-size:18px;font-weight:800;color:var(--teal)">7,534,000원</span>
+        </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
-</div><!-- /layout -->
+  </div>
+</main>
 
-<!-- ===== 작업지시 작성/수정 모달 ===== -->
+<!-- ===== 작업지시 모달 ===== -->
 <div id="woModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('woModal')">
   <div class="modal">
     <div class="modal-hd">
-      <div class="modal-title" id="woModalTitle">작업지시 작성</div>
+      <div class="modal-title">📋 작업지시 상세</div>
       <button class="modal-close" onclick="closeModal('woModal')">✕</button>
+    </div>
+    <div class="modal-body" id="woModalBody">
+      <!-- 동적 -->
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('woModal')">닫기</button>
+      <button class="btn btn-primary" onclick="toast('✅ 작업지시 재발송 완료');closeModal('woModal')">📨 재발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 새 작업지시 모달 ===== -->
+<div id="newWoModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('newWoModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">📨 새 작업지시 발송</div>
+      <button class="modal-close" onclick="closeModal('newWoModal')">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">담당 보호사</label>
           <select class="form-input form-select" id="wo-worker">
-            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option>
+            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option><option>정혜원</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">수급자</label>
           <select class="form-input form-select" id="wo-patient">
-            <option>박종철 어르신</option><option>이순자 어르신</option><option>최영순 어르신</option><option>정동호 어르신</option><option>강복순 어르신</option><option>홍말순 어르신</option>
+            <option>이순자</option><option>박종철</option><option>최영순</option><option>정동호</option><option>강복순</option><option>김순자</option><option>윤재호</option><option>한미숙</option>
           </select>
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">작업지시 내용</label>
+        <textarea class="form-input form-textarea" placeholder="예: 오늘 식사 보조 시 연하 곤란 주의. 죽 형태로 제공 부탁드립니다."></textarea>
+      </div>
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">방문 일자</label>
-          <input type="date" class="form-input" id="wo-date">
+          <label class="form-label">긴급도</label>
+          <select class="form-input form-select"><option>일반</option><option>긴급</option></select>
         </div>
         <div class="form-group">
-          <label class="form-label">방문 시간</label>
-          <input type="time" class="form-input" id="wo-time">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">케어 항목 (복수 선택)</label>
-        <div class="check-grid">
-          <label class="check-option"><input type="checkbox" checked> 🍚 식사 보조</label>
-          <label class="check-option"><input type="checkbox" checked> 🤸 체위 변경</label>
-          <label class="check-option"><input type="checkbox"> 🧘 스트레칭</label>
-          <label class="check-option"><input type="checkbox"> 💊 투약 확인</label>
-          <label class="check-option"><input type="checkbox"> 🛁 청결 케어</label>
-          <label class="check-option"><input type="checkbox"> 🩺 혈압 체크</label>
-          <label class="check-option"><input type="checkbox"> 🧠 인지활동</label>
-          <label class="check-option"><input type="checkbox"> 🛏️ 침구 교체</label>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">특별 지시사항</label>
-        <textarea class="form-input form-textarea" id="wo-memo" placeholder="어르신 상태, 주의사항, 특별 요청 등을 입력하세요..."></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label">긴급도</label>
-        <div class="urgency-row">
-          <button class="urgency-btn u-normal sel" onclick="setUrgency(this,'normal')">일반</button>
-          <button class="urgency-btn u-important" onclick="setUrgency(this,'important')">⚠ 중요</button>
-          <button class="urgency-btn u-urgent" onclick="setUrgency(this,'urgent')">🚨 긴급</button>
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">전송 방법</label>
-        <div class="radio-row">
-          <label class="radio-option selected" id="send-app" onclick="setSendMethod('app')"><input type="radio" name="send" value="app" checked> 📱 앱 알림</label>
-          <label class="radio-option" id="send-sms" onclick="setSendMethod('sms')"><input type="radio" name="send" value="sms"> 💬 문자(SMS)</label>
-          <label class="radio-option" id="send-both" onclick="setSendMethod('both')"><input type="radio" name="send" value="both"> 📱+💬 둘 다</label>
+          <label class="form-label">발송 방식</label>
+          <select class="form-input form-select"><option>앱 푸시 + 알림톡</option><option>앱 푸시</option><option>SMS</option></select>
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="closeModal('woModal')">취소</button>
-      <button class="btn btn-primary" onclick="sendWorkOrder()">작업지시 발송</button>
+      <button class="btn btn-ghost-sm" onclick="closeModal('newWoModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 작업지시 발송 완료 (앱 푸시 + 알림톡)');closeModal('newWoModal')">📨 발송하기</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 미납금 정산 모달 ===== -->
-<div id="unpaidModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('unpaidModal')">
-  <div class="modal" style="max-width:400px">
-    <div class="modal-hd">
-      <div class="modal-title">미납금 정산</div>
-      <button class="modal-close" onclick="closeModal('unpaidModal')">✕</button>
-    </div>
-    <div class="modal-body">
-      <div id="unpaidInfo" style="background:var(--g50);border-radius:12px;padding:16px;margin-bottom:16px;font-size:14px;line-height:1.8"></div>
-      <div class="form-group">
-        <label class="form-label">정산 메모</label>
-        <textarea class="form-input form-textarea" style="min-height:60px" placeholder="현금 수납, 계좌이체 등 정산 방법 메모..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="toast('📨 미납 안내 문자 발송 완료');closeModal('unpaidModal')">문자 발송</button>
-      <button class="btn btn-primary" onclick="toast('✅ 정산 처리 완료');closeModal('unpaidModal')">정산 완료 처리</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== 케어일지 상세 모달 ===== -->
-<div id="journalModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('journalModal')">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-hd">
-      <div class="modal-title" id="journalModalTitle">케어일지 상세</div>
-      <button class="modal-close" onclick="closeModal('journalModal')">✕</button>
-    </div>
-    <div class="modal-body" id="journalModalBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="toast('📥 PDF 저장 완료');closeModal('journalModal')">PDF 저장</button>
-      <button class="btn btn-primary" onclick="toast('📨 가족에게 일지 공유 완료');closeModal('journalModal')">가족 공유</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== 보호사 상세 모달 ===== -->
+<!-- ===== 보호사 모달 ===== -->
 <div id="workerModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('workerModal')">
-  <div class="modal" style="max-width:400px">
+  <div class="modal">
     <div class="modal-hd">
-      <div class="modal-title" id="workerModalTitle">보호사 정보</div>
+      <div class="modal-title" id="wkmTitle">👩‍⚕️ 보호사</div>
       <button class="modal-close" onclick="closeModal('workerModal')">✕</button>
     </div>
-    <div class="modal-body" id="workerModalBody"></div>
+    <div class="modal-body" id="wkmBody"></div>
     <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="closeModal('workerModal');openNewWoModal()">작업지시 발송</button>
-      <button class="btn btn-primary" onclick="toast('📞 전화 연결 중...');closeModal('workerModal')">📞 전화하기</button>
+      <button class="btn btn-ghost-sm" onclick="closeModal('workerModal')">닫기</button>
+      <button class="btn btn-primary" onclick="toast('📨 작업지시 발송창으로 이동');closeModal('workerModal');openNewWoModal()">+ 작업지시</button>
     </div>
   </div>
 </div>
 
-<script>
-// ===== 날짜 =====
-(function(){
-  const d=new Date();
-  const days=['일','월','화','수','목','금','토'];
-  const dateStr=`${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
-  document.getElementById('topbarDate').textContent=dateStr;
-  const vsub=document.getElementById('visitSubtitle');
-  if(vsub)vsub.textContent=dateStr+' · 총 12건 예정';
-  const dt=document.getElementById('wo-date');
-  if(dt)dt.value=d.toISOString().split('T')[0];
-})();
-
-// ===== 뷰 전환 =====
-const viewTitles={
-  dashboard:'📊 대시보드',visits:'🏠 오늘 방문 현황',workorders:'📋 작업지시 관리',
-  schedule:'📅 일정 관리',patients:'👴 수급자 관리',workers:'👩‍⚕️ 보호사 관리',
-  journal:'📝 케어일지',unpaid:'💰 미납금 관리',revenue:'📈 매출 현황',salary:'🧾 급여 정산'
-};
-const mainBtns={
-  dashboard:'+ 작업지시 발송',visits:'+ 작업지시 발송',workorders:'+ 새 작업지시',
-  patients:'+ 수급자 등록',workers:'+ 보호사 등록',journal:'PDF 다운로드',
-  unpaid:'전체 문자 발송',revenue:'리포트 출력',schedule:'+ 일정 등록',salary:'명세서 일괄 발송'
-};
-const viewGroup={
-  dashboard:'ops',visits:'ops',workorders:'ops',schedule:'ops',
-  patients:'mgmt',workers:'mgmt',journal:'mgmt',
-  unpaid:'settle',revenue:'settle',salary:'settle'
-};
-function showView(name){
-  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
-  const el=document.getElementById('view-'+name);
-  if(el)el.classList.add('active');
-  document.querySelectorAll('.sb-item').forEach(b=>{
-    b.classList.toggle('active',b.dataset.view===name);
-  });
-  document.getElementById('topbarTitle').textContent=viewTitles[name]||name;
-  document.getElementById('topbarMainBtn').textContent=mainBtns[name]||'+ 새로 만들기';
-  // topbar 탭 활성화
-  const grp=viewGroup[name];
-  const tnavBtns=document.querySelectorAll('.tnav-btn');
-  tnavBtns[0].classList.toggle('active',grp==='ops');
-  tnavBtns[1].classList.toggle('active',grp==='mgmt');
-  tnavBtns[2].classList.toggle('active',grp==='settle');
-}
-document.querySelectorAll('.sb-item').forEach(item=>{
-  item.addEventListener('click',()=>showView(item.dataset.view));
-});
-function handleMainBtn(){
-  const active=document.querySelector('.view.active');
-  if(!active)return;
-  const name=active.id.replace('view-','');
-  if(['dashboard','visits','workorders','schedule'].includes(name)) openNewWoModal();
-  else if(name==='unpaid') toast('📨 전체 미납 안내 문자 발송 완료',2500);
-  else if(name==='journal') toast('📥 전체 PDF 다운로드 중...');
-  else if(name==='salary') toast('📨 전체 명세서 발송 중...');
-  else toast('➕ 새로 만들기');
-}
-
-// ===== 토스트 =====
-function toast(msg,duration=2500){
-  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
-  const el=document.createElement('div');
-  el.className='t-msg';
-  el.textContent=msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(),duration);
-}
-
-// ===== 모달 =====
-function closeModal(id){document.getElementById(id).style.display='none';}
-
-// 작업지시 모달 (새로 작성)
-function openNewWoModal(worker=''){
-  document.getElementById('woModalTitle').textContent='✏️ 작업지시 작성';
-  if(worker){
-    const sel=document.getElementById('wo-worker');
-    for(let i=0;i<sel.options.length;i++){if(sel.options[i].text===worker){sel.selectedIndex=i;break;}}
-  }
-  document.getElementById('wo-memo').value='';
-  document.getElementById('woModal').style.display='flex';
-}
-
-// 작업지시 모달 (수정)
-function openWoEditModal(patient,worker,time,status){
-  document.getElementById('woModalTitle').textContent='📋 작업지시 수정 · '+patient+' 어르신';
-  const ws=document.getElementById('wo-worker');
-  for(let i=0;i<ws.options.length;i++){if(ws.options[i].text===worker){ws.selectedIndex=i;break;}}
-  const ps=document.getElementById('wo-patient');
-  for(let i=0;i<ps.options.length;i++){if(ps.options[i].text.includes(patient)){ps.selectedIndex=i;break;}}
-  document.getElementById('wo-time').value=time.replace(':',':')||'11:30';
-  const memos={
-    '박종철':'오늘 방문 시 혈압 체크 필수. 무릎 통증 호소 중이므로 스트레칭 강도 줄이고 연고 도포 확인해주세요.',
-    '이순자':'혈압 체크 후 인지활동 진행. 식사량 저하 시 센터장에게 바로 보고해주세요.',
-    '최영순':'청결 케어 후 침구 교체. 방문 완료 후 일지 사진 첨부 필수.',
-    '정동호':'식사 보조 시 연하 곤란 주의. 죽 형태로 제공 확인. 투약 빠지지 않도록.',
-    '강복순':'기본 케어 진행. 특이사항 있으면 즉시 보고.',
-    '홍말순':'기본 케어 + 혈압 체크. 어르신 기분 상태 확인 후 인지활동 진행.'
-  };
-  document.getElementById('wo-memo').value=memos[patient]||'기본 케어 항목 진행해주세요.';
-  document.getElementById('woModal').style.display='flex';
-}
-
-function sendWorkOrder(){
-  const worker=document.getElementById('wo-worker').value;
-  const patient=document.getElementById('wo-patient').value;
-  closeModal('woModal');
-  toast(`✅ ${worker} 보호사에게\n${patient} 작업지시 발송 완료`,2800);
-}
-
-function setUrgency(btn,level){
-  document.querySelectorAll('.urgency-btn').forEach(b=>b.classList.remove('sel'));
-  btn.classList.add('sel');
-}
-
-// ===== 일정 필터 =====
-function filterDay(day,clickedBtn){
-  document.querySelectorAll('[id^="daybtn-"]').forEach(b=>{
-    b.className='btn btn-ghost-sm';
-    b.style.cssText='padding:7px 14px;font-size:12px';
-  });
-  clickedBtn.className='btn btn-primary';
-  clickedBtn.style.cssText='padding:7px 14px;font-size:12px';
-  if(clickedBtn.id==='daybtn-all') clickedBtn.style.marginLeft='auto';
-  document.querySelectorAll('.sch-row').forEach(row=>{
-    row.style.display=(day==='all'||row.dataset.day===day)?'':'none';
-  });
-}
-function setSendMethod(method){
-  ['app','sms','both'].forEach(m=>{
-    document.getElementById('send-'+m).classList.toggle('selected',m===method);
-  });
-}
-
-// 미납금 모달
-function openUnpaidModal(name,amt,days){
-  document.getElementById('unpaidInfo').innerHTML=
-    `<strong>${name} 어르신</strong><br>
-    미납 금액: <span style="color:var(--red);font-weight:800;">${Number(amt).toLocaleString()}원</span><br>
-    경과 기간: ${days}일<br>
-    보호자 연락처: 010-0000-0000`;
-  document.getElementById('unpaidModal').style.display='flex';
-}
-
-// 케어일지 모달
-const journalData={
-  '박종철':{worker:'김미영',time:'11:45~13:02',bp:'130/82',meal:'100%',mood:'😊 양호',
-    memo:'무릎 통증 호소하여 스트레칭 강도 조절. 연고 도포 완료. 가족분 방문 예정이라 주변 정리함.',
-    items:['식사보조','체위변경','스트레칭','연고도포']},
-  '이순자':{worker:'박민정',time:'09:05~10:28',bp:'130/80',meal:'80%',mood:'😊 양호',
-    memo:'식욕 다소 저하. 인지활동(그림 맞추기) 진행. 어르신 기분 좋으심.',
-    items:['식사보조','혈압체크','인지활동','청결케어']},
-  '강복순':{worker:'박민정',time:'10:05~11:32',bp:'125/78',meal:'100%',mood:'😊 매우 양호',
-    memo:'특이사항 없음. 침구 교체 완료. 어르신 컨디션 좋으심.',
-    items:['식사보조','체위변경','청결케어','침구교체']}
-};
-function openJournalModal(patient,worker){
-  const d=journalData[patient];
-  if(!d)return;
-  document.getElementById('journalModalTitle').textContent='📝 '+patient+' 어르신 케어일지';
-  document.getElementById('journalModalBody').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-      <div style="background:var(--g50);border-radius:10px;padding:12px"><div style="font-size:10px;color:var(--gray);margin-bottom:4px">담당 보호사</div><div style="font-weight:700;">${d.worker}</div></div>
-      <div style="background:var(--g50);border-radius:10px;padding:12px"><div style="font-size:10px;color:var(--gray);margin-bottom:4px">방문 시간</div><div style="font-weight:700;">${d.time}</div></div>
-      <div style="background:var(--g50);border-radius:10px;padding:12px"><div style="font-size:10px;color:var(--gray);margin-bottom:4px">혈압</div><div style="font-weight:700;">${d.bp}</div></div>
-      <div style="background:var(--g50);border-radius:10px;padding:12px"><div style="font-size:10px;color:var(--gray);margin-bottom:4px">식사량</div><div style="font-weight:700;">${d.meal}</div></div>
+<!-- ===== 미납 모달 ===== -->
+<div id="unpaidModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('unpaidModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">💰 미납금 상세</div>
+      <button class="modal-close" onclick="closeModal('unpaidModal')">✕</button>
     </div>
-    <div style="margin-bottom:12px"><div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:8px">수행 케어 항목</div>
-      <div style="display:flex;gap:6px;flex-wrap:wrap">${d.items.map(i=>`<span class="badge b-done">✓ ${i}</span>`).join('')}</div>
+    <div class="modal-body" id="upmBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('unpaidModal')">닫기</button>
+      <button class="btn btn-primary" onclick="toast('📨 미납 안내 SMS 발송 완료');closeModal('unpaidModal')">📨 안내 발송</button>
     </div>
-    <div style="background:var(--g50);border-radius:10px;padding:12px">
-      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px">특이사항 메모</div>
-      <div style="font-size:13px;line-height:1.7;color:var(--navy)">${d.memo}</div>
-    </div>`;
-  document.getElementById('journalModal').style.display='flex';
-}
+  </div>
+</div>
 
-// 보호사 모달
-function openWorkerModal(name){
-  const data={
-    '김미영':{emoji:'👩‍⚕️',exp:'5년',cert:'요양보호사 1급',phone:'010-1111-2222',today:4,month:48,status:'방문중'},
-    '박민정':{emoji:'👩',exp:'3년',cert:'요양보호사 1급',phone:'010-2222-3333',today:3,month:36,status:'이동중'},
-    '이지현':{emoji:'👩‍🦳',exp:'7년',cert:'요양보호사 1급',phone:'010-3333-4444',today:2,month:31,status:'대기중'},
-    '최수진':{emoji:'👩‍🦱',exp:'2년',cert:'요양보호사 1급',phone:'010-4444-5555',today:3,month:28,status:'방문중'}
-  };
-  const d=data[name];if(!d)return;
-  document.getElementById('workerModalTitle').textContent=d.emoji+' '+name+' 보호사';
-  document.getElementById('workerModalBody').innerHTML=`
-    <div style="text-align:center;margin-bottom:18px">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 10px;border:3px solid var(--teal2)">${d.emoji}</div>
-      <div style="font-size:18px;font-weight:800">${name}</div>
-      <div style="font-size:12px;color:var(--gray)">경력 ${d.exp} · ${d.cert}</div>
+<!-- ===== 보호자 초대 모달 ===== -->
+<div id="inviteModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('inviteModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">📨 보호자 초대</div>
+      <button class="modal-close" onclick="closeModal('inviteModal')">✕</button>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
-      <div style="background:var(--g50);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--gray)">오늘 담당</div><div style="font-size:20px;font-weight:800;color:var(--teal)">${d.today}건</div></div>
-      <div style="background:var(--g50);border-radius:10px;padding:12px;text-align:center"><div style="font-size:10px;color:var(--gray)">이번달 근무</div><div style="font-size:20px;font-weight:800;color:var(--teal)">${d.month}건</div></div>
+    <div class="modal-body">
+      <div style="background:var(--tl);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px">
+        <div id="invitePatient" style="font-weight:700;color:var(--teal);margin-bottom:4px">-</div>
+        <div style="color:var(--gray);font-size:12px">초대 코드 + 링크가 생성됩니다. 보호자가 가입 시 자동 연결됩니다.</div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">관계</label>
+          <select class="form-input form-select"><option>자녀</option><option>배우자</option><option>손주</option><option>형제자매</option></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">보호자 연락처</label>
+          <input type="tel" class="form-input" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div style="background:#fff;border:2px dashed var(--teal);border-radius:14px;padding:20px;text-align:center">
+        <div style="font-size:11px;color:var(--gray);margin-bottom:6px">초대 코드 (7일 유효)</div>
+        <div style="font-size:28px;font-weight:800;letter-spacing:6px;color:var(--teal);font-family:monospace">A8K3MP9R</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:8px">5월 4일까지 유효</div>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:12px;margin-top:12px;font-size:11px;font-family:monospace;color:var(--teal);word-break:break-all">crescentstudio.co.kr/care-login.html?invite=A8K3MP9R</div>
     </div>
-    <div style="background:var(--g50);border-radius:10px;padding:12px;font-size:13px;line-height:1.8">
-      연락처: <strong>${d.phone}</strong><br>현재 상태: <strong style="color:var(--teal)">${d.status}</strong>
-    </div>`;
-  document.getElementById('workerModal').style.display='flex';
-}
-</script>
+    <div class="modal-footer" style="flex-wrap:wrap;gap:6px">
+      <button class="btn btn-ghost-sm" onclick="closeModal('inviteModal')">닫기</button>
+      <button class="btn btn-ghost-sm" onclick="toast('🔗 링크가 복사되었습니다')">🔗 복사</button>
+      <button class="btn btn-ghost-sm" onclick="toast('💬 카카오톡으로 공유')">💬 카톡</button>
+      <button class="btn btn-primary" onclick="toast('✅ SMS 발송 완료');closeModal('inviteModal')">📱 SMS 발송</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== 수급자 등록 모달 ===== -->
-<div id="patientRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('patientRegModal')">
-  <div class="modal" style="max-width:540px">
-    <div class="modal-hd"><div class="modal-title">👴 수급자 등록</div><button class="modal-close" onclick="closeModal('patientRegModal')">✕</button></div>
+<div id="patRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('patRegModal')">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">👴 수급자 등록</div><button class="modal-close" onclick="closeModal('patRegModal')">✕</button></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">성명 *</label><input class="form-input" placeholder="홍길동"></div>
-        <div class="form-group"><label class="form-label">생년월일 *</label><input class="form-input" type="date"></div>
+        <div class="form-group"><label class="form-label">성명 *</label><input type="text" class="form-input" placeholder="홍길동"></div>
+        <div class="form-group"><label class="form-label">생년월일</label><input type="date" class="form-input"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">장기요양등급 *</label>
-          <select class="form-input form-select">
-            <option>1등급</option><option>2등급</option><option selected>3등급</option><option>4등급</option><option>5등급</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">연락처</label><input class="form-input" placeholder="010-0000-0000"></div>
+        <div class="form-group"><label class="form-label">장기요양 등급 *</label><select class="form-input form-select"><option>3등급</option><option>1등급</option><option>2등급</option><option>4등급</option><option>5등급</option></select></div>
+        <div class="form-group"><label class="form-label">연락처</label><input type="tel" class="form-input" placeholder="010-0000-0000"></div>
       </div>
-      <div class="form-group"><label class="form-label">주소 *</label><input class="form-input" placeholder="성남시 중원구 중앙동 123"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">담당 보호사</label>
-          <select class="form-input form-select">
-            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">보호자 연락처</label><input class="form-input" placeholder="보호자 전화번호"></div>
-      </div>
-      <div class="form-group"><label class="form-label">특이사항</label>
-        <textarea class="form-input form-textarea" placeholder="건강 상태, 주의사항 등을 입력하세요..."></textarea>
-      </div>
+      <div class="form-group"><label class="form-label">주소</label><input type="text" class="form-input" placeholder="예: 분당구 서현동 123"></div>
+      <div class="form-group"><label class="form-label">담당 보호사</label><select class="form-input form-select"><option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option><option>정혜원</option></select></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="closeModal('patientRegModal')">취소</button>
-      <button class="btn btn-primary" onclick="toast('✅ 수급자 등록이 완료되었습니다');closeModal('patientRegModal')">등록 완료</button>
+      <button class="btn btn-ghost-sm" onclick="closeModal('patRegModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 수급자 등록 완료');closeModal('patRegModal')">등록하기</button>
     </div>
   </div>
 </div>
 
 <!-- ===== 보호사 등록 모달 ===== -->
-<div id="workerRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('workerRegModal')">
-  <div class="modal" style="max-width:540px">
-    <div class="modal-hd"><div class="modal-title">👩‍⚕️ 보호사 등록</div><button class="modal-close" onclick="closeModal('workerRegModal')">✕</button></div>
+<div id="wkrRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('wkrRegModal')">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">👩‍⚕️ 보호사 등록</div><button class="modal-close" onclick="closeModal('wkrRegModal')">✕</button></div>
     <div class="modal-body">
       <div class="form-row">
-        <div class="form-group"><label class="form-label">성명 *</label><input class="form-input" placeholder="홍길동"></div>
-        <div class="form-group"><label class="form-label">연락처 *</label><input class="form-input" placeholder="010-0000-0000"></div>
+        <div class="form-group"><label class="form-label">성명 *</label><input type="text" class="form-input"></div>
+        <div class="form-group"><label class="form-label">연락처 *</label><input type="tel" class="form-input"></div>
       </div>
+      <div class="form-group"><label class="form-label">이메일 * <span style="font-size:10px;color:var(--gray);font-weight:400">(보호사가 이 이메일로 가입하면 자동 연결)</span></label><input type="email" class="form-input"></div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">자격증 종류 *</label>
-          <select class="form-input form-select">
-            <option>요양보호사 1급</option><option>요양보호사 2급</option><option>사회복지사</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">경력 연수</label><input class="form-input" type="number" placeholder="3" min="0"></div>
+        <div class="form-group"><label class="form-label">자격증</label><select class="form-input form-select"><option>요양보호사 1급</option><option>요양보호사 2급</option><option>간호조무사</option></select></div>
+        <div class="form-group"><label class="form-label">경력 (년수)</label><input type="number" class="form-input" placeholder="0"></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">생년월일</label><input class="form-input" type="date"></div>
-        <div class="form-group"><label class="form-label">계좌번호</label><input class="form-input" placeholder="은행명 + 계좌번호"></div>
-      </div>
-      <div class="form-group"><label class="form-label">주소</label><input class="form-input" placeholder="거주지 주소"></div>
-      <div class="form-group"><label class="form-label">담당 가능 지역</label>
-        <input class="form-input" placeholder="예: 성남시 중원구, 수정구">
-      </div>
+      <div class="form-group"><label class="form-label">담당 지역</label><input type="text" class="form-input" placeholder="예: 분당구, 수정구"></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="closeModal('workerRegModal')">취소</button>
-      <button class="btn btn-primary" onclick="toast('✅ 보호사 등록이 완료되었습니다');closeModal('workerRegModal')">등록 완료</button>
+      <button class="btn btn-ghost-sm" onclick="closeModal('wkrRegModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 등록 완료! 보호사가 가입하면 자동 연결됩니다');closeModal('wkrRegModal')">등록하기</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 일정 등록 모달 ===== -->
-<div id="schedRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('schedRegModal')">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-hd"><div class="modal-title">📅 일정 등록</div><button class="modal-close" onclick="closeModal('schedRegModal')">✕</button></div>
+<!-- ===== 일정 등록 ===== -->
+<div id="schedModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('schedModal')">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">📅 일정 등록</div><button class="modal-close" onclick="closeModal('schedModal')">✕</button></div>
     <div class="modal-body">
-      <div class="notice" style="margin-bottom:16px">💡 반복 방문 스케줄을 등록합니다. 등록 후 달력에 자동 반영됩니다.</div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">수급자 *</label>
-          <select class="form-input form-select">
-            <option>박종철 어르신</option><option>이순자 어르신</option><option>최영순 어르신</option><option>정동호 어르신</option><option>홍말순 어르신</option><option>강복순 어르신</option><option>김영자 어르신</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">담당 보호사 *</label>
-          <select class="form-input form-select">
-            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-group"><label class="form-label">방문 요일 *</label>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 월</label>
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 화</label>
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 수</label>
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 목</label>
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 금</label>
-          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 토</label>
-        </div>
+        <div class="form-group"><label class="form-label">날짜 *</label><input type="date" class="form-input"></div>
+        <div class="form-group"><label class="form-label">시작 시간 *</label><input type="time" class="form-input"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">방문 시작 시간 *</label><input class="form-input" type="time" value="09:00"></div>
-        <div class="form-group"><label class="form-label">서비스 시간</label>
-          <select class="form-input form-select">
-            <option>30분</option><option>60분</option><option selected>90분</option><option>120분</option><option>180분</option>
-          </select>
-        </div>
+        <div class="form-group"><label class="form-label">수급자 *</label><select class="form-input form-select"><option>이순자</option><option>박종철</option><option>최영순</option><option>정동호</option><option>강복순</option><option>김순자</option><option>윤재호</option><option>한미숙</option></select></div>
+        <div class="form-group"><label class="form-label">담당 보호사 *</label><select class="form-input form-select"><option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option><option>정혜원</option></select></div>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">서비스 종류</label>
-          <select class="form-input form-select">
-            <option selected>방문요양</option><option>방문목욕</option><option>방문간호</option>
-          </select>
-        </div>
-        <div class="form-group"><label class="form-label">시작일 *</label><input class="form-input" type="date"></div>
-      </div>
+      <div class="form-group"><label class="form-label">서비스</label><select class="form-input form-select"><option>방문요양 90분</option><option>방문요양 60분</option><option>방문목욕 60분</option><option>방문간호 30분</option></select></div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-ghost-sm" onclick="closeModal('schedRegModal')">취소</button>
-      <button class="btn btn-primary" onclick="toast('✅ 일정이 등록되었습니다. 달력에 반영됩니다.');closeModal('schedRegModal')">일정 등록</button>
+      <button class="btn btn-ghost-sm" onclick="closeModal('schedModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 일정이 등록되었습니다');closeModal('schedModal')">등록하기</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 전체 문자 발송 모달 ===== -->
+<!-- ===== 전체 문자 발송 ===== -->
 <div id="smsModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('smsModal')">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-hd"><div class="modal-title">📨 전체 미납 안내 문자 발송</div><button class="modal-close" onclick="closeModal('smsModal')">✕</button></div>
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">📨 전체 문자 발송</div><button class="modal-close" onclick="closeModal('smsModal')">✕</button></div>
     <div class="modal-body">
-      <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#92400e">
-        ⚠️ 미납금이 있는 <strong>3명</strong>의 보호자에게 문자가 발송됩니다.
+      <div class="form-group">
+        <label class="form-label">수신 대상</label>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer"><input type="checkbox" checked> 보호자 12명</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer"><input type="checkbox"> 수급자 8명</label>
+          <label style="display:flex;align-items:center;gap:8px;padding:10px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer"><input type="checkbox"> 보호사 5명</label>
+        </div>
       </div>
-      <div class="form-group"><label class="form-label">발신번호</label>
-        <input class="form-input" value="031-000-0000" readonly style="background:var(--g50)">
-      </div>
-      <div class="form-group"><label class="form-label">문자 내용 (수정 가능)</label>
-        <textarea class="form-input form-textarea" style="min-height:120px">[햇살요양센터] 안녕하세요. 미납금 안내드립니다.
+      <div class="form-group"><label class="form-label">내용 (변수: #{이름})</label><textarea class="form-input form-textarea" rows="4">안녕하세요 #{이름}님,
 
-보호자님, 현재 미납금이 발생되어 안내드립니다.
-납부 문의: 031-000-0000
+이번주 케어 일정 안내드립니다.
+- 다음 방문: ____월 ____일 ____시
+- 담당 보호사: ____
 
-감사합니다.</textarea>
-      </div>
-      <div style="font-size:12px;color:var(--gray)">수신: 박종철 어르신 보호자 · 이순자 어르신 보호자 · 정동호 어르신 보호자</div>
+감사합니다. - 햇살요양센터</textarea></div>
+      <div style="background:#fef3c7;color:#78350f;padding:10px;border-radius:8px;font-size:12px">⚠️ 예상 발송: 12건 · 잔여 58건 → 발송 후 잔여 46건</div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost-sm" onclick="closeModal('smsModal')">취소</button>
-      <button class="btn btn-primary" onclick="toast('📨 3명에게 미납 안내 문자를 발송했습니다');closeModal('smsModal')">📨 발송하기</button>
+      <button class="btn btn-primary" onclick="toast('✅ 12명에게 발송 완료');closeModal('smsModal')">📨 발송하기</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 급여 명세서 일괄 발송 모달 ===== -->
+<!-- ===== 급여 명세서 ===== -->
 <div id="salaryModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('salaryModal')">
-  <div class="modal" style="max-width:500px">
-    <div class="modal-hd"><div class="modal-title">🧾 급여 명세서 일괄 발송</div><button class="modal-close" onclick="closeModal('salaryModal')">✕</button></div>
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">💼 급여 명세서 일괄 발송</div><button class="modal-close" onclick="closeModal('salaryModal')">✕</button></div>
     <div class="modal-body">
-      <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--teal)">
-        📋 보호사 <strong>4명</strong>에게 2026년 4월 급여 명세서를 발송합니다.
+      <div style="background:var(--tl);padding:14px;border-radius:10px;margin-bottom:14px;font-size:13px;line-height:1.7">
+        <b>2026년 4월 급여 명세서</b>를 보호사 5명에게 일괄 발송합니다.<br>
+        총 지급 예정: <b style="color:var(--teal)">7,534,000원</b>
       </div>
-      <div class="card" style="margin-bottom:0;padding:14px">
-        <table class="tbl">
-          <thead><tr><th>보호사</th><th>실수령액</th><th>발송 방법</th></tr></thead>
-          <tbody>
-            <tr><td><b>김미영</b></td><td style="color:var(--teal);font-weight:700">1,779,520원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
-            <tr><td><b>박민정</b></td><td style="color:var(--teal);font-weight:700">1,334,640원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
-            <tr><td><b>이지현</b></td><td style="color:var(--teal);font-weight:700">1,148,280원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
-            <tr><td><b>최수진</b></td><td style="color:var(--teal);font-weight:700">1,037,040원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="tbl">
+        <thead><tr><th>보호사</th><th>실지급</th><th>발송 상태</th></tr></thead>
+        <tbody>
+          <tr><td>김미영</td><td>1,832,000원</td><td><span class="badge b-wait">대기</span></td></tr>
+          <tr><td>박민정</td><td>1,520,000원</td><td><span class="badge b-wait">대기</span></td></tr>
+          <tr><td>이지현</td><td>2,000,000원</td><td><span class="badge b-wait">대기</span></td></tr>
+          <tr><td>최수진</td><td>948,000원</td><td><span class="badge b-wait">대기</span></td></tr>
+          <tr><td>정혜원</td><td>1,234,000원</td><td><span class="badge b-wait">대기</span></td></tr>
+        </tbody>
+      </table>
     </div>
     <div class="modal-footer">
       <button class="btn btn-ghost-sm" onclick="closeModal('salaryModal')">취소</button>
-      <button class="btn btn-primary" onclick="toast('📨 4명에게 급여 명세서를 발송했습니다');closeModal('salaryModal')">📨 일괄 발송</button>
+      <button class="btn btn-primary" onclick="toast('✅ 5명에게 명세서 LMS 발송 완료');closeModal('salaryModal')">📨 일괄 발송</button>
     </div>
   </div>
 </div>
 
-<!-- ===== 데모 초기화 ===== -->
+<!-- ===== 문자 충전 ===== -->
+<div id="smsChargeModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('smsChargeModal')">
+  <div class="modal">
+    <div class="modal-hd"><div class="modal-title">💬 문자 추가 충전</div><button class="modal-close" onclick="closeModal('smsChargeModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--tl);padding:14px;border-radius:10px;margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span>이번달 사용</span><b style="color:var(--teal)">42건 / 100건</b></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:700">잔여</span><b style="color:var(--teal);font-size:15px">58건</b></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">충전 패키지 (단문 SMS)</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <label style="border:1.5px solid var(--border);padding:14px;border-radius:10px;text-align:center;cursor:pointer"><input type="radio" name="pkg" style="display:none"><div style="font-size:14px;font-weight:700">100건</div><div style="font-size:16px;color:var(--teal);font-weight:800;margin:4px 0">2,500원</div></label>
+          <label style="border:2px solid var(--teal);background:var(--tl);padding:14px;border-radius:10px;text-align:center;cursor:pointer"><input type="radio" name="pkg" style="display:none" checked><div style="font-size:14px;font-weight:700">300건 🔥</div><div style="font-size:16px;color:var(--teal);font-weight:800;margin:4px 0">7,500원</div></label>
+          <label style="border:1.5px solid var(--border);padding:14px;border-radius:10px;text-align:center;cursor:pointer"><input type="radio" name="pkg" style="display:none"><div style="font-size:14px;font-weight:700">500건</div><div style="font-size:16px;color:var(--teal);font-weight:800;margin:4px 0">12,500원</div></label>
+          <label style="border:1.5px solid var(--border);padding:14px;border-radius:10px;text-align:center;cursor:pointer"><input type="radio" name="pkg" style="display:none"><div style="font-size:14px;font-weight:700">1,000건</div><div style="font-size:16px;color:var(--teal);font-weight:800;margin:4px 0">25,000원</div></label>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('smsChargeModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('💳 토스 결제창으로 이동... (데모: 결제 시뮬레이션)');closeModal('smsChargeModal')">💳 결제하기</button>
+    </div>
+  </div>
+</div>
+
 <script>
-// ===== 케어일지 날짜 필터 =====
-function filterJournal(period) {
-  // 탭 활성화
-  document.querySelectorAll('.day-tab').forEach(t => t.classList.remove('active'));
-  event.target.classList.add('active');
+// ===== 사이드바 토글 =====
+function toggleSidebar(force){
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sbBackdrop');
+  const open = (typeof force === 'boolean') ? force : !sb.classList.contains('open');
+  sb.classList.toggle('open', open);
+  bd.classList.toggle('show', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+window.addEventListener('resize', () => { if(window.innerWidth > 900) toggleSidebar(false); });
 
-  // 항목 표시/숨기기
-  document.querySelectorAll('#journalList .journal-item').forEach(item => {
-    const periods = item.dataset.period || 'today';
-    item.style.display = periods.includes(period) ? 'block' : 'none';
+// ===== 표 자동 가로스크롤 래퍼 =====
+function wrapTables(root){
+  (root||document).querySelectorAll('.tbl').forEach(t => {
+    if(!t.parentElement.classList.contains('tbl-wrap')){
+      const wrap = document.createElement('div');
+      wrap.className = 'tbl-wrap';
+      t.parentElement.insertBefore(wrap, t);
+      wrap.appendChild(t);
+    }
   });
-
-  // 부제목 업데이트
-  const count = [...document.querySelectorAll('#journalList .journal-item')]
-    .filter(el => el.style.display !== 'none').length;
-  const labels = {today:'오늘',yesterday:'어제',week:'이번주',month:'이번달'};
-  document.getElementById('journalSub').textContent = `${labels[period]} 제출된 일지 ${count}건`;
 }
+window.addEventListener('DOMContentLoaded', () => wrapTables());
 
-// ===== 케어일지 전체 내용 (PDF용) =====
-const journalFullText = {
-  '박종철_11:45~13:02_2026-04-26': '식사량 100% 양호. 무릎 통증 호소하여 스트레칭 강도 조절 후 어르신 통증 감소 확인. 연고 도포 완료. 가족분 방문 예정이라 주변 정리 완료. 투약(혈압약, 당뇨약) 확인. 체온 36.5도 정상. 다음 방문 시 무릎 경과 지속 확인 필요.',
-  '이순자_09:05~10:28_2026-04-26': '혈압 130/80 측정 (정상 범위). 컨디션 양호. 식사량 80% (식욕 다소 저하, 어르신 배가 안고프다 하심). 인지활동으로 그림 맞추기 게임 20분 진행, 표정 밝으심. 보행 상태 양호. 청결케어 완료.',
-  '강복순_10:05~11:32_2026-04-26': '기본 케어 전반 진행. 특이사항 없음. 어르신 컨디션 좋으심. 침구 교체 및 환기 완료. 식사량 100%. 혈압 120/78 정상. 투약 확인 완료. 가족과 통화하여 건강 상태 전달함.',
-  '최영순_14:00~15:28_2026-04-25': '혈압 125/78 (정상). 기분 좋으심. 손자 사진 보여드리며 대화, 매우 기뻐하심. 식사량 100%. 오전에 가족과 산책 다녀오셨다고 하심. 청결케어 완료. 정서 상태 매우 양호.',
-  '정동호_16:30~17:45_2026-04-25': '연하 곤란으로 죽 형태 식사 제공, 식사량 70%. 투약 확인 완료 (혈압약, 혈액순환제). 혈압 145/92 (약간 높음), 가족에게 문자로 상황 전달. 다음 방문 시 혈압 재측정 필요. 청결케어 완료.',
-  '박종철_11:30~13:00_2026-04-25': '식사량 90%. 무릎 상태 전일보다 호전, 스트레칭 정상 강도로 진행. 침구 교체 및 환기 완료. 투약 확인 완료. 혈압 128/80 정상. 어르신 기분 좋으심.',
-  '홍말순_09:30~11:00_2026-04-24': '전반적 컨디션 양호. 혈압 128/80 정상. 가벼운 인지활동(퍼즐) 20분 진행, 집중력 양호. 식사량 95%. 청결케어 완료. 투약 확인. 특이사항 없음.',
-  '이순자_09:00~10:30_2026-04-24': '식욕 회복됨, 식사량 100%. 혈압 122/76 양호. 좋아하시는 트로트 노래 틀어드리며 정서 지원, 매우 좋아하심. 청결케어 완료. 투약 확인. 보행 상태 양호.',
-  '김영자_13:00~14:30_2026-04-23': '체중 측정 52.3kg (전주 대비 -0.5kg 감소). 식사량 85%. 가족에게 체중 감소 사실 문자 보고 완료. 보행 보조 진행, 다소 불안정. 혈압 118/74. 영양 보충 권장.',
-  '최영순_14:00~15:30_2026-04-20': '혈압 132/84. 허리 통증 호소하여 자세 교정 도움, 쿠션 지지대 활용. 식사량 100%. 딸이 방문하여 함께 대화 진행, 밝은 표정. 청결케어 완료. 투약 확인.',
-  '정동호_16:30~18:00_2026-04-18': '혈압 정상화(135/85). 이전보다 투약 이행 개선됨. 식사량 100%. 죽 형태에서 일반식으로 전환 시도, 연하 상태 양호. 표정 밝으심. 가족에게 호전 상황 전달.',
+// ===== View 전환 =====
+const VIEW_TITLES = {
+  dashboard:'📊 대시보드', visits:'🏠 오늘 방문 현황', workorders:'📋 작업지시 관리',
+  schedule:'📅 일정 관리', patients:'👴 수급자 관리', workers:'👩‍⚕️ 보호사 관리',
+  journal:'📝 케어일지', sms:'💬 문자 발송',
+  unpaid:'💰 미납금 관리', revenue:'📈 매출 현황', salary:'🧾 급여 정산'
 };
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name)?.classList.add('active');
+  document.querySelectorAll('.sb-item').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+  document.getElementById('topbarTitle').textContent = VIEW_TITLES[name] || '대시보드';
+  // 모바일에서 사이드바 자동 닫기
+  if(window.innerWidth <= 900) toggleSidebar(false);
+  // 표 다시 감싸기 (동적 콘텐츠 대응)
+  wrapTables();
+}
+document.querySelectorAll('.sb-item').forEach(item =>
+  item.addEventListener('click', () => showView(item.dataset.view))
+);
 
-// ===== PDF 다운로드 =====
-function downloadJournalPDF() {
-  const sub = document.getElementById('journalSub').textContent;
-  const items = [...document.querySelectorAll('#journalList .journal-item')]
-    .filter(el => el.style.display !== 'none');
-
-  let html = `<html><head><meta charset="UTF-8">
-  <style>
-    body{font-family:'Apple SD Gothic Neo',sans-serif;padding:30px;color:#0F1B2D;font-size:13px;line-height:1.6}
-    h2{font-size:20px;margin-bottom:6px}
-    .sub{color:#6b7280;font-size:12px;margin-bottom:28px;border-bottom:1px solid #e2e8f0;padding-bottom:12px}
-    .item{border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;page-break-inside:avoid}
-    .name{font-weight:700;font-size:15px;margin-bottom:4px;color:#0F1B2D}
-    .time{color:#6b7280;font-size:12px;margin-bottom:10px}
-    .preview{font-size:13px;line-height:1.8;color:#374151;background:#f8fafc;border-radius:8px;padding:12px;word-break:keep-all}
-    .tags{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
-    .tag{background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
-    .tag-warn{background:#fef9c3;color:#92400e}
-    @media print{body{padding:20px}@page{margin:1.5cm}}
-  </style></head><body>
-  <h2>📝 케어일지</h2>
-  <div class="sub">햇살요양센터 · ${sub} · 출력일: ${new Date().toLocaleDateString('ko-KR')}</div>`;
-
-  items.forEach(item => {
-    const name = item.querySelector('.journal-name')?.textContent || '';
-    const time = item.querySelector('.journal-time')?.textContent || '';
-    // onclick에서 환자명·시간·날짜 추출해서 전체 내용 조회
-    const onclick = item.getAttribute('onclick') || '';
-    const m = onclick.match(/openJournalModal\('([^']+)','[^']+','([^']+)','([^']+)'\)/);
-    const key = m ? `${m[1]}_${m[2]}_${m[3]}` : '';
-    const fullText = journalFullText[key] || item.querySelector('.journal-preview')?.textContent || '';
-    const tags = [...item.querySelectorAll('.badge')].map(b => {
-      const warn = b.textContent.includes('⚠');
-      return `<span class="tag${warn?' tag-warn':''}">${b.textContent}</span>`;
-    }).join('');
-    html += `<div class="item">
-      <div class="name">${name}</div>
-      <div class="time">${time}</div>
-      <div class="preview">${preview}</div>
-      <div class="tags">${tags}</div>
-    </div>`;
-  });
-
-  html += '</body></html>';
-  const w = window.open('', '_blank');
-  w.document.write(html);
-  w.document.close();
-  w.focus();
-  setTimeout(() => w.print(), 500);
+// ===== 토스트 =====
+function toast(msg, duration=2500){
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el = document.createElement('div');
+  el.className = 't-msg';
+  el.style.cssText = 'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:pre-line;text-align:center;box-shadow:0 8px 32px rgba(0,0,0,.25)';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), duration);
 }
 
-// ===== 일정 달력 =====
-const scheduleData = {
-  '2026-04-26': [{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'완료'},{patient:'강복순',worker:'박민정',time:'10:00~11:30',status:'완료'},{patient:'박종철',worker:'김미영',time:'11:30~13:00',status:'방문중'},{patient:'최영순',worker:'이지현',time:'14:00~15:30',status:'대기'},{patient:'정동호',worker:'김미영',time:'16:30~17:30',status:'주의'}],
-  '2026-04-27': [{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'예정'},{patient:'홍말순',worker:'최수진',time:'10:00~11:30',status:'예정'},{patient:'김영자',worker:'최수진',time:'13:00~14:30',status:'예정'}],
-  '2026-04-28': [{patient:'박종철',worker:'김미영',time:'11:30~13:00',status:'예정'},{patient:'최영순',worker:'이지현',time:'14:00~15:30',status:'예정'}],
-  '2026-04-29': [{patient:'강복순',worker:'박민정',time:'10:00~11:30',status:'예정'},{patient:'정동호',worker:'김미영',time:'14:00~15:00',status:'예정'}],
-  '2026-04-30': [{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'예정'},{patient:'홍말순',worker:'최수진',time:'10:00~11:30',status:'예정'}],
-  '2026-04-25': [{patient:'최영순',worker:'이지현',time:'14:00~15:30',status:'완료'},{patient:'정동호',worker:'김미영',time:'16:30~17:45',status:'완료'},{patient:'박종철',worker:'김미영',time:'11:30~13:00',status:'완료'}],
-  '2026-04-24': [{patient:'홍말순',worker:'최수진',time:'09:30~11:00',status:'완료'},{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'완료'}],
-  '2026-04-23': [{patient:'김영자',worker:'최수진',time:'13:00~14:30',status:'완료'},{patient:'박종철',worker:'김미영',time:'11:30~13:00',status:'완료'},{patient:'강복순',worker:'박민정',time:'10:00~11:30',status:'완료'}],
-  '2026-04-22': [{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'완료'},{patient:'최영순',worker:'이지현',time:'14:00~15:30',status:'완료'}],
-  '2026-04-21': [{patient:'정동호',worker:'김미영',time:'16:30~17:30',status:'완료'},{patient:'박종철',worker:'김미영',time:'11:30~13:00',status:'완료'},{patient:'홍말순',worker:'최수진',time:'09:30~11:00',status:'완료'}],
-  '2026-04-20': [{patient:'강복순',worker:'박민정',time:'10:00~11:30',status:'완료'},{patient:'이순자',worker:'박민정',time:'09:00~10:30',status:'완료'}],
+// ===== 모달 =====
+function closeModal(id){ document.getElementById(id).style.display = 'none'; }
+
+// 작업지시 상세
+const WO_DETAILS = {
+  '이순자': '식사 보조 100% 완료. 혈압 130/85 안정. 무릎 통증 호소 → 연고 도포 + 마사지 15분.',
+  '박종철': '오늘 방문 시 혈압 체크 필수. 무릎 통증 → 스트레칭 강도 줄이고 연고 도포.',
+  '최영순': '기본 케어 진행. 청결 케어 후 침구 교체. 일지 사진 첨부 필수.',
+  '정동호': '식사 보조 시 연하 곤란 주의. 죽 형태로 제공. 투약 빠지지 않도록 가족에게도 알림.',
+  '강복순': '청결 케어 + 식사 보조. 변비 호소 시 수분 섭취 격려.',
+  '김순자': '체위 변경 + 인지 활동 (퍼즐, 노래). 가족분께 사진 공유.',
+  '윤재호': '활동 보조. 야외 산책 30분 (날씨 확인 후). 기분 상태 일지 기록.',
+  '한미숙': '방문 목욕 진행. 욕실 안전 점검 우선. 가족분 동석 확인됨.'
 };
-
-let calYear=2026, calMonth=4;
-
-function renderCalendar(year, month) {
-  calYear=year; calMonth=month;
-  document.getElementById('calTitle').textContent = `${year}년 ${month}월`;
-  const grid = document.getElementById('calGrid');
-  grid.innerHTML='';
-  const firstDay = new Date(year, month-1, 1).getDay();
-  const lastDate = new Date(year, month, 0).getDate();
-  const today = new Date();
-  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-  for(let i=0;i<firstDay;i++) grid.insertAdjacentHTML('beforeend','<div></div>');
-  for(let d=1;d<=lastDate;d++) {
-    const dateStr=`${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const visits=scheduleData[dateStr]||[];
-    const isToday=dateStr===todayStr;
-    const isPast=dateStr<todayStr;
-    const dow=(firstDay+d-1)%7;
-    const color=dow===0?'var(--red)':dow===6?'var(--blue)':'var(--navy)';
-    grid.insertAdjacentHTML('beforeend',`
-      <div onclick="showCalDay('${dateStr}')" style="
-        border:2px solid ${isToday?'var(--teal)':'var(--border)'};
-        border-radius:12px;padding:10px 8px;cursor:pointer;min-height:90px;
-        background:${isToday?'var(--tl)':isPast&&visits.length?'#f8fafc':'#fff'};
-        transition:all .15s" onmouseover="this.style.borderColor='var(--teal2)'" onmouseout="this.style.borderColor='${isToday?'var(--teal)':'var(--border)'}'">
-        <div style="font-size:14px;font-weight:${isToday?'800':'700'};color:${isToday?'var(--teal)':color};margin-bottom:5px;text-align:center">${d}</div>
-        ${visits.length?`<div style="font-size:11px;font-weight:700;color:var(--teal);text-align:center;background:var(--tl);border-radius:6px;padding:2px 4px;margin-bottom:4px">${visits.length}건</div>`:''}
-        ${visits.slice(0,3).map(v=>`<div style="font-size:11px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;font-weight:500">${v.patient}</div>`).join('')}
-      </div>`);
-  }
-  document.getElementById('calDayDetail').style.display='none';
+function openWoModal(patient, worker, time, status){
+  const STATUS_BADGE = { '완료':'<span class="badge b-done">완료</span>','방문중':'<span class="badge b-ing">방문중</span>','대기':'<span class="badge b-wait">대기</span>'};
+  document.getElementById('woModalBody').innerHTML = `
+    <div style="background:var(--tl);padding:14px;border-radius:10px;margin-bottom:14px">
+      <div style="font-weight:700;margin-bottom:6px">👴 ${patient} 어르신 · 👩‍⚕️ ${worker} 보호사</div>
+      <div style="font-size:12px;color:var(--gray)">오늘 ${time} ${STATUS_BADGE[status]||''}</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">작업지시 내용</label>
+      <div style="background:var(--g50);padding:12px;border-radius:8px;font-size:13px;line-height:1.7">${WO_DETAILS[patient]||'기본 케어 진행'}</div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">발송 시각</label><div style="font-size:13px;font-weight:600">오늘 오전 10:15</div></div>
+      <div class="form-group"><label class="form-label">수신 확인</label><div style="font-size:13px;font-weight:600;color:var(--green)">✅ 읽음 (10:18)</div></div>
+    </div>
+  `;
+  document.getElementById('woModal').style.display = 'flex';
 }
 
-function showCalDay(dateStr) {
-  const visits=scheduleData[dateStr]||[];
-  const d=new Date(dateStr);
-  const days=['일','월','화','수','목','금','토'];
-  document.getElementById('calDayTitle').textContent = `📋 ${d.getMonth()+1}월 ${d.getDate()}일(${days[d.getDay()]}) · ${visits.length}건`;
-  const tbody=document.getElementById('calDayTbody');
-  tbody.innerHTML = visits.length ? visits.map(v=>{
-    const badges={'완료':'b-done','방문중':'b-ing','대기':'b-wait','주의':'b-warn','예정':'b-wait'};
-    return `<tr><td><b>${v.patient}</b></td><td>${v.worker}</td><td>${v.time}</td><td>방문요양</td>
-      <td><span class="badge ${badges[v.status]||'b-wait'}">${v.status}</span></td>
-      <td><span class="act-btn" onclick="openWoEditModal('${v.patient}','${v.worker}','${v.time.split('~')[0]}','${v.status}')">상세</span></td></tr>`;
-  }).join('') : `<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:20px">이 날 방문 일정이 없습니다</td></tr>`;
-  document.getElementById('calDayDetail').style.display='block';
+const WORKERS = {
+  '김미영':{exp:5,phone:'010-1111-2222',region:'수정구',today:2,month:26,patients:'박종철, 정동호'},
+  '박민정':{exp:3,phone:'010-2222-3333',region:'분당구·수정구',today:2,month:22,patients:'이순자, 강복순'},
+  '이지현':{exp:7,phone:'010-3333-4444',region:'분당구·수정구',today:2,month:28,patients:'최영순, 한미숙'},
+  '최수진':{exp:2,phone:'010-4444-5555',region:'분당구',today:1,month:14,patients:'윤재호'},
+  '정혜원':{exp:4,phone:'010-5555-6666',region:'중원구',today:1,month:18,patients:'김순자'}
+};
+function openWorkerModal(name){
+  const w = WORKERS[name];
+  document.getElementById('wkmTitle').textContent = `👩‍⚕️ ${name} 보호사`;
+  document.getElementById('wkmBody').innerHTML = `
+    <div style="background:var(--tl);padding:14px;border-radius:10px;margin-bottom:14px">
+      <div style="font-size:15px;font-weight:800;margin-bottom:4px">${name}</div>
+      <div style="font-size:12px;color:var(--gray)">경력 ${w.exp}년 · 요양보호사 1급</div>
+    </div>
+    <table class="tbl"><tbody>
+      <tr><td style="color:var(--gray);font-size:11px;width:90px">연락처</td><td>${w.phone}</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td>${w.region}</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">오늘 담당</td><td><b>${w.today}건</b></td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">담당 어르신</td><td>${w.patients}</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">이번달 근무</td><td><b>${w.month}건</b></td></tr>
+    </tbody></table>
+  `;
+  document.getElementById('workerModal').style.display = 'flex';
 }
 
-function moveCalMonth(dir) {
-  calMonth+=dir;
-  if(calMonth>12){calMonth=1;calYear++;}
-  if(calMonth<1){calMonth=12;calYear--;}
-  renderCalendar(calYear,calMonth);
+function openUnpaidModal(name, amount, days){
+  document.getElementById('upmBody').innerHTML = `
+    <div style="background:#fee2e2;padding:14px;border-radius:10px;margin-bottom:14px;text-align:center">
+      <div style="font-size:13px;color:var(--gray);margin-bottom:4px">${name} 어르신 미납금</div>
+      <div style="font-size:28px;font-weight:800;color:var(--red)">${parseInt(amount).toLocaleString()}원</div>
+      <div style="font-size:11px;color:var(--red);margin-top:4px">${days}일 경과</div>
+    </div>
+    <table class="tbl"><tbody>
+      <tr><td style="color:var(--gray);font-size:11px;width:80px">서비스</td><td>방문요양 (3월 26일~31일)</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">횟수</td><td>4회</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">청구일</td><td>4월 1일</td></tr>
+      <tr><td style="color:var(--gray);font-size:11px">결제 방법</td><td>계좌이체 (안내 미수신)</td></tr>
+    </tbody></table>
+  `;
+  document.getElementById('unpaidModal').style.display = 'flex';
 }
 
-function setSchedView(mode) {
-  document.getElementById('schedCalView').style.display = mode==='cal'?'block':'none';
-  document.getElementById('schedListView').style.display = mode==='list'?'block':'none';
-  document.getElementById('btnCalView').style.cssText = mode==='cal'?'background:var(--tl);color:var(--teal);border-color:var(--teal)':'';
-  document.getElementById('btnListView').style.cssText = mode==='list'?'background:var(--tl);color:var(--teal);border-color:var(--teal)':'';
+function openInviteModal(patient){
+  document.getElementById('invitePatient').textContent = `👴 ${patient} 어르신`;
+  document.getElementById('inviteModal').style.display = 'flex';
 }
 
-window.addEventListener('load', () => {
-  renderCalendar(2026, 4);
-  // 센터 정보 세팅
-  const centerName = '햇살요양센터';
-  document.querySelector('.sb-brand').textContent = centerName;
-  document.querySelector('.sb-prole').textContent = centerName;
-  document.querySelector('.sb-pname').textContent = '홍길동 센터장';
-  document.title = centerName + ' · 센터장 대시보드';
-  const topbarCenter = document.getElementById('topbarCenterName');
-  if (topbarCenter) topbarCenter.textContent = '🏥 ' + centerName;
-
-  // 날짜
-  const now = new Date();
-  const days = ['일','월','화','수','목','금','토'];
-  document.getElementById('topbarDate').textContent =
-    `${now.getFullYear()}년 ${now.getMonth()+1}월 ${now.getDate()}일 (${days[now.getDay()]})`;
-});
-
-// 로그아웃 데모용
-function doLogout() {
-  if (confirm('데모 모드에서는 로그인 화면으로 이동합니다.')) {
-    location.href = 'care-login.html';
-  }
+function openNewWoModal(worker){
+  if(worker) document.getElementById('wo-worker').value = worker;
+  document.getElementById('newWoModal').style.display = 'flex';
 }
+function openPatientRegModal(){ document.getElementById('patRegModal').style.display = 'flex'; }
+function openWorkerRegModal(){ document.getElementById('wkrRegModal').style.display = 'flex'; }
+function openSchedModal(){ document.getElementById('schedModal').style.display = 'flex'; }
+function openSmsModal(){ document.getElementById('smsModal').style.display = 'flex'; }
+function openSalaryModal(){ document.getElementById('salaryModal').style.display = 'flex'; }
+function openSmsChargeModal(){ document.getElementById('smsChargeModal').style.display = 'flex'; }
+
+// 날짜 표시
+const today = new Date();
+const dayNames = ['일','월','화','수','목','금','토'];
+document.getElementById('topbarDate').textContent = `${today.getMonth()+1}월 ${today.getDate()}일 (${dayNames[today.getDay()]})`;
+
+// 환영 토스트
+setTimeout(() => toast('👋 데모 모드로 진입했습니다.\n좌측 메뉴에서 자유롭게 둘러보세요.'), 600);
 </script>
 </body>
 </html>
