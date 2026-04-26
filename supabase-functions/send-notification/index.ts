@@ -93,11 +93,28 @@ async function tryWebPush(supabase: any, recipientId: string, payload: Payload):
   return anySuccess;
 }
 
+// ── 센터별 발신번호 + 센터명 조회 ────────────────────────────────
+async function getCenterInfo(supabase: any, centerId?: string): Promise<{ fromNumber: string; centerName: string }> {
+  const fallbackNumber = Deno.env.get("SOLAPI_FROM_NUMBER")!;
+  if (!centerId) return { fromNumber: fallbackNumber, centerName: "CareOn" };
+
+  const { data } = await supabase.from("centers")
+    .select("name, solapi_from_number")
+    .eq("id", centerId).maybeSingle();
+
+  return {
+    fromNumber: (data?.solapi_from_number || fallbackNumber).replace(/-/g, ""),
+    centerName: data?.name || "CareOn"
+  };
+}
+
 // ── 2. 알림톡 시도 (Solapi) ─────────────────────────────────────
-async function tryKakaoTalk(payload: Payload): Promise<boolean> {
+async function tryKakaoTalk(supabase: any, payload: Payload): Promise<boolean> {
   const pfid = Deno.env.get("SOLAPI_KAKAO_PFID");
   const tplid = Deno.env.get("SOLAPI_KAKAO_TPLID");
   if (!pfid || !tplid || !payload.recipient_phone) return false;
+
+  const { fromNumber, centerName } = await getCenterInfo(supabase, payload.center_id);
 
   const auth = await solapiAuthHeader();
   const res = await fetch("https://api.solapi.com/messages/v4/send", {
@@ -106,11 +123,15 @@ async function tryKakaoTalk(payload: Payload): Promise<boolean> {
     body: JSON.stringify({
       message: {
         to: payload.recipient_phone.replace(/-/g, ""),
-        from: Deno.env.get("SOLAPI_FROM_NUMBER")!,
+        from: fromNumber,
         kakaoOptions: {
           pfId: pfid,
           templateId: tplid,
-          variables: { "#{이름}": payload.recipient_name || "고객", "#{내용}": payload.body }
+          variables: {
+            "#{이름}": payload.recipient_name || "고객",
+            "#{센터}": centerName,
+            "#{내용}": payload.body
+          }
         }
       }
     })
@@ -121,9 +142,10 @@ async function tryKakaoTalk(payload: Payload): Promise<boolean> {
 }
 
 // ── 3. SMS 시도 (Solapi) ────────────────────────────────────────
-async function trySms(payload: Payload): Promise<boolean> {
+async function trySms(supabase: any, payload: Payload): Promise<boolean> {
   if (!payload.recipient_phone) return false;
-  const text = `[CareOn] ${payload.title}\n${payload.body}`;
+  const { fromNumber, centerName } = await getCenterInfo(supabase, payload.center_id);
+  const text = `[${centerName}] ${payload.title}\n${payload.body}`;
   const auth = await solapiAuthHeader();
   const res = await fetch("https://api.solapi.com/messages/v4/send", {
     method: "POST",
@@ -131,7 +153,7 @@ async function trySms(payload: Payload): Promise<boolean> {
     body: JSON.stringify({
       message: {
         to: payload.recipient_phone.replace(/-/g, ""),
-        from: Deno.env.get("SOLAPI_FROM_NUMBER")!,
+        from: fromNumber,
         text,
         type: text.length > 90 ? "LMS" : "SMS"
       }
@@ -186,7 +208,7 @@ Deno.serve(async (req) => {
 
   // 2) 알림톡
   try {
-    const ok = await tryKakaoTalk(payload);
+    const ok = await tryKakaoTalk(supabase, payload);
     attempts.push({ channel: "kakao", status: ok ? "sent" : "skip" });
     if (ok) {
       await supabase.from("notifications").insert({ ...payload, channel: "kakao", status: "sent", sent_at: new Date().toISOString() });
@@ -198,7 +220,7 @@ Deno.serve(async (req) => {
 
   // 3) SMS
   try {
-    const ok = await trySms(payload);
+    const ok = await trySms(supabase, payload);
     attempts.push({ channel: "sms", status: ok ? "sent" : "failed" });
     if (ok) {
       await supabase.from("notifications").insert({ ...payload, channel: "sms", status: "sent", sent_at: new Date().toISOString() });

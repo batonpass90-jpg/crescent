@@ -233,6 +233,15 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <div style="font-size:11px;color:var(--gray);margin-top:4px">이 센터에 부여할 추가 문자 건수 (기본 제공량에 합산)</div>
       </div>
       <div class="form-group">
+        <label class="form-label">📱 SMS 발신번호 <span style="color:var(--red);font-weight:600">필수</span></label>
+        <input type="tel" class="form-input" id="planModalFromNumber" placeholder="031-000-0000 또는 010-0000-0000">
+        <div style="font-size:11px;color:#92400e;background:#fef3c7;padding:8px 10px;border-radius:6px;margin-top:6px;line-height:1.6">
+          ⚠️ 이 번호로 SMS·알림톡이 발송됩니다.<br>
+          반드시 <b>본사 Solapi 계정에 사전등록 + 명의 인증 완료된 번호</b>여야 합니다.<br>
+          미등록 번호 입력 시 발송 실패 (한국 통신법).
+        </div>
+      </div>
+      <div class="form-group">
         <label class="form-label">메모 (내부용)</label>
         <input type="text" class="form-input" id="planModalMemo" placeholder="변경 사유, 특이사항...">
       </div>
@@ -419,13 +428,18 @@ function filterTable() {
 }
 
 // ===== 플랜 변경 모달 =====
-function openPlanModal(centerId, centerName, currentPlan, extraSms) {
+async function openPlanModal(centerId, centerName, currentPlan, extraSms) {
   _editingCenterId = centerId;
   document.getElementById('planModalInfo').innerHTML =
-    `<b>${centerName}</b><br>현재 플랜: <b style="color:var(--teal)">${{basic:'베이직',pro:'프로',premium:'프리미엄'}[currentPlan]||currentPlan}</b>`;
+    `<b>${centerName}</b><br>현재 플랜: <b style="color:var(--teal)">${{basic:'베이직',standard:'스탠다드',pro:'프로',premium:'프리미엄'}[currentPlan]||currentPlan}</b>`;
   document.getElementById('planModalSelect').value = currentPlan || 'basic';
   document.getElementById('planModalExtraSms').value = extraSms || 0;
   document.getElementById('planModalMemo').value = '';
+
+  // 현재 발신번호 로드
+  const { data } = await sb.from('centers').select('solapi_from_number').eq('id', centerId).single();
+  document.getElementById('planModalFromNumber').value = data?.solapi_from_number || '';
+
   document.getElementById('planModal').style.display = 'flex';
 }
 
@@ -433,15 +447,26 @@ async function savePlan() {
   if (!_editingCenterId) return;
   const newPlan = document.getElementById('planModalSelect').value;
   const extraSms = parseInt(document.getElementById('planModalExtraSms').value) || 0;
+  const fromNumber = document.getElementById('planModalFromNumber').value.trim().replace(/-/g, '');
+
+  // 발신번호 형식 검증 (선택 입력이지만 입력 시 형식 체크)
+  if (fromNumber && !/^0\d{8,10}$/.test(fromNumber)) {
+    toast('❌ 발신번호 형식 오류: 숫자만 입력 (예: 0316829090)');
+    return;
+  }
 
   try {
     const { error } = await sb.from('centers')
-      .update({ plan: newPlan, sms_extra_quota: extraSms })
+      .update({
+        plan: newPlan,
+        sms_extra_quota: extraSms,
+        solapi_from_number: fromNumber || null
+      })
       .eq('id', _editingCenterId);
     if (error) throw error;
 
     document.getElementById('planModal').style.display = 'none';
-    toast(`✅ 플랜 변경 완료: ${newPlan}${extraSms > 0 ? ' + 추가문자 ' + extraSms + '건' : ''}`);
+    toast(`✅ 저장 완료: ${newPlan}${extraSms > 0 ? ' + 추가문자 ' + extraSms + '건' : ''}${fromNumber ? ' + 발신번호 ' + fromNumber : ''}`);
     await loadCenters(); // 목록 갱신
   } catch(e) {
     toast('❌ 저장 실패: ' + e.message);
