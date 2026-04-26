@@ -1103,6 +1103,23 @@ function clearHardcoded() {
   // 미납금 관리 테이블 초기화
   const unpaidTbody = document.querySelector('#view-unpaid .tbl tbody');
   if (unpaidTbody) unpaidTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">미납금이 없습니다</td></tr>';
+
+  // 일정 관리 초기화
+  const schedTbody = document.querySelector('#view-schedule .tbl tbody');
+  if (schedTbody) schedTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 일정이 없습니다</td></tr>';
+
+  // 케어일지 초기화
+  document.querySelectorAll('#view-journal .journal-item').forEach(e => e.remove());
+  const journalSec = document.querySelector('#view-journal .sec-hd .sec-hd-sub');
+  if (journalSec) journalSec.textContent = '제출된 일지 없음';
+
+  // 매출 현황 초기화
+  document.querySelectorAll('#view-revenue .stat-num').forEach(el => el.textContent = '0원');
+  document.querySelectorAll('#view-revenue .bar').forEach(el => el.style.height = '0%');
+
+  // 급여 정산 초기화
+  const salaryTbody = document.querySelector('#view-salary .tbl tbody');
+  if (salaryTbody) salaryTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 보호사가 없습니다</td></tr>';
 }
 
 // ===== 보호사 렌더링 =====
