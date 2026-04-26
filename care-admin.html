@@ -246,10 +246,24 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     .sec-hd .btn{width:100%}
   }
   .content{padding:16px 12px}
-  /* 표 가로 스크롤 - 모바일 핵심 */
-  .tbl-wrap, .card .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .tbl{min-width:520px}
+  /* 카드: 패딩 축소 + 가로 콘텐츠 스크롤 가능 */
+  .card{padding:14px 12px;margin-bottom:12px}
+  .card-ttl{font-size:11px;flex-wrap:wrap;gap:6px}
+  .card-more{font-size:11px}
+  /* 카드 안 표가 화면 밖으로 나가지 않게 자동 가로 스크롤 (JS에서 감쌈) */
+  .tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -12px;padding:0 12px}
+  .tbl{min-width:480px}
   .tbl th, .tbl td{white-space:nowrap;font-size:12px;padding:8px 10px}
+  /* 보호사·미납 아이템 컴팩트 */
+  .worker-item{padding:8px 0;gap:8px}
+  .w-av{width:30px;height:30px;font-size:13px}
+  .w-name{font-size:13px}
+  .w-sub{font-size:10px}
+  .w-status{font-size:9px;padding:2px 6px}
+  /* 차트 바 컴팩트 */
+  .chart-bars{height:80px;gap:4px}
+  .bar-lbl{font-size:9px}
+  /* 모달 모바일 */
   .modal{width:calc(100vw - 20px);max-height:90vh;margin:10px}
   .modal-body{max-height:calc(90vh - 130px);overflow-y:auto}
 }
@@ -1008,6 +1022,23 @@ function toggleSidebar(force){
 window.addEventListener('resize', () => {
   if(window.innerWidth > 900) toggleSidebar(false);
 });
+
+// ===== 표 자동 가로스크롤 래퍼 =====
+// 모든 .tbl을 .tbl-wrap div로 감싸 모바일에서 가로 스크롤 가능하게
+function wrapTables(root){
+  (root||document).querySelectorAll('.tbl').forEach(t => {
+    if(!t.parentElement.classList.contains('tbl-wrap')){
+      const wrap = document.createElement('div');
+      wrap.className = 'tbl-wrap';
+      t.parentElement.insertBefore(wrap, t);
+      wrap.appendChild(t);
+    }
+  });
+}
+// 초기 + 동적 렌더 후에도 호출
+window.addEventListener('DOMContentLoaded', () => wrapTables());
+// MutationObserver로 새로 그려지는 표도 자동 감쌈
+new MutationObserver(() => wrapTables()).observe(document.body, { childList:true, subtree:true });
 function handleMainBtn(){
   const active=document.querySelector('.view.active');
   if(!active)return;
