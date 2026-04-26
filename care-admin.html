@@ -249,7 +249,11 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
   <div class="sb-foot">
     <div class="sb-profile">
       <div class="sb-av">👤</div>
-      <div><div class="sb-pname">홍길동 센터장</div><div class="sb-prole">햇살요양센터</div></div>
+      <div style="flex:1;min-width:0">
+        <div class="sb-pname">홍길동 센터장</div>
+        <div class="sb-prole">햇살요양센터</div>
+        <span id="sbPlanBadge" style="display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)">베이직</span>
+      </div>
     </div>
     <button onclick="doLogout()" style="width:100%;margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🚪 로그아웃</button>
   </div>
@@ -1245,7 +1249,7 @@ window.addEventListener('load', async () => {
 
     // 프로필 + 센터 정보 로드
     const { data: profile } = await sb.from('profiles')
-      .select('*, centers(name, primary_color, phone, address)')
+      .select('*, centers(name, primary_color, phone, address, plan, sms_extra_quota)')
       .eq('id', session.user.id).single();
 
     if (profile?.centers) {
@@ -1260,6 +1264,8 @@ window.addEventListener('load', async () => {
       if (c.primary_color) {
         document.documentElement.style.setProperty('--teal', c.primary_color);
       }
+      // 플랜 배지 반영
+      if (c.plan) applyPlanBadge(c.plan);
     }
     if (profile?.name) {
       document.querySelector('.sb-pname').textContent = profile.name + ' 센터장';
@@ -2281,6 +2287,28 @@ const SMS_OVER_PRICE = { basic: 25, standard: 23, pro: 21, premium: 20 }; // 초
 let _smsHistory = [];
 let _smsQuotaData = { plan: 'basic', used: 0, extra: 0 };
 
+// ===== 플랜 배지 공통 업데이트 =====
+function applyPlanBadge(plan) {
+  const PLAN_COLORS = {
+    basic:    { bg:'rgba(255,255,255,.15)', color:'rgba(255,255,255,.85)' },
+    standard: { bg:'rgba(20,184,166,.35)',  color:'#a7f3d0' },
+    pro:      { bg:'rgba(59,130,246,.35)',  color:'#bfdbfe' },
+    premium:  { bg:'rgba(245,158,11,.3)',   color:'#fde68a' }
+  };
+  const col = PLAN_COLORS[plan] || PLAN_COLORS.basic;
+  const label = SMS_PLAN_LABEL[plan] || plan;
+  // 사이드바 배지
+  const sb = document.getElementById('sbPlanBadge');
+  if (sb) { sb.textContent = label; sb.style.background = col.bg; sb.style.color = col.color; }
+  // 문자 발송 뷰 배지
+  const mb = document.getElementById('myPlanBadge');
+  if (mb) {
+    const CARD_COLORS = { basic:'background:var(--g100);color:var(--gray)', standard:'background:var(--tl);color:var(--teal)', pro:'background:#dbeafe;color:#1d4ed8', premium:'background:#fef9c3;color:#92400e' };
+    mb.textContent = label;
+    mb.style.cssText = `font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${CARD_COLORS[plan]||CARD_COLORS.basic}`;
+  }
+}
+
 async function loadSmsView() {
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -2319,12 +2347,8 @@ async function loadSmsView() {
     document.getElementById('smsPlanBadge').textContent = SMS_PLAN_LABEL[plan] || plan;
     // 티어별 단문 초과 단가 갱신
     SMS_UNIT_PRICE.sms = SMS_OVER_PRICE[plan] || 25;
-    const myBadge = document.getElementById('myPlanBadge');
-    if(myBadge) {
-      const planColors = { basic:'background:var(--g100);color:var(--gray)', standard:'background:var(--tl);color:var(--teal)', pro:'background:#dbeafe;color:#1d4ed8', premium:'background:#fef9c3;color:#92400e' };
-      myBadge.textContent = SMS_PLAN_LABEL[plan] || plan;
-      myBadge.style.cssText = `font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${planColors[plan]||planColors.basic}`;
-    }
+    // 플랜 배지 공통 업데이트 (사이드바 + 문자뷰 동시)
+    applyPlanBadge(plan);
     document.getElementById('smsQuotaLabel').textContent = `기본 ${planQuota}건${extraQuota > 0 ? ` + 추가 ${extraQuota}건` : ''}`;
     document.getElementById('smsSub').textContent = `이번달 ${used}건 발송 · 잔여 ${remain}건`;
 
