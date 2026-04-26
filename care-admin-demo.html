@@ -666,7 +666,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost-sm" id="btnCalView" onclick="setSchedView('cal')" style="background:var(--tl);color:var(--teal);border-color:var(--teal)">📅 달력</button>
           <button class="btn btn-ghost-sm" id="btnListView" onclick="setSchedView('list')">📋 목록</button>
-          <button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button>
+          <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
         </div>
       </div>
 
@@ -697,39 +697,23 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         </div>
       </div>
 
-      <!-- 목록 뷰 (기존) -->
+      <!-- 목록 뷰: 수급자별 반복 스케줄 -->
       <div id="schedListView" style="display:none">
-      <div class="notice">💡 일정을 클릭하면 해당 수급자의 작업지시를 바로 발송할 수 있습니다.</div>
-      <!-- 요일 탭 -->
-      <div style="display:flex;gap:6px;margin-bottom:14px">
-        <button class="btn btn-primary" id="daybtn-mon" style="padding:7px 14px;font-size:12px" onclick="filterDay('mon',this)">월요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-tue" style="padding:7px 14px;font-size:12px" onclick="filterDay('tue',this)">화요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-wed" style="padding:7px 14px;font-size:12px" onclick="filterDay('wed',this)">수요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-thu" style="padding:7px 14px;font-size:12px" onclick="filterDay('thu',this)">목요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-fri" style="padding:7px 14px;font-size:12px" onclick="filterDay('fri',this)">금요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-all" style="padding:7px 14px;font-size:12px;margin-left:auto" onclick="filterDay('all',this)">전체 보기</button>
-      </div>
-      <div class="card">
-        <table class="tbl">
-          <thead><tr><th>요일</th><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
-          <tbody id="scheduleTbody">
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('이순자','박민정','09:00','완료')">일지 보기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('강복순','박민정','10:00','완료')">일지 보기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoEditModal('박종철','김미영','11:30','방문중')">수정 발송</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoEditModal('최영순','이지현','14:00','대기')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>정동호</b></td><td>김미영</td><td>16:30~17:30</td><td>방문요양 60분</td><td><span class="badge b-warn">⚠주의</span></td><td><span class="act-btn red" onclick="openWoEditModal('정동호','김미영','16:30','주의')">긴급 수정</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>김영자</b></td><td>최수진</td><td>13:00~14:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('이지현')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>정동호</b></td><td>김미영</td><td>14:00~15:00</td><td>방문요양 60분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-          </tbody>
-        </table>
-      </div>
+        <div class="notice">💡 수급자별 반복 방문 스케줄입니다. 달력에서 날짜를 클릭하면 당일 현황을 확인할 수 있습니다.</div>
+        <div class="card">
+          <table class="tbl">
+            <thead><tr><th>수급자</th><th>담당 보호사</th><th>방문 요일</th><th>방문 시간</th><th>서비스</th><th>시작일</th><th>관리</th></tr></thead>
+            <tbody id="schedListTbody">
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdfa;">👴</div><b>박종철</b></div></td><td>김미영</td><td><span class="badge b-ing">월·수·금</span></td><td>11:30~13:00</td><td>방문요양 90분</td><td>2026.01.05</td><td><span class="act-btn" onclick="toast('✏️ 박종철 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fef9c3;">👵</div><b>이순자</b></div></td><td>박민정</td><td><span class="badge b-ing">월·화·목·금</span></td><td>09:00~10:30</td><td>방문요양 90분</td><td>2026.01.12</td><td><span class="act-btn" onclick="toast('✏️ 이순자 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#dbeafe;">👵</div><b>최영순</b></div></td><td>이지현</td><td><span class="badge b-ing">월·수·금</span></td><td>14:00~15:30</td><td>방문요양 90분</td><td>2026.02.03</td><td><span class="act-btn" onclick="toast('✏️ 최영순 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fce7f3;">👴</div><b>정동호</b></div></td><td>김미영</td><td><span class="badge b-ing">월·목</span></td><td>16:30~17:30</td><td>방문요양 60분</td><td>2026.01.19</td><td><span class="act-btn" onclick="toast('✏️ 정동호 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#f0fdf4;">👵</div><b>홍말순</b></div></td><td>최수진</td><td><span class="badge b-ing">화·목·토</span></td><td>09:30~11:00</td><td>방문요양 90분</td><td>2026.02.17</td><td><span class="act-btn" onclick="toast('✏️ 홍말순 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#ede9fe;">👵</div><b>강복순</b></div></td><td>박민정</td><td><span class="badge b-ing">월·수</span></td><td>10:00~11:30</td><td>방문요양 90분</td><td>2026.03.02</td><td><span class="act-btn" onclick="toast('✏️ 강복순 어르신 일정 수정')">수정</span></td></tr>
+              <tr><td><div class="avatar-cell"><div class="av-sm" style="background:#fef3c7;">👵</div><b>김영자</b></div></td><td>최수진</td><td><span class="badge b-ing">화·금</span></td><td>13:00~14:30</td><td>방문요양 90분</td><td>2026.03.10</td><td><span class="act-btn" onclick="toast('✏️ 김영자 어르신 일정 수정')">수정</span></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div><!-- /schedListView -->
     </div>
 
@@ -1102,6 +1086,21 @@ function filterJournal(period) {
   document.getElementById('journalSub').textContent = `${labels[period]} 제출된 일지 ${count}건`;
 }
 
+// ===== 케어일지 전체 내용 (PDF용) =====
+const journalFullText = {
+  '박종철_11:45~13:02_2026-04-26': '식사량 100% 양호. 무릎 통증 호소하여 스트레칭 강도 조절 후 어르신 통증 감소 확인. 연고 도포 완료. 가족분 방문 예정이라 주변 정리 완료. 투약(혈압약, 당뇨약) 확인. 체온 36.5도 정상. 다음 방문 시 무릎 경과 지속 확인 필요.',
+  '이순자_09:05~10:28_2026-04-26': '혈압 130/80 측정 (정상 범위). 컨디션 양호. 식사량 80% (식욕 다소 저하, 어르신 배가 안고프다 하심). 인지활동으로 그림 맞추기 게임 20분 진행, 표정 밝으심. 보행 상태 양호. 청결케어 완료.',
+  '강복순_10:05~11:32_2026-04-26': '기본 케어 전반 진행. 특이사항 없음. 어르신 컨디션 좋으심. 침구 교체 및 환기 완료. 식사량 100%. 혈압 120/78 정상. 투약 확인 완료. 가족과 통화하여 건강 상태 전달함.',
+  '최영순_14:00~15:28_2026-04-25': '혈압 125/78 (정상). 기분 좋으심. 손자 사진 보여드리며 대화, 매우 기뻐하심. 식사량 100%. 오전에 가족과 산책 다녀오셨다고 하심. 청결케어 완료. 정서 상태 매우 양호.',
+  '정동호_16:30~17:45_2026-04-25': '연하 곤란으로 죽 형태 식사 제공, 식사량 70%. 투약 확인 완료 (혈압약, 혈액순환제). 혈압 145/92 (약간 높음), 가족에게 문자로 상황 전달. 다음 방문 시 혈압 재측정 필요. 청결케어 완료.',
+  '박종철_11:30~13:00_2026-04-25': '식사량 90%. 무릎 상태 전일보다 호전, 스트레칭 정상 강도로 진행. 침구 교체 및 환기 완료. 투약 확인 완료. 혈압 128/80 정상. 어르신 기분 좋으심.',
+  '홍말순_09:30~11:00_2026-04-24': '전반적 컨디션 양호. 혈압 128/80 정상. 가벼운 인지활동(퍼즐) 20분 진행, 집중력 양호. 식사량 95%. 청결케어 완료. 투약 확인. 특이사항 없음.',
+  '이순자_09:00~10:30_2026-04-24': '식욕 회복됨, 식사량 100%. 혈압 122/76 양호. 좋아하시는 트로트 노래 틀어드리며 정서 지원, 매우 좋아하심. 청결케어 완료. 투약 확인. 보행 상태 양호.',
+  '김영자_13:00~14:30_2026-04-23': '체중 측정 52.3kg (전주 대비 -0.5kg 감소). 식사량 85%. 가족에게 체중 감소 사실 문자 보고 완료. 보행 보조 진행, 다소 불안정. 혈압 118/74. 영양 보충 권장.',
+  '최영순_14:00~15:30_2026-04-20': '혈압 132/84. 허리 통증 호소하여 자세 교정 도움, 쿠션 지지대 활용. 식사량 100%. 딸이 방문하여 함께 대화 진행, 밝은 표정. 청결케어 완료. 투약 확인.',
+  '정동호_16:30~18:00_2026-04-18': '혈압 정상화(135/85). 이전보다 투약 이행 개선됨. 식사량 100%. 죽 형태에서 일반식으로 전환 시도, 연하 상태 양호. 표정 밝으심. 가족에게 호전 상황 전달.',
+};
+
 // ===== PDF 다운로드 =====
 function downloadJournalPDF() {
   const sub = document.getElementById('journalSub').textContent;
@@ -1110,16 +1109,17 @@ function downloadJournalPDF() {
 
   let html = `<html><head><meta charset="UTF-8">
   <style>
-    body{font-family:'Apple SD Gothic Neo',sans-serif;padding:30px;color:#0F1B2D;font-size:13px}
-    h2{font-size:18px;margin-bottom:4px}
-    .sub{color:#6b7280;font-size:12px;margin-bottom:24px}
-    .item{border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid}
-    .name{font-weight:700;font-size:14px;margin-bottom:4px}
-    .time{color:#6b7280;font-size:11px;margin-bottom:8px}
-    .preview{font-size:12px;line-height:1.6;color:#374151}
-    .tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
-    .tag{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
-    @media print{body{padding:20px}}
+    body{font-family:'Apple SD Gothic Neo',sans-serif;padding:30px;color:#0F1B2D;font-size:13px;line-height:1.6}
+    h2{font-size:20px;margin-bottom:6px}
+    .sub{color:#6b7280;font-size:12px;margin-bottom:28px;border-bottom:1px solid #e2e8f0;padding-bottom:12px}
+    .item{border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin-bottom:16px;page-break-inside:avoid}
+    .name{font-weight:700;font-size:15px;margin-bottom:4px;color:#0F1B2D}
+    .time{color:#6b7280;font-size:12px;margin-bottom:10px}
+    .preview{font-size:13px;line-height:1.8;color:#374151;background:#f8fafc;border-radius:8px;padding:12px;word-break:keep-all}
+    .tags{margin-top:12px;display:flex;gap:6px;flex-wrap:wrap}
+    .tag{background:#dcfce7;color:#166534;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+    .tag-warn{background:#fef9c3;color:#92400e}
+    @media print{body{padding:20px}@page{margin:1.5cm}}
   </style></head><body>
   <h2>📝 케어일지</h2>
   <div class="sub">햇살요양센터 · ${sub} · 출력일: ${new Date().toLocaleDateString('ko-KR')}</div>`;
@@ -1127,8 +1127,15 @@ function downloadJournalPDF() {
   items.forEach(item => {
     const name = item.querySelector('.journal-name')?.textContent || '';
     const time = item.querySelector('.journal-time')?.textContent || '';
-    const preview = item.querySelector('.journal-preview')?.textContent || '';
-    const tags = [...item.querySelectorAll('.badge')].map(b => `<span class="tag">${b.textContent}</span>`).join('');
+    // onclick에서 환자명·시간·날짜 추출해서 전체 내용 조회
+    const onclick = item.getAttribute('onclick') || '';
+    const m = onclick.match(/openJournalModal\('([^']+)','[^']+','([^']+)','([^']+)'\)/);
+    const key = m ? `${m[1]}_${m[2]}_${m[3]}` : '';
+    const fullText = journalFullText[key] || item.querySelector('.journal-preview')?.textContent || '';
+    const tags = [...item.querySelectorAll('.badge')].map(b => {
+      const warn = b.textContent.includes('⚠');
+      return `<span class="tag${warn?' tag-warn':''}">${b.textContent}</span>`;
+    }).join('');
     html += `<div class="item">
       <div class="name">${name}</div>
       <div class="time">${time}</div>
