@@ -683,20 +683,33 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           </div>
           <!-- 플랜 비교 미니표 -->
           <div style="font-size:11px">
-            <div style="display:grid;grid-template-columns:1fr repeat(3,auto);gap:4px 8px;align-items:center">
-              <div style="color:var(--gray);font-weight:700">기능</div>
-              <div style="text-align:center;font-weight:700;color:var(--gray)">베이직</div>
-              <div style="text-align:center;font-weight:700;color:var(--teal)">프로</div>
-              <div style="text-align:center;font-weight:700;color:#f59e0b">프리미엄</div>
-              <!-- 구분선 -->
-              <div style="grid-column:1/-1;height:1px;background:var(--border);margin:4px 0"></div>
-              <div style="color:var(--gray)">연간 이용료</div><div style="text-align:center;font-weight:700">99만원</div><div style="text-align:center;font-weight:700;color:var(--teal)">149만원</div><div style="text-align:center;font-weight:700;color:#f59e0b">199만원</div>
-              <div style="grid-column:1/-1;height:1px;background:var(--border);margin:2px 0"></div>
-              <div style="color:var(--gray)">수급자 관리</div><div style="text-align:center">20명</div><div style="text-align:center;color:var(--teal)">50명</div><div style="text-align:center;color:#f59e0b">무제한</div>
-              <div style="color:var(--gray)">보호사 관리</div><div style="text-align:center">5명</div><div style="text-align:center;color:var(--teal)">15명</div><div style="text-align:center;color:#f59e0b">무제한</div>
-              <div style="color:var(--gray)">기본 문자</div><div style="text-align:center">100건</div><div style="text-align:center;color:var(--teal)">300건</div><div style="text-align:center;color:#f59e0b">500건</div>
-              <div style="color:var(--gray)">매출 분석</div><div style="text-align:center">-</div><div style="text-align:center;color:var(--teal)">✓</div><div style="text-align:center;color:#f59e0b">✓</div>
-              <div style="color:var(--gray)">카카오 알림톡</div><div style="text-align:center">-</div><div style="text-align:center">-</div><div style="text-align:center;color:#f59e0b">✓</div>
+            <div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:4px 8px;align-items:center;font-size:11px">
+              <div style="color:var(--gray);font-weight:700">항목</div>
+              <div style="text-align:center;font-weight:700;color:var(--gray)">1티어</div>
+              <div style="text-align:center;font-weight:700;color:var(--teal)">2티어</div>
+              <div style="text-align:center;font-weight:700;color:#3b82f6">3티어</div>
+              <div style="text-align:center;font-weight:700;color:#f59e0b">4티어</div>
+              <div style="grid-column:1/-1;height:1px;background:var(--border);margin:3px 0"></div>
+              <div style="color:var(--gray)">수급자 수</div>
+              <div style="text-align:center">10인 미만</div>
+              <div style="text-align:center;color:var(--teal)">20인 미만</div>
+              <div style="text-align:center;color:#3b82f6">40인 미만</div>
+              <div style="text-align:center;color:#f59e0b">40인 이상</div>
+              <div style="color:var(--gray)">월 구독료</div>
+              <div style="text-align:center;font-weight:700">19,900원</div>
+              <div style="text-align:center;font-weight:700;color:var(--teal)">39,900원</div>
+              <div style="text-align:center;font-weight:700;color:#3b82f6">69,900원</div>
+              <div style="text-align:center;font-weight:700;color:#f59e0b">99,000원</div>
+              <div style="color:var(--gray)">기본 문자</div>
+              <div style="text-align:center">100건</div>
+              <div style="text-align:center;color:var(--teal)">200건</div>
+              <div style="text-align:center;color:#3b82f6">350건</div>
+              <div style="text-align:center;color:#f59e0b">500건</div>
+              <div style="color:var(--gray)">초과 단가</div>
+              <div style="text-align:center">25원</div>
+              <div style="text-align:center;color:var(--teal)">23원</div>
+              <div style="text-align:center;color:#3b82f6">21원</div>
+              <div style="text-align:center;color:#f59e0b">20원</div>
             </div>
           </div>
           <div style="margin-top:12px;display:flex;gap:8px">
@@ -1537,7 +1550,7 @@ async function doLogout() {
     </div>
     <div class="modal-body">
       <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:var(--teal);font-weight:600">
-        💡 구독 플랜 기본 제공량 초과 시 추가 충전이 필요합니다. 충전 즉시 사용 가능합니다.
+        💡 기본 제공량 초과 시 추가 충전이 필요합니다. 상위 티어일수록 단가가 낮습니다.
       </div>
       <!-- 현재 플랜 현황 -->
       <div style="background:var(--g50);border-radius:12px;padding:14px;margin-bottom:18px">
@@ -2261,8 +2274,9 @@ async function sendSalaryAll() {
 
 // ===== 문자 발송 뷰 로직 =====
 // 플랜별 기본 제공 문자 수
-const SMS_PLAN_QUOTA = { basic: 100, standard: 300, premium: 500 };
-const SMS_PLAN_LABEL = { basic: '🔵 기본 플랜', standard: '🟢 표준 플랜', premium: '⭐ 프리미엄 플랜' };
+const SMS_PLAN_QUOTA = { tier1: 100, tier2: 200, tier3: 350, tier4: 500 };
+const SMS_PLAN_LABEL = { tier1: '1티어', tier2: '2티어', tier3: '3티어', tier4: '4티어' };
+const SMS_OVER_PRICE = { tier1: 25, tier2: 23, tier3: 21, tier4: 20 }; // 초과 단가
 
 let _smsHistory = [];
 let _smsQuotaData = { plan: 'basic', used: 0, extra: 0 };
@@ -2303,12 +2317,13 @@ async function loadSmsView() {
     document.getElementById('smsProgressBar').style.width = pct + '%';
     document.getElementById('smsProgressBar').style.background = pct >= 90 ? 'var(--red)' : pct >= 70 ? 'var(--amber)' : 'var(--teal2)';
     document.getElementById('smsPlanBadge').textContent = SMS_PLAN_LABEL[plan] || plan;
+    // 티어별 단문 초과 단가 갱신
+    SMS_UNIT_PRICE.sms = SMS_OVER_PRICE[plan] || 25;
     const myBadge = document.getElementById('myPlanBadge');
     if(myBadge) {
-      const planNames = { basic:'베이직', pro:'프로', premium:'프리미엄' };
-      const planColors = { basic:'background:var(--tl);color:var(--teal)', pro:'background:#dbeafe;color:#1d4ed8', premium:'background:#fef9c3;color:#92400e' };
-      myBadge.textContent = planNames[plan] || plan;
-      myBadge.style.cssText = `font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${planColors[plan]||planColors.basic}`;
+      const planColors = { tier1:'background:var(--g100);color:var(--gray)', tier2:'background:var(--tl);color:var(--teal)', tier3:'background:#dbeafe;color:#1d4ed8', tier4:'background:#fef9c3;color:#92400e' };
+      myBadge.textContent = SMS_PLAN_LABEL[plan] || plan;
+      myBadge.style.cssText = `font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${planColors[plan]||planColors.tier1}`;
     }
     document.getElementById('smsQuotaLabel').textContent = `기본 ${planQuota}건${extraQuota > 0 ? ` + 추가 ${extraQuota}건` : ''}`;
     document.getElementById('smsSub').textContent = `이번달 ${used}건 발송 · 잔여 ${remain}건`;
@@ -2366,9 +2381,10 @@ function openSmsCompose() {
 }
 
 // ===== 추가 충전 모달 =====
-// 단문 25원 / 장문 50원
-const SMS_UNIT_PRICE = { sms: 25, lms: 50 };
-const SMS_TYPE_NAME  = { sms: '단문 SMS', lms: '장문 LMS' };
+// 장문 고정 50원 / 단문은 티어별 초과 단가 (기본 25원, loadSmsView 후 갱신)
+const SMS_LMS_PRICE = 50;
+const SMS_TYPE_NAME = { sms: '단문 SMS', lms: '장문 LMS' };
+let SMS_UNIT_PRICE  = { sms: 25, lms: 50 }; // sms는 티어별 초과단가로 갱신됨
 let _chargeType = 'sms'; // 현재 선택된 문자 유형
 
 function openSmsCharge() {
