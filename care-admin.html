@@ -237,6 +237,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
       <button class="sb-item" data-view="patients"><span class="sb-icon">👴</span>수급자 관리</button>
       <button class="sb-item" data-view="workers"><span class="sb-icon">👩‍⚕️</span>보호사 관리</button>
       <button class="sb-item" data-view="journal"><span class="sb-icon">📝</span>케어일지</button>
+      <button class="sb-item" data-view="sms"><span class="sb-icon">💬</span>문자 발송</button>
     </div>
     <div class="sb-sec">
       <div class="sb-sec-lbl">정산</div>
@@ -644,6 +645,68 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
       </div>
     </div>
 
+    <!-- ===== 문자 발송 ===== -->
+    <div class="view" id="view-sms">
+      <div class="sec-hd">
+        <div><div class="sec-hd-title">💬 문자 발송</div><div class="sec-hd-sub" id="smsSub">이번달 사용량 로딩 중...</div></div>
+        <button class="btn btn-primary" onclick="openSmsCompose()">+ 문자 발송</button>
+      </div>
+
+      <!-- 구독 사용량 카드 -->
+      <div class="grid2" style="margin-bottom:14px">
+        <div class="card" style="margin-bottom:0">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <div>
+              <div style="font-size:12px;color:var(--gray);font-weight:700;margin-bottom:4px">이번달 문자 사용량</div>
+              <div style="display:flex;align-items:baseline;gap:6px">
+                <span style="font-size:28px;font-weight:800;color:var(--teal)" id="smsUsedCount">0</span>
+                <span style="font-size:13px;color:var(--gray)">/ <span id="smsTotalQuota">0</span>건</span>
+              </div>
+            </div>
+            <div style="text-align:right">
+              <div id="smsPlanBadge" style="display:inline-block;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--tl);color:var(--teal);margin-bottom:6px">기본 플랜</div>
+              <div style="font-size:12px;color:var(--gray)">잔여 <span id="smsRemainCount" style="color:var(--teal);font-weight:800">0</span>건</div>
+            </div>
+          </div>
+          <!-- 사용량 프로그레스바 -->
+          <div style="height:8px;background:var(--g100);border-radius:20px;overflow:hidden">
+            <div id="smsProgressBar" style="height:100%;background:var(--teal2);border-radius:20px;transition:width .4s;width:0%"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:var(--gray)">
+            <span>0건</span><span id="smsQuotaLabel">기본 제공량</span>
+          </div>
+        </div>
+        <div class="card" style="margin-bottom:0">
+          <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:12px">💳 플랜별 기본 제공량</div>
+          <div id="smsPlanTable" style="font-size:12px;line-height:2">
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🔵 기본 플랜</span><span style="font-weight:700">월 <b>100</b>건 포함</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)"><span>🟢 표준 플랜</span><span style="font-weight:700">월 <b>300</b>건 포함</span></div>
+            <div style="display:flex;justify-content:space-between;padding:6px 0"><span>⭐ 프리미엄 플랜</span><span style="font-weight:700">월 <b>500</b>건 포함</span></div>
+          </div>
+          <button onclick="openSmsCharge()" class="btn btn-primary" style="width:100%;margin-top:14px;font-size:13px">⚡ 문자 추가 충전</button>
+        </div>
+      </div>
+
+      <!-- 발송 내역 -->
+      <div class="card">
+        <div class="card-ttl">
+          <span class="card-ttl-txt">발송 내역</span>
+          <div style="display:flex;gap:6px">
+            <button class="day-tab active" onclick="filterSmsHistory('all',this)">전체</button>
+            <button class="day-tab" onclick="filterSmsHistory('unpaid',this)">미납안내</button>
+            <button class="day-tab" onclick="filterSmsHistory('general',this)">일반공지</button>
+            <button class="day-tab" onclick="filterSmsHistory('salary',this)">급여명세서</button>
+          </div>
+        </div>
+        <table class="tbl" id="smsHistoryTable">
+          <thead><tr><th>발송일시</th><th>유형</th><th>수신자</th><th>건수</th><th>내용</th><th>상태</th></tr></thead>
+          <tbody id="smsHistoryTbody">
+            <tr><td colspan="6" style="text-align:center;color:var(--gray);padding:30px;font-size:13px">발송 내역이 없습니다</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <!-- ===== 급여 정산 ===== -->
     <div class="view" id="view-salary">
       <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="openSalaryModal()">명세서 일괄 발송</button></div>
@@ -805,16 +868,16 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 const viewTitles={
   dashboard:'📊 대시보드',visits:'🏠 오늘 방문 현황',workorders:'📋 작업지시 관리',
   schedule:'📅 일정 관리',patients:'👴 수급자 관리',workers:'👩‍⚕️ 보호사 관리',
-  journal:'📝 케어일지',unpaid:'💰 미납금 관리',revenue:'📈 매출 현황',salary:'🧾 급여 정산'
+  journal:'📝 케어일지',sms:'💬 문자 발송',unpaid:'💰 미납금 관리',revenue:'📈 매출 현황',salary:'🧾 급여 정산'
 };
 const mainBtns={
   dashboard:'+ 작업지시 발송',visits:'+ 작업지시 발송',workorders:'+ 새 작업지시',
   patients:'+ 수급자 등록',workers:'+ 보호사 등록',journal:'PDF 다운로드',
-  unpaid:'전체 문자 발송',revenue:'리포트 출력',schedule:'+ 일정 등록',salary:'명세서 일괄 발송'
+  sms:'+ 문자 발송',unpaid:'전체 문자 발송',revenue:'리포트 출력',schedule:'+ 일정 등록',salary:'명세서 일괄 발송'
 };
 const viewGroup={
   dashboard:'ops',visits:'ops',workorders:'ops',schedule:'ops',
-  patients:'mgmt',workers:'mgmt',journal:'mgmt',
+  patients:'mgmt',workers:'mgmt',journal:'mgmt',sms:'mgmt',
   unpaid:'settle',revenue:'settle',salary:'settle'
 };
 function showView(name){
@@ -832,6 +895,8 @@ function showView(name){
   tnavBtns[0].classList.toggle('active',grp==='ops');
   tnavBtns[1].classList.toggle('active',grp==='mgmt');
   tnavBtns[2].classList.toggle('active',grp==='settle');
+  // 문자 발송 뷰 진입 시 데이터 로드
+  if(name==='sms' && typeof sb !== 'undefined' && sb) loadSmsView();
 }
 document.querySelectorAll('.sb-item').forEach(item=>{
   item.addEventListener('click',()=>showView(item.dataset.view));
@@ -844,6 +909,7 @@ function handleMainBtn(){
   else if(name==='schedule') openSchedModal();
   else if(name==='patients') openPatientModal();
   else if(name==='workers') openWorkerRegModal();
+  else if(name==='sms') openSmsCompose();
   else if(name==='unpaid') openSmsModal();
   else if(name==='journal') downloadJournalPDF();
   else if(name==='salary') openSalaryModal();
@@ -1316,6 +1382,20 @@ function clearHardcoded() {
   // 급여 정산 초기화
   const salaryTbody = document.querySelector('#view-salary .tbl tbody');
   if (salaryTbody) salaryTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 보호사가 없습니다</td></tr>';
+
+  // 문자 발송 뷰 초기화
+  const smsUsed = document.getElementById('smsUsedCount');
+  const smsTotal = document.getElementById('smsTotalQuota');
+  const smsRemain = document.getElementById('smsRemainCount');
+  const smsBar = document.getElementById('smsProgressBar');
+  const smsSub2 = document.getElementById('smsSub');
+  if(smsUsed) smsUsed.textContent='0';
+  if(smsTotal) smsTotal.textContent='0';
+  if(smsRemain) smsRemain.textContent='0';
+  if(smsBar) smsBar.style.width='0%';
+  if(smsSub2) smsSub2.textContent='이번달 사용량 로딩 중...';
+  const smsHistTbody = document.getElementById('smsHistoryTbody');
+  if(smsHistTbody) smsHistTbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:30px;font-size:13px">발송 내역이 없습니다</td></tr>';
 }
 
 // ===== 보호사 렌더링 =====
@@ -1428,6 +1508,69 @@ async function doLogout() {
   location.href = 'care-login.html';
 }
 </script>
+
+<!-- ===== 문자 추가 충전 모달 ===== -->
+<div id="smsChargeModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('smsChargeModal')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-hd">
+      <div class="modal-title">⚡ 문자 추가 충전</div>
+      <button class="modal-close" onclick="closeModal('smsChargeModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:13px;color:var(--teal);font-weight:600">
+        💡 구독 플랜 기본 제공량 초과 시 추가 충전이 필요합니다. 충전 즉시 사용 가능합니다.
+      </div>
+      <!-- 현재 플랜 현황 -->
+      <div style="background:var(--g50);border-radius:12px;padding:14px;margin-bottom:18px">
+        <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:8px">현재 구독 현황</div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;line-height:2">
+          <span>플랜</span><span id="chargePlanLabel" style="font-weight:700">기본 플랜</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;line-height:2">
+          <span>이번달 기본 제공</span><span id="chargePlanQuota" style="font-weight:700">100건</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;line-height:2">
+          <span>이번달 사용</span><span id="chargeUsed" style="font-weight:700;color:var(--teal)">0건</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:13px;line-height:2;border-top:1px solid var(--border);margin-top:6px;padding-top:6px">
+          <span style="font-weight:700">잔여</span><span id="chargeRemain" style="font-weight:800;font-size:15px;color:var(--teal)">0건</span>
+        </div>
+      </div>
+      <!-- 충전 패키지 선택 -->
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">충전 패키지 선택</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="chargePackages">
+        <div class="charge-pkg" data-count="100" data-price="900" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--navy)">100건</div>
+          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">900원</div>
+          <div style="font-size:10px;color:var(--gray)">건당 9원</div>
+        </div>
+        <div class="charge-pkg sel" data-count="300" data-price="2400" onclick="selectChargePkg(this)" style="border:2px solid var(--teal);border-radius:12px;padding:14px;cursor:pointer;background:var(--tl);transition:all .15s;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--teal)">300건</div>
+          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">2,400원</div>
+          <div style="font-size:10px;color:var(--teal);font-weight:700">🔥 건당 8원 (인기)</div>
+        </div>
+        <div class="charge-pkg" data-count="500" data-price="3500" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--navy)">500건</div>
+          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">3,500원</div>
+          <div style="font-size:10px;color:var(--gray)">건당 7원</div>
+        </div>
+        <div class="charge-pkg" data-count="1000" data-price="6000" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+          <div style="font-size:20px;font-weight:800;color:var(--navy)">1,000건</div>
+          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">6,000원</div>
+          <div style="font-size:10px;color:var(--gray)">건당 6원 (최저가)</div>
+        </div>
+      </div>
+      <div style="margin-top:14px;background:var(--g50);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;font-weight:700">결제 금액</span>
+        <span style="font-size:20px;font-weight:800;color:var(--teal)" id="chargeTotal">2,400원</span>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('smsChargeModal')">취소</button>
+      <button class="btn btn-primary" onclick="proceedCharge()">💳 결제하기</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== 수급자 등록 모달 ===== -->
 <div id="patientRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('patientRegModal')">
@@ -2044,6 +2187,150 @@ async function sendSalaryAll() {
   await new Promise(r=>setTimeout(r,900));
   closeModal('salaryModal');
   toast(`✅ ${selected.length}명 보호사에게 명세서 발송 완료`,3000);
+}
+
+// ===== 문자 발송 뷰 로직 =====
+// 플랜별 기본 제공 문자 수
+const SMS_PLAN_QUOTA = { basic: 100, standard: 300, premium: 500 };
+const SMS_PLAN_LABEL = { basic: '🔵 기본 플랜', standard: '🟢 표준 플랜', premium: '⭐ 프리미엄 플랜' };
+
+let _smsHistory = [];
+let _smsQuotaData = { plan: 'basic', used: 0, extra: 0 };
+
+async function loadSmsView() {
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+    const centerId = profile.center_id;
+    const now = new Date();
+    const ym = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+
+    // 센터 플랜 + 추가 충전량 조회
+    const { data: center } = await sb.from('centers').select('plan, sms_extra_quota').eq('id', centerId).single();
+    const plan = center?.plan || 'basic';
+    const extraQuota = center?.sms_extra_quota || 0;
+    const planQuota = SMS_PLAN_QUOTA[plan] || 100;
+    const totalQuota = planQuota + extraQuota;
+
+    // 이번달 발송 건수 조회 (sms_logs 테이블)
+    const { data: logs, count } = await sb.from('sms_logs')
+      .select('*', { count: 'exact' })
+      .eq('center_id', centerId)
+      .gte('sent_at', ym + '-01')
+      .order('sent_at', { ascending: false });
+
+    const used = count || 0;
+    const remain = Math.max(0, totalQuota - used);
+    const pct = totalQuota > 0 ? Math.min(100, Math.round(used / totalQuota * 100)) : 0;
+
+    _smsQuotaData = { plan, used, extra: extraQuota, total: totalQuota };
+    _smsHistory = logs || [];
+
+    // UI 반영
+    document.getElementById('smsUsedCount').textContent = used;
+    document.getElementById('smsTotalQuota').textContent = totalQuota;
+    document.getElementById('smsRemainCount').textContent = remain;
+    document.getElementById('smsProgressBar').style.width = pct + '%';
+    document.getElementById('smsProgressBar').style.background = pct >= 90 ? 'var(--red)' : pct >= 70 ? 'var(--amber)' : 'var(--teal2)';
+    document.getElementById('smsPlanBadge').textContent = SMS_PLAN_LABEL[plan] || plan;
+    document.getElementById('smsQuotaLabel').textContent = `기본 ${planQuota}건${extraQuota > 0 ? ` + 추가 ${extraQuota}건` : ''}`;
+    document.getElementById('smsSub').textContent = `이번달 ${used}건 발송 · 잔여 ${remain}건`;
+
+    // 발송 내역 렌더
+    renderSmsHistory('all');
+  } catch(e) {
+    document.getElementById('smsSub').textContent = '데이터 로딩 실패';
+    console.error(e);
+  }
+}
+
+const SMS_TYPE_LABEL = {
+  unpaid: { label: '미납안내', color: '#fee2e2', text: '#dc2626' },
+  general: { label: '일반공지', color: '#dbeafe', text: '#1d4ed8' },
+  salary: { label: '급여명세서', color: '#dcfce7', text: '#16a34a' },
+  other: { label: '기타', color: 'var(--g100)', text: 'var(--gray)' }
+};
+
+function renderSmsHistory(filter) {
+  const tbody = document.getElementById('smsHistoryTbody');
+  const filtered = filter === 'all' ? _smsHistory : _smsHistory.filter(l => l.type === filter);
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:30px;font-size:13px">발송 내역이 없습니다</td></tr>';
+    return;
+  }
+  tbody.innerHTML = filtered.map(log => {
+    const d = new Date(log.sent_at);
+    const dateStr = `${d.getMonth()+1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+    const typeInfo = SMS_TYPE_LABEL[log.type] || SMS_TYPE_LABEL.other;
+    return `<tr>
+      <td style="font-size:12px">${dateStr}</td>
+      <td><span style="background:${typeInfo.color};color:${typeInfo.text};padding:3px 8px;border-radius:20px;font-size:10px;font-weight:700">${typeInfo.label}</span></td>
+      <td style="font-size:12px">${log.recipient_name || '-'}</td>
+      <td style="font-weight:700">${log.count || 1}건</td>
+      <td style="font-size:12px;color:var(--gray);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${log.message || '-'}</td>
+      <td><span class="badge ${log.status==='sent'?'b-done':'b-wait'}">${log.status==='sent'?'발송완료':'발송실패'}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function filterSmsHistory(filter, btn) {
+  document.querySelectorAll('#view-sms .day-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderSmsHistory(filter);
+}
+
+// 문자 발송 뷰가 열릴 때마다 데이터 갱신
+const _origShowView = showView;
+// (showView 내부에서 sms 뷰 진입 시 loadSmsView 호출은 showView 재정의로 처리)
+
+// ===== 문자 작성 (뷰에서 바로 발송) =====
+function openSmsCompose() {
+  openSmsModal(); // 기존 전체 문자 발송 모달 재활용
+}
+
+// ===== 추가 충전 모달 =====
+function openSmsCharge() {
+  // 현재 사용량 현황 반영
+  const plan = _smsQuotaData.plan || 'basic';
+  const planQuota = SMS_PLAN_QUOTA[plan] || 100;
+  const used = _smsQuotaData.used || 0;
+  const total = _smsQuotaData.total || planQuota;
+  const remain = Math.max(0, total - used);
+  document.getElementById('chargePlanLabel').textContent = SMS_PLAN_LABEL[plan] || plan;
+  document.getElementById('chargePlanQuota').textContent = planQuota + '건';
+  document.getElementById('chargeUsed').textContent = used + '건';
+  document.getElementById('chargeRemain').textContent = remain + '건';
+  // 기본 선택 패키지
+  document.querySelectorAll('.charge-pkg').forEach(p => {
+    const isSel = p.dataset.count === '300';
+    p.style.border = isSel ? '2px solid var(--teal)' : '2px solid var(--border)';
+    p.style.background = isSel ? 'var(--tl)' : '#fff';
+    p.querySelector('div').style.color = isSel ? 'var(--teal)' : 'var(--navy)';
+  });
+  document.getElementById('chargeTotal').textContent = '2,400원';
+  document.getElementById('smsChargeModal').style.display = 'flex';
+}
+
+function selectChargePkg(el) {
+  document.querySelectorAll('.charge-pkg').forEach(p => {
+    p.style.border = '2px solid var(--border)';
+    p.style.background = '#fff';
+    p.querySelectorAll('div')[0].style.color = 'var(--navy)';
+  });
+  el.style.border = '2px solid var(--teal)';
+  el.style.background = 'var(--tl)';
+  el.querySelectorAll('div')[0].style.color = 'var(--teal)';
+  const price = parseInt(el.dataset.price);
+  document.getElementById('chargeTotal').textContent = price.toLocaleString() + '원';
+}
+
+async function proceedCharge() {
+  const selected = document.querySelector('.charge-pkg[style*="var(--tl)"]');
+  const count = selected ? parseInt(selected.dataset.count) : 300;
+  const price = selected ? parseInt(selected.dataset.price) : 2400;
+  // 실제 결제 연동 전 안내
+  toast(`💳 ${count}건 · ${price.toLocaleString()}원 결제 페이지로 이동합니다.\n(결제 모듈 연동 후 활성화)`, 3000);
+  closeModal('smsChargeModal');
 }
 
 // ===== 공통 메시지 헬퍼 =====
