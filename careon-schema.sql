@@ -180,9 +180,10 @@ create table if not exists public.sms_logs (
 );
 alter table public.sms_logs enable row level security;
 
--- 인덱스: 월별 사용량 집계 (YYYY-MM 비교)
-create index if not exists sms_logs_center_month
-  on public.sms_logs (center_id, date_trunc('month', sent_at));
+-- 인덱스: 월별 사용량 집계 (sent_at 정렬 / 범위 검색용)
+-- date_trunc는 STABLE이라 인덱스에 직접 못 쓰므로 raw timestamptz 사용
+create index if not exists sms_logs_center_sent_at
+  on public.sms_logs (center_id, sent_at desc);
 
 create policy "sms_logs_select" on public.sms_logs
   for select using (
