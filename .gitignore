@@ -1,0 +1,15 @@
+.claude/
+*.log
+.env
+.env.local
+
+# Dev scripts (deploy folder shouldn't include)
+add-sub-plans.js
+polish-ux.js
+replace-login.js
+restore-missing-fns.js
+screenshot.mjs
+script-check.js
+
+# Supabase CLI temp
+supabase/.temp/
