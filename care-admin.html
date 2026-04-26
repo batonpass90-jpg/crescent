@@ -1088,10 +1088,10 @@ function renderCalendar(year, month) {
     const dow=(firstDay+d-1)%7;
     const color=dow===0?'var(--red)':dow===6?'#3b82f6':'var(--navy)';
     grid.insertAdjacentHTML('beforeend',`
-      <div onclick="showCalDay('${dateStr}')" style="border:1px solid ${isToday?'var(--teal)':'var(--border)'};border-radius:10px;padding:6px 4px;cursor:pointer;min-height:54px;background:${isToday?'var(--tl)':'#fff'};transition:all .15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='${isToday?'var(--teal)':'var(--border)'}'">
-        <div style="font-size:11px;font-weight:${isToday?'800':'600'};color:${isToday?'var(--teal)':color};margin-bottom:3px;text-align:center">${d}</div>
-        ${visits.length?`<div style="font-size:9px;font-weight:700;color:var(--teal);text-align:center;background:var(--tl);border-radius:4px;padding:1px 2px">${visits.length}건</div>`:''}
-        ${visits.slice(0,2).map(v=>`<div style="font-size:9px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">${v.patient}</div>`).join('')}
+      <div onclick="showCalDay('${dateStr}')" style="border:2px solid ${isToday?'var(--teal)':'var(--border)'};border-radius:12px;padding:10px 8px;cursor:pointer;min-height:90px;background:${isToday?'var(--tl)':'#fff'};transition:all .15s" onmouseover="this.style.borderColor='var(--teal2)'" onmouseout="this.style.borderColor='${isToday?'var(--teal)':'var(--border)'}'">
+        <div style="font-size:14px;font-weight:${isToday?'800':'700'};color:${isToday?'var(--teal)':color};margin-bottom:5px;text-align:center">${d}</div>
+        ${visits.length?`<div style="font-size:11px;font-weight:700;color:var(--teal);text-align:center;background:var(--tl);border-radius:6px;padding:2px 4px;margin-bottom:4px">${visits.length}건</div>`:''}
+        ${visits.slice(0,3).map(v=>`<div style="font-size:11px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px;font-weight:500">${v.patient}</div>`).join('')}
       </div>`);
   }
   document.getElementById('calDayDetail').style.display='none';
