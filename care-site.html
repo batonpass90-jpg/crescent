@@ -98,10 +98,11 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
   <button class="nav-btn">입소 문의</button>
 </nav>
 
-<div class="hero">
-  <div class="hero-bg">요양</div>
-  <div class="hero-badge"><span class="hero-dot"></span> 지금 방문요양 진행 중</div>
-  <div class="hero-title">어르신의<br>편안한 일상을<br><span>함께합니다</span></div>
+<main>
+<div class="hero" role="banner">
+  <div class="hero-bg" aria-hidden="true">요양</div>
+  <div class="hero-badge"><span class="hero-dot" aria-hidden="true"></span> 지금 방문요양 진행 중</div>
+  <h1 class="hero-title">어르신의<br>편안한 일상을<br><span>함께합니다</span></h1>
   <div class="hero-sub">24시간 전문 요양보호사가 함께합니다.<br>GPS 실시간 확인으로 가족도 안심하세요.</div>
   <div class="hero-cta">
     <button class="btn-white">입소 상담 신청</button>
@@ -230,8 +231,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 <div class="footer">
   <strong data-bind="name">CareOn 요양센터</strong><br>
   <span data-bind="address">주소 정보 로딩 중...</span><br>
-  TEL: <span data-bind="phone">대표번호</span>
+  TEL: <a data-bind="phone" id="footerPhone" href="#" style="color:inherit;text-decoration:none">대표번호</a>
 </div>
+</main>
 
 <script>
 function toast(msg,duration=2500){
@@ -270,11 +272,29 @@ function showModal(){
 document.querySelector('.nav-btn').onclick=()=>showModal();
 document.querySelector('.btn-white').onclick=()=>showModal();
 document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
-document.getElementById('btnCallCenter').onclick=()=>{
+document.getElementById('btnCallCenter').onclick=async ()=>{
+  // 로드 완료 전이면 잠깐 대기
+  if(!_centerLoaded){
+    toast('📞 연결 준비 중...');
+    for(let i=0;i<20;i++){
+      await new Promise(r=>setTimeout(r,100));
+      if(_centerLoaded) break;
+    }
+  }
   if(_centerPhone) location.href='tel:'+_centerPhone.replace(/-/g,'');
-  else toast('📞 전화번호 로드 중...');
+  else toast('전화번호가 등록되지 않은 센터입니다');
 };
-document.querySelector('.btn-kakao').onclick=()=>toast('💬 카카오톡 채널로 이동합니다');
+document.querySelector('.btn-kakao').onclick=()=>{
+  // 카카오톡 공유 (PC: 텍스트 복사 / 모바일: 카톡 직접 열기)
+  const text = `[CareOn] 방문요양 상담 문의\n${location.href}`;
+  if(navigator.share){
+    navigator.share({ title: 'CareOn 방문요양 상담', text, url: location.href }).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast('💬 메시지가 복사되었습니다. 카카오톡에 붙여넣어 보내주세요'));
+  } else {
+    toast('💬 카카오톡 앱에서 직접 검색해주세요');
+  }
+};
 document.querySelectorAll('.svc-card').forEach(card=>{
   card.style.cursor='pointer';
   card.onclick=()=>toast('🏠 '+card.querySelector('.svc-ttl').textContent+' 자세히 알아보기');
@@ -290,6 +310,12 @@ document.querySelectorAll('.step').forEach(step=>{
 
 // ===== 센터 정보 동적 로딩 (slug 기반) =====
 let _centerPhone = '';
+let _centerLoaded = false;
+function setOgMeta(prop, content){
+  let el = document.querySelector(`meta[property="${prop}"]`);
+  if(!el){ el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
+  el.setAttribute('content', content);
+}
 (async function loadCenter(){
   const sb = window.supabase.createClient(
     'https://swsemxzgzcwwrhowuaqz.supabase.co',
@@ -297,23 +323,40 @@ let _centerPhone = '';
   );
   const slug = CenterRouter.detectSlug();
   if(!slug){
+    // 슬러그 없으면 일반 안내 페이지로 (CareOn 메인 마케팅 톤)
     document.querySelectorAll('[data-bind]').forEach(el=>{
-      if(el.getAttribute('data-bind')==='name') el.textContent='센터를 선택해주세요';
-      if(el.getAttribute('data-bind')==='phone') el.textContent='-';
-      if(el.getAttribute('data-bind')==='address') el.textContent='URL에 ?c=센터슬러그 를 추가해주세요';
+      const k = el.getAttribute('data-bind');
+      if(k==='name') el.textContent='CareOn 파트너 센터';
+      else if(k==='phone') el.textContent='상담 연결';
+      else if(k==='address') el.textContent='가까운 CareOn 파트너 센터를 안내해 드립니다';
+      else if(k==='hours') el.textContent='평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00';
     });
+    _centerLoaded = true;
     return;
   }
   const center = await CenterRouter.loadCenterBySlug(sb, slug);
   if(!center){
     document.querySelectorAll('[data-bind]').forEach(el=>{
       if(el.getAttribute('data-bind')==='name') el.textContent='존재하지 않는 센터';
+      if(el.getAttribute('data-bind')==='phone') el.textContent='-';
+      if(el.getAttribute('data-bind')==='address') el.textContent='URL을 다시 확인해주세요';
     });
+    _centerLoaded = true;
     return;
   }
   CenterRouter.applyCenterToDOM(center);
   _centerPhone = center.phone || '';
   document.title = center.name + ' — 방문요양 전문';
+
+  // OG 메타 동적 업데이트 (카카오톡/페이스북 미리보기)
+  setOgMeta('og:title', `${center.name} · 요양 통합 플랫폼 CareOn`);
+  if(center.description) setOgMeta('og:description', center.description);
+  setOgMeta('og:url', location.href);
+
+  // footer 전화번호 링크 동작
+  const fp = document.getElementById('footerPhone');
+  if(fp && _centerPhone) fp.href = 'tel:' + _centerPhone.replace(/-/g,'');
+  _centerLoaded = true;
 })();
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>

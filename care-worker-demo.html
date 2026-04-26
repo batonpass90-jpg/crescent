@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>CareOn · 요양보호사 앱 (데모)</title>
+<meta name="description" content="CareOn 요양보호사 앱 데모 — 오늘 방문 일정, GPS 체크인, 케어일지 작성">
+<meta property="og:type" content="website">
+<meta property="og:title" content="요양 통합 플랫폼 · CareOn">
+<meta property="og:description" content="요양보호사 앱 데모 — 오늘 방문 일정 / GPS 체크인 / 케어일지 작성">
+<meta property="og:image" content="https://crescentstudio.co.kr/careon-icon.svg">
+<meta property="og:site_name" content="CareOn">
+<meta name="theme-color" content="#0D9488">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8fafc;color:var(--navy);max-width:430px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+
+.demo-bar{background:linear-gradient(90deg,#fef3c7,#fde68a);color:#78350f;padding:8px 14px;font-size:11px;font-weight:600;text-align:center;border-bottom:1px solid #fcd34d}
+
+.hd{background:var(--teal);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hd-left{display:flex;align-items:center;gap:10px}
+.hd-avatar{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:16px;border:2px solid rgba(255,255,255,.4)}
+.hd-name{font-size:15px;font-weight:800;color:#fff}
+.hd-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:1px}
+.hd-right{display:flex;align-items:center;gap:8px}
+.hd-bell{font-size:20px;cursor:pointer;color:#fff}
+
+.wrap{padding:16px}
+
+/* GPS 경고 */
+.gps-warn{background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#92400e;line-height:1.6}
+.gps-warn.success{background:#dcfce7;border-color:#86efac;color:#166534}
+
+.route-card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.route-ttl{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.route-ttl-txt{display:flex;align-items:center;gap:6px}
+.route-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
+.route-date{font-size:11px;color:var(--teal);font-weight:700}
+.route-list{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.route-list::-webkit-scrollbar{display:none}
+.route-stop{display:flex;flex-direction:column;align-items:center;flex-shrink:0;cursor:pointer}
+.rs-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--border);background:#fff}
+.rs-circle.done{border-color:var(--green);background:#f0fdf4}
+.rs-circle.active{border-color:var(--teal);background:var(--tl);box-shadow:0 0 0 4px rgba(13,148,136,.15)}
+.rs-name{font-size:10px;font-weight:600;color:var(--navy);margin-top:5px;text-align:center;white-space:nowrap}
+.rs-time{font-size:10px;color:var(--gray);margin-top:1px}
+.route-line{width:28px;height:2px;background:var(--border);flex-shrink:0;margin-bottom:20px}
+.route-line.done{background:var(--green)}
+
+.visit-card{background:linear-gradient(135deg,#042f2e,#0f766e);border-radius:22px;padding:22px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.visit-card::after{content:'🏠';position:absolute;right:-10px;bottom:-15px;font-size:90px;opacity:.08}
+.visit-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.visit-name{font-size:18px;font-weight:800}
+.visit-status{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);padding:5px 12px;border-radius:50px;font-size:12px;font-weight:700}
+.v-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+.visit-addr{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border-radius:12px;padding:10px 14px;margin-bottom:14px;font-size:13px}
+.visit-time{display:flex;gap:0;margin-bottom:16px}
+.vt-item{flex:1;text-align:center}
+.vt-item+.vt-item{border-left:1px solid rgba(255,255,255,.2)}
+.vt-lbl{font-size:10px;color:rgba(255,255,255,.6);margin-bottom:3px}
+.vt-val{font-size:16px;font-weight:800}
+
+.gps-btn{background:#fff;color:var(--teal);border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
+.gps-btn.checked{background:var(--green);color:#fff}
+.navi-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:12px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+
+.card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.card-ttl{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.card-ttl-txt{display:flex;align-items:center;gap:6px}
+.card-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
+.progress-bar{height:6px;background:var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s}
+
+.check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-box{width:24px;height:24px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .2s;background:#fff}
+.check-box.checked{background:var(--teal);border-color:var(--teal);color:#fff}
+.check-content{flex:1}
+.check-ttl{font-size:14px;font-weight:700;color:var(--navy)}
+.check-sub{font-size:11px;color:var(--gray);margin-top:2px}
+.check-time{font-size:11px;color:var(--teal);font-weight:700}
+
+.memo-box{background:var(--tl);border-radius:12px;padding:14px;border:1px solid #99f6e4;margin-bottom:14px}
+.memo-lbl{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px}
+.memo-input{width:100%;background:transparent;border:none;font-family:inherit;font-size:13px;color:var(--navy);line-height:1.7;resize:none;outline:none}
+
+/* 사진 업로드 */
+.photo-section{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.photo-thumb{aspect-ratio:1;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;position:relative;overflow:hidden}
+.photo-thumb.add{background:var(--tl);color:var(--teal);border:2px dashed var(--teal2)}
+.photo-thumb .del{position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:none;cursor:pointer}
+
+.complete-btn{background:var(--teal);color:#fff;border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(13,148,136,.4)}
+
+.bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:10px;color:var(--gray);font-weight:600;padding:4px 0}
+.bnav-item.active{color:var(--teal)}
+.bnav-icon{font-size:22px}
+
+/* 뷰 */
+.view{display:none}
+.view.active{display:block}
+
+/* 케어일지 */
+.log-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer}
+.log-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.log-name{font-size:14px;font-weight:700;color:var(--navy)}
+.log-meta{display:flex;gap:12px;font-size:11px;color:var(--gray);margin-top:6px}
+.log-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:#dcfce7;color:#16a34a}
+</style>
+</head>
+<body>
+
+<div class="demo-bar">🎬 데모 모드 — 김미영 보호사 시점 (현재 박종철 어르신 댁 방문 중)</div>
+
+<div class="hd">
+  <div class="hd-left">
+    <div class="hd-avatar">👩‍⚕️</div>
+    <div>
+      <div class="hd-name">김미영 보호사님</div>
+      <div class="hd-sub" id="workerSub">오늘 2건 방문 예정</div>
+    </div>
+  </div>
+  <div class="hd-right">
+    <div class="hd-bell" onclick="toast('🔔 센터장: 박종철 어르신 무릎 통증 주의')">🔔</div>
+    <div id="liveClock" style="font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:20px;letter-spacing:.5px">12:13:00</div>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ========== 오늘일정 ========== -->
+<div class="view active" id="view-today">
+
+  <!-- GPS 성공 배너 -->
+  <div class="gps-warn success" id="gpsWarn">✅ <b>방문지 12m 이내</b> · GPS 정확도 8m</div>
+
+  <!-- 오늘 루트 -->
+  <div class="route-card">
+    <div class="route-ttl">
+      <span class="route-ttl-txt">오늘 방문 루트</span>
+      <span class="route-date">4월 26일 (금) · 총 2곳</span>
+    </div>
+    <div class="route-list">
+      <div class="route-stop" onclick="toast('👴 박종철 어르신 · 방문중 (11:30)')">
+        <div class="rs-circle active">🏠</div>
+        <div class="rs-name">박종철<br>어르신</div>
+        <div class="rs-time">11:30</div>
+      </div>
+      <div class="route-line"></div>
+      <div class="route-stop" onclick="toast('👴 정동호 어르신 · 13:00 예정')">
+        <div class="rs-circle" style="border-color:var(--border);background:#f8fafc">⏳</div>
+        <div class="rs-name">정동호<br>어르신</div>
+        <div class="rs-time">13:00</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 현재 방문지 -->
+  <div class="visit-card">
+    <div class="visit-top">
+      <div class="visit-name">박종철 어르신</div>
+      <div class="visit-status"><span class="v-dot"></span>방문중</div>
+    </div>
+    <div class="visit-addr">📍 성남시 수정구 태평동 88-12 (대평빌라 205호)</div>
+    <div class="visit-time">
+      <div class="vt-item"><div class="vt-lbl">방문 시작</div><div class="vt-val">11:30</div></div>
+      <div class="vt-item"><div class="vt-lbl">예정 종료</div><div class="vt-val">13:00</div></div>
+      <div class="vt-item"><div class="vt-lbl">경과</div><div class="vt-val" id="elapsed">43분</div></div>
+    </div>
+    <button class="gps-btn checked">✅ GPS 체크인 완료 (11:30)</button>
+    <button class="navi-btn" onclick="toast('🗺️ 카카오맵 길찾기 열림')">🗺️ 네비게이션 열기</button>
+  </div>
+
+  <!-- 케어 체크리스트 -->
+  <div class="card">
+    <div class="card-ttl">
+      <span class="card-ttl-txt">케어 체크리스트</span>
+      <span id="checkProgress" style="font-size:11px;color:var(--teal);font-weight:700">3/5 완료</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:60%"></div></div>
+    <div id="checklistItems"></div>
+  </div>
+
+  <!-- 사진 업로드 -->
+  <div class="photo-section">
+    <div class="card-ttl"><span class="card-ttl-txt">📷 케어 사진</span><span style="font-size:11px;color:var(--gray)" id="photoCount">3장</span></div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:8px">식사·활동·상태 등을 사진으로 기록. 보호자에게 자동 공유됩니다.</div>
+    <div class="photo-grid">
+      <div class="photo-thumb add" onclick="addPhoto()">+</div>
+      <div class="photo-thumb" style="background:linear-gradient(135deg,#fef9c3,#fde68a);font-size:34px" onclick="toast('📷 식사 사진 11:45')">🍱<button class="del" onclick="event.stopPropagation();removePhoto(this)">✕</button></div>
+      <div class="photo-thumb" style="background:linear-gradient(135deg,#dcfce7,#bbf7d0);font-size:34px" onclick="toast('📷 체조 사진 12:10')">🤸<button class="del" onclick="event.stopPropagation();removePhoto(this)">✕</button></div>
+      <div class="photo-thumb" style="background:linear-gradient(135deg,#dbeafe,#bfdbfe);font-size:34px" onclick="toast('📷 투약 사진 12:30')">💊<button class="del" onclick="event.stopPropagation();removePhoto(this)">✕</button></div>
+    </div>
+  </div>
+
+  <!-- 메모 -->
+  <div class="memo-box">
+    <div class="memo-lbl">📝 오늘 특이사항 메모</div>
+    <textarea class="memo-input" rows="3" maxlength="2000">식사량 100% 완료. 혈압 130/85 안정. 무릎 통증 호전 중. 가족 안부 전달 완료.</textarea>
+  </div>
+
+  <!-- 완료 버튼 -->
+  <button class="complete-btn" onclick="completeCare()">✅ 케어 완료 전송</button>
+</div>
+
+<!-- ========== 케어일지 ========== -->
+<div class="view" id="view-log">
+  <div class="card-ttl" style="margin:14px 4px"><span class="card-ttl-txt">📋 최근 케어일지 (30일 · 26건)</span></div>
+
+  <div class="log-card" onclick="toast('📋 박종철 어르신 일지 상세')">
+    <div class="log-hd">
+      <div class="log-name">👴 박종철 어르신</div>
+      <div class="log-status">✅ 완료</div>
+    </div>
+    <div class="log-meta">
+      <span>📅 4/25 (목)</span>
+      <span>⏰ 11:30~13:00</span>
+      <span>✅ 5/5</span>
+      <span>📷 3</span>
+    </div>
+  </div>
+  <div class="log-card" onclick="toast('📋 정동호 어르신 일지 상세')">
+    <div class="log-hd">
+      <div class="log-name">👴 정동호 어르신</div>
+      <div class="log-status">✅ 완료</div>
+    </div>
+    <div class="log-meta">
+      <span>📅 4/25 (목)</span>
+      <span>⏰ 13:00~14:30</span>
+      <span>✅ 5/5</span>
+      <span>📷 2</span>
+    </div>
+  </div>
+  <div class="log-card" onclick="toast('📋 박종철 어르신 일지 상세')">
+    <div class="log-hd">
+      <div class="log-name">👴 박종철 어르신</div>
+      <div class="log-status">✅ 완료</div>
+    </div>
+    <div class="log-meta">
+      <span>📅 4/23 (화)</span>
+      <span>⏰ 11:30~13:00</span>
+      <span>✅ 4/5</span>
+      <span>📷 2</span>
+    </div>
+  </div>
+  <div class="log-card" onclick="toast('📋 정동호 어르신 일지 상세')">
+    <div class="log-hd">
+      <div class="log-name">👴 정동호 어르신</div>
+      <div class="log-status">✅ 완료</div>
+    </div>
+    <div class="log-meta">
+      <span>📅 4/23 (화)</span>
+      <span>⏰ 13:00~14:30</span>
+      <span>✅ 5/5</span>
+      <span>📷 1</span>
+    </div>
+  </div>
+  <div class="log-card" onclick="toast('📋 박종철 어르신 일지 상세')">
+    <div class="log-hd">
+      <div class="log-name">👴 박종철 어르신</div>
+      <div class="log-status">✅ 완료</div>
+    </div>
+    <div class="log-meta">
+      <span>📅 4/21 (일)</span>
+      <span>⏰ 11:30~13:00</span>
+      <span>✅ 5/5</span>
+      <span>📷 4</span>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 담당 수급자 ========== -->
+<div class="view" id="view-patients">
+  <div class="card-ttl" style="margin:14px 4px"><span class="card-ttl-txt">👴 담당 수급자 (2명)</span></div>
+
+  <div class="card" onclick="toast('👴 박종철 어르신 상세')">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="width:42px;height:42px;border-radius:50%;background:#fef9c3;display:flex;align-items:center;justify-content:center;font-size:20px">👴</div>
+      <div>
+        <div style="font-size:15px;font-weight:800">박종철 어르신</div>
+        <div style="font-size:11px;color:var(--gray)">2등급 · 78세 · 남성</div>
+      </div>
+      <span class="log-status" style="margin-left:auto">방문중</span>
+    </div>
+    <div style="font-size:12px;color:var(--gray);line-height:1.7">
+      📍 수정구 태평동 88-12 (대평빌라 205호)<br>
+      📞 010-1234-5678 (배우자 박지영)<br>
+      💊 혈압약, 당뇨약 (식후 30분)<br>
+      ⚠️ 무릎 관절 통증 (계단 주의)
+    </div>
+  </div>
+
+  <div class="card" onclick="toast('👴 정동호 어르신 상세')">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="width:42px;height:42px;border-radius:50%;background:#fce7f3;display:flex;align-items:center;justify-content:center;font-size:20px">👴</div>
+      <div>
+        <div style="font-size:15px;font-weight:800">정동호 어르신</div>
+        <div style="font-size:11px;color:var(--gray)">3등급 · 82세 · 남성</div>
+      </div>
+      <span class="log-status" style="background:var(--border);color:var(--gray);margin-left:auto">대기</span>
+    </div>
+    <div style="font-size:12px;color:var(--gray);line-height:1.7">
+      📍 분당구 야탑동 32-1<br>
+      📞 010-2345-6789 (자녀 정수영)<br>
+      💊 혈압약, 위장약<br>
+      ⚠️ 연하 곤란 (죽 형태로 식사)
+    </div>
+  </div>
+</div>
+
+<!-- ========== 내정보 ========== -->
+<div class="view" id="view-me">
+  <div class="card" style="margin-top:14px">
+    <div class="card-ttl"><span class="card-ttl-txt">👤 내 정보</span></div>
+    <div style="display:flex;align-items:center;gap:14px;padding:10px 0 16px;border-bottom:1px solid var(--border);margin-bottom:14px">
+      <div style="width:60px;height:60px;border-radius:50%;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:30px">👩‍⚕️</div>
+      <div>
+        <div style="font-size:17px;font-weight:800">김미영</div>
+        <div style="font-size:12px;color:var(--gray);margin-top:2px">요양보호사 1급 · 경력 5년</div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+      <div><b style="color:var(--gray);width:80px;display:inline-block">소속 센터</b> 햇살요양센터</div>
+      <div><b style="color:var(--gray);width:80px;display:inline-block">연락처</b> 010-1111-2222</div>
+      <div><b style="color:var(--gray);width:80px;display:inline-block">담당 지역</b> 수정구</div>
+      <div><b style="color:var(--gray);width:80px;display:inline-block">입사일</b> 2021년 4월 1일</div>
+      <div><b style="color:var(--gray);width:80px;display:inline-block">담당 어르신</b> 박종철, 정동호</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl"><span class="card-ttl-txt">📊 이번달 활동</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div style="background:var(--tl);padding:14px;border-radius:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:var(--teal)">26건</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">방문 완료</div>
+      </div>
+      <div style="background:#fef9c3;padding:14px;border-radius:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#92400e">52시간</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">총 근무</div>
+      </div>
+      <div style="background:#dbeafe;padding:14px;border-radius:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#1d4ed8">100%</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">정시 도착률</div>
+      </div>
+      <div style="background:#dcfce7;padding:14px;border-radius:12px;text-align:center">
+        <div style="font-size:22px;font-weight:800;color:#16a34a">⭐ 4.9</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">보호자 평가</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-ttl"><span class="card-ttl-txt">💰 이번달 예상 급여</span></div>
+    <div style="font-size:24px;font-weight:800;color:var(--teal);text-align:center;padding:10px 0">1,832,000원</div>
+    <div style="font-size:11px;color:var(--gray);text-align:center">기본급 1,820,000 + 수당 180,000 - 공제 168,000</div>
+    <button class="complete-btn" style="background:#fff;color:var(--teal);box-shadow:none;border:1.5px solid var(--teal);margin-top:12px" onclick="toast('📄 명세서 PDF 발송')">📄 명세서 받기</button>
+  </div>
+
+  <button class="complete-btn" style="background:var(--gray);box-shadow:none;margin-top:14px" onclick="toast('🔔 알림 활성화됨')">🔔 알림 활성화</button>
+  <button class="complete-btn" style="background:var(--red);box-shadow:none;margin-top:8px" onclick="toast('🚪 로그아웃 (데모)')">🚪 로그아웃</button>
+</div>
+
+</div>
+
+<div class="bnav">
+  <div class="bnav-item active" data-view="today" onclick="showView('today')"><span class="bnav-icon">🏠</span>오늘일정</div>
+  <div class="bnav-item" data-view="log" onclick="showView('log')"><span class="bnav-icon">📋</span>케어일지</div>
+  <div class="bnav-item" data-view="patients" onclick="showView('patients')"><span class="bnav-icon">👴</span>수급자</div>
+  <div class="bnav-item" data-view="me" onclick="showView('me')"><span class="bnav-icon">👤</span>내정보</div>
+</div>
+
+<script>
+const CHECKLIST = [
+  { id:'meal', icon:'🍚', title:'식사 보조', sub:'식사량 확인 및 보조', done:true, time:'11:45' },
+  { id:'posture', icon:'🤸', title:'체위 변경', sub:'2시간마다 자세 변경', done:true, time:'12:05' },
+  { id:'stretch', icon:'🧘', title:'스트레칭', sub:'관절 운동 및 스트레칭', done:true, time:'12:20' },
+  { id:'medi', icon:'💊', title:'투약 확인', sub:'처방약 복용 확인', done:false, time:null },
+  { id:'hygiene', icon:'🛁', title:'청결 케어', sub:'구강 청결 및 세면', done:false, time:null }
+];
+
+function renderChecklist(){
+  const wrap = document.getElementById('checklistItems');
+  wrap.innerHTML = CHECKLIST.map((it, i) => `
+    <div class="check-item" onclick="toggleCheck(${i})">
+      <div class="check-box ${it.done?'checked':''}">${it.done?'✓':'○'}</div>
+      <div class="check-content">
+        <div class="check-ttl">${it.icon} ${it.title}</div>
+        <div class="check-sub">${it.sub}</div>
+      </div>
+      <span class="check-time" style="${it.done?'':'color:var(--gray)'}">${it.time||'미완료'}</span>
+    </div>
+  `).join('');
+  const done = CHECKLIST.filter(c=>c.done).length;
+  document.getElementById('checkProgress').textContent = `${done}/${CHECKLIST.length} 완료`;
+  document.getElementById('progressFill').style.width = (done/CHECKLIST.length*100)+'%';
+}
+
+function toggleCheck(idx){
+  const it = CHECKLIST[idx];
+  it.done = !it.done;
+  if(it.done){
+    const now = new Date();
+    it.time = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+    toast(`✅ ${it.title} 완료 - 보호자에게 알림 발송`);
+  } else {
+    it.time = null;
+  }
+  renderChecklist();
+}
+
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name)?.classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+}
+
+function toast(msg, duration=2500){
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el = document.createElement('div');
+  el.className = 't-msg';
+  el.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:pre-line;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.2);max-width:80%';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), duration);
+}
+
+function addPhoto(){
+  toast('📷 카메라 또는 갤러리 열기\n(데모: 시뮬레이션)', 2200);
+}
+function removePhoto(btn){
+  if(!confirm('사진을 삭제할까요?')) return;
+  btn.closest('.photo-thumb').remove();
+  const count = document.querySelectorAll('.photo-thumb').length - 1;
+  document.getElementById('photoCount').textContent = count + '장';
+}
+
+function completeCare(){
+  const done = CHECKLIST.filter(c=>c.done).length;
+  if(done < CHECKLIST.length){
+    if(!confirm(`아직 ${CHECKLIST.length-done}개 항목이 미완료예요. 그래도 완료 처리할까요?`)) return;
+  }
+  toast('⏳ GPS 체크아웃 + 케어일지 전송 중...');
+  setTimeout(() => toast('✅ 케어 완료! 박지영 (보호자)에게 알림 발송 완료'), 1500);
+}
+
+// 시계 (1초마다 갱신)
+let elapsed = 43;
+function tick(){
+  const now = new Date();
+  document.getElementById('liveClock').textContent =
+    String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
+}
+tick(); setInterval(tick, 1000);
+
+// 경과 시간 (1분마다 +1)
+setInterval(() => {
+  elapsed++;
+  const el = document.getElementById('elapsed');
+  if(el) el.textContent = elapsed < 60 ? elapsed+'분' : Math.floor(elapsed/60)+'시간 '+(elapsed%60)+'분';
+}, 60000);
+
+renderChecklist();
+
+// 5초 후 GPS 배너 자동 숨김
+setTimeout(() => {
+  const w = document.getElementById('gpsWarn');
+  if(w) w.style.display = 'none';
+}, 5000);
+
+setTimeout(() => toast('👋 김미영님, 박종철 어르신 케어 진행 중'), 700);
+</script>
+</body>
+</html>

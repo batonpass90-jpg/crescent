@@ -208,7 +208,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
   <!-- 메모 -->
   <div class="memo-box" id="memoBox" style="display:none">
     <div class="memo-lbl">📝 오늘 특이사항 메모</div>
-    <textarea class="memo-input" id="memoInput" rows="3" placeholder="어르신 상태, 특이사항 등을 입력해주세요..."></textarea>
+    <textarea class="memo-input" id="memoInput" rows="3" maxlength="2000" placeholder="어르신 상태, 특이사항 등을 입력해주세요..."></textarea>
   </div>
 
   <!-- 완료 버튼 -->
@@ -561,12 +561,14 @@ function renderMyInfo(){
 
 // ===== Haversine 거리 계산 (m 단위) =====
 function haversine(lat1, lng1, lat2, lng2){
+  if(lat1==null||lng1==null||lat2==null||lng2==null) return null;
   const R = 6371000; // 지구 반경 (m)
   const toRad = d => d * Math.PI / 180;
   const dLat = toRad(lat2 - lat1);
   const dLng = toRad(lng2 - lng1);
   const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
-  return Math.round(2 * R * Math.asin(Math.sqrt(a)));
+  // 부동소수점 오차 방지: a가 1을 넘으면 NaN 발생 → Math.min으로 클램프
+  return Math.round(2 * R * Math.asin(Math.min(1, Math.sqrt(a))));
 }
 
 // ===== GPS 체크인 (거리 검증 포함) =====
@@ -687,6 +689,9 @@ async function doCheckin(){
 async function uploadPhoto(input){
   const file = input.files?.[0];
   if(!file || !_currentVisit) return;
+  // 파일 크기 제한 10MB
+  if(file.size > 10 * 1024 * 1024){ alert('10MB 이하 사진만 업로드 가능합니다.'); input.value=''; return; }
+  if(!file.type.startsWith('image/')){ alert('이미지 파일만 업로드 가능합니다.'); input.value=''; return; }
 
   // 파일명: <center_id>/<patient_id>/<visit_id>/<timestamp>_<filename>
   const path = `${_profile.center_id}/${_currentVisit.patient_id}/${_currentVisit.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
@@ -711,12 +716,16 @@ async function renderPhotos(){
   const photos = _currentVisit?.photos || [];
   document.getElementById('photoCount').textContent = `${photos.length}장`;
 
-  // 추가 버튼 + 사진 썸네일
+  // signed URL 병렬 발급 (성능: N번 await → 1번 Promise.all)
+  const urls = await Promise.all(photos.map(p =>
+    sb.storage.from('care-photos').createSignedUrl(p.path, 3600).then(r => r.data?.signedUrl || '')
+  ));
+
   let html = `<div class="photo-thumb add" onclick="document.getElementById('photoInput').click()">+</div>`;
-  for(const p of photos){
-    const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
-    html += `<div class="photo-thumb"><img src="${data?.signedUrl||''}" alt=""><button class="del" onclick="deletePhoto('${p.path}')">✕</button></div>`;
-  }
+  photos.forEach((p, i) => {
+    const safePath = p.path.replace(/'/g, "\\'");
+    html += `<div class="photo-thumb"><img src="${urls[i]}" alt="케어 사진" loading="lazy"><button class="del" onclick="deletePhoto('${safePath}')">✕</button></div>`;
+  });
   grid.innerHTML = html;
 }
 

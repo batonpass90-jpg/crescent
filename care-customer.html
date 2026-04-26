@@ -452,7 +452,9 @@ function renderNextVisit(){
 }
 
 function careerFromDate(hireDate){
+  if(!hireDate) return '';
   const start = new Date(hireDate);
+  if(isNaN(start.getTime())) return '';
   const years = Math.floor((new Date() - start) / (365.25*24*60*60*1000));
   return years > 0 ? years + '년' : '';
 }
@@ -504,6 +506,11 @@ async function doLogout(){
   location.href = '/care-login.html';
 }
 
+// 페이지 떠날 때 Realtime 채널 정리 (메모리 누수 방지)
+window.addEventListener('beforeunload', () => {
+  if(_realtimeChannel && sb) sb.removeChannel(_realtimeChannel);
+});
+
 // ===== 뷰 전환 =====
 function showView(name){
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -536,14 +543,13 @@ async function loadCareLog(){
     return;
   }
 
-  // 사진 thumbnail signed URL 일괄 발급
+  // 사진 thumbnail signed URL 병렬 발급 (성능: N번 await → 1번 Promise.all)
+  const allPhotoPaths = logs.flatMap(v => (v.photos||[]).map(p => p.path));
   const photoUrls = {};
-  for(const v of logs){
-    for(const p of (v.photos||[])){
-      const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
-      photoUrls[p.path] = data?.signedUrl || '';
-    }
-  }
+  const urlResults = await Promise.all(
+    allPhotoPaths.map(path => sb.storage.from('care-photos').createSignedUrl(path, 3600).then(r => [path, r.data?.signedUrl || '']))
+  );
+  urlResults.forEach(([path, url]) => { photoUrls[path] = url; });
 
   list.innerHTML = logs.map(v => {
     let log = {};
@@ -559,7 +565,10 @@ async function loadCareLog(){
 
     const photosHtml = (v.photos||[]).length ? `
       <div class="log-photos">
-        ${v.photos.map(p => `<img src="${photoUrls[p.path]||''}" onclick="openLightbox('${photoUrls[p.path]||''}')" alt="">`).join('')}
+        ${v.photos.map(p => {
+          const url = photoUrls[p.path]||'';
+          return `<img src="${escapeAttr(url)}" data-url="${escapeAttr(url)}" onclick="openLightbox(this.dataset.url)" alt="케어 사진" loading="lazy">`;
+        }).join('')}
       </div>` : '';
 
     return `
@@ -568,14 +577,21 @@ async function loadCareLog(){
           <div class="log-date">📅 ${date.getMonth()+1}월 ${date.getDate()}일 (${dayNames[date.getDay()]})</div>
           <div class="log-time">${(v.start_time||'').slice(0,5)} ~ ${(v.end_time||'').slice(0,5)}</div>
         </div>
-        <div style="font-size:12px;color:var(--gray);margin-bottom:6px">👩‍⚕️ ${v.workers?.name||'-'} 보호사</div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:6px">👩‍⚕️ ${escapeHtml(v.workers?.name||'-')} 보호사</div>
         <div class="log-checks">${checksHtml}</div>
-        ${log.memo ? `<div class="log-memo">📝 ${log.memo}</div>` : ''}
+        ${log.memo ? `<div class="log-memo">📝 ${escapeHtml(log.memo)}</div>` : ''}
         ${photosHtml}
       </div>
     `;
   }).join('');
 }
+
+// ===== HTML/속성 이스케이프 (XSS 방어) =====
+function escapeHtml(s){
+  if(s==null) return '';
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function escapeAttr(s){ return escapeHtml(s); }
 
 // ===== 사진 갤러리 =====
 async function loadGallery(){
@@ -602,16 +618,17 @@ async function loadGallery(){
     return;
   }
 
-  // signed URL 일괄 발급
+  // signed URL 병렬 발급
   const urls = {};
-  for(const p of allPhotos){
-    const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
-    urls[p.path] = data?.signedUrl || '';
-  }
+  const urlResults = await Promise.all(
+    allPhotos.map(p => sb.storage.from('care-photos').createSignedUrl(p.path, 3600).then(r => [p.path, r.data?.signedUrl || '']))
+  );
+  urlResults.forEach(([path, url]) => { urls[path] = url; });
 
-  wrap.innerHTML = `<div class="gallery">${allPhotos.map(p =>
-    `<img src="${urls[p.path]}" onclick="openLightbox('${urls[p.path]}')" alt="${p.date}">`
-  ).join('')}</div>`;
+  wrap.innerHTML = `<div class="gallery">${allPhotos.map(p => {
+    const url = urls[p.path]||'';
+    return `<img src="${escapeAttr(url)}" data-url="${escapeAttr(url)}" onclick="openLightbox(this.dataset.url)" alt="${escapeAttr(p.date||'')}" loading="lazy">`;
+  }).join('')}</div>`;
 }
 
 function openLightbox(url){
