@@ -591,6 +591,35 @@ async function doCheckin(){
   // 거리 검증
   let distance = null;
   const patient = _currentVisit.patients;
+
+  // ===== 첫 방문: 어르신 댁 좌표 미등록 시 현재 위치로 자동 등록 =====
+  if(coords && patient && (!patient.gps_lat || !patient.gps_lng)){
+    const ok = confirm(
+      `📍 ${patient.name} 어르신 댁의 위치가 아직 등록되지 않았어요.\n\n` +
+      `현재 보호사님 위치를 어르신 댁 좌표로 저장할까요?\n` +
+      `(다음 방문부터 GPS 거리 검증이 자동으로 작동합니다)`
+    );
+    if(ok){
+      const { error: updErr } = await sb.from('patients')
+        .update({ gps_lat: coords.lat, gps_lng: coords.lng })
+        .eq('id', patient.id);
+      if(updErr){
+        console.warn('수급자 좌표 저장 실패:', updErr);
+      } else {
+        // 메모리상 patient 객체도 업데이트 (이번 체크인 거리 계산은 0이 됨)
+        patient.gps_lat = coords.lat;
+        patient.gps_lng = coords.lng;
+        warnEl.className = 'gps-warn';
+        warnEl.style.background = '#dcfce7';
+        warnEl.style.borderColor = '#86efac';
+        warnEl.style.color = '#166534';
+        warnEl.style.display = 'block';
+        warnEl.innerHTML = `✅ <b>어르신 댁 좌표가 등록되었습니다.</b><br>다음 방문부터 거리 검증이 적용됩니다.`;
+        setTimeout(() => warnEl.style.display='none', 5000);
+      }
+    }
+  }
+
   if(coords && patient?.gps_lat && patient?.gps_lng){
     distance = haversine(coords.lat, coords.lng, patient.gps_lat, patient.gps_lng);
 
