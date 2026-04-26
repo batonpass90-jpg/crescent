@@ -1081,13 +1081,18 @@ function clearHardcoded() {
   const workerCont = document.querySelector('#view-dashboard .card:nth-child(2)');
   if (workerCont) workerCont.querySelectorAll('.worker-item').forEach(e=>e.remove());
 
+  // 대시보드 stat-change 뱃지 초기화 (+1추가, 진행중, 주의, +2이번달)
+  document.querySelectorAll('#view-dashboard .stat-change').forEach(el => el.textContent = '');
   // 대시보드 미납금 초기화
   document.querySelectorAll('#view-dashboard .unpaid-item').forEach(e=>e.remove());
-  const totalEl = document.querySelector('#view-dashboard strong[style*="red"]');
-  if (totalEl) totalEl.textContent = '0원';
+  // 대시보드 미납금 합계 초기화 (span[style*="red"])
+  document.querySelectorAll('#view-dashboard span[style*="red"]').forEach(el => el.textContent = '0원');
   // 대시보드 이번달 누계 방문건수 초기화
-  const monthVisitEl = document.querySelector('#view-dashboard strong[style*="teal"]');
-  if (monthVisitEl) monthVisitEl.textContent = '0건';
+  document.querySelectorAll('#view-dashboard strong').forEach(el => {
+    if (el.style.color && el.style.color.includes('teal') || el.getAttribute('style')?.includes('teal')) el.textContent = '0건';
+  });
+  // 미납금 뷰 합계 초기화
+  document.querySelectorAll('#view-unpaid span[style*="red"]').forEach(el => el.textContent = '0원');
 
   // 오늘 방문 현황 뷰 초기화
   const visitViewTbody = document.querySelector('#view-visits .tbl tbody');
@@ -1114,6 +1119,8 @@ function clearHardcoded() {
   // 일정 관리 초기화
   const schedTbody = document.querySelector('#view-schedule .tbl tbody');
   if (schedTbody) schedTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 일정이 없습니다</td></tr>';
+  const schedSub = document.querySelector('#view-schedule .sec-hd-sub');
+  if (schedSub) schedSub.textContent = '등록된 일정 없음';
 
   // 케어일지 초기화
   document.querySelectorAll('#view-journal .journal-item').forEach(e => e.remove());
