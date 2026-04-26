@@ -1281,13 +1281,15 @@ window.addEventListener('load', async () => {
     // ★ 하드코딩 데이터 전부 초기화 (제일 먼저!)
     clearHardcoded();
 
-    // 보호사 목록 로드
+    // 보호사 목록 로드 (해지 안 된 모든 보호사: active + pending_signup)
     const { data: workers } = await sb.from('workers')
-      .select('*').eq('center_id', profile.center_id).eq('status','active');
+      .select('*').eq('center_id', profile.center_id).neq('status','inactive');
 
     renderWorkers(workers || []);
     const wSel = document.getElementById('wo-worker');
-    wSel.innerHTML = (workers||[]).map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
+    // 작업지시 select에는 active만 (가입대기 보호사는 작업 배정 불가)
+    const activeOnly = (workers||[]).filter(w => w.status === 'active');
+    wSel.innerHTML = activeOnly.map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
 
     // 수급자 목록 로드
     const { data: patients } = await sb.from('patients')
@@ -1447,21 +1449,78 @@ function clearHardcoded() {
 function renderWorkers(workers) {
   const emojis = ['👩‍⚕️','👩','👩‍🦳','👩‍🦱','👨‍⚕️','👨'];
   const colors = ['#f0fdfa','#fef9c3','#dbeafe','#fce7f3','#f0fdf4','#fef3c7'];
-  // 대시보드 보호사 카드
+
+  // 대시보드 보호사 카드 (active만)
+  const activeWorkers = workers.filter(w => w.status === 'active');
   const cont = document.querySelector('#view-dashboard .worker-item')?.parentElement;
   if (cont) {
     cont.querySelectorAll('.worker-item').forEach(e=>e.remove());
-    workers.slice(0,4).forEach((w,i) => {
+    activeWorkers.slice(0,4).forEach((w,i) => {
       cont.insertAdjacentHTML('beforeend', `
         <div class="worker-item" onclick="openWorkerModal('${w.name}','${w.id}')">
           <div class="w-av" style="background:${colors[i%colors.length]}">${emojis[i%emojis.length]}</div>
-          <div><div class="w-name">${w.name}</div><div class="w-sub">요양보호사 ${w.experience_years}년</div></div>
+          <div><div class="w-name">${w.name}</div><div class="w-sub">요양보호사 ${w.experience_years||0}년</div></div>
           <span class="w-status w-off">활동중</span>
         </div>`);
     });
   }
+
+  // 보호사 관리 뷰: 전체 카드 동적 렌더 (active + pending_signup)
+  const grid = document.querySelector('#view-workers .grid2');
+  if (grid) {
+    grid.innerHTML = '';
+    workers.forEach((w,i) => {
+      const isPending = w.status === 'pending_signup';
+      const statusBadge = isPending
+        ? '<span class="w-status" style="margin-left:auto;background:#fef3c7;color:#92400e">⏳ 가입대기</span>'
+        : (w.status === 'active' ? '<span class="w-status w-off" style="margin-left:auto">활동중</span>'
+                                  : '<span class="w-status" style="margin-left:auto;background:#f1f5f9;color:var(--gray)">해지됨</span>');
+      const linkInfo = isPending
+        ? `<tr><td style="color:var(--gray);font-size:11px">가입 이메일</td><td style="font-size:12px;font-weight:600;color:var(--amber)">${w.email||'-'}</td></tr>`
+        : `<tr><td style="color:var(--gray);font-size:11px">자격증</td><td style="font-size:13px;">${w.certificate_type||'-'}</td></tr>`;
+      grid.insertAdjacentHTML('beforeend', `
+        <div class="card" style="cursor:pointer">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+            <div style="width:48px;height:48px;border-radius:50%;background:${colors[i%colors.length]};display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid var(--teal2)">${emojis[i%emojis.length]}</div>
+            <div><div style="font-size:15px;font-weight:800;">${w.name}</div><div style="font-size:11px;color:var(--gray);">경력 ${w.experience_years||0}년 · ${w.certificate_type||'요양보호사'}</div></div>
+            ${statusBadge}
+          </div>
+          <table class="tbl"><tbody>
+            <tr><td style="color:var(--gray);font-size:11px;width:80px">연락처</td><td style="font-size:13px;">${w.phone||'-'}</td></tr>
+            ${linkInfo}
+            <tr><td style="color:var(--gray);font-size:11px">담당 지역</td><td style="font-size:13px;">${w.service_area||'-'}</td></tr>
+          </tbody></table>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            ${!isPending ? `<span class="act-btn" onclick="event.stopPropagation();openNewWoModal('${w.name}')">작업지시 발송</span>` : ''}
+            ${w.phone ? `<span class="act-btn" onclick="event.stopPropagation();location.href='tel:${(w.phone||'').replace(/-/g,'')}'">📞 전화</span>` : ''}
+            ${w.status === 'active' || isPending ? `<span class="act-btn" style="background:#fee2e2;color:#dc2626;margin-left:auto" onclick="event.stopPropagation();deactivateWorker('${w.id}','${w.name}')">해지</span>` : ''}
+          </div>
+        </div>
+      `);
+    });
+    const sub = document.querySelector('#view-workers .sec-hd-sub');
+    if (sub) sub.textContent = `총 ${activeWorkers.length}명 근무중${workers.filter(w=>w.status==='pending_signup').length>0?` · 가입대기 ${workers.filter(w=>w.status==='pending_signup').length}명`:''}`;
+  }
+
   // 사이드바 라이브 텍스트
-  document.querySelector('.sb-live-txt').textContent = `보호사 ${workers.length}명 활동중`;
+  const live = document.querySelector('.sb-live-txt');
+  if (live) live.textContent = `보호사 ${activeWorkers.length}명 활동중`;
+}
+
+// ===== 보호사 해지 =====
+async function deactivateWorker(workerId, workerName) {
+  if (!confirm(`${workerName} 보호사를 해지하시겠어요?\n\n· 케어일지 등 기존 데이터는 보존됩니다\n· 보호사 앱 로그인이 차단됩니다`)) return;
+  const { data, error } = await sb.rpc('deactivate_worker', { p_worker_id: workerId });
+  if (error || !data?.success) {
+    toast('❌ 해지 실패: ' + (error?.message || data?.error || '알 수 없는 오류'));
+    return;
+  }
+  toast(`✅ ${workerName} 보호사가 해지되었습니다`);
+  // 목록 갱신
+  const { data: { session } } = await sb.auth.getSession();
+  const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+  const { data: ws } = await sb.from('workers').select('*').eq('center_id', profile.center_id).neq('status','inactive');
+  if (ws) renderWorkers(ws);
 }
 
 // ===== 수급자 수 카드 업데이트 =====
@@ -1780,6 +1839,10 @@ async function doLogout() {
           <input type="tel" class="form-input" id="wr-phone" placeholder="010-0000-0000">
         </div>
       </div>
+      <div class="form-group">
+        <label class="form-label">이메일 * <span style="color:var(--gray);font-weight:400;font-size:11px">(보호사가 이 이메일로 가입하면 자동 연결됩니다)</span></label>
+        <input type="email" class="form-input" id="wr-email" placeholder="worker@example.com">
+      </div>
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">자격증 종류</label>
@@ -2046,8 +2109,10 @@ function openWorkerRegModal() {
 async function saveWorker() {
   const name = document.getElementById('wr-name').value.trim();
   const phone = document.getElementById('wr-phone').value.trim();
+  const email = document.getElementById('wr-email').value.trim().toLowerCase();
   if (!name) return showRegMsg('workerRegMsg','이름을 입력하세요.','error');
   if (!phone) return showRegMsg('workerRegMsg','연락처를 입력하세요.','error');
+  if (!email || !email.includes('@')) return showRegMsg('workerRegMsg','올바른 이메일을 입력하세요.','error');
 
   const btn = document.getElementById('workerRegBtn');
   btn.disabled=true; btn.textContent='등록 중...';
@@ -2060,28 +2125,30 @@ async function saveWorker() {
       center_id: profile.center_id,
       name,
       phone,
+      email,
       certificate_type: document.getElementById('wr-cert').value,
       experience_years: parseInt(document.getElementById('wr-exp').value)||0,
       birth_date: document.getElementById('wr-dob').value || null,
       bank_account: document.getElementById('wr-account').value.trim() || null,
       address: document.getElementById('wr-address').value.trim() || null,
       service_area: document.getElementById('wr-region').value.trim() || null,
-      status: 'active'
+      status: 'pending_signup'  // 보호사가 직접 가입 시 'active'로 자동 전환
     };
 
     const { error } = await sb.from('workers').insert(payload);
     if (error) throw error;
 
-    showRegMsg('workerRegMsg','✅ 보호사 등록이 완료되었습니다!','success');
+    showRegMsg('workerRegMsg',`✅ 등록 완료! 보호사가 ${email}로 가입하면 자동 연결됩니다.`,'success');
     setTimeout(() => {
       closeModal('workerRegModal');
       // 목록 갱신
-      sb.from('workers').select('*').eq('center_id', profile.center_id).eq('status','active')
+      sb.from('workers').select('*').eq('center_id', profile.center_id).neq('status','inactive')
         .then(({data}) => {
           if(data) {
             renderWorkers(data);
+            const activeOnly = data.filter(w => w.status === 'active');
             const wSel = document.getElementById('wo-worker');
-            wSel.innerHTML = data.map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
+            wSel.innerHTML = activeOnly.map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
           }
         });
     }, 1200);
