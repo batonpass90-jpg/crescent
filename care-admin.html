@@ -44,6 +44,10 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .topbar-bell{font-size:19px;cursor:pointer;position:relative}
 .bell-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
 .topbar-btn{display:none}
+.day-tab{background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 14px;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;font-family:inherit;transition:all .15s}
+.day-tab:hover{border-color:var(--teal);color:var(--teal)}
+.day-tab.active{background:var(--teal);border-color:var(--teal);color:#fff}
+@media print{.sidebar,.topbar{display:none!important}.main{margin-left:0!important}}
 .tnav-btn{background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--gray);padding:5px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
 .tnav-btn:hover{background:var(--g100);color:var(--navy)}
 .tnav-btn.active{background:var(--tl);color:var(--teal)}
@@ -535,23 +539,17 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <!-- ===== 케어일지 ===== -->
     <div class="view" id="view-journal">
       <div class="sec-hd">
-        <div><div class="sec-hd-title">📝 케어일지</div><div class="sec-hd-sub">오늘 제출된 일지 3건</div></div>
-        <button class="btn btn-ghost-sm" onclick="toast('📥 전체 PDF 다운로드 중...')">PDF 다운로드</button>
+        <div><div class="sec-hd-title">📝 케어일지</div><div class="sec-hd-sub" id="journalSub">제출된 일지 없음</div></div>
+        <button class="btn btn-ghost-sm" onclick="downloadJournalPDF()">⬇ PDF 다운로드</button>
       </div>
-      <div class="journal-item" onclick="openJournalModal('박종철','김미영')">
-        <div class="journal-meta"><span class="journal-name">박종철 어르신 · 김미영 보호사</span><span class="journal-time">오전 11:45 ~ 13:02</span></div>
-        <div class="journal-preview">식사량 100% 양호. 무릎 통증 호소하여 스트레칭 강도 조절. 연고 도포 완료. 가족분 방문 예정이라 주변 정리...</div>
-        <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">체위변경 ✓</span><span class="badge b-done">스트레칭 ✓</span><span class="badge b-ing">투약확인</span><span class="badge b-wait">청결케어</span></div>
+      <div style="display:flex;gap:6px;margin-bottom:14px" id="journalTabs">
+        <button class="day-tab active" onclick="filterJournal('today',this)">오늘</button>
+        <button class="day-tab" onclick="filterJournal('yesterday',this)">어제</button>
+        <button class="day-tab" onclick="filterJournal('week',this)">이번주</button>
+        <button class="day-tab" onclick="filterJournal('month',this)">이번달</button>
       </div>
-      <div class="journal-item" onclick="openJournalModal('이순자','박민정')">
-        <div class="journal-meta"><span class="journal-name">이순자 어르신 · 박민정 보호사</span><span class="journal-time">오전 09:05 ~ 10:28</span></div>
-        <div class="journal-preview">혈압 130/80 측정. 컨디션 양호. 식사량 80% (식욕 다소 저하). 인지활동 진행, 오늘은 그림 맞추기 게임...</div>
-        <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">혈압체크 ✓</span><span class="badge b-done">인지활동 ✓</span><span class="badge b-done">청결케어 ✓</span></div>
-      </div>
-      <div class="journal-item" onclick="openJournalModal('강복순','박민정')">
-        <div class="journal-meta"><span class="journal-name">강복순 어르신 · 박민정 보호사</span><span class="journal-time">오전 10:05 ~ 11:32</span></div>
-        <div class="journal-preview">기본 케어 전반 진행. 특이사항 없음. 어르신 컨디션 좋으심. 침구 교체 완료...</div>
-        <div class="journal-tags"><span class="badge b-done">식사보조 ✓</span><span class="badge b-done">체위변경 ✓</span><span class="badge b-done">청결케어 ✓</span><span class="badge b-done">침구교체 ✓</span></div>
+      <div id="journalList">
+        <div style="text-align:center;color:var(--gray);padding:40px;font-size:13px">제출된 케어일지가 없습니다</div>
       </div>
     </div>
 
@@ -600,37 +598,49 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 
     <!-- ===== 일정 관리 ===== -->
     <div class="view" id="view-schedule">
-      <div class="sec-hd"><div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub">이번주 방문 일정 · 총 52건</div></div><button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button></div>
-      <div class="notice">💡 일정을 클릭하면 해당 수급자의 작업지시를 바로 발송할 수 있습니다.</div>
-      <!-- 요일 탭 -->
-      <div style="display:flex;gap:6px;margin-bottom:14px">
-        <button class="btn btn-primary" id="daybtn-mon" style="padding:7px 14px;font-size:12px" onclick="filterDay('mon',this)">월요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-tue" style="padding:7px 14px;font-size:12px" onclick="filterDay('tue',this)">화요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-wed" style="padding:7px 14px;font-size:12px" onclick="filterDay('wed',this)">수요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-thu" style="padding:7px 14px;font-size:12px" onclick="filterDay('thu',this)">목요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-fri" style="padding:7px 14px;font-size:12px" onclick="filterDay('fri',this)">금요일</button>
-        <button class="btn btn-ghost-sm" id="daybtn-all" style="padding:7px 14px;font-size:12px;margin-left:auto" onclick="filterDay('all',this)">전체 보기</button>
+      <div class="sec-hd"><div><div class="sec-hd-title">📅 일정 관리</div><div class="sec-hd-sub" id="schedSub">등록된 일정 없음</div></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-ghost-sm" id="btnCalView" onclick="setSchedView('cal')" style="background:var(--tl);color:var(--teal);border-color:var(--teal)">📅 달력</button>
+          <button class="btn btn-ghost-sm" id="btnListView" onclick="setSchedView('list')">📋 목록</button>
+          <button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button>
+        </div>
       </div>
-      <div class="card">
-        <table class="tbl">
-          <thead><tr><th>요일</th><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
-          <tbody id="scheduleTbody">
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('이순자','박민정','09:00','완료')">일지 보기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-done">완료</span></td><td><span class="act-btn" onclick="openWoEditModal('강복순','박민정','10:00','완료')">일지 보기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-ing">방문중</span></td><td><span class="act-btn" onclick="openWoEditModal('박종철','김미영','11:30','방문중')">수정 발송</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">대기</span></td><td><span class="act-btn" onclick="openWoEditModal('최영순','이지현','14:00','대기')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="mon"><td style="color:var(--teal);font-weight:700;">월(오늘)</td><td><b>정동호</b></td><td>김미영</td><td>16:30~17:30</td><td>방문요양 60분</td><td><span class="badge b-warn">⚠주의</span></td><td><span class="act-btn red" onclick="openWoEditModal('정동호','김미영','16:30','주의')">긴급 수정</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="tue" style="display:none"><td>화요일</td><td><b>김영자</b></td><td>최수진</td><td>13:00~14:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>박종철</b></td><td>김미영</td><td>11:30~13:00</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="wed" style="display:none"><td>수요일</td><td><b>최영순</b></td><td>이지현</td><td>14:00~15:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('이지현')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>강복순</b></td><td>박민정</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="thu" style="display:none"><td>목요일</td><td><b>정동호</b></td><td>김미영</td><td>14:00~15:00</td><td>방문요양 60분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('김미영')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>이순자</b></td><td>박민정</td><td>09:00~10:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('박민정')">발송하기</span></td></tr>
-            <tr class="sch-row" data-day="fri" style="display:none"><td>금요일</td><td><b>홍말순</b></td><td>최수진</td><td>10:00~11:30</td><td>방문요양 90분</td><td><span class="badge b-wait">예정</span></td><td><span class="act-btn" onclick="openNewWoModal('최수진')">발송하기</span></td></tr>
-          </tbody>
-        </table>
+      <!-- 달력 뷰 -->
+      <div id="schedCalView">
+        <div class="card" style="padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+            <button onclick="moveCalMonth(-1)" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">‹</button>
+            <span style="font-weight:800;font-size:15px" id="calTitle"></span>
+            <button onclick="moveCalMonth(1)" style="background:none;border:1px solid var(--border);border-radius:8px;padding:4px 12px;cursor:pointer;font-size:16px">›</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center;margin-bottom:6px">
+            <div style="font-size:11px;font-weight:700;color:var(--red);padding:4px">일</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">월</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">화</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">수</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">목</div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);padding:4px">금</div>
+            <div style="font-size:11px;font-weight:700;color:#3b82f6;padding:4px">토</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px" id="calGrid"></div>
+        </div>
+        <div id="calDayDetail" style="margin-top:14px;display:none">
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:10px" id="calDayTitle"></div>
+          <table class="tbl"><thead><tr><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
+          <tbody id="calDayTbody"></tbody></table>
+        </div>
+      </div>
+      <!-- 목록 뷰 -->
+      <div id="schedListView" style="display:none">
+        <div class="notice">💡 일정을 클릭하면 해당 수급자의 작업지시를 바로 발송할 수 있습니다.</div>
+        <div class="card">
+          <table class="tbl">
+            <thead><tr><th>날짜</th><th>수급자</th><th>보호사</th><th>시간</th><th>서비스</th><th>상태</th><th>작업지시</th></tr></thead>
+            <tbody id="scheduleTbody">
+              <tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 일정이 없습니다</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -979,6 +989,141 @@ function openWorkerModal(name){
       연락처: <strong>${d.phone}</strong><br>현재 상태: <strong style="color:var(--teal)">${d.status}</strong>
     </div>`;
   document.getElementById('workerModal').style.display='flex';
+}
+</script>
+
+<!-- ===== 케어일지 + 달력 ===== -->
+<script>
+// ===== 케어일지 날짜 필터 =====
+let journalAllItems = []; // DB에서 로드된 전체 일지 캐시
+
+function filterJournal(period, btn) {
+  document.querySelectorAll('#journalTabs .day-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderJournalByPeriod(period);
+}
+
+function renderJournalByPeriod(period) {
+  const list = document.getElementById('journalList');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const filtered = journalAllItems.filter(item => {
+    const d = new Date(item.created_at); d.setHours(0,0,0,0);
+    const diff = Math.floor((today - d) / 86400000);
+    if (period === 'today') return diff === 0;
+    if (period === 'yesterday') return diff === 1;
+    if (period === 'week') return diff <= 6;
+    if (period === 'month') return diff <= 29;
+    return true;
+  });
+  const labels = {today:'오늘',yesterday:'어제',week:'이번주',month:'이번달'};
+  const sub = document.getElementById('journalSub');
+  if (sub) sub.textContent = `${labels[period]||''} 제출된 일지 ${filtered.length}건`;
+
+  if (!filtered.length) {
+    list.innerHTML = '<div style="text-align:center;color:var(--gray);padding:40px;font-size:13px">제출된 케어일지가 없습니다</div>';
+    return;
+  }
+  list.innerHTML = filtered.map(item => {
+    const d = new Date(item.created_at);
+    const timeStr = d.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+    const dateStr = period!=='today' ? ` · ${d.getMonth()+1}월 ${d.getDate()}일` : '';
+    return `<div class="journal-item" onclick="openJournalModal('${item.patients?.name||''}','${item.workers?.name||''}')">
+      <div class="journal-meta"><span class="journal-name">${item.patients?.name||''} 어르신 · ${item.workers?.name||''} 보호사</span><span class="journal-time">${timeStr}${dateStr}</span></div>
+      <div class="journal-preview">${item.content||'내용 없음'}</div>
+      <div class="journal-tags">${(item.tasks||[]).map(t=>`<span class="badge b-done">${t} ✓</span>`).join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== PDF 다운로드 =====
+function downloadJournalPDF() {
+  const sub = document.getElementById('journalSub')?.textContent || '';
+  const items = [...document.querySelectorAll('#journalList .journal-item')];
+  let html = `<html><head><meta charset="UTF-8"><style>
+    body{font-family:'Apple SD Gothic Neo',sans-serif;padding:30px;color:#0F1B2D;font-size:13px}
+    h2{font-size:18px;margin-bottom:4px}.sub{color:#6b7280;font-size:12px;margin-bottom:24px}
+    .item{border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-bottom:12px;page-break-inside:avoid}
+    .name{font-weight:700;font-size:14px;margin-bottom:4px}.time{color:#6b7280;font-size:11px;margin-bottom:8px}
+    .preview{font-size:12px;line-height:1.6;color:#374151}.tags{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
+    .tag{background:#dcfce7;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+  </style></head><body>
+  <h2>📝 케어일지</h2>
+  <div class="sub">${document.querySelector('.sb-brand')?.textContent||'센터'} · ${sub} · 출력일: ${new Date().toLocaleDateString('ko-KR')}</div>`;
+  items.forEach(item => {
+    const name = item.querySelector('.journal-name')?.textContent||'';
+    const time = item.querySelector('.journal-time')?.textContent||'';
+    const preview = item.querySelector('.journal-preview')?.textContent||'';
+    const tags = [...item.querySelectorAll('.badge')].map(b=>`<span class="tag">${b.textContent}</span>`).join('');
+    html += `<div class="item"><div class="name">${name}</div><div class="time">${time}</div><div class="preview">${preview}</div><div class="tags">${tags}</div></div>`;
+  });
+  html += '</body></html>';
+  const w = window.open('','_blank');
+  w.document.write(html); w.document.close(); w.focus();
+  setTimeout(()=>w.print(), 500);
+}
+
+// ===== 달력 =====
+let calYear, calMonth, calVisitData = {};
+
+function initCalendar() {
+  const now = new Date();
+  calYear = now.getFullYear(); calMonth = now.getMonth()+1;
+  renderCalendar(calYear, calMonth);
+}
+
+function renderCalendar(year, month) {
+  calYear=year; calMonth=month;
+  document.getElementById('calTitle').textContent = `${year}년 ${month}월`;
+  const grid = document.getElementById('calGrid');
+  grid.innerHTML='';
+  const firstDay = new Date(year, month-1, 1).getDay();
+  const lastDate = new Date(year, month, 0).getDate();
+  const now = new Date();
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  for(let i=0;i<firstDay;i++) grid.insertAdjacentHTML('beforeend','<div></div>');
+  for(let d=1;d<=lastDate;d++) {
+    const dateStr=`${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const visits=calVisitData[dateStr]||[];
+    const isToday=dateStr===todayStr;
+    const dow=(firstDay+d-1)%7;
+    const color=dow===0?'var(--red)':dow===6?'#3b82f6':'var(--navy)';
+    grid.insertAdjacentHTML('beforeend',`
+      <div onclick="showCalDay('${dateStr}')" style="border:1px solid ${isToday?'var(--teal)':'var(--border)'};border-radius:10px;padding:6px 4px;cursor:pointer;min-height:54px;background:${isToday?'var(--tl)':'#fff'};transition:all .15s" onmouseover="this.style.borderColor='var(--teal)'" onmouseout="this.style.borderColor='${isToday?'var(--teal)':'var(--border)'}'">
+        <div style="font-size:11px;font-weight:${isToday?'800':'600'};color:${isToday?'var(--teal)':color};margin-bottom:3px;text-align:center">${d}</div>
+        ${visits.length?`<div style="font-size:9px;font-weight:700;color:var(--teal);text-align:center;background:var(--tl);border-radius:4px;padding:1px 2px">${visits.length}건</div>`:''}
+        ${visits.slice(0,2).map(v=>`<div style="font-size:9px;color:var(--gray);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px">${v.patient}</div>`).join('')}
+      </div>`);
+  }
+  document.getElementById('calDayDetail').style.display='none';
+}
+
+function showCalDay(dateStr) {
+  const visits=calVisitData[dateStr]||[];
+  const d=new Date(dateStr);
+  const days=['일','월','화','수','목','금','토'];
+  document.getElementById('calDayTitle').textContent=`📋 ${d.getMonth()+1}월 ${d.getDate()}일(${days[d.getDay()]}) · ${visits.length}건`;
+  const tbody=document.getElementById('calDayTbody');
+  const badges={completed:'b-done',in_progress:'b-ing',scheduled:'b-wait',pending:'b-wait'};
+  tbody.innerHTML=visits.length?visits.map(v=>`<tr>
+    <td><b>${v.patient}</b></td><td>${v.worker}</td><td>${v.time}</td><td>방문요양</td>
+    <td><span class="badge ${badges[v.status]||'b-wait'}">${{completed:'완료',in_progress:'방문중',scheduled:'예정',pending:'대기'}[v.status]||v.status}</span></td>
+    <td><span class="act-btn" onclick="toast('📋 ${v.patient} 어르신 일정 상세')">상세</span></td>
+  </tr>`).join(''):`<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:20px">이 날 방문 일정이 없습니다</td></tr>`;
+  document.getElementById('calDayDetail').style.display='block';
+}
+
+function moveCalMonth(dir) {
+  calMonth+=dir;
+  if(calMonth>12){calMonth=1;calYear++;}
+  if(calMonth<1){calMonth=12;calYear--;}
+  renderCalendar(calYear,calMonth);
+}
+
+function setSchedView(mode) {
+  document.getElementById('schedCalView').style.display=mode==='cal'?'block':'none';
+  document.getElementById('schedListView').style.display=mode==='list'?'block':'none';
+  document.getElementById('btnCalView').style.cssText=mode==='cal'?'background:var(--tl);color:var(--teal);border-color:var(--teal)':'';
+  document.getElementById('btnListView').style.cssText=mode==='list'?'background:var(--tl);color:var(--teal);border-color:var(--teal)':'';
 }
 </script>
 
