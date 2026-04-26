@@ -994,39 +994,75 @@ window.addEventListener('load', async () => {
       document.querySelector('.sb-pname').textContent = profile.name + ' 센터장';
     }
 
+    // ★ 하드코딩 데이터 전부 초기화
+    clearHardcoded();
+
     // 보호사 목록 로드
     const { data: workers } = await sb.from('workers')
       .select('*').eq('center_id', profile.center_id).eq('status','active');
 
-    if (workers?.length) {
-      renderWorkers(workers);
-      // 작업지시 모달 드롭다운 업데이트
-      const sel = document.getElementById('wo-worker');
-      sel.innerHTML = workers.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
-    }
+    renderWorkers(workers || []);
+    const wSel = document.getElementById('wo-worker');
+    wSel.innerHTML = (workers||[]).map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
 
     // 수급자 목록 로드
     const { data: patients } = await sb.from('patients')
       .select('*').eq('center_id', profile.center_id).eq('status','active');
 
-    if (patients?.length) {
-      // 통계 카드 업데이트
-      document.querySelector('.stat-num:last-of-type') && updateStatCard(patients.length);
-      renderPatients(patients);
-      // 작업지시 모달 드롭다운 업데이트
-      const sel = document.getElementById('wo-patient');
-      sel.innerHTML = patients.map(p => `<option value="${p.id}">${p.name} 어르신</option>`).join('');
-    }
+    renderPatients(patients || []);
+    const pSel = document.getElementById('wo-patient');
+    pSel.innerHTML = (patients||[]).map(p=>`<option value="${p.id}">${p.name} 어르신</option>`).join('') || '<option>등록된 수급자 없음</option>';
+
+    // 수급자 수 통계 카드
+    const statCards = document.querySelectorAll('.stat-num');
+    if (statCards[3]) statCards[3].textContent = (patients||[]).length + '명';
 
     // 미납금 로드
     const { data: unpaid } = await sb.from('unpaid_fees')
       .select('*, patients(name)').eq('center_id', profile.center_id).eq('status','unpaid');
-    if (unpaid?.length) renderUnpaid(unpaid);
+    renderUnpaid(unpaid || []);
+
+    // 미납금 수 통계 카드
+    if (statCards[2]) statCards[2].textContent = (unpaid||[]).length + '건';
 
   } catch(e) {
     console.error('초기화 오류:', e);
   }
 });
+
+// ===== 하드코딩 초기화 =====
+function clearHardcoded() {
+  // 대시보드 방문 현황 테이블 초기화
+  const visitTbody = document.querySelector('#view-dashboard .tbl tbody');
+  if (visitTbody) visitTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">오늘 등록된 방문이 없습니다</td></tr>';
+
+  // 대시보드 보호사 현황 초기화
+  const workerCont = document.querySelector('#view-dashboard .card:nth-child(2)');
+  if (workerCont) workerCont.querySelectorAll('.worker-item').forEach(e=>e.remove());
+
+  // 대시보드 미납금 초기화
+  document.querySelectorAll('#view-dashboard .unpaid-item').forEach(e=>e.remove());
+  const totalEl = document.querySelector('#view-dashboard strong[style*="red"]');
+  if (totalEl) totalEl.textContent = '0원';
+
+  // 오늘 방문 현황 뷰 초기화
+  const visitViewTbody = document.querySelector('#view-visits .tbl tbody');
+  if (visitViewTbody) visitViewTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">오늘 등록된 방문이 없습니다</td></tr>';
+
+  // 작업지시 뷰 초기화
+  document.querySelectorAll('#view-workorders .wo-item').forEach(e=>e.remove());
+
+  // 수급자 관리 테이블 초기화
+  const patientTbody = document.querySelector('#view-patients .tbl tbody');
+  if (patientTbody) patientTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 수급자가 없습니다</td></tr>';
+
+  // 보호사 관리 뷰 초기화
+  document.querySelectorAll('#view-workers .card').forEach(e=>e.remove());
+
+  // 미납금 관리 테이블 초기화
+  const unpaidTbody = document.querySelector('#view-unpaid .tbl tbody');
+  if (unpaidTbody) unpaidTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">미납금이 없습니다</td></tr>';
+}
 
 // ===== 보호사 렌더링 =====
 function renderWorkers(workers) {
@@ -1081,6 +1117,7 @@ function renderPatients(patients) {
 
 // ===== 미납금 렌더링 =====
 function renderUnpaid(items) {
+  if (!items.length) return;
   const total = items.reduce((s,i) => s+i.amount, 0);
   // 대시보드 미납금 카드
   const dashUnpaid = document.querySelector('#view-dashboard .unpaid-item')?.parentElement;
