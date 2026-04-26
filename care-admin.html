@@ -1054,12 +1054,24 @@ function clearHardcoded() {
   if (statNums[2]) statNums[2].textContent = '0건';
   if (statNums[3]) statNums[3].textContent = '0명';
 
-  // 사이드바 뱃지 숫자 초기화
+  // 사이드바 뱃지 숫자 전부 제거
   document.querySelectorAll('.sb-badge').forEach(b => b.remove());
 
   // 오늘 방문 현황 부제목 초기화
   const vsub = document.getElementById('visitSubtitle');
   if (vsub) vsub.textContent = '오늘 등록된 방문이 없습니다';
+
+  // 미납금 관리 뷰 헤더 초기화
+  const unpaidSub = document.querySelector('#view-unpaid .sec-hd-sub');
+  if (unpaidSub) unpaidSub.textContent = '미납금 없음';
+
+  // 미납금 합계 초기화
+  const unpaidTotal = document.querySelector('#view-unpaid .tbl')?.nextElementSibling?.querySelector('span:last-child');
+  if (unpaidTotal) unpaidTotal.textContent = '0원';
+
+  // 미납금 뷰 테이블 바디 초기화 (기존 행 제거)
+  const unpaidViewTbody = document.querySelector('#view-unpaid .tbl tbody');
+  if (unpaidViewTbody) unpaidViewTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">미납금이 없습니다</td></tr>';
 
   // 대시보드 방문 현황 테이블 초기화
   const visitTbody = document.querySelector('#view-dashboard .tbl tbody');
@@ -1148,6 +1160,33 @@ function renderPatients(patients) {
 function renderUnpaid(items) {
   if (!items.length) return;
   const total = items.reduce((s,i) => s+i.amount, 0);
+
+  // 미납금 관리 뷰 헤더 업데이트
+  const unpaidSub = document.querySelector('#view-unpaid .sec-hd-sub');
+  if (unpaidSub) unpaidSub.textContent = `총 미납금 ${total.toLocaleString()}원 · ${items.length}건`;
+
+  // 미납금 합계 업데이트
+  const unpaidTotal = document.querySelector('#view-unpaid .tbl')?.nextElementSibling?.querySelector('span:last-child');
+  if (unpaidTotal) unpaidTotal.textContent = total.toLocaleString() + '원';
+
+  // 미납금 뷰 테이블 채우기
+  const tbody = document.querySelector('#view-unpaid .tbl tbody');
+  if (tbody) {
+    tbody.innerHTML = '';
+    items.forEach(item => {
+      const days = Math.floor((Date.now() - new Date(item.created_at)) / (1000*60*60*24));
+      tbody.insertAdjacentHTML('beforeend', `
+        <tr onclick="openUnpaidModal('${item.patients?.name}','${item.amount}','${days}')">
+          <td><b>${item.patients?.name}</b> 어르신</td><td>-</td>
+          <td><span style="color:var(--red);font-weight:700;">${days}일 경과</span></td>
+          <td><span style="font-weight:800;color:var(--red);">${item.amount.toLocaleString()}원</span></td>
+          <td style="display:flex;gap:6px">
+            <span class="act-btn" onclick="event.stopPropagation();toast('📨 미납 안내 문자 발송 완료')">문자 발송</span>
+            <span class="act-btn red" onclick="event.stopPropagation();openUnpaidModal('${item.patients?.name}','${item.amount}','${days}')">정산</span>
+          </td>
+        </tr>`);
+    });
+  }
   // 대시보드 미납금 카드
   const dashUnpaid = document.querySelector('#view-dashboard .unpaid-item')?.parentElement;
   if (dashUnpaid) {
