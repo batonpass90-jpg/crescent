@@ -29,6 +29,12 @@ create table if not exists public.centers (
   primary_color text default '#0D9488',
   created_at    timestamptz not null default now()
 );
+-- 기존 테이블이 컬럼 없이 만들어진 경우를 위한 안전장치 (idempotent)
+alter table public.centers add column if not exists plan text not null default 'basic';
+alter table public.centers add column if not exists sms_extra_quota integer not null default 0;
+alter table public.centers add column if not exists primary_color text default '#0D9488';
+alter table public.centers add column if not exists phone text;
+alter table public.centers add column if not exists address text;
 alter table public.centers enable row level security;
 
 -- 센터는 본인 소유 센터 또는 소속 센터만 조회
@@ -61,6 +67,10 @@ create table if not exists public.profiles (
   center_id  uuid references public.centers(id) on delete set null,
   created_at timestamptz not null default now()
 );
+alter table public.profiles add column if not exists name text;
+alter table public.profiles add column if not exists phone text;
+alter table public.profiles add column if not exists role text not null default 'admin';
+alter table public.profiles add column if not exists center_id uuid references public.centers(id) on delete set null;
 alter table public.profiles enable row level security;
 
 -- 자기 자신 + 같은 센터 구성원 + 슈퍼어드민
