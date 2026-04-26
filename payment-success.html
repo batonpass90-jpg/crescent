@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>결제 처리 중 · CareOn</title>
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--teal:#0D9488;--navy:#0F1B2D;--gray:#6b7280;--green:#22c55e;--red:#ef4444}
+body{font-family:'Pretendard',sans-serif;background:linear-gradient(135deg,#042f2e,#0f766e);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;color:#fff}
+.box{background:#fff;color:var(--navy);border-radius:20px;padding:36px 28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 16px}
+.icon.loading{background:#f0f9ff;color:#0284c7}
+.icon.success{background:#dcfce7;color:#16a34a}
+.icon.error{background:#fee2e2;color:#dc2626}
+h1{font-size:20px;font-weight:800;margin-bottom:8px}
+.desc{font-size:14px;color:var(--gray);line-height:1.6;margin-bottom:24px}
+.detail{background:#f8fafc;border-radius:12px;padding:14px;font-size:13px;color:var(--navy);margin-bottom:24px;text-align:left;line-height:1.8}
+.detail b{color:var(--teal);margin-left:8px}
+.btn{background:var(--teal);color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;width:100%}
+.btn:hover{background:#0f766e}
+.spinner{width:48px;height:48px;border:4px solid #e0f2fe;border-top-color:#0284c7;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px}
+@keyframes spin{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="box">
+  <div id="state-loading">
+    <div class="spinner"></div>
+    <h1>결제 확인 중...</h1>
+    <div class="desc">잠시만 기다려주세요. 결제를 검증하고 있습니다.</div>
+  </div>
+
+  <div id="state-success" style="display:none">
+    <div class="icon success">✅</div>
+    <h1>결제 완료!</h1>
+    <div class="desc">SMS 충전이 완료되었습니다.</div>
+    <div class="detail" id="successDetail"></div>
+    <button class="btn" onclick="location.href='/care-admin.html'">대시보드로 돌아가기</button>
+  </div>
+
+  <div id="state-error" style="display:none">
+    <div class="icon error">⚠️</div>
+    <h1>결제 검증 실패</h1>
+    <div class="desc" id="errorMsg">결제는 완료되었으나 충전 처리 중 오류가 발생했습니다.</div>
+    <div class="detail" style="background:#fef3c7;color:#92400e;font-size:12px">
+      이 화면을 캡처해서 센터 담당자에게 보내주세요.<br>
+      자동 처리되지 않은 경우 수동 충전됩니다.
+    </div>
+    <button class="btn" onclick="location.href='/care-admin.html'">대시보드로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+window.addEventListener('load', async () => {
+  const params = new URLSearchParams(location.search);
+  const paymentKey = params.get('paymentKey');
+  const orderId    = params.get('orderId');
+  const amount     = params.get('amount');
+
+  if(!paymentKey || !orderId || !amount){
+    showError('결제 정보가 누락되었습니다.');
+    return;
+  }
+
+  const sb = window.supabase.createClient(
+    'https://swsemxzgzcwwrhowuaqz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
+  );
+
+  // 세션 체크 (결제 후 돌아왔으니 로그인 상태여야 함)
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){
+    showError('로그인이 만료되었습니다. 다시 로그인 후 충전 내역을 확인해주세요.');
+    return;
+  }
+
+  // Edge Function 호출 - 토스 API로 결제 검증 + quota 증가
+  const { data, error } = await sb.functions.invoke('confirm-payment', {
+    body: { paymentKey, orderId, amount: parseInt(amount) }
+  });
+
+  if(error || !data?.success){
+    showError(data?.error || error?.message || '결제 검증 실패');
+    return;
+  }
+
+  // 성공
+  document.getElementById('state-loading').style.display = 'none';
+  document.getElementById('state-success').style.display = 'block';
+  document.getElementById('successDetail').innerHTML = `
+    <div>주문번호 <b>${orderId.slice(-8).toUpperCase()}</b></div>
+    <div>충전 건수 <b>${data.count}건</b></div>
+    <div>결제 금액 <b>${parseInt(amount).toLocaleString()}원</b></div>
+  `;
+});
+
+function showError(msg){
+  document.getElementById('state-loading').style.display = 'none';
+  document.getElementById('state-error').style.display = 'block';
+  document.getElementById('errorMsg').textContent = msg;
+}
+</script>
+</body>
+</html>

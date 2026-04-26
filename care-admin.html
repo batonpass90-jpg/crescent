@@ -1368,6 +1368,7 @@ function setSchedView(mode) {
 
 <!-- ===== SUPABASE 연동 ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://js.tosspayments.com/v1/payment"></script>
 <script>
 const SUPA_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
@@ -2749,13 +2750,56 @@ function updateChargeTotal(count, unitPrice) {
   document.getElementById('chargeSummaryTxt').textContent = `${SMS_TYPE_NAME[_chargeType]} ${count}건 · 건당 ${unitPrice}원`;
 }
 
+// ===== 토스페이먼츠 클라이언트 키 =====
+// 테스트 키 (회원가입 없이 즉시 동작 확인 가능)
+// 라이브 운영 시 토스 가입 후 본인 라이브 키로 교체
+const TOSS_CLIENT_KEY = 'test_ck_DpexMgkW36zpmjk0PNALrGbR5ozO';
+
 async function proceedCharge() {
   const selected = document.querySelector('.charge-pkg.sel');
   const count = selected ? parseInt(selected.dataset.count) : 300;
   const unitPrice = SMS_UNIT_PRICE[_chargeType];
   const total = count * unitPrice;
-  toast(`💳 ${SMS_TYPE_NAME[_chargeType]} ${count}건 · ${total.toLocaleString()}원\n결제 페이지로 이동합니다. (결제 모듈 연동 후 활성화)`, 3000);
-  closeModal('smsChargeModal');
+
+  if(!sb){ toast('서버 연결 중입니다. 잠시 후 다시 시도하세요.'); return; }
+
+  // 세션/센터 정보 확인
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ toast('로그인이 필요합니다.'); return; }
+  const { data: profile } = await sb.from('profiles').select('center_id, name, centers(name)').eq('id', session.user.id).single();
+  if(!profile?.center_id){ toast('센터 정보를 찾을 수 없습니다.'); return; }
+
+  // 1) 주문 미리 INSERT (status=pending)
+  const orderId = 'sms-' + crypto.randomUUID();
+  const { error: insErr } = await sb.from('sms_purchases').insert({
+    order_id: orderId,
+    center_id: profile.center_id,
+    buyer_id: session.user.id,
+    sms_type: _chargeType,
+    count, unit_price: unitPrice, amount: total,
+    status: 'pending'
+  });
+  if(insErr){ toast('주문 생성 실패: ' + insErr.message); return; }
+
+  // 2) 토스 결제창 호출
+  try {
+    const tossPayments = TossPayments(TOSS_CLIENT_KEY);
+    await tossPayments.requestPayment('카드', {
+      amount: total,
+      orderId,
+      orderName: `CareOn ${SMS_TYPE_NAME[_chargeType]} ${count}건 충전`,
+      customerName: profile.name || '센터장',
+      customerEmail: session.user.email,
+      successUrl: `${location.origin}/payment-success.html`,
+      failUrl:    `${location.origin}/payment-fail.html`
+    });
+    // requestPayment는 페이지 이동을 일으키므로 아래 코드는 보통 도달하지 않음
+  } catch(e){
+    // 사용자가 결제창 닫음 등의 케이스
+    await sb.rpc('fail_sms_purchase', { p_order_id: orderId, p_reason: e.message || '결제 취소' });
+    if(e.code === 'USER_CANCEL') toast('결제가 취소되었습니다.');
+    else toast('결제 오류: ' + (e.message || ''));
+  }
 }
 
 // ===== 공통 메시지 헬퍼 =====
