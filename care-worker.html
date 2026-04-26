@@ -95,6 +95,32 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:10px;color:var(--gray);font-weight:600;padding:4px 0}
 .bnav-item.active{color:var(--teal)}
 .bnav-icon{font-size:22px}
+
+/* GPS 거리 경고 */
+.gps-warn{background:#fef3c7;border:1px solid #fde68a;border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:12px;color:#92400e;line-height:1.6}
+.gps-warn.danger{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+
+/* 사진 업로드 */
+.photo-section{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.photo-thumb{aspect-ratio:1;border-radius:10px;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;position:relative;overflow:hidden}
+.photo-thumb img{width:100%;height:100%;object-fit:cover}
+.photo-thumb.add{background:var(--tl);color:var(--teal);border:2px dashed var(--teal2)}
+.photo-thumb .del{position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;border:none;cursor:pointer}
+
+/* 뷰 시스템 */
+.view{display:none}
+.view.active{display:block}
+
+/* 케어일지 카드 */
+.log-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border);cursor:pointer}
+.log-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.log-name{font-size:14px;font-weight:700;color:var(--navy)}
+.log-date{font-size:11px;color:var(--gray)}
+.log-meta{display:flex;gap:12px;font-size:11px;color:var(--gray)}
+.log-meta span{display:flex;align-items:center;gap:3px}
+.log-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+.log-status.done{background:#dcfce7;color:#16a34a}
 </style>
 </head>
 <body>
@@ -114,6 +140,12 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 </div>
 
 <div class="wrap" id="mainWrap">
+
+<!-- ========== 오늘일정 뷰 ========== -->
+<div class="view active" id="view-today">
+
+  <!-- GPS 경고 표시 -->
+  <div class="gps-warn" id="gpsWarn" style="display:none"></div>
 
   <!-- 오늘 루트 -->
   <div class="route-card" id="routeCard" style="display:none">
@@ -157,6 +189,14 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
     <div id="checklistItems"></div>
   </div>
 
+  <!-- 사진 업로드 -->
+  <div class="photo-section" id="photoSection" style="display:none">
+    <div class="card-ttl"><span class="card-ttl-txt">📷 케어 사진</span><span style="font-size:11px;color:var(--gray)" id="photoCount">0장</span></div>
+    <div style="font-size:11px;color:var(--gray);margin-bottom:8px">식사·활동·상태 등을 사진으로 기록하세요. 보호자에게 공유됩니다.</div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="uploadPhoto(this)">
+    <div class="photo-grid" id="photoGrid"></div>
+  </div>
+
   <!-- 메모 -->
   <div class="memo-box" id="memoBox" style="display:none">
     <div class="memo-lbl">📝 오늘 특이사항 메모</div>
@@ -165,14 +205,46 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 
   <!-- 완료 버튼 -->
   <button class="complete-btn" id="completeBtn" onclick="completeVisit()" style="display:none">✅ 케어 완료 전송</button>
+</div>
+
+<!-- ========== 케어일지 뷰 ========== -->
+<div class="view" id="view-log">
+  <div class="card-ttl" style="margin:14px 4px"><span class="card-ttl-txt">📋 최근 케어일지</span></div>
+  <div id="logList">
+    <div class="empty-msg"><div class="empty-icon">📋</div><div style="font-size:13px">로딩 중...</div></div>
+  </div>
+</div>
+
+<!-- ========== 수급자 뷰 ========== -->
+<div class="view" id="view-patients">
+  <div class="card-ttl" style="margin:14px 4px"><span class="card-ttl-txt">👴 담당 수급자</span></div>
+  <div id="patientList">
+    <div class="empty-msg"><div class="empty-icon">👴</div><div style="font-size:13px">로딩 중...</div></div>
+  </div>
+</div>
+
+<!-- ========== 내정보 뷰 ========== -->
+<div class="view" id="view-me">
+  <div class="card" style="margin-top:14px">
+    <div class="card-ttl"><span class="card-ttl-txt">👤 내 정보</span></div>
+    <div style="display:flex;flex-direction:column;gap:10px;font-size:13px">
+      <div><b>이름</b> <span id="meName" style="color:var(--gray);margin-left:8px">-</span></div>
+      <div><b>연락처</b> <span id="mePhone" style="color:var(--gray);margin-left:8px">-</span></div>
+      <div><b>입사일</b> <span id="meHire" style="color:var(--gray);margin-left:8px">-</span></div>
+      <div><b>소속 센터</b> <span id="meCenter" style="color:var(--gray);margin-left:8px">-</span></div>
+    </div>
+  </div>
+  <button class="complete-btn" style="background:var(--gray);box-shadow:none;margin-top:14px" onclick="enablePush()">🔔 알림 활성화</button>
+  <button class="complete-btn" style="background:var(--red);box-shadow:none;margin-top:8px" onclick="doLogout()">🚪 로그아웃</button>
+</div>
 
 </div>
 
 <div class="bnav">
-  <div class="bnav-item active"><span class="bnav-icon">🏠</span>오늘일정</div>
-  <div class="bnav-item" onclick="alert('케어일지 - 다음 업데이트')"><span class="bnav-icon">📋</span>케어일지</div>
-  <div class="bnav-item" onclick="alert('수급자 - 다음 업데이트')"><span class="bnav-icon">👴</span>수급자</div>
-  <div class="bnav-item" onclick="doLogout()"><span class="bnav-icon">👤</span>내정보</div>
+  <div class="bnav-item active" data-view="today" onclick="showView('today')"><span class="bnav-icon">🏠</span>오늘일정</div>
+  <div class="bnav-item" data-view="log" onclick="showView('log')"><span class="bnav-icon">📋</span>케어일지</div>
+  <div class="bnav-item" data-view="patients" onclick="showView('patients')"><span class="bnav-icon">👴</span>수급자</div>
+  <div class="bnav-item" data-view="me" onclick="showView('me')"><span class="bnav-icon">👤</span>내정보</div>
 </div>
 
 <script>
@@ -346,6 +418,7 @@ function renderCurrentVisit(){
     gpsBtn.textContent = '✅ 완료된 방문';
     gpsBtn.disabled = true;
     document.getElementById('checklistCard').style.display = 'none';
+    document.getElementById('photoSection').style.display = 'none';
     document.getElementById('memoBox').style.display = 'none';
     document.getElementById('completeBtn').style.display = 'none';
   } else if(status === 'in_progress'){
@@ -355,6 +428,8 @@ function renderCurrentVisit(){
     gpsBtn.disabled = true;
     loadChecklist();
     document.getElementById('checklistCard').style.display = 'block';
+    document.getElementById('photoSection').style.display = 'block';
+    renderPhotos();
     document.getElementById('memoBox').style.display = 'block';
     document.getElementById('completeBtn').style.display = 'flex';
   } else {
@@ -363,24 +438,144 @@ function renderCurrentVisit(){
     gpsBtn.textContent = '🛰️ GPS 체크인';
     gpsBtn.disabled = false;
     document.getElementById('checklistCard').style.display = 'none';
+    document.getElementById('photoSection').style.display = 'none';
     document.getElementById('memoBox').style.display = 'none';
     document.getElementById('completeBtn').style.display = 'none';
   }
 }
 
-// ===== GPS 체크인 =====
+// ===== 뷰 전환 =====
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name)?.classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+
+  if(name === 'log') loadCareLog();
+  else if(name === 'patients') loadMyPatients();
+  else if(name === 'me') renderMyInfo();
+}
+
+// ===== 케어일지 (최근 30일 visits) =====
+async function loadCareLog(){
+  if(!_worker) return;
+  const list = document.getElementById('logList');
+  list.innerHTML = '<div class="empty-msg"><div class="empty-icon">📋</div><div style="font-size:13px">로딩 중...</div></div>';
+
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
+  const { data: logs } = await sb.from('visits')
+    .select('*, patients(name)')
+    .eq('worker_id', _worker.id)
+    .eq('status', 'completed')
+    .gte('scheduled_date', since)
+    .order('scheduled_date', { ascending: false })
+    .order('start_time', { ascending: false })
+    .limit(50);
+
+  if(!logs || logs.length === 0){
+    list.innerHTML = '<div class="empty-msg"><div class="empty-icon">📋</div><div style="font-size:13px">최근 30일 내 완료된 케어가 없습니다</div></div>';
+    return;
+  }
+
+  list.innerHTML = logs.map(v => {
+    let log = {};
+    try { log = JSON.parse(v.care_log||'{}'); } catch(e){}
+    const checks = log.checks || {};
+    const doneCount = Object.values(checks).filter(c => c.done).length;
+    const photoCount = (v.photos||[]).length;
+    const date = new Date(v.scheduled_date);
+    const dayNames = ['일','월','화','수','목','금','토'];
+    return `
+      <div class="log-card" onclick="showLogDetail('${v.id}')">
+        <div class="log-hd">
+          <div class="log-name">👴 ${v.patients?.name||'?'} 어르신</div>
+          <div class="log-status done">✅ 완료</div>
+        </div>
+        <div class="log-meta">
+          <span>📅 ${date.getMonth()+1}/${date.getDate()} (${dayNames[date.getDay()]})</span>
+          <span>⏰ ${(v.start_time||'').slice(0,5)}~${(v.end_time||'').slice(0,5)}</span>
+          <span>✅ ${doneCount}/5</span>
+          ${photoCount?`<span>📷 ${photoCount}</span>`:''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function showLogDetail(visitId){
+  // 간단히 alert로 메모 표시 (향후 모달로 확장)
+  const v = (_logCache||[]).find(x=>x.id===visitId);
+  alert('케어일지 상세 (다음 업데이트에 모달로 제공 예정)');
+}
+
+// ===== 담당 수급자 목록 =====
+async function loadMyPatients(){
+  if(!_worker) return;
+  const list = document.getElementById('patientList');
+  list.innerHTML = '<div class="empty-msg"><div class="empty-icon">👴</div><div style="font-size:13px">로딩 중...</div></div>';
+
+  // 최근 30일 내 visits에 등장한 patients (담당 수급자)
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
+  const { data: visits } = await sb.from('visits')
+    .select('patient_id, patients(*)')
+    .eq('worker_id', _worker.id)
+    .gte('scheduled_date', since);
+
+  const uniq = {};
+  (visits||[]).forEach(v => { if(v.patients) uniq[v.patient_id] = v.patients; });
+  const patients = Object.values(uniq);
+
+  if(patients.length === 0){
+    list.innerHTML = '<div class="empty-msg"><div class="empty-icon">👴</div><div style="font-size:13px">담당 수급자가 없습니다</div></div>';
+    return;
+  }
+
+  list.innerHTML = patients.map(p => `
+    <div class="log-card">
+      <div class="log-hd">
+        <div class="log-name">👴 ${p.name} 어르신</div>
+        <div class="log-status done">${p.care_grade||'-'}등급</div>
+      </div>
+      <div class="log-meta">
+        <span>📍 ${p.address||'주소 미등록'}</span>
+      </div>
+      ${p.phone?`<div class="log-meta" style="margin-top:6px"><span>📞 ${p.phone}</span></div>`:''}
+    </div>
+  `).join('');
+}
+
+// ===== 내 정보 =====
+function renderMyInfo(){
+  document.getElementById('meName').textContent = _profile?.name || '-';
+  document.getElementById('mePhone').textContent = _profile?.phone || '-';
+  document.getElementById('meHire').textContent = _worker?.hire_date || '-';
+  document.getElementById('meCenter').textContent = _profile?.centers?.name || '-';
+}
+
+// ===== Haversine 거리 계산 (m 단위) =====
+function haversine(lat1, lng1, lat2, lng2){
+  const R = 6371000; // 지구 반경 (m)
+  const toRad = d => d * Math.PI / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLng = toRad(lng2 - lng1);
+  const a = Math.sin(dLat/2)**2 + Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return Math.round(2 * R * Math.asin(Math.sqrt(a)));
+}
+
+// ===== GPS 체크인 (거리 검증 포함) =====
 async function doCheckin(){
   if(!_currentVisit) return;
   const btn = document.getElementById('gpsBtn');
   btn.disabled = true;
   btn.textContent = '⏳ GPS 확인 중...';
+  const warnEl = document.getElementById('gpsWarn');
+  warnEl.style.display = 'none';
 
   // GPS 좌표 획득
   let coords = null;
   try {
     coords = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
-        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude, acc: pos.coords.accuracy }),
         err => reject(err),
         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
       );
@@ -393,6 +588,39 @@ async function doCheckin(){
     }
   }
 
+  // 거리 검증
+  let distance = null;
+  const patient = _currentVisit.patients;
+  if(coords && patient?.gps_lat && patient?.gps_lng){
+    distance = haversine(coords.lat, coords.lng, patient.gps_lat, patient.gps_lng);
+
+    if(distance > 500){
+      warnEl.className = 'gps-warn danger';
+      warnEl.style.display = 'block';
+      warnEl.innerHTML = `🚫 <b>방문지에서 ${distance}m 떨어져 있습니다.</b><br>500m 이상 떨어진 곳에서는 체크인할 수 없어요. 어르신 댁에서 다시 시도해주세요.`;
+      btn.disabled = false;
+      btn.textContent = '🛰️ GPS 체크인';
+      return;
+    } else if(distance > 100){
+      warnEl.className = 'gps-warn';
+      warnEl.style.display = 'block';
+      warnEl.innerHTML = `⚠️ <b>방문지에서 ${distance}m 거리입니다.</b><br>위치가 정확한지 확인해주세요. 케어 사진 업로드를 권장합니다.`;
+      if(!confirm(`방문지에서 ${distance}m 거리에서 체크인합니다. 계속할까요?`)){
+        btn.disabled = false;
+        btn.textContent = '🛰️ GPS 체크인';
+        return;
+      }
+    } else {
+      warnEl.className = 'gps-warn';
+      warnEl.style.background = '#dcfce7';
+      warnEl.style.borderColor = '#86efac';
+      warnEl.style.color = '#166534';
+      warnEl.style.display = 'block';
+      warnEl.innerHTML = `✅ <b>방문지 ${distance}m 이내</b> · GPS 정확도 ${Math.round(coords.acc)}m`;
+      setTimeout(() => warnEl.style.display='none', 4000);
+    }
+  }
+
   const now = new Date();
   const startTime = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':00';
 
@@ -400,7 +628,8 @@ async function doCheckin(){
     status: 'in_progress',
     start_time: _currentVisit.start_time || startTime,
     gps_checkin_lat: coords?.lat,
-    gps_checkin_lng: coords?.lng
+    gps_checkin_lng: coords?.lng,
+    checkin_distance_m: distance
   }).eq('id', _currentVisit.id);
 
   if(error){
@@ -415,6 +644,52 @@ async function doCheckin(){
     `${_profile.name} 보호사가 ${(_currentVisit.start_time||'').slice(0,5)} 케어를 시작했습니다.`);
 
   await loadTodayVisits();
+}
+
+// ===== 사진 업로드 =====
+async function uploadPhoto(input){
+  const file = input.files?.[0];
+  if(!file || !_currentVisit) return;
+
+  // 파일명: <center_id>/<patient_id>/<visit_id>/<timestamp>_<filename>
+  const path = `${_profile.center_id}/${_currentVisit.patient_id}/${_currentVisit.id}/${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_')}`;
+
+  const { error: upErr } = await sb.storage.from('care-photos').upload(path, file, {
+    cacheControl: '3600', upsert: false
+  });
+  if(upErr){ alert('사진 업로드 실패: '+upErr.message); input.value=''; return; }
+
+  // visits.photos 배열에 추가
+  const photos = Array.isArray(_currentVisit.photos) ? [..._currentVisit.photos] : [];
+  photos.push({ path, uploaded_at: new Date().toISOString() });
+  await sb.from('visits').update({ photos }).eq('id', _currentVisit.id);
+  _currentVisit.photos = photos;
+
+  input.value = '';
+  renderPhotos();
+}
+
+async function renderPhotos(){
+  const grid = document.getElementById('photoGrid');
+  const photos = _currentVisit?.photos || [];
+  document.getElementById('photoCount').textContent = `${photos.length}장`;
+
+  // 추가 버튼 + 사진 썸네일
+  let html = `<div class="photo-thumb add" onclick="document.getElementById('photoInput').click()">+</div>`;
+  for(const p of photos){
+    const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
+    html += `<div class="photo-thumb"><img src="${data?.signedUrl||''}" alt=""><button class="del" onclick="deletePhoto('${p.path}')">✕</button></div>`;
+  }
+  grid.innerHTML = html;
+}
+
+async function deletePhoto(path){
+  if(!confirm('사진을 삭제할까요?')) return;
+  await sb.storage.from('care-photos').remove([path]);
+  const photos = (_currentVisit.photos||[]).filter(p => p.path !== path);
+  await sb.from('visits').update({ photos }).eq('id', _currentVisit.id);
+  _currentVisit.photos = photos;
+  renderPhotos();
 }
 
 // ===== 체크리스트 =====

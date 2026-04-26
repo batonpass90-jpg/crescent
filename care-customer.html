@@ -87,6 +87,33 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 .bnav-icon{font-size:22px}
 
 .memo-block{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:12px 14px;font-size:13px;color:#78350f;line-height:1.6;margin-top:10px}
+
+/* 뷰 시스템 */
+.view{display:none}
+.view.active{display:block}
+
+/* 일지 카드 */
+.log-card{background:#fff;border-radius:14px;padding:14px;margin-bottom:10px;border:1px solid var(--border)}
+.log-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.log-date{font-size:13px;font-weight:700;color:var(--navy)}
+.log-time{font-size:11px;color:var(--gray)}
+.log-checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.log-chk{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;background:#dcfce7;color:#16a34a}
+.log-chk.no{background:var(--border);color:var(--gray)}
+.log-memo{margin-top:10px;padding:10px 12px;background:#fffbeb;border-radius:10px;font-size:12px;color:#78350f;line-height:1.6}
+.log-photos{display:flex;gap:6px;margin-top:10px;overflow-x:auto;scrollbar-width:none}
+.log-photos::-webkit-scrollbar{display:none}
+.log-photos img{width:70px;height:70px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer}
+
+/* 사진 갤러리 */
+.gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 0 10px}
+.gallery img{width:100%;aspect-ratio:1;border-radius:10px;object-fit:cover;cursor:pointer}
+
+/* 사진 라이트박스 */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:300;display:none;align-items:center;justify-content:center;padding:20px}
+.lightbox.show{display:flex}
+.lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+.lightbox-close{position:absolute;top:16px;right:16px;width:40px;height:40px;background:rgba(255,255,255,.2);border:none;border-radius:50%;color:#fff;font-size:20px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -102,6 +129,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 <div class="wrap">
 
   <div class="patient-tabs" id="patientTabs" style="display:none"></div>
+
+<!-- ========== 홈 뷰 ========== -->
+<div class="view active" id="view-home">
 
   <div class="empty-msg" id="emptyMsg" style="display:none">
     <div class="empty-icon">👴</div>
@@ -154,14 +184,50 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
     <button class="btn-call" onclick="callWorker()">📞 보호사 연락</button>
     <button class="btn-center" onclick="callCenter()">🏠 센터 문의</button>
   </div>
+</div>
+
+<!-- ========== 일지 뷰 ========== -->
+<div class="view" id="view-log">
+  <div class="card-ttl" style="margin:14px 4px">📋 케어일지 (최근 30일)</div>
+  <div id="logList">
+    <div class="empty-msg"><div class="empty-icon">📋</div><div>로딩 중...</div></div>
+  </div>
+</div>
+
+<!-- ========== 사진 뷰 ========== -->
+<div class="view" id="view-photos">
+  <div class="card-ttl" style="margin:14px 4px">📷 케어 사진 모아보기</div>
+  <div id="galleryWrap">
+    <div class="empty-msg"><div class="empty-icon">📷</div><div>로딩 중...</div></div>
+  </div>
+</div>
+
+<!-- ========== 문의 뷰 ========== -->
+<div class="view" id="view-contact">
+  <div class="card" style="margin-top:14px">
+    <div class="card-ttl">💬 센터 연락처</div>
+    <div style="font-size:14px;line-height:1.8">
+      <div><b id="contactCenterName">센터명</b></div>
+      <div style="color:var(--gray)" id="contactCenterAddr">주소</div>
+      <div style="margin-top:8px"><b>📞</b> <a id="contactCenterPhone" style="color:var(--teal)">-</a></div>
+    </div>
+    <button class="btn-call" style="width:100%;margin-top:14px" onclick="callCenter()">📞 센터 전화하기</button>
+  </div>
+</div>
 
 </div>
 
+<!-- 사진 라이트박스 -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close">✕</button>
+  <img id="lightboxImg" alt="">
+</div>
+
 <div class="bnav">
-  <div class="bnav-item active"><span class="bnav-icon">🏠</span>홈</div>
-  <div class="bnav-item" onclick="alert('일지 - 다음 업데이트')"><span class="bnav-icon">📋</span>일지</div>
-  <div class="bnav-item" onclick="alert('사진 - 다음 업데이트')"><span class="bnav-icon">📷</span>사진</div>
-  <div class="bnav-item" onclick="callCenter()"><span class="bnav-icon">💬</span>문의</div>
+  <div class="bnav-item active" data-view="home" onclick="showView('home')"><span class="bnav-icon">🏠</span>홈</div>
+  <div class="bnav-item" data-view="log" onclick="showView('log')"><span class="bnav-icon">📋</span>일지</div>
+  <div class="bnav-item" data-view="photos" onclick="showView('photos')"><span class="bnav-icon">📷</span>사진</div>
+  <div class="bnav-item" data-view="contact" onclick="showView('contact')"><span class="bnav-icon">💬</span>문의</div>
 </div>
 
 <script>
@@ -428,6 +494,134 @@ async function doLogout(){
   if(_realtimeChannel) sb.removeChannel(_realtimeChannel);
   await sb.auth.signOut();
   location.href = '/care-login.html';
+}
+
+// ===== 뷰 전환 =====
+function showView(name){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-'+name)?.classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(b => b.classList.toggle('active', b.dataset.view === name));
+
+  if(name === 'log') loadCareLog();
+  else if(name === 'photos') loadGallery();
+  else if(name === 'contact') renderContact();
+}
+
+// ===== 케어일지 (최근 30일) =====
+async function loadCareLog(){
+  if(!_activePatient) return;
+  const list = document.getElementById('logList');
+  list.innerHTML = '<div class="empty-msg"><div class="empty-icon">📋</div><div>로딩 중...</div></div>';
+
+  const since = new Date(Date.now() - 30*24*60*60*1000).toISOString().split('T')[0];
+  const { data: logs } = await sb.from('visits')
+    .select('*, workers(name)')
+    .eq('patient_id', _activePatient.id)
+    .eq('status', 'completed')
+    .gte('scheduled_date', since)
+    .order('scheduled_date', { ascending: false })
+    .order('start_time', { ascending: false })
+    .limit(50);
+
+  if(!logs || logs.length === 0){
+    list.innerHTML = '<div class="empty-msg"><div class="empty-icon">📋</div><div>최근 30일 내 완료된 케어가 없습니다</div></div>';
+    return;
+  }
+
+  // 사진 thumbnail signed URL 일괄 발급
+  const photoUrls = {};
+  for(const v of logs){
+    for(const p of (v.photos||[])){
+      const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
+      photoUrls[p.path] = data?.signedUrl || '';
+    }
+  }
+
+  list.innerHTML = logs.map(v => {
+    let log = {};
+    try { log = JSON.parse(v.care_log||'{}'); } catch(e){}
+    const checks = log.checks || {};
+    const date = new Date(v.scheduled_date);
+    const dayNames = ['일','월','화','수','목','금','토'];
+
+    const checksHtml = Object.entries(CHECKLIST_LABELS).map(([k, lbl]) => {
+      const c = checks[k] || {};
+      return `<span class="log-chk ${c.done?'':'no'}">${lbl.icon} ${c.done?lbl.title:lbl.title+' ✕'}</span>`;
+    }).join('');
+
+    const photosHtml = (v.photos||[]).length ? `
+      <div class="log-photos">
+        ${v.photos.map(p => `<img src="${photoUrls[p.path]||''}" onclick="openLightbox('${photoUrls[p.path]||''}')" alt="">`).join('')}
+      </div>` : '';
+
+    return `
+      <div class="log-card">
+        <div class="log-hd">
+          <div class="log-date">📅 ${date.getMonth()+1}월 ${date.getDate()}일 (${dayNames[date.getDay()]})</div>
+          <div class="log-time">${(v.start_time||'').slice(0,5)} ~ ${(v.end_time||'').slice(0,5)}</div>
+        </div>
+        <div style="font-size:12px;color:var(--gray);margin-bottom:6px">👩‍⚕️ ${v.workers?.name||'-'} 보호사</div>
+        <div class="log-checks">${checksHtml}</div>
+        ${log.memo ? `<div class="log-memo">📝 ${log.memo}</div>` : ''}
+        ${photosHtml}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== 사진 갤러리 =====
+async function loadGallery(){
+  if(!_activePatient) return;
+  const wrap = document.getElementById('galleryWrap');
+  wrap.innerHTML = '<div class="empty-msg"><div class="empty-icon">📷</div><div>로딩 중...</div></div>';
+
+  const since = new Date(Date.now() - 90*24*60*60*1000).toISOString().split('T')[0];
+  const { data: visits } = await sb.from('visits')
+    .select('id, scheduled_date, photos')
+    .eq('patient_id', _activePatient.id)
+    .gte('scheduled_date', since)
+    .order('scheduled_date', { ascending: false });
+
+  const allPhotos = [];
+  for(const v of (visits||[])){
+    for(const p of (v.photos||[])){
+      allPhotos.push({ ...p, date: v.scheduled_date });
+    }
+  }
+
+  if(allPhotos.length === 0){
+    wrap.innerHTML = '<div class="empty-msg"><div class="empty-icon">📷</div><div>업로드된 사진이 없습니다</div></div>';
+    return;
+  }
+
+  // signed URL 일괄 발급
+  const urls = {};
+  for(const p of allPhotos){
+    const { data } = await sb.storage.from('care-photos').createSignedUrl(p.path, 3600);
+    urls[p.path] = data?.signedUrl || '';
+  }
+
+  wrap.innerHTML = `<div class="gallery">${allPhotos.map(p =>
+    `<img src="${urls[p.path]}" onclick="openLightbox('${urls[p.path]}')" alt="${p.date}">`
+  ).join('')}</div>`;
+}
+
+function openLightbox(url){
+  if(!url) return;
+  document.getElementById('lightboxImg').src = url;
+  document.getElementById('lightbox').classList.add('show');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('show');
+}
+
+// ===== 문의 뷰 =====
+function renderContact(){
+  document.getElementById('contactCenterName').textContent = _center?.name || '-';
+  document.getElementById('contactCenterAddr').textContent = _center?.address || '-';
+  const phoneEl = document.getElementById('contactCenterPhone');
+  phoneEl.textContent = _center?.phone || '-';
+  if(_center?.phone) phoneEl.href = 'tel:'+_center.phone.replace(/-/g,'');
 }
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>

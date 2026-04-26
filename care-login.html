@@ -126,6 +126,15 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:linear
         </div>
       </div>
 
+      <!-- 보호자 전용: 초대 코드 -->
+      <div id="guardianFields" style="display:none">
+        <div class="form-group">
+          <label class="form-label">초대 코드 *</label>
+          <input type="text" class="form-input" id="inviteCode" placeholder="센터에서 받은 8자리 코드" maxlength="8" style="text-transform:uppercase;letter-spacing:3px;font-family:monospace;font-weight:700">
+          <div id="invitePreview" style="display:none;margin-top:8px;padding:10px 12px;background:var(--tl);border-radius:8px;font-size:12px;color:var(--teal);font-weight:600"></div>
+        </div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">이름</label>
         <input type="text" class="form-input" id="signupName" placeholder="이름 입력">
@@ -173,6 +182,30 @@ function selectRole(role) {
     document.getElementById('role-'+r).classList.toggle('sel', r===role);
   });
   document.getElementById('adminFields').style.display = role==='admin' ? 'block' : 'none';
+  document.getElementById('guardianFields').style.display = role==='guardian' ? 'block' : 'none';
+}
+
+// ===== 초대 코드 미리 검증 =====
+let _inviteValid = null;
+async function validateInvite(code){
+  if(!sb || !code || code.length < 8) { _inviteValid = null; return; }
+  const { data } = await sb.from('guardian_invitations')
+    .select('id, patient_id, relationship, expires_at, patients(name), centers(name)')
+    .eq('code', code.toUpperCase())
+    .is('used_at', null)
+    .gt('expires_at', new Date().toISOString())
+    .maybeSingle();
+  const preview = document.getElementById('invitePreview');
+  if(!data){
+    _inviteValid = null;
+    preview.style.display = 'block';
+    preview.style.cssText = 'display:block;margin-top:8px;padding:10px 12px;background:#fee2e2;border-radius:8px;font-size:12px;color:#dc2626;font-weight:600';
+    preview.textContent = '❌ 유효하지 않은 코드입니다';
+  } else {
+    _inviteValid = data;
+    preview.style.cssText = 'display:block;margin-top:8px;padding:10px 12px;background:var(--tl);border-radius:8px;font-size:12px;color:var(--teal);font-weight:600';
+    preview.innerHTML = `✅ ${data.centers?.name||'센터'} · ${data.patients?.name} 어르신의 ${data.relationship}로 가입`;
+  }
 }
 
 // ===== 메시지 =====
@@ -223,9 +256,34 @@ window.addEventListener('load', async () => {
       'https://swsemxzgzcwwrhowuaqz.supabase.co',
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
     );
+
+    // URL의 invite 파라미터 처리 → 보호자 가입 모드 자동 전환
+    const qs = new URLSearchParams(location.search);
+    const inviteFromUrl = qs.get('invite');
+    if (inviteFromUrl) {
+      switchTab('signup');
+      selectRole('guardian');
+      const inviteInput = document.getElementById('inviteCode');
+      inviteInput.value = inviteFromUrl.toUpperCase();
+      validateInvite(inviteFromUrl.toUpperCase());
+    }
+
+    // 초대 코드 입력 시 실시간 검증
+    document.getElementById('inviteCode').addEventListener('input', (e) => {
+      e.target.value = e.target.value.toUpperCase();
+      validateInvite(e.target.value);
+    });
+
     // 이미 로그인된 경우 자동 이동
     const { data: { session } } = await sb.auth.getSession();
-    if (session) await redirectByRole(session.user.id);
+    if (session) {
+      // 단, 초대 코드가 있고 아직 redeem 안 했으면 redeem 먼저
+      if (inviteFromUrl) {
+        const { data } = await sb.rpc('redeem_invitation', { p_code: inviteFromUrl.toUpperCase() });
+        if (data?.success) showMsg('loginMsg', '✅ 어르신이 연결되었습니다', 'success');
+      }
+      await redirectByRole(session.user.id);
+    }
   } catch(e) {
     console.error('Supabase 초기화 실패:', e);
   }
@@ -254,6 +312,11 @@ async function doSignup() {
   const centerName = document.getElementById('centerName').value.trim();
   if (!name || !email || !pw) return showMsg('signupMsg','필수 항목을 모두 입력하세요.');
   if (selectedRole === 'admin' && !centerName) return showMsg('signupMsg','센터명을 입력하세요.');
+  if (selectedRole === 'guardian') {
+    const code = document.getElementById('inviteCode').value.trim().toUpperCase();
+    if (!code) return showMsg('signupMsg','초대 코드를 입력하세요. 센터에 요청해주세요.');
+    if (!_inviteValid) return showMsg('signupMsg','유효하지 않은 초대 코드입니다.');
+  }
   if (pw.length < 6) return showMsg('signupMsg','비밀번호는 6자 이상이어야 합니다.');
   hideMsg('signupMsg');
   setLoading('signupBtn', true);
@@ -267,12 +330,25 @@ async function doSignup() {
     const { data: center, error: cErr } = await sb.from('centers').insert({ name: centerName, owner_id: userId, phone }).select().single();
     if (cErr) { setLoading('signupBtn', false); return showMsg('signupMsg','센터 생성 중 오류가 발생했습니다.'); }
     await sb.from('profiles').upsert({ id: userId, name, phone, role: 'admin', center_id: center.id });
+  } else if (selectedRole === 'guardian') {
+    // 보호자: 초대 코드 redeem (서버 함수가 profile + patient_guardians 자동 처리)
+    await sb.from('profiles').upsert({ id: userId, name, phone, role: 'guardian' });
+    const code = document.getElementById('inviteCode').value.trim().toUpperCase();
+    const { data: redeemResult, error: redeemErr } = await sb.rpc('redeem_invitation', { p_code: code });
+    if (redeemErr || !redeemResult?.success) {
+      setLoading('signupBtn', false);
+      return showMsg('signupMsg', '초대 연결 실패: ' + (redeemErr?.message || redeemResult?.error || '알 수 없는 오류'));
+    }
   } else {
     await sb.from('profiles').upsert({ id: userId, name, phone, role: selectedRole });
   }
 
   setLoading('signupBtn', false);
-  showMsg('signupMsg', selectedRole==='admin' ? `✅ ${centerName} 등록 완료! 이메일 인증 후 로그인하세요.` : '✅ 등록 완료! 이메일 인증 후 로그인하세요.', 'success');
+  let successMsg;
+  if (selectedRole==='admin') successMsg = `✅ ${centerName} 등록 완료! 이메일 인증 후 로그인하세요.`;
+  else if (selectedRole==='guardian') successMsg = `✅ ${_inviteValid?.patients?.name||''} 어르신과 연결 완료! 이메일 인증 후 로그인하세요.`;
+  else successMsg = '✅ 등록 완료! 이메일 인증 후 로그인하세요.';
+  showMsg('signupMsg', successMsg, 'success');
 }
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
