@@ -451,7 +451,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-patients">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 28명 등록</div></div>
-        <button class="btn btn-primary" onclick="toast('➕ 수급자 등록 화면으로 이동합니다')">+ 수급자 등록</button>
+        <button class="btn btn-primary" onclick="openModal('patientRegModal')">+ 수급자 등록</button>
       </div>
       <div class="card">
         <table class="tbl">
@@ -471,7 +471,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-workers">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👩‍⚕️ 보호사 관리</div><div class="sec-hd-sub">총 4명 근무중</div></div>
-        <button class="btn btn-primary" onclick="toast('➕ 보호사 등록')">+ 보호사 등록</button>
+        <button class="btn btn-primary" onclick="openModal('workerRegModal')">+ 보호사 등록</button>
       </div>
       <div class="grid2">
         <div class="card" onclick="openWorkerModal('김미영')" style="cursor:pointer">
@@ -621,7 +621,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-unpaid">
       <div class="sec-hd">
         <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 104,000원 · 3건</div></div>
-        <button class="btn btn-primary" onclick="toast('📨 전체 미납 안내 문자 발송 중...',2500)">전체 문자 발송</button>
+        <button class="btn btn-primary" onclick="openModal('smsModal')">전체 문자 발송</button>
       </div>
       <div class="card">
         <table class="tbl">
@@ -719,7 +719,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 
     <!-- ===== 급여 정산 ===== -->
     <div class="view" id="view-salary">
-      <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="toast('📨 전체 급여 명세서 발송 중...')">명세서 일괄 발송</button></div>
+      <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="openModal('salaryModal')">명세서 일괄 발송</button></div>
       <div class="card">
         <table class="tbl">
           <thead><tr><th>보호사</th><th>이번달 근무</th><th>기본급</th><th>수당</th><th>실수령액</th><th>명세서</th></tr></thead>
@@ -1064,6 +1064,183 @@ function openWorkerModal(name){
   document.getElementById('workerModal').style.display='flex';
 }
 </script>
+
+<!-- ===== 수급자 등록 모달 ===== -->
+<div id="patientRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('patientRegModal')">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-hd"><div class="modal-title">👴 수급자 등록</div><button class="modal-close" onclick="closeModal('patientRegModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">성명 *</label><input class="form-input" placeholder="홍길동"></div>
+        <div class="form-group"><label class="form-label">생년월일 *</label><input class="form-input" type="date"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">장기요양등급 *</label>
+          <select class="form-input form-select">
+            <option>1등급</option><option>2등급</option><option selected>3등급</option><option>4등급</option><option>5등급</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">연락처</label><input class="form-input" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="form-group"><label class="form-label">주소 *</label><input class="form-input" placeholder="성남시 중원구 중앙동 123"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">담당 보호사</label>
+          <select class="form-input form-select">
+            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">보호자 연락처</label><input class="form-input" placeholder="보호자 전화번호"></div>
+      </div>
+      <div class="form-group"><label class="form-label">특이사항</label>
+        <textarea class="form-input form-textarea" placeholder="건강 상태, 주의사항 등을 입력하세요..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('patientRegModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 수급자 등록이 완료되었습니다');closeModal('patientRegModal')">등록 완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 보호사 등록 모달 ===== -->
+<div id="workerRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('workerRegModal')">
+  <div class="modal" style="max-width:540px">
+    <div class="modal-hd"><div class="modal-title">👩‍⚕️ 보호사 등록</div><button class="modal-close" onclick="closeModal('workerRegModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">성명 *</label><input class="form-input" placeholder="홍길동"></div>
+        <div class="form-group"><label class="form-label">연락처 *</label><input class="form-input" placeholder="010-0000-0000"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">자격증 종류 *</label>
+          <select class="form-input form-select">
+            <option>요양보호사 1급</option><option>요양보호사 2급</option><option>사회복지사</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">경력 연수</label><input class="form-input" type="number" placeholder="3" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">생년월일</label><input class="form-input" type="date"></div>
+        <div class="form-group"><label class="form-label">계좌번호</label><input class="form-input" placeholder="은행명 + 계좌번호"></div>
+      </div>
+      <div class="form-group"><label class="form-label">주소</label><input class="form-input" placeholder="거주지 주소"></div>
+      <div class="form-group"><label class="form-label">담당 가능 지역</label>
+        <input class="form-input" placeholder="예: 성남시 중원구, 수정구">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('workerRegModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 보호사 등록이 완료되었습니다');closeModal('workerRegModal')">등록 완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 일정 등록 모달 ===== -->
+<div id="schedRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('schedRegModal')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hd"><div class="modal-title">📅 일정 등록</div><button class="modal-close" onclick="closeModal('schedRegModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="notice" style="margin-bottom:16px">💡 반복 방문 스케줄을 등록합니다. 등록 후 달력에 자동 반영됩니다.</div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">수급자 *</label>
+          <select class="form-input form-select">
+            <option>박종철 어르신</option><option>이순자 어르신</option><option>최영순 어르신</option><option>정동호 어르신</option><option>홍말순 어르신</option><option>강복순 어르신</option><option>김영자 어르신</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">담당 보호사 *</label>
+          <select class="form-input form-select">
+            <option>김미영</option><option>박민정</option><option>이지현</option><option>최수진</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group"><label class="form-label">방문 요일 *</label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 월</label>
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 화</label>
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 수</label>
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 목</label>
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 금</label>
+          <label style="display:flex;align-items:center;gap:4px;padding:7px 12px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--teal)"> 토</label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">방문 시작 시간 *</label><input class="form-input" type="time" value="09:00"></div>
+        <div class="form-group"><label class="form-label">서비스 시간</label>
+          <select class="form-input form-select">
+            <option>30분</option><option>60분</option><option selected>90분</option><option>120분</option><option>180분</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">서비스 종류</label>
+          <select class="form-input form-select">
+            <option selected>방문요양</option><option>방문목욕</option><option>방문간호</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">시작일 *</label><input class="form-input" type="date"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('schedRegModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('✅ 일정이 등록되었습니다. 달력에 반영됩니다.');closeModal('schedRegModal')">일정 등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 전체 문자 발송 모달 ===== -->
+<div id="smsModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('smsModal')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hd"><div class="modal-title">📨 전체 미납 안내 문자 발송</div><button class="modal-close" onclick="closeModal('smsModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:#92400e">
+        ⚠️ 미납금이 있는 <strong>3명</strong>의 보호자에게 문자가 발송됩니다.
+      </div>
+      <div class="form-group"><label class="form-label">발신번호</label>
+        <input class="form-input" value="031-000-0000" readonly style="background:var(--g50)">
+      </div>
+      <div class="form-group"><label class="form-label">문자 내용 (수정 가능)</label>
+        <textarea class="form-input form-textarea" style="min-height:120px">[햇살요양센터] 안녕하세요. 미납금 안내드립니다.
+
+보호자님, 현재 미납금이 발생되어 안내드립니다.
+납부 문의: 031-000-0000
+
+감사합니다.</textarea>
+      </div>
+      <div style="font-size:12px;color:var(--gray)">수신: 박종철 어르신 보호자 · 이순자 어르신 보호자 · 정동호 어르신 보호자</div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('smsModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('📨 3명에게 미납 안내 문자를 발송했습니다');closeModal('smsModal')">📨 발송하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 급여 명세서 일괄 발송 모달 ===== -->
+<div id="salaryModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('salaryModal')">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-hd"><div class="modal-title">🧾 급여 명세서 일괄 발송</div><button class="modal-close" onclick="closeModal('salaryModal')">✕</button></div>
+    <div class="modal-body">
+      <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:12px;margin-bottom:16px;font-size:13px;color:var(--teal)">
+        📋 보호사 <strong>4명</strong>에게 2026년 4월 급여 명세서를 발송합니다.
+      </div>
+      <div class="card" style="margin-bottom:0;padding:14px">
+        <table class="tbl">
+          <thead><tr><th>보호사</th><th>실수령액</th><th>발송 방법</th></tr></thead>
+          <tbody>
+            <tr><td><b>김미영</b></td><td style="color:var(--teal);font-weight:700">1,779,520원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
+            <tr><td><b>박민정</b></td><td style="color:var(--teal);font-weight:700">1,334,640원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
+            <tr><td><b>이지현</b></td><td style="color:var(--teal);font-weight:700">1,148,280원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
+            <tr><td><b>최수진</b></td><td style="color:var(--teal);font-weight:700">1,037,040원</td><td><span class="badge b-ing">앱 알림</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('salaryModal')">취소</button>
+      <button class="btn btn-primary" onclick="toast('📨 4명에게 급여 명세서를 발송했습니다');closeModal('salaryModal')">📨 일괄 발송</button>
+    </div>
+  </div>
+</div>
 
 <!-- ===== 데모 초기화 ===== -->
 <script>
