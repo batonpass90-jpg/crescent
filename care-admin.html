@@ -44,6 +44,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .topbar-bell{font-size:19px;cursor:pointer;position:relative}
 .bell-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;background:var(--red);border-radius:50%;border:1.5px solid #fff}
 .topbar-btn{display:none}
+.tnav-btn{background:none;border:none;font-family:inherit;font-size:13px;font-weight:600;color:var(--gray);padding:5px 12px;border-radius:8px;cursor:pointer;transition:all .15s}
+.tnav-btn:hover{background:var(--g100);color:var(--navy)}
+.tnav-btn.active{background:var(--tl);color:var(--teal)}
 
 .content{padding:22px 24px;flex:1}
 
@@ -251,7 +254,15 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 <div class="main">
   <div class="topbar">
     <div class="topbar-title" id="topbarTitle">📊 대시보드</div>
-    <div style="font-size:14px;font-weight:700;color:var(--navy)" id="topbarCenterName">🏥 센터명</div>
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="font-size:14px;font-weight:700;color:var(--navy)" id="topbarCenterName">🏥 센터명</div>
+      <div style="width:1px;height:18px;background:var(--border)"></div>
+      <div style="display:flex;gap:4px" id="topbarNav">
+        <button class="tnav-btn active" onclick="showView('dashboard')">운영</button>
+        <button class="tnav-btn" onclick="showView('patients')">관리</button>
+        <button class="tnav-btn" onclick="showView('unpaid')">정산</button>
+      </div>
+    </div>
     <div class="topbar-right">
       <div class="topbar-date" id="topbarDate"></div>
       <div class="topbar-bell" onclick="toast('🔔 새 알림이 없습니다')">🔔<span class="bell-dot"></span></div>
@@ -791,6 +802,11 @@ const mainBtns={
   patients:'+ 수급자 등록',workers:'+ 보호사 등록',journal:'PDF 다운로드',
   unpaid:'전체 문자 발송',revenue:'리포트 출력',schedule:'+ 일정 등록',salary:'명세서 일괄 발송'
 };
+const viewGroup={
+  dashboard:'ops',visits:'ops',workorders:'ops',schedule:'ops',
+  patients:'mgmt',workers:'mgmt',journal:'mgmt',
+  unpaid:'settle',revenue:'settle',salary:'settle'
+};
 function showView(name){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   const el=document.getElementById('view-'+name);
@@ -800,6 +816,12 @@ function showView(name){
   });
   document.getElementById('topbarTitle').textContent=viewTitles[name]||name;
   document.getElementById('topbarMainBtn').textContent=mainBtns[name]||'+ 새로 만들기';
+  // topbar 탭 활성화
+  const grp=viewGroup[name];
+  const tnavBtns=document.querySelectorAll('.tnav-btn');
+  tnavBtns[0].classList.toggle('active',grp==='ops');
+  tnavBtns[1].classList.toggle('active',grp==='mgmt');
+  tnavBtns[2].classList.toggle('active',grp==='settle');
 }
 document.querySelectorAll('.sb-item').forEach(item=>{
   item.addEventListener('click',()=>showView(item.dataset.view));
