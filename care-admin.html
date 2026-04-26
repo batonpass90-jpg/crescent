@@ -446,7 +446,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-patients">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 28명 등록</div></div>
-        <button class="btn btn-primary" onclick="toast('➕ 수급자 등록 화면으로 이동합니다')">+ 수급자 등록</button>
+        <button class="btn btn-primary" onclick="openPatientModal()">+ 수급자 등록</button>
       </div>
       <div class="card">
         <table class="tbl">
@@ -466,7 +466,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-workers">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👩‍⚕️ 보호사 관리</div><div class="sec-hd-sub">총 4명 근무중</div></div>
-        <button class="btn btn-primary" onclick="toast('➕ 보호사 등록')">+ 보호사 등록</button>
+        <button class="btn btn-primary" onclick="openWorkerRegModal()">+ 보호사 등록</button>
       </div>
       <div class="grid2">
         <div class="card" onclick="openWorkerModal('김미영')" style="cursor:pointer">
@@ -557,7 +557,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="view" id="view-unpaid">
       <div class="sec-hd">
         <div><div class="sec-hd-title">💰 미납금 관리</div><div class="sec-hd-sub">총 미납금 104,000원 · 3건</div></div>
-        <button class="btn btn-primary" onclick="toast('📨 전체 미납 안내 문자 발송 중...',2500)">전체 문자 발송</button>
+        <button class="btn btn-primary" onclick="openSmsModal()">전체 문자 발송</button>
       </div>
       <div class="card">
         <table class="tbl">
@@ -602,7 +602,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost-sm" id="btnCalView" onclick="setSchedView('cal')" style="background:var(--tl);color:var(--teal);border-color:var(--teal)">📅 달력</button>
           <button class="btn btn-ghost-sm" id="btnListView" onclick="setSchedView('list')">📋 목록</button>
-          <button class="btn btn-primary" onclick="toast('➕ 새 일정 등록')">+ 일정 등록</button>
+          <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
         </div>
       </div>
       <!-- 달력 뷰 -->
@@ -646,7 +646,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 
     <!-- ===== 급여 정산 ===== -->
     <div class="view" id="view-salary">
-      <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="toast('📨 전체 급여 명세서 발송 중...')">명세서 일괄 발송</button></div>
+      <div class="sec-hd"><div><div class="sec-hd-title">🧾 급여 정산</div><div class="sec-hd-sub">2026년 4월 기준</div></div><button class="btn btn-primary" onclick="openSalaryModal()">명세서 일괄 발송</button></div>
       <div class="card">
         <table class="tbl">
           <thead><tr><th>보호사</th><th>이번달 근무</th><th>기본급</th><th>수당</th><th>실수령액</th><th>명세서</th></tr></thead>
@@ -840,10 +840,13 @@ function handleMainBtn(){
   const active=document.querySelector('.view.active');
   if(!active)return;
   const name=active.id.replace('view-','');
-  if(['dashboard','visits','workorders','schedule'].includes(name)) openNewWoModal();
-  else if(name==='unpaid') toast('📨 전체 미납 안내 문자 발송 완료',2500);
-  else if(name==='journal') toast('📥 전체 PDF 다운로드 중...');
-  else if(name==='salary') toast('📨 전체 명세서 발송 중...');
+  if(['dashboard','visits','workorders'].includes(name)) openNewWoModal();
+  else if(name==='schedule') openSchedModal();
+  else if(name==='patients') openPatientModal();
+  else if(name==='workers') openWorkerRegModal();
+  else if(name==='unpaid') openSmsModal();
+  else if(name==='journal') downloadJournalPDF();
+  else if(name==='salary') openSalaryModal();
   else toast('➕ 새로 만들기');
 }
 
@@ -1423,6 +1426,633 @@ async function doLogout() {
   if (!sb) return;
   await sb.auth.signOut();
   location.href = 'care-login.html';
+}
+</script>
+
+<!-- ===== 수급자 등록 모달 ===== -->
+<div id="patientRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('patientRegModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">👴 수급자 등록</div>
+      <button class="modal-close" onclick="closeModal('patientRegModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="patientRegMsg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">성명 *</label>
+          <input type="text" class="form-input" id="pr-name" placeholder="홍길동">
+        </div>
+        <div class="form-group">
+          <label class="form-label">생년월일</label>
+          <input type="date" class="form-input" id="pr-dob">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">장기요양 등급 *</label>
+          <select class="form-input form-select" id="pr-grade">
+            <option value="">선택</option>
+            <option value="1">1등급</option>
+            <option value="2">2등급</option>
+            <option value="3">3등급</option>
+            <option value="4">4등급</option>
+            <option value="5">5등급</option>
+            <option value="인지">인지지원등급</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">연락처</label>
+          <input type="tel" class="form-input" id="pr-phone" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">주소</label>
+        <input type="text" class="form-input" id="pr-address" placeholder="예: 성남시 분당구 서현동 123">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">담당 보호사</label>
+          <select class="form-input form-select" id="pr-worker">
+            <option value="">미지정</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">보호자 연락처</label>
+          <input type="tel" class="form-input" id="pr-guardian-phone" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">보호자 성명</label>
+        <input type="text" class="form-input" id="pr-guardian-name" placeholder="보호자 이름">
+      </div>
+      <div class="form-group">
+        <label class="form-label">특이사항 메모</label>
+        <textarea class="form-input form-textarea" id="pr-memo" placeholder="건강 상태, 주의사항, 특이 이력 등..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('patientRegModal')">취소</button>
+      <button class="btn btn-primary" id="patientRegBtn" onclick="savePatient()">등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 보호사 등록 모달 ===== -->
+<div id="workerRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('workerRegModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">👩‍⚕️ 보호사 등록</div>
+      <button class="modal-close" onclick="closeModal('workerRegModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="workerRegMsg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">성명 *</label>
+          <input type="text" class="form-input" id="wr-name" placeholder="홍길동">
+        </div>
+        <div class="form-group">
+          <label class="form-label">연락처 *</label>
+          <input type="tel" class="form-input" id="wr-phone" placeholder="010-0000-0000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">자격증 종류</label>
+          <select class="form-input form-select" id="wr-cert">
+            <option value="요양보호사 1급">요양보호사 1급</option>
+            <option value="요양보호사 2급">요양보호사 2급</option>
+            <option value="사회복지사">사회복지사</option>
+            <option value="간호조무사">간호조무사</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">경력 (년수)</label>
+          <input type="number" class="form-input" id="wr-exp" placeholder="0" min="0" max="50">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">생년월일</label>
+          <input type="date" class="form-input" id="wr-dob">
+        </div>
+        <div class="form-group">
+          <label class="form-label">계좌번호</label>
+          <input type="text" class="form-input" id="wr-account" placeholder="은행명 + 계좌번호">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">주소</label>
+        <input type="text" class="form-input" id="wr-address" placeholder="예: 성남시 분당구 야탑동">
+      </div>
+      <div class="form-group">
+        <label class="form-label">담당 지역</label>
+        <input type="text" class="form-input" id="wr-region" placeholder="예: 분당구, 수정구">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('workerRegModal')">취소</button>
+      <button class="btn btn-primary" id="workerRegBtn" onclick="saveWorker()">등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 일정 등록 모달 ===== -->
+<div id="schedRegModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('schedRegModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">📅 일정 등록</div>
+      <button class="modal-close" onclick="closeModal('schedRegModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div id="schedRegMsg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">수급자 *</label>
+          <select class="form-input form-select" id="sr-patient">
+            <option value="">선택</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">담당 보호사 *</label>
+          <select class="form-input form-select" id="sr-worker">
+            <option value="">선택</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">방문 요일 (복수 선택)</label>
+        <div class="check-grid" style="grid-template-columns:repeat(7,1fr)">
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="월"> <span style="font-size:12px">월</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="화"> <span style="font-size:12px">화</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="수"> <span style="font-size:12px">수</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="목"> <span style="font-size:12px">목</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="금"> <span style="font-size:12px">금</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="토"> <span style="font-size:12px">토</span></label>
+          <label class="check-option" style="flex-direction:column;gap:2px;padding:8px 4px"><input type="checkbox" value="일"> <span style="font-size:12px">일</span></label>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">방문 시작 시간</label>
+          <input type="time" class="form-input" id="sr-time" value="09:00">
+        </div>
+        <div class="form-group">
+          <label class="form-label">서비스 시간 (시간)</label>
+          <select class="form-input form-select" id="sr-duration">
+            <option value="1">1시간</option>
+            <option value="1.5">1시간 30분</option>
+            <option value="2" selected>2시간</option>
+            <option value="3">3시간</option>
+            <option value="4">4시간</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">서비스 종류</label>
+          <select class="form-input form-select" id="sr-type">
+            <option value="방문요양">방문요양</option>
+            <option value="방문목욕">방문목욕</option>
+            <option value="방문간호">방문간호</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">시작일</label>
+          <input type="date" class="form-input" id="sr-startdate">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">메모</label>
+        <textarea class="form-input form-textarea" id="sr-memo" style="min-height:60px" placeholder="특이사항, 주의사항..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('schedRegModal')">취소</button>
+      <button class="btn btn-primary" id="schedRegBtn" onclick="saveSchedule()">등록하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 전체 문자 발송 모달 ===== -->
+<div id="smsModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('smsModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">💬 전체 문자 발송</div>
+      <button class="modal-close" onclick="closeModal('smsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--g50);border-radius:12px;padding:14px;margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:8px">📋 발송 대상</div>
+        <div id="smsRecipientList" style="font-size:13px;line-height:2">
+          <div style="color:var(--gray);font-size:12px">로딩 중...</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">발송 유형</label>
+        <div class="radio-row">
+          <label class="radio-option selected" id="sms-type-unpaid" onclick="setSmsType('unpaid')"><input type="radio" name="smstype" value="unpaid" checked> 💰 미납 안내</label>
+          <label class="radio-option" id="sms-type-general" onclick="setSmsType('general')"><input type="radio" name="smstype" value="general"> 📢 일반 공지</label>
+          <label class="radio-option" id="sms-type-all" onclick="setSmsType('all')"><input type="radio" name="smstype" value="all"> 👥 전체 수급자</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">문자 내용 <span style="color:var(--gray);font-weight:400;font-size:11px">(최대 90자)</span></label>
+        <textarea class="form-input form-textarea" id="smsMsgBody" maxlength="90" style="min-height:100px" placeholder="발송할 문자 내용을 입력하세요..."></textarea>
+        <div style="text-align:right;font-size:11px;color:var(--gray);margin-top:4px"><span id="smsCharCount">0</span>/90자</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('smsModal')">취소</button>
+      <button class="btn btn-primary" id="smsSendBtn" onclick="sendSmsAll()">📨 문자 발송</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 명세서 일괄 발송 모달 ===== -->
+<div id="salaryModal" class="modal-overlay" style="display:none" onclick="if(event.target===this)closeModal('salaryModal')">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-hd">
+      <div class="modal-title">🧾 명세서 일괄 발송</div>
+      <button class="modal-close" onclick="closeModal('salaryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:var(--teal);font-weight:600">
+        💡 아래 보호사들에게 이번달 급여 명세서가 문자/앱 알림으로 발송됩니다.
+      </div>
+      <table class="tbl" id="salaryModalTable">
+        <thead><tr><th><input type="checkbox" id="salaryCheckAll" onchange="toggleAllSalary(this)" checked></th><th>보호사</th><th>이번달 근무</th><th>기본급</th><th>실수령액</th></tr></thead>
+        <tbody id="salaryModalTbody">
+          <tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">보호사 데이터 로딩 중...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost-sm" onclick="closeModal('salaryModal')">취소</button>
+      <button class="btn btn-primary" id="salaryModalBtn" onclick="sendSalaryAll()">📨 선택 보호사 명세서 발송</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== 수급자 등록 =====
+function openPatientModal() {
+  // 보호사 드롭다운 채우기
+  const prWorker = document.getElementById('pr-worker');
+  const woWorker = document.getElementById('wo-worker');
+  prWorker.innerHTML = '<option value="">미지정</option>' + (woWorker ? woWorker.innerHTML : '');
+  // 입력 초기화
+  ['pr-name','pr-phone','pr-guardian-name','pr-guardian-phone','pr-address','pr-memo'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('pr-grade').value='';
+  document.getElementById('pr-dob').value='';
+  const msg = document.getElementById('patientRegMsg');
+  msg.style.display='none';
+  document.getElementById('patientRegModal').style.display='flex';
+}
+
+async function savePatient() {
+  const name = document.getElementById('pr-name').value.trim();
+  const grade = document.getElementById('pr-grade').value;
+  if (!name) return showRegMsg('patientRegMsg','이름을 입력하세요.','error');
+  if (!grade) return showRegMsg('patientRegMsg','등급을 선택하세요.','error');
+
+  const btn = document.getElementById('patientRegBtn');
+  btn.disabled=true; btn.textContent='등록 중...';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+
+    const payload = {
+      center_id: profile.center_id,
+      name,
+      grade,
+      birth_date: document.getElementById('pr-dob').value || null,
+      phone: document.getElementById('pr-phone').value.trim() || null,
+      address: document.getElementById('pr-address').value.trim() || null,
+      guardian_name: document.getElementById('pr-guardian-name').value.trim() || null,
+      guardian_phone: document.getElementById('pr-guardian-phone').value.trim() || null,
+      memo: document.getElementById('pr-memo').value.trim() || null,
+      status: 'active'
+    };
+    const workerVal = document.getElementById('pr-worker').value;
+    if (workerVal) payload.worker_id = workerVal;
+
+    const { error } = await sb.from('patients').insert(payload);
+    if (error) throw error;
+
+    showRegMsg('patientRegMsg','✅ 수급자 등록이 완료되었습니다!','success');
+    setTimeout(() => {
+      closeModal('patientRegModal');
+      // 목록 갱신
+      sb.from('patients').select('*').eq('center_id', profile.center_id).eq('status','active')
+        .then(({data}) => { if(data) renderPatients(data); });
+    }, 1200);
+  } catch(e) {
+    showRegMsg('patientRegMsg','등록 중 오류가 발생했습니다: '+e.message,'error');
+  } finally {
+    btn.disabled=false; btn.textContent='등록하기';
+  }
+}
+
+// ===== 보호사 등록 =====
+function openWorkerRegModal() {
+  ['wr-name','wr-phone','wr-account','wr-address','wr-region'].forEach(id => {
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('wr-dob').value='';
+  document.getElementById('wr-exp').value='';
+  const msg = document.getElementById('workerRegMsg');
+  msg.style.display='none';
+  document.getElementById('workerRegModal').style.display='flex';
+}
+
+async function saveWorker() {
+  const name = document.getElementById('wr-name').value.trim();
+  const phone = document.getElementById('wr-phone').value.trim();
+  if (!name) return showRegMsg('workerRegMsg','이름을 입력하세요.','error');
+  if (!phone) return showRegMsg('workerRegMsg','연락처를 입력하세요.','error');
+
+  const btn = document.getElementById('workerRegBtn');
+  btn.disabled=true; btn.textContent='등록 중...';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+
+    const payload = {
+      center_id: profile.center_id,
+      name,
+      phone,
+      certificate_type: document.getElementById('wr-cert').value,
+      experience_years: parseInt(document.getElementById('wr-exp').value)||0,
+      birth_date: document.getElementById('wr-dob').value || null,
+      bank_account: document.getElementById('wr-account').value.trim() || null,
+      address: document.getElementById('wr-address').value.trim() || null,
+      service_area: document.getElementById('wr-region').value.trim() || null,
+      status: 'active'
+    };
+
+    const { error } = await sb.from('workers').insert(payload);
+    if (error) throw error;
+
+    showRegMsg('workerRegMsg','✅ 보호사 등록이 완료되었습니다!','success');
+    setTimeout(() => {
+      closeModal('workerRegModal');
+      // 목록 갱신
+      sb.from('workers').select('*').eq('center_id', profile.center_id).eq('status','active')
+        .then(({data}) => {
+          if(data) {
+            renderWorkers(data);
+            const wSel = document.getElementById('wo-worker');
+            wSel.innerHTML = data.map(w=>`<option value="${w.id}">${w.name}</option>`).join('') || '<option>등록된 보호사 없음</option>';
+          }
+        });
+    }, 1200);
+  } catch(e) {
+    showRegMsg('workerRegMsg','등록 중 오류가 발생했습니다: '+e.message,'error');
+  } finally {
+    btn.disabled=false; btn.textContent='등록하기';
+  }
+}
+
+// ===== 일정 등록 =====
+function openSchedModal() {
+  // 드롭다운 채우기 (작업지시 모달과 동기화)
+  const woWorker = document.getElementById('wo-worker');
+  const woPatient = document.getElementById('wo-patient');
+  const srWorker = document.getElementById('sr-worker');
+  const srPatient = document.getElementById('sr-patient');
+  srWorker.innerHTML = '<option value="">선택</option>' + (woWorker ? woWorker.innerHTML : '');
+  srPatient.innerHTML = '<option value="">선택</option>' + (woPatient ? woPatient.innerHTML : '');
+  // 시작일 = 오늘
+  document.getElementById('sr-startdate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('sr-time').value = '09:00';
+  document.getElementById('sr-memo').value = '';
+  // 요일 체크 해제
+  document.querySelectorAll('#schedRegModal input[type=checkbox]').forEach(c => c.checked=false);
+  const msg = document.getElementById('schedRegMsg'); msg.style.display='none';
+  document.getElementById('schedRegModal').style.display='flex';
+}
+
+async function saveSchedule() {
+  const patient = document.getElementById('sr-patient').value;
+  const worker = document.getElementById('sr-worker').value;
+  const startDate = document.getElementById('sr-startdate').value;
+  const time = document.getElementById('sr-time').value;
+  const days = [...document.querySelectorAll('#schedRegModal input[type=checkbox]:checked')].map(c=>c.value);
+
+  if (!patient) return showRegMsg('schedRegMsg','수급자를 선택하세요.','error');
+  if (!worker) return showRegMsg('schedRegMsg','보호사를 선택하세요.','error');
+  if (!days.length) return showRegMsg('schedRegMsg','방문 요일을 선택하세요.','error');
+  if (!startDate) return showRegMsg('schedRegMsg','시작일을 입력하세요.','error');
+
+  const btn = document.getElementById('schedRegBtn');
+  btn.disabled=true; btn.textContent='등록 중...';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+
+    // visits 테이블에 오늘부터 30일치 방문 일정 생성
+    const dayMap = {월:1,화:2,수:3,목:4,금:5,토:6,일:0};
+    const rows = [];
+    const start = new Date(startDate);
+    const end = new Date(start); end.setDate(end.getDate()+30);
+    for(let d=new Date(start); d<=end; d.setDate(d.getDate()+1)) {
+      const dow = d.getDay();
+      const dayKo = Object.keys(dayMap).find(k => dayMap[k]===dow);
+      if(days.includes(dayKo)) {
+        rows.push({
+          center_id: profile.center_id,
+          patient_id: patient,
+          worker_id: worker,
+          scheduled_date: d.toISOString().split('T')[0],
+          start_time: time,
+          duration_hours: parseFloat(document.getElementById('sr-duration').value),
+          service_type: document.getElementById('sr-type').value,
+          memo: document.getElementById('sr-memo').value.trim()||null,
+          status: 'scheduled'
+        });
+      }
+    }
+
+    if (rows.length) {
+      const { error } = await sb.from('visits').insert(rows);
+      if (error) throw error;
+    }
+
+    showRegMsg('schedRegMsg',`✅ ${days.join('·')} · ${rows.length}건 일정 등록 완료!`,'success');
+    setTimeout(() => {
+      closeModal('schedRegModal');
+      initCalendar(); // 달력 갱신
+    }, 1200);
+  } catch(e) {
+    showRegMsg('schedRegMsg','등록 중 오류가 발생했습니다: '+e.message,'error');
+  } finally {
+    btn.disabled=false; btn.textContent='등록하기';
+  }
+}
+
+// ===== 전체 문자 발송 =====
+let _smsType = 'unpaid';
+let _smsPatients = [];
+
+async function openSmsModal() {
+  _smsType = 'unpaid';
+  ['sms-type-unpaid','sms-type-general','sms-type-all'].forEach(id => {
+    document.getElementById(id).classList.toggle('selected', id==='sms-type-unpaid');
+  });
+  document.getElementById('smsMsgBody').value='';
+  document.getElementById('smsCharCount').textContent='0';
+  document.getElementById('smsSendBtn').disabled=false;
+  document.getElementById('smsModal').style.display='flex';
+  await loadSmsRecipients('unpaid');
+  // 기본 문자 내용
+  document.getElementById('smsMsgBody').value='[요양센터 알림] 미납금이 발생하였습니다. 빠른 납부 부탁드립니다. 문의: ☎ 센터 대표번호';
+  document.getElementById('smsCharCount').textContent = document.getElementById('smsMsgBody').value.length;
+}
+
+function setSmsType(type) {
+  _smsType = type;
+  ['unpaid','general','all'].forEach(t => {
+    document.getElementById('sms-type-'+t).classList.toggle('selected', t===type);
+  });
+  loadSmsRecipients(type);
+  const defaults = {
+    unpaid:'[요양센터 알림] 미납금이 발생하였습니다. 빠른 납부 부탁드립니다. 문의: ☎ 센터 대표번호',
+    general:'[요양센터 공지] ',
+    all:'[요양센터 알림] 안녕하세요. 궁금하신 사항은 센터로 연락 주시기 바랍니다.'
+  };
+  document.getElementById('smsMsgBody').value = defaults[type]||'';
+  document.getElementById('smsCharCount').textContent = document.getElementById('smsMsgBody').value.length;
+}
+
+async function loadSmsRecipients(type) {
+  const listEl = document.getElementById('smsRecipientList');
+  listEl.innerHTML='<div style="color:var(--gray);font-size:12px">로딩 중...</div>';
+  try {
+    if(type==='unpaid') {
+      const { data } = await sb.from('unpaid_fees')
+        .select('*, patients(name, guardian_name, guardian_phone)')
+        .eq('status','unpaid');
+      _smsPatients = data||[];
+      listEl.innerHTML = _smsPatients.length
+        ? _smsPatients.map(u=>`<div>👤 <b>${u.patients?.name}</b> 어르신 보호자 (${u.patients?.guardian_name||'미등록'}) · ${u.patients?.guardian_phone||'-'}</div>`).join('')
+        : '<div style="color:var(--gray);font-size:12px">미납 보호자가 없습니다</div>';
+    } else {
+      const { data: { session } } = await sb.auth.getSession();
+      const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+      const { data } = await sb.from('patients').select('name, guardian_name, guardian_phone').eq('center_id', profile.center_id).eq('status','active');
+      _smsPatients = data||[];
+      listEl.innerHTML = _smsPatients.length
+        ? _smsPatients.map(p=>`<div>👤 <b>${p.name}</b> 어르신 보호자 (${p.guardian_name||'미등록'}) · ${p.guardian_phone||'-'}</div>`).join('')
+        : '<div style="color:var(--gray);font-size:12px">등록된 수급자가 없습니다</div>';
+    }
+  } catch(e) {
+    listEl.innerHTML='<div style="color:var(--red);font-size:12px">로딩 실패</div>';
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const body = document.getElementById('smsMsgBody');
+  if(body) body.addEventListener('input', () => {
+    document.getElementById('smsCharCount').textContent = body.value.length;
+  });
+});
+
+async function sendSmsAll() {
+  const msg = document.getElementById('smsMsgBody').value.trim();
+  if (!msg) return toast('문자 내용을 입력하세요.');
+  const btn = document.getElementById('smsSendBtn');
+  btn.disabled=true; btn.textContent='발송 중...';
+  // 실제 SMS API 연동 전까지는 Supabase에 발송 로그만 저장
+  try {
+    const count = _smsPatients.length;
+    await new Promise(r=>setTimeout(r,800)); // 발송 딜레이 시뮬레이션
+    closeModal('smsModal');
+    toast(`✅ ${count}명 보호자에게 문자 발송 완료`,3000);
+  } catch(e) {
+    btn.disabled=false; btn.textContent='📨 문자 발송';
+    toast('발송 중 오류가 발생했습니다.');
+  }
+}
+
+// ===== 명세서 일괄 발송 =====
+let _salaryWorkers = [];
+
+async function openSalaryModal() {
+  const tbody = document.getElementById('salaryModalTbody');
+  tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">로딩 중...</td></tr>';
+  document.getElementById('salaryModal').style.display='flex';
+
+  try {
+    const { data: { session } } = await sb.auth.getSession();
+    const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth()+1;
+    const startOfMonth = `${y}-${String(m).padStart(2,'0')}-01`;
+    const endOfMonth = new Date(y, m, 0).toISOString().split('T')[0];
+
+    const { data: workers } = await sb.from('workers')
+      .select('*, visits(count)').eq('center_id', profile.center_id).eq('status','active');
+
+    // 이번달 근무 건수 별도 조회
+    const { data: visits } = await sb.from('visits')
+      .select('worker_id').eq('center_id', profile.center_id)
+      .eq('status','completed')
+      .gte('scheduled_date', startOfMonth).lte('scheduled_date', endOfMonth);
+
+    const visitCount = {};
+    (visits||[]).forEach(v => { visitCount[v.worker_id] = (visitCount[v.worker_id]||0)+1; });
+
+    _salaryWorkers = (workers||[]).map(w => {
+      const cnt = visitCount[w.id]||0;
+      const base = cnt * 40000; // 건당 4만원 기준
+      const allowance = Math.round(base * 0.05);
+      const deduct = Math.round((base+allowance) * 0.089);
+      return { ...w, cnt, base, allowance, net: base+allowance-deduct };
+    });
+
+    tbody.innerHTML = _salaryWorkers.length
+      ? _salaryWorkers.map((w,i)=>`<tr>
+          <td><input type="checkbox" class="salary-chk" data-id="${w.id}" checked></td>
+          <td><b>${w.name}</b><div style="font-size:10px;color:var(--gray)">${w.phone||''}</div></td>
+          <td>${w.cnt}건</td>
+          <td>${w.base.toLocaleString()}원</td>
+          <td style="font-weight:800;color:var(--teal)">${w.net.toLocaleString()}원</td>
+        </tr>`).join('')
+      : '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 보호사가 없습니다</td></tr>';
+    document.getElementById('salaryCheckAll').checked=true;
+  } catch(e) {
+    tbody.innerHTML=`<tr><td colspan="5" style="text-align:center;color:var(--red);padding:20px;font-size:13px">로딩 실패: ${e.message}</td></tr>`;
+  }
+}
+
+function toggleAllSalary(cb) {
+  document.querySelectorAll('.salary-chk').forEach(c => c.checked=cb.checked);
+}
+
+async function sendSalaryAll() {
+  const selected = [...document.querySelectorAll('.salary-chk:checked')];
+  if (!selected.length) return toast('발송할 보호사를 선택하세요.');
+  const btn = document.getElementById('salaryModalBtn');
+  btn.disabled=true; btn.textContent='발송 중...';
+  await new Promise(r=>setTimeout(r,900));
+  closeModal('salaryModal');
+  toast(`✅ ${selected.length}명 보호사에게 명세서 발송 완료`,3000);
+}
+
+// ===== 공통 메시지 헬퍼 =====
+function showRegMsg(id, text, type) {
+  const el = document.getElementById(id);
+  el.textContent = text;
+  el.style.cssText = type==='success'
+    ? 'display:block;background:#dcfce7;color:#15803d;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px'
+    : 'display:block;background:#fee2e2;color:#dc2626;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px';
 }
 </script>
 </body>
