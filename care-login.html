@@ -13,6 +13,7 @@
 <link rel="apple-touch-icon" href="/careon-icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/center-router.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#e2e8f0;--red:#ef4444}
@@ -203,13 +204,16 @@ async function doReset() {
   showMsg('loginMsg','재설정 링크를 이메일로 발송했습니다.','success');
 }
 
-// ===== 역할별 이동 =====
+// ===== 역할별 이동 (slug 유지) =====
 async function redirectByRole(userId) {
   const { data: profile } = await sb.from('profiles').select('role').eq('id', userId).single();
   const role = profile?.role || 'admin';
-  if (role === 'worker') location.href = 'care-worker.html';
-  else if (role === 'guardian') location.href = 'care-customer.html';
-  else location.href = 'care-admin.html';
+  let path;
+  if (role === 'worker')        path = '/care-worker.html';
+  else if (role === 'guardian') path = '/care-customer.html';
+  else if (role === 'superadmin') path = '/care-superadmin.html';
+  else                          path = '/care-admin.html';
+  location.href = (typeof CenterRouter !== 'undefined') ? CenterRouter.buildUrl(path) : path;
 }
 
 // ===== Supabase 초기화 (CDN 로드 후 실행) =====

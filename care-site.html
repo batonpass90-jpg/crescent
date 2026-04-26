@@ -3,8 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>햇살요양센터 — 방문요양 전문</title>
+<title>CareOn — 방문요양 전문</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0D9488">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/center-router.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -80,7 +85,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 
 <nav class="nav">
   <div>
-    <span class="nav-logo">햇살<span>요양</span>센터</span>
+    <span class="nav-logo" data-bind="name">CareOn 요양센터</span>
     <span class="nav-badge">CareOn</span>
   </div>
   <button class="nav-btn">입소 문의</button>
@@ -144,7 +149,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 
 <div class="section">
   <div class="sec-label">Why Us</div>
-  <div class="sec-title">왜 햇살요양센터인가요?</div>
+  <div class="sec-title">왜 <span data-bind="name">CareOn 요양센터</span>인가요?</div>
   <div class="sec-sub">다른 센터와 다른 이유가 있어요</div>
   <div class="feat-grid">
     <div class="feat-card">
@@ -208,19 +213,17 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 <div class="cta-sec">
   <div class="cta-tag">✨ 지금 바로 시작하세요</div>
   <div class="cta-ttl">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
-  <div class="cta-sub">평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00<br>긴급 상황은 24시간 대응합니다</div>
+  <div class="cta-sub" data-bind="hours">평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00<br>긴급 상황은 24시간 대응합니다</div>
   <div class="cta-btns">
-    <button class="btn-teal">📞 전화 상담 031-000-0000</button>
+    <button class="btn-teal" id="btnCallCenter">📞 전화 상담 <span data-bind="phone">대표번호</span></button>
     <button class="btn-kakao">💬 카카오톡 상담하기</button>
   </div>
 </div>
 
 <div class="footer">
-  <strong>햇살요양센터</strong><br>
-  경기도 성남시 분당구 정자동 123-45<br>
-  대표자: 홍길동 · 사업자번호: 123-45-67890<br>
-  장기요양기관 지정번호: 12345678<br>
-  TEL: 031-000-0000
+  <strong data-bind="name">CareOn 요양센터</strong><br>
+  <span data-bind="address">주소 정보 로딩 중...</span><br>
+  TEL: <span data-bind="phone">대표번호</span>
 </div>
 
 <script>
@@ -260,7 +263,10 @@ function showModal(){
 document.querySelector('.nav-btn').onclick=()=>showModal();
 document.querySelector('.btn-white').onclick=()=>showModal();
 document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
-document.querySelector('.btn-teal').onclick=()=>toast('📞 031-000-0000 전화 연결 중...');
+document.getElementById('btnCallCenter').onclick=()=>{
+  if(_centerPhone) location.href='tel:'+_centerPhone.replace(/-/g,'');
+  else toast('📞 전화번호 로드 중...');
+};
 document.querySelector('.btn-kakao').onclick=()=>toast('💬 카카오톡 채널로 이동합니다');
 document.querySelectorAll('.svc-card').forEach(card=>{
   card.style.cursor='pointer';
@@ -274,6 +280,35 @@ document.querySelectorAll('.step').forEach(step=>{
   step.style.cursor='pointer';
   step.onclick=()=>toast('👣 '+step.querySelector('.step-ttl').textContent);
 });
+
+// ===== 센터 정보 동적 로딩 (slug 기반) =====
+let _centerPhone = '';
+(async function loadCenter(){
+  const sb = window.supabase.createClient(
+    'https://swsemxzgzcwwrhowuaqz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
+  );
+  const slug = CenterRouter.detectSlug();
+  if(!slug){
+    document.querySelectorAll('[data-bind]').forEach(el=>{
+      if(el.getAttribute('data-bind')==='name') el.textContent='센터를 선택해주세요';
+      if(el.getAttribute('data-bind')==='phone') el.textContent='-';
+      if(el.getAttribute('data-bind')==='address') el.textContent='URL에 ?c=센터슬러그 를 추가해주세요';
+    });
+    return;
+  }
+  const center = await CenterRouter.loadCenterBySlug(sb, slug);
+  if(!center){
+    document.querySelectorAll('[data-bind]').forEach(el=>{
+      if(el.getAttribute('data-bind')==='name') el.textContent='존재하지 않는 센터';
+    });
+    return;
+  }
+  CenterRouter.applyCenterToDOM(center);
+  _centerPhone = center.phone || '';
+  document.title = center.name + ' — 방문요양 전문';
+})();
 </script>
+<script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
 </body>
 </html>

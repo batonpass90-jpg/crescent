@@ -12,6 +12,9 @@
 <meta name="apple-mobile-web-app-title" content="CareOn">
 <link rel="apple-touch-icon" href="/careon-icon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="/center-router.js"></script>
+<script src="/push-client.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b}
@@ -24,11 +27,12 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 .hd-sub{font-size:11px;color:rgba(255,255,255,.75);margin-top:1px}
 .hd-right{display:flex;align-items:center;gap:8px}
 .hd-bell{font-size:20px;cursor:pointer}
-.hd-badge{background:rgba(255,255,255,.2);color:#fff;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px}
 
 .wrap{padding:16px}
 
-/* ROUTE BAR */
+.empty-msg{background:#fff;border-radius:18px;padding:40px 20px;text-align:center;color:var(--gray);border:1px solid var(--border);margin-bottom:14px}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.5}
+
 .route-card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
 .route-ttl{font-size:12px;font-weight:700;color:var(--gray);margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .route-ttl-txt{display:flex;align-items:center;gap:6px}
@@ -36,17 +40,15 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 .route-date{font-size:11px;color:var(--teal);font-weight:700}
 .route-list{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
 .route-list::-webkit-scrollbar{display:none}
-.route-stop{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
-.rs-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--border);background:#fff;position:relative}
+.route-stop{display:flex;flex-direction:column;align-items:center;flex-shrink:0;cursor:pointer}
+.rs-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid var(--border);background:#fff}
 .rs-circle.done{border-color:var(--green);background:#f0fdf4}
 .rs-circle.active{border-color:var(--teal);background:var(--tl);box-shadow:0 0 0 4px rgba(13,148,136,.15)}
-.rs-circle.wait{border-color:var(--border);background:#f8fafc}
 .rs-name{font-size:10px;font-weight:600;color:var(--navy);margin-top:5px;text-align:center;white-space:nowrap}
 .rs-time{font-size:10px;color:var(--gray);margin-top:1px}
 .route-line{width:28px;height:2px;background:var(--border);flex-shrink:0;margin-bottom:20px}
 .route-line.done{background:var(--green)}
 
-/* CURRENT VISIT */
 .visit-card{background:linear-gradient(135deg,#042f2e,#0f766e);border-radius:22px;padding:22px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
 .visit-card::after{content:'🏠';position:absolute;right:-10px;bottom:-15px;font-size:90px;opacity:.08}
 .visit-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -63,40 +65,36 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 
 .gps-btn{background:#fff;color:var(--teal);border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px}
 .gps-btn.checked{background:var(--green);color:#fff}
+.gps-btn:disabled{opacity:.6;cursor:not-allowed}
 .navi-btn{background:rgba(255,255,255,.15);border:1.5px solid rgba(255,255,255,.3);border-radius:14px;padding:12px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
 
-/* CHECKLIST */
 .card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;border:1px solid var(--border)}
 .card-ttl{font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
 .card-ttl-txt{display:flex;align-items:center;gap:6px}
 .card-ttl-txt::before{content:'';width:3px;height:12px;background:var(--teal);border-radius:2px;display:block}
 .progress-bar{height:6px;background:var(--border);border-radius:10px;margin-bottom:14px;overflow:hidden}
-.progress-fill{height:100%;background:var(--teal);border-radius:10px;width:60%;transition:width .4s}
+.progress-fill{height:100%;background:var(--teal);border-radius:10px;transition:width .4s}
 
 .check-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer}
 .check-item:last-child{border-bottom:none}
 .check-box{width:24px;height:24px;border-radius:8px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .2s;background:#fff}
 .check-box.checked{background:var(--teal);border-color:var(--teal);color:#fff}
-.check-box.locked{background:var(--border);border-color:var(--border);color:var(--gray)}
 .check-content{flex:1}
 .check-ttl{font-size:14px;font-weight:700;color:var(--navy)}
 .check-sub{font-size:11px;color:var(--gray);margin-top:2px}
 .check-time{font-size:11px;color:var(--teal);font-weight:700}
 
-/* MEMO */
 .memo-box{background:var(--tl);border-radius:12px;padding:14px;border:1px solid #99f6e4;margin-bottom:14px}
 .memo-lbl{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:8px}
 .memo-input{width:100%;background:transparent;border:none;font-family:inherit;font-size:13px;color:var(--navy);line-height:1.7;resize:none;outline:none}
 
 .complete-btn{background:var(--teal);color:#fff;border:none;border-radius:16px;padding:16px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 20px rgba(13,148,136,.4)}
+.complete-btn:disabled{opacity:.6;cursor:not-allowed}
 
 .bnav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:#fff;border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100}
 .bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;font-size:10px;color:var(--gray);font-weight:600;padding:4px 0}
 .bnav-item.active{color:var(--teal)}
 .bnav-icon{font-size:22px}
-
-/* LOCKED STATE */
-.locked-msg{background:#fff8f0;border:1px solid #fed7aa;border-radius:12px;padding:14px;text-align:center;font-size:13px;color:#92400e;margin-bottom:14px;display:none}
 </style>
 </head>
 <body>
@@ -105,240 +103,481 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
   <div class="hd-left">
     <div class="hd-avatar">👩‍⚕️</div>
     <div>
-      <div class="hd-name">김미영 보호사님</div>
-      <div class="hd-sub">오늘 4건 방문 예정</div>
+      <div class="hd-name" id="workerName">로딩 중...</div>
+      <div class="hd-sub" id="workerSub">오늘 일정 확인 중</div>
     </div>
   </div>
   <div class="hd-right">
-    <div class="hd-bell">🔔</div>
+    <div class="hd-bell" onclick="enablePush()">🔔</div>
     <div id="liveClock" style="font-size:13px;font-weight:800;color:#fff;background:rgba(255,255,255,.18);padding:4px 10px;border-radius:20px;letter-spacing:.5px"></div>
   </div>
 </div>
 
-<div class="wrap">
+<div class="wrap" id="mainWrap">
 
   <!-- 오늘 루트 -->
-  <div class="route-card">
+  <div class="route-card" id="routeCard" style="display:none">
     <div class="route-ttl">
       <span class="route-ttl-txt">오늘 방문 루트</span>
-      <span class="route-date">4월 23일 · 총 4곳</span>
+      <span class="route-date" id="routeDate"></span>
     </div>
-    <div class="route-list">
-      <div class="route-stop">
-        <div class="rs-circle done">✅</div>
-        <div class="rs-name">이순자<br>어르신</div>
-        <div class="rs-time">09:00</div>
-      </div>
-      <div class="route-line done"></div>
-      <div class="route-stop">
-        <div class="rs-circle active">🏠</div>
-        <div class="rs-name">박종철<br>어르신</div>
-        <div class="rs-time">11:30</div>
-      </div>
-      <div class="route-line"></div>
-      <div class="route-stop">
-        <div class="rs-circle wait">⏳</div>
-        <div class="rs-name">최영순<br>어르신</div>
-        <div class="rs-time">14:00</div>
-      </div>
-      <div class="route-line"></div>
-      <div class="route-stop">
-        <div class="rs-circle wait">⏳</div>
-        <div class="rs-name">정동호<br>어르신</div>
-        <div class="rs-time">16:30</div>
-      </div>
-    </div>
+    <div class="route-list" id="routeList"></div>
+  </div>
+
+  <!-- 빈 상태 -->
+  <div class="empty-msg" id="emptyMsg" style="display:none">
+    <div class="empty-icon">📋</div>
+    <div style="font-size:15px;font-weight:700;color:var(--navy);margin-bottom:4px">오늘 예정된 방문이 없습니다</div>
+    <div style="font-size:12px">센터장에게 일정 등록을 요청하세요</div>
   </div>
 
   <!-- 현재 방문지 -->
-  <div class="visit-card">
+  <div class="visit-card" id="visitCard" style="display:none">
     <div class="visit-top">
-      <div class="visit-name">박종철 어르신</div>
-      <div class="visit-status"><span class="v-dot"></span>방문중</div>
+      <div class="visit-name" id="visitName">-</div>
+      <div class="visit-status" id="visitStatus"><span class="v-dot"></span>대기</div>
     </div>
-    <div class="visit-addr">📍 성남시 수정구 태평동 88-12 (대평빌라 205호)</div>
+    <div class="visit-addr" id="visitAddr">📍 -</div>
     <div class="visit-time">
-      <div class="vt-item"><div class="vt-lbl">방문 시작</div><div class="vt-val">11:30</div></div>
-      <div class="vt-item"><div class="vt-lbl">예정 종료</div><div class="vt-val">13:00</div></div>
-      <div class="vt-item"><div class="vt-lbl">경과</div><div class="vt-val" id="elapsed">43분</div></div>
+      <div class="vt-item"><div class="vt-lbl">방문 시작</div><div class="vt-val" id="vtStart">-</div></div>
+      <div class="vt-item"><div class="vt-lbl">예정 종료</div><div class="vt-val" id="vtEnd">-</div></div>
+      <div class="vt-item"><div class="vt-lbl">경과</div><div class="vt-val" id="elapsed">-</div></div>
     </div>
-    <button class="gps-btn checked" id="gpsBtn" onclick="toggleGps()">✅ GPS 체크인 완료</button>
-    <button class="navi-btn">🗺️ 네비게이션 열기</button>
+    <button class="gps-btn" id="gpsBtn" onclick="doCheckin()">🛰️ GPS 체크인</button>
+    <button class="navi-btn" id="naviBtn" onclick="openNavi()">🗺️ 네비게이션 열기</button>
   </div>
 
   <!-- 케어 체크리스트 -->
-  <div class="card">
+  <div class="card" id="checklistCard" style="display:none">
     <div class="card-ttl">
       <span class="card-ttl-txt">케어 체크리스트</span>
-      <span style="font-size:11px;color:var(--teal);font-weight:700;">3/5 완료</span>
+      <span id="checkProgress" style="font-size:11px;color:var(--teal);font-weight:700">0/5 완료</span>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="check-item" onclick="toggle(this)">
-      <div class="check-box checked">✓</div>
-      <div class="check-content">
-        <div class="check-ttl">🍚 식사 보조</div>
-        <div class="check-sub">식사량 확인 및 보조</div>
-      </div>
-      <span class="check-time">11:45</span>
-    </div>
-    <div class="check-item" onclick="toggle(this)">
-      <div class="check-box checked">✓</div>
-      <div class="check-content">
-        <div class="check-ttl">🤸 체위 변경</div>
-        <div class="check-sub">2시간마다 자세 변경</div>
-      </div>
-      <span class="check-time">12:05</span>
-    </div>
-    <div class="check-item" onclick="toggle(this)">
-      <div class="check-box checked">✓</div>
-      <div class="check-content">
-        <div class="check-ttl">🧘 스트레칭</div>
-        <div class="check-sub">관절 운동 및 스트레칭</div>
-      </div>
-      <span class="check-time">12:20</span>
-    </div>
-    <div class="check-item" onclick="toggle(this)">
-      <div class="check-box">○</div>
-      <div class="check-content">
-        <div class="check-ttl">💊 투약 확인</div>
-        <div class="check-sub">처방약 복용 확인</div>
-      </div>
-      <span class="check-time" style="color:var(--gray)">미완료</span>
-    </div>
-    <div class="check-item" onclick="toggle(this)">
-      <div class="check-box">○</div>
-      <div class="check-content">
-        <div class="check-ttl">🛁 청결 케어</div>
-        <div class="check-sub">구강 청결 및 세면</div>
-      </div>
-      <span class="check-time" style="color:var(--gray)">미완료</span>
-    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div id="checklistItems"></div>
   </div>
 
-  <!-- 특이사항 메모 -->
-  <div class="memo-box">
+  <!-- 메모 -->
+  <div class="memo-box" id="memoBox" style="display:none">
     <div class="memo-lbl">📝 오늘 특이사항 메모</div>
-    <textarea class="memo-input" rows="3" placeholder="어르신 상태, 특이사항 등을 입력해주세요...">오늘 식사량 평소보다 좋음. 기분 양호. 무릎 통증 호소 — 연고 도포함.</textarea>
+    <textarea class="memo-input" id="memoInput" rows="3" placeholder="어르신 상태, 특이사항 등을 입력해주세요..."></textarea>
   </div>
 
   <!-- 완료 버튼 -->
-  <button class="complete-btn" onclick="complete()">✅ 케어 완료 전송</button>
+  <button class="complete-btn" id="completeBtn" onclick="completeVisit()" style="display:none">✅ 케어 완료 전송</button>
 
 </div>
 
 <div class="bnav">
   <div class="bnav-item active"><span class="bnav-icon">🏠</span>오늘일정</div>
-  <div class="bnav-item"><span class="bnav-icon">📋</span>케어일지</div>
-  <div class="bnav-item"><span class="bnav-icon">👴</span>수급자</div>
-  <div class="bnav-item"><span class="bnav-icon">👤</span>내정보</div>
+  <div class="bnav-item" onclick="alert('케어일지 - 다음 업데이트')"><span class="bnav-icon">📋</span>케어일지</div>
+  <div class="bnav-item" onclick="alert('수급자 - 다음 업데이트')"><span class="bnav-icon">👴</span>수급자</div>
+  <div class="bnav-item" onclick="doLogout()"><span class="bnav-icon">👤</span>내정보</div>
 </div>
 
 <script>
-// 실시간 시계 + 경과 시간
+// ===== 기본 체크리스트 (5개 표준 항목) =====
+const DEFAULT_CHECKLIST = [
+  { id:'meal',    icon:'🍚', title:'식사 보조',  sub:'식사량 확인 및 보조' },
+  { id:'posture', icon:'🤸', title:'체위 변경',  sub:'2시간마다 자세 변경' },
+  { id:'stretch', icon:'🧘', title:'스트레칭',   sub:'관절 운동 및 스트레칭' },
+  { id:'medi',    icon:'💊', title:'투약 확인',  sub:'처방약 복용 확인' },
+  { id:'hygiene', icon:'🛁', title:'청결 케어',  sub:'구강 청결 및 세면' }
+];
+
+// ===== 상태 =====
+let sb = null;
+let _session = null;
+let _profile = null;
+let _worker = null;
+let _todayVisits = [];
+let _currentVisit = null;
+let _checklist = JSON.parse(JSON.stringify(DEFAULT_CHECKLIST.map(i => ({...i, done:false, time:null}))));
+
+// ===== 시계 =====
 (function tick() {
   const now = new Date();
-  const hh = String(now.getHours()).padStart(2,'0');
-  const mm = String(now.getMinutes()).padStart(2,'0');
-  const ss = String(now.getSeconds()).padStart(2,'0');
-  document.getElementById('liveClock').textContent = hh+':'+mm+':'+ss;
+  document.getElementById('liveClock').textContent =
+    String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':'+String(now.getSeconds()).padStart(2,'0');
 
-  // 방문 시작 11:30 기준 경과
-  const start = new Date();
-  start.setHours(11,30,0,0);
-  const diff = Math.max(0, Math.floor((now - start)/60000));
-  const elEl = document.getElementById('elapsed');
-  if(elEl) {
-    if(diff < 60) elEl.textContent = diff+'분';
-    else elEl.textContent = Math.floor(diff/60)+'시간 '+(diff%60)+'분';
+  if(_currentVisit && _currentVisit.start_time && _currentVisit.status === 'in_progress'){
+    const [h,m] = _currentVisit.start_time.split(':').map(Number);
+    const start = new Date();
+    start.setHours(h, m, 0, 0);
+    const diff = Math.max(0, Math.floor((now - start)/60000));
+    const elEl = document.getElementById('elapsed');
+    if(elEl) elEl.textContent = diff < 60 ? diff+'분' : Math.floor(diff/60)+'시간 '+(diff%60)+'분';
   }
   setTimeout(tick, 1000);
 })();
 
-let gpsChecked = true;
+// ===== 부팅 =====
+window.addEventListener('load', async () => {
+  sb = window.supabase.createClient(
+    'https://swsemxzgzcwwrhowuaqz.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
+  );
 
-// 네비 버튼
-document.querySelector('.navi-btn').onclick=()=>toast('🗺️ 카카오맵 네비게이션 연결 중...');
+  // 세션 체크
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){ location.href = CenterRouter.buildUrl('/care-login.html'); return; }
+  _session = session;
 
-// 벨
-document.querySelector('.hd-bell').onclick=()=>toast('🔔 센터장: 오후 방문 전 전화 부탁드려요');
+  // 프로필 + 보호사 정보 로드
+  const { data: profile } = await sb.from('profiles')
+    .select('*, centers(name, phone)')
+    .eq('id', session.user.id).single();
 
-// 하단 탭
-document.querySelectorAll('.bnav-item').forEach((item,i)=>{
-  item.onclick=()=>{
-    document.querySelectorAll('.bnav-item').forEach((b,j)=>b.classList.toggle('active',i===j));
-    const msgs=['오늘 일정','케어일지 목록','수급자 목록','내 정보'];
-    toast('📋 '+msgs[i]);
-  };
+  if(!profile || profile.role !== 'worker'){
+    alert('보호사 계정이 아닙니다.');
+    await sb.auth.signOut();
+    location.href = '/care-login.html';
+    return;
+  }
+  _profile = profile;
+
+  // 보호사 레코드 조회 (profile_id로 매칭)
+  const { data: worker } = await sb.from('workers')
+    .select('*').eq('profile_id', session.user.id).maybeSingle();
+  _worker = worker;
+
+  document.getElementById('workerName').textContent = (profile.name || '보호사') + ' 보호사님';
+
+  // 오늘의 방문 일정 로드
+  await loadTodayVisits();
 });
 
-// 루트 정류장 클릭
-const routeNames=['이순자 어르신 · 완료 ✅','박종철 어르신 · 방문중 🏠','최영순 어르신 · 14:00 예정','정동호 어르신 · 16:30 예정'];
-document.querySelectorAll('.route-stop').forEach((stop,i)=>{
-  stop.style.cursor='pointer';
-  stop.onclick=()=>toast('📍 '+routeNames[i]);
-});
+// ===== 오늘 일정 로드 =====
+async function loadTodayVisits(){
+  if(!_worker){
+    document.getElementById('workerSub').textContent = '보호사 등록이 필요합니다';
+    document.getElementById('emptyMsg').style.display = 'block';
+    return;
+  }
 
-function toggleGps() {
-  gpsChecked = !gpsChecked;
+  const today = new Date().toISOString().split('T')[0];
+  const { data: visits } = await sb.from('visits')
+    .select('*, patients(name, address, phone, guardian_name, guardian_phone)')
+    .eq('worker_id', _worker.id)
+    .eq('scheduled_date', today)
+    .order('start_time', { ascending: true });
+
+  _todayVisits = visits || [];
+  renderTodayUI();
+}
+
+function renderTodayUI(){
+  const sub = document.getElementById('workerSub');
+
+  if(_todayVisits.length === 0){
+    sub.textContent = '오늘 예정 방문 없음';
+    document.getElementById('emptyMsg').style.display = 'block';
+    document.getElementById('routeCard').style.display = 'none';
+    document.getElementById('visitCard').style.display = 'none';
+    document.getElementById('checklistCard').style.display = 'none';
+    document.getElementById('memoBox').style.display = 'none';
+    document.getElementById('completeBtn').style.display = 'none';
+    return;
+  }
+
+  sub.textContent = `오늘 ${_todayVisits.length}건 방문 예정`;
+  document.getElementById('emptyMsg').style.display = 'none';
+
+  // 루트 렌더
+  renderRoute();
+
+  // 진행 중 또는 다음 방문 선택
+  _currentVisit = _todayVisits.find(v => v.status === 'in_progress')
+                 || _todayVisits.find(v => v.status === 'scheduled')
+                 || _todayVisits[_todayVisits.length-1];
+
+  renderCurrentVisit();
+}
+
+function renderRoute(){
+  const list = document.getElementById('routeList');
+  const card = document.getElementById('routeCard');
+  card.style.display = 'block';
+
+  const today = new Date();
+  document.getElementById('routeDate').textContent =
+    `${today.getMonth()+1}월 ${today.getDate()}일 · 총 ${_todayVisits.length}곳`;
+
+  list.innerHTML = _todayVisits.map((v, i) => {
+    const cls = v.status==='completed' ? 'done' : (v.status==='in_progress' ? 'active' : '');
+    const icon = v.status==='completed' ? '✅' : (v.status==='in_progress' ? '🏠' : '⏳');
+    const lineCls = i < _todayVisits.length-1 && _todayVisits[i].status==='completed' ? 'done' : '';
+    const time = (v.start_time || '').slice(0,5) || '-';
+    const name = (v.patients?.name || '?').replace(/(.{3})/g, '$1\n');
+    return `
+      <div class="route-stop" onclick="selectVisit('${v.id}')">
+        <div class="rs-circle ${cls}">${icon}</div>
+        <div class="rs-name">${(v.patients?.name||'?')}<br>어르신</div>
+        <div class="rs-time">${time}</div>
+      </div>
+      ${i < _todayVisits.length-1 ? `<div class="route-line ${lineCls}"></div>` : ''}
+    `;
+  }).join('');
+}
+
+function selectVisit(id){
+  _currentVisit = _todayVisits.find(v => v.id === id);
+  if(_currentVisit) renderCurrentVisit();
+}
+
+function renderCurrentVisit(){
+  if(!_currentVisit){
+    document.getElementById('visitCard').style.display = 'none';
+    return;
+  }
+  document.getElementById('visitCard').style.display = 'block';
+  document.getElementById('visitName').textContent = (_currentVisit.patients?.name || '?') + ' 어르신';
+  document.getElementById('visitAddr').textContent = '📍 ' + (_currentVisit.patients?.address || '주소 미등록');
+  document.getElementById('vtStart').textContent = (_currentVisit.start_time || '-').slice(0,5);
+  document.getElementById('vtEnd').textContent = (_currentVisit.end_time || '-').slice(0,5);
+
+  const status = _currentVisit.status;
+  const statusEl = document.getElementById('visitStatus');
+  const gpsBtn = document.getElementById('gpsBtn');
+
+  if(status === 'completed'){
+    statusEl.innerHTML = '✅ 완료';
+    gpsBtn.className = 'gps-btn checked';
+    gpsBtn.textContent = '✅ 완료된 방문';
+    gpsBtn.disabled = true;
+    document.getElementById('checklistCard').style.display = 'none';
+    document.getElementById('memoBox').style.display = 'none';
+    document.getElementById('completeBtn').style.display = 'none';
+  } else if(status === 'in_progress'){
+    statusEl.innerHTML = '<span class="v-dot"></span>방문중';
+    gpsBtn.className = 'gps-btn checked';
+    gpsBtn.textContent = '✅ GPS 체크인 완료';
+    gpsBtn.disabled = true;
+    loadChecklist();
+    document.getElementById('checklistCard').style.display = 'block';
+    document.getElementById('memoBox').style.display = 'block';
+    document.getElementById('completeBtn').style.display = 'flex';
+  } else {
+    statusEl.innerHTML = '⏳ 대기';
+    gpsBtn.className = 'gps-btn';
+    gpsBtn.textContent = '🛰️ GPS 체크인';
+    gpsBtn.disabled = false;
+    document.getElementById('checklistCard').style.display = 'none';
+    document.getElementById('memoBox').style.display = 'none';
+    document.getElementById('completeBtn').style.display = 'none';
+  }
+}
+
+// ===== GPS 체크인 =====
+async function doCheckin(){
+  if(!_currentVisit) return;
   const btn = document.getElementById('gpsBtn');
-  if(gpsChecked) {
-    btn.className = 'gps-btn checked';
-    btn.innerHTML = '✅ GPS 체크인 완료';
-  } else {
-    btn.className = 'gps-btn';
-    btn.innerHTML = '🛰️ GPS 체크인';
+  btn.disabled = true;
+  btn.textContent = '⏳ GPS 확인 중...';
+
+  // GPS 좌표 획득
+  let coords = null;
+  try {
+    coords = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        pos => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        err => reject(err),
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    });
+  } catch(e){
+    if(!confirm('GPS를 가져올 수 없습니다. GPS 없이 체크인하시겠어요?')){
+      btn.disabled = false;
+      btn.textContent = '🛰️ GPS 체크인';
+      return;
+    }
   }
+
+  const now = new Date();
+  const startTime = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':00';
+
+  const { error } = await sb.from('visits').update({
+    status: 'in_progress',
+    start_time: _currentVisit.start_time || startTime,
+    gps_checkin_lat: coords?.lat,
+    gps_checkin_lng: coords?.lng
+  }).eq('id', _currentVisit.id);
+
+  if(error){
+    alert('체크인 실패: ' + error.message);
+    btn.disabled = false;
+    btn.textContent = '🛰️ GPS 체크인';
+    return;
+  }
+
+  // 보호자에게 도착 알림
+  notifyGuardians('visit_start', `${_currentVisit.patients.name} 어르신 댁 도착`,
+    `${_profile.name} 보호사가 ${(_currentVisit.start_time||'').slice(0,5)} 케어를 시작했습니다.`);
+
+  await loadTodayVisits();
 }
 
-function toggle(item) {
-  const box = item.querySelector('.check-box');
-  const timeEl = item.querySelector('.check-time');
-  if(box.classList.contains('checked')) {
-    box.classList.remove('checked');
-    box.textContent = '○';
-    timeEl.style.color = 'var(--gray)';
-    timeEl.textContent = '미완료';
-  } else {
-    box.classList.add('checked');
-    box.textContent = '✓';
-    timeEl.style.color = 'var(--teal)';
+// ===== 체크리스트 =====
+function loadChecklist(){
+  // care_log JSON에 저장된 체크리스트 복원
+  let log = {};
+  try { log = JSON.parse(_currentVisit.care_log || '{}'); } catch(e){}
+
+  _checklist = DEFAULT_CHECKLIST.map(item => ({
+    ...item,
+    done: !!log.checks?.[item.id]?.done,
+    time: log.checks?.[item.id]?.time || null
+  }));
+
+  renderChecklist();
+  document.getElementById('memoInput').value = log.memo || '';
+}
+
+function renderChecklist(){
+  const wrap = document.getElementById('checklistItems');
+  wrap.innerHTML = _checklist.map((it, i) => `
+    <div class="check-item" onclick="toggleCheck(${i})">
+      <div class="check-box ${it.done?'checked':''}">${it.done?'✓':'○'}</div>
+      <div class="check-content">
+        <div class="check-ttl">${it.icon} ${it.title}</div>
+        <div class="check-sub">${it.sub}</div>
+      </div>
+      <span class="check-time" style="${it.done?'':'color:var(--gray)'}">${it.time||'미완료'}</span>
+    </div>
+  `).join('');
+
+  const done = _checklist.filter(c=>c.done).length;
+  document.getElementById('checkProgress').textContent = `${done}/${_checklist.length} 완료`;
+  document.getElementById('progressFill').style.width = (done/_checklist.length*100) + '%';
+}
+
+async function toggleCheck(idx){
+  const it = _checklist[idx];
+  it.done = !it.done;
+  if(it.done){
     const now = new Date();
-    timeEl.textContent = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+    it.time = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
+  } else {
+    it.time = null;
   }
-  updateProgress();
+  renderChecklist();
+
+  // 비동기 저장 (실패해도 UI는 유지)
+  saveProgress();
 }
 
-function updateProgress() {
-  const total = document.querySelectorAll('.check-item').length;
-  const done = document.querySelectorAll('.check-box.checked').length;
-  const pct = (done/total)*100;
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.querySelector('.card-ttl span:last-child').textContent = done + '/' + total + ' 완료';
+let _saveTimer = null;
+function saveProgress(){
+  if(_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(async () => {
+    const log = {
+      checks: Object.fromEntries(_checklist.map(c => [c.id, { done:c.done, time:c.time }])),
+      memo: document.getElementById('memoInput').value
+    };
+    await sb.from('visits').update({ care_log: JSON.stringify(log) }).eq('id', _currentVisit.id);
+  }, 800);
 }
 
-function toast(msg, duration=2200) {
-  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
-  const el = document.createElement('div');
-  el.className = 't-msg';
-  el.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:11px 20px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.2)';
-  el.textContent = msg;
-  document.body.appendChild(el);
-  setTimeout(()=>el.remove(), duration);
-}
+document.getElementById('memoInput').addEventListener('input', saveProgress);
 
-function complete() {
-  const done = document.querySelectorAll('.check-box.checked').length;
-  const total = document.querySelectorAll('.check-item').length;
-  if(done < total) {
-    if(!confirm('아직 ' + (total-done) + '개 항목이 미완료예요. 그래도 전송하시겠어요?')) return;
+// ===== 케어 완료 =====
+async function completeVisit(){
+  const done = _checklist.filter(c=>c.done).length;
+  if(done < _checklist.length){
+    if(!confirm(`아직 ${_checklist.length-done}개 항목이 미완료예요. 그래도 완료 처리할까요?`)) return;
   }
-  const btn = document.querySelector('.complete-btn');
+
+  const btn = document.getElementById('completeBtn');
+  btn.disabled = true;
   btn.innerHTML = '⏳ 전송 중...';
-  btn.style.background = '#64748b';
-  setTimeout(() => {
-    btn.innerHTML = '✅ 전송 완료! 센터장님께 알림 전송됨';
-    btn.style.background = 'var(--green)';
-  }, 1200);
+
+  // GPS 체크아웃
+  let coords = null;
+  try {
+    coords = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(
+      p => res({ lat:p.coords.latitude, lng:p.coords.longitude }), rej,
+      { enableHighAccuracy:true, timeout:8000 }
+    ));
+  } catch(e){}
+
+  const now = new Date();
+  const endTime = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0')+':00';
+  const log = {
+    checks: Object.fromEntries(_checklist.map(c => [c.id, { done:c.done, time:c.time }])),
+    memo: document.getElementById('memoInput').value
+  };
+
+  const { error } = await sb.from('visits').update({
+    status: 'completed',
+    end_time: endTime,
+    care_log: JSON.stringify(log),
+    gps_checkout_lat: coords?.lat,
+    gps_checkout_lng: coords?.lng
+  }).eq('id', _currentVisit.id);
+
+  if(error){
+    alert('완료 처리 실패: ' + error.message);
+    btn.disabled = false;
+    btn.innerHTML = '✅ 케어 완료 전송';
+    return;
+  }
+
+  // 보호자에게 완료 알림
+  notifyGuardians('care_complete', `${_currentVisit.patients.name} 어르신 케어 완료`,
+    `${done}/${_checklist.length} 항목 완료. ${log.memo ? '메모: '+log.memo.slice(0,40) : ''}`);
+
+  btn.innerHTML = '✅ 전송 완료!';
+  setTimeout(() => loadTodayVisits(), 1500);
+}
+
+// ===== 보호자에게 알림 =====
+async function notifyGuardians(type, title, body){
+  try {
+    // patient_guardians 조회
+    const { data: pgs } = await sb.from('patient_guardians')
+      .select('guardian_id, profiles:guardian_id(phone, name)')
+      .eq('patient_id', _currentVisit.patient_id)
+      .eq('notify_enabled', true);
+
+    if(!pgs || pgs.length === 0) return;
+
+    for(const pg of pgs){
+      await PushClient.sendNotification(sb, {
+        recipient_id: pg.guardian_id,
+        recipient_phone: pg.profiles?.phone,
+        recipient_name: pg.profiles?.name,
+        type, title, body,
+        url: '/care-customer.html',
+        center_id: _profile.center_id
+      });
+    }
+  } catch(e){
+    console.warn('알림 발송 실패:', e);
+  }
+}
+
+// ===== 푸시 권한 요청 =====
+async function enablePush(){
+  const r = await PushClient.requestAndSubscribe(sb, _profile?.center_id);
+  alert(r.success ? '🔔 알림이 활성화되었습니다.' : '알림 활성화 실패: ' + r.error);
+}
+
+// ===== 네비게이션 =====
+function openNavi(){
+  if(!_currentVisit?.patients?.address){
+    alert('주소가 등록되지 않았습니다.');
+    return;
+  }
+  const addr = encodeURIComponent(_currentVisit.patients.address);
+  // 카카오맵 길찾기
+  location.href = `https://map.kakao.com/link/to/${addr},,`;
+}
+
+// ===== 로그아웃 =====
+async function doLogout(){
+  if(!confirm('로그아웃 하시겠어요?')) return;
+  await sb.auth.signOut();
+  location.href = '/care-login.html';
 }
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
