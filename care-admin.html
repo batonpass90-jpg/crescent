@@ -212,20 +212,57 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 /* NOTICE BANNER */
 .notice{background:var(--tl);border:1px solid #99f6e4;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:13px;color:var(--teal);font-weight:600;display:flex;align-items:center;gap:8px}
 
+/* 햄버거 버튼 (모바일 전용) */
+.hamburger{display:none;background:none;border:none;font-size:22px;cursor:pointer;padding:6px 10px;color:var(--navy);font-family:inherit}
+
+/* 사이드바 백드롭 (모바일 오버레이) */
+.sb-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:199;opacity:0;transition:opacity .25s}
+.sb-backdrop.show{display:block;opacity:1}
+
 @media(max-width:900px){
-  .sidebar{display:none}
+  /* 사이드바를 슬라이드 형태로 변경 */
+  .sidebar{transform:translateX(-100%);transition:transform .28s ease-out;width:260px}
+  .sidebar.open{transform:translateX(0);box-shadow:0 0 40px rgba(0,0,0,.3)}
   .main{margin-left:0}
-  .stat-grid{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 10px;gap:8px}
+  .topbar-title{display:block;font-size:15px;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .hamburger{display:block;flex-shrink:0}
+  /* 모바일에서 토픽바의 가운데(센터명+탭) 그룹 숨김 */
+  .topbar-center{display:none !important}
+  /* 토픽바 우측 컴팩트 */
+  .topbar-right{gap:8px;flex-shrink:0}
+  .topbar-date{display:none}
+  .stat-grid{grid-template-columns:1fr 1fr;gap:10px}
   .grid2,.grid3{grid-template-columns:1fr}
   .form-row{grid-template-columns:1fr}
+  .sec-hd{flex-wrap:wrap;gap:10px}
+  .sec-hd-title{font-size:16px}
+  .content{padding:16px 12px}
+  /* 표 가로 스크롤 - 모바일 핵심 */
+  .tbl-wrap, .card .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl{min-width:520px}
+  .tbl th, .tbl td{white-space:nowrap;font-size:12px;padding:8px 10px}
+  .modal{width:calc(100vw - 20px);max-height:90vh;margin:10px}
+  .modal-body{max-height:calc(90vh - 130px);overflow-y:auto}
+}
+@media(max-width:480px){
+  .stat-grid{grid-template-columns:1fr 1fr;gap:8px}
+  .stat-card{padding:14px}
+  .stat-num{font-size:22px}
+  .stat-lbl{font-size:10px}
+  /* 너무 좁으면 표 글자 더 작게 */
+  .tbl{min-width:480px}
 }
 </style>
 </head>
 <body>
 <div class="layout">
 
+<!-- 사이드바 백드롭 (모바일에서만 보임) -->
+<div class="sb-backdrop" id="sbBackdrop" onclick="toggleSidebar(false)"></div>
+
 <!-- SIDEBAR -->
-<div class="sidebar">
+<div class="sidebar" id="sidebar">
   <div class="sb-logo">
     <div class="sb-brand">햇살요양센터</div>
     <div class="sb-sub">센터장 관리 시스템</div>
@@ -269,8 +306,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()" aria-label="메뉴 열기">☰</button>
     <div class="topbar-title" id="topbarTitle">📊 대시보드</div>
-    <div style="display:flex;align-items:center;gap:16px">
+    <div class="topbar-center" style="display:flex;align-items:center;gap:16px">
       <div style="font-size:14px;font-weight:700;color:var(--navy)" id="topbarCenterName">🏥 센터명</div>
       <div style="width:1px;height:18px;background:var(--border)"></div>
       <div style="display:flex;gap:4px" id="topbarNav">
@@ -942,7 +980,25 @@ function showView(name){
   if(name==='sms' && typeof sb !== 'undefined' && sb) loadSmsView();
 }
 document.querySelectorAll('.sb-item').forEach(item=>{
-  item.addEventListener('click',()=>showView(item.dataset.view));
+  item.addEventListener('click',()=>{
+    showView(item.dataset.view);
+    // 모바일에서 메뉴 클릭 시 자동 닫힘
+    if(window.innerWidth <= 900) toggleSidebar(false);
+  });
+});
+
+// ===== 모바일 사이드바 토글 =====
+function toggleSidebar(force){
+  const sb = document.getElementById('sidebar');
+  const bd = document.getElementById('sbBackdrop');
+  const open = (typeof force === 'boolean') ? force : !sb.classList.contains('open');
+  sb.classList.toggle('open', open);
+  bd.classList.toggle('show', open);
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+// 화면 리사이즈 시 데스크톱 복귀하면 사이드바 상태 초기화
+window.addEventListener('resize', () => {
+  if(window.innerWidth > 900) toggleSidebar(false);
 });
 function handleMainBtn(){
   const active=document.querySelector('.view.active');
