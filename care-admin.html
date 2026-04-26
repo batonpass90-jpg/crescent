@@ -1096,9 +1096,13 @@ function clearHardcoded() {
   // 수급자 관리 테이블 초기화
   const patientTbody = document.querySelector('#view-patients .tbl tbody');
   if (patientTbody) patientTbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">등록된 수급자가 없습니다</td></tr>';
+  const patientSub = document.querySelector('#view-patients .sec-hd-sub');
+  if (patientSub) patientSub.textContent = '등록된 수급자 없음';
 
   // 보호사 관리 뷰 초기화
   document.querySelectorAll('#view-workers .card').forEach(e=>e.remove());
+  const workerSub = document.querySelector('#view-workers .sec-hd-sub');
+  if (workerSub) workerSub.textContent = '근무중인 보호사 없음';
 
   // 미납금 관리 테이블 초기화
   const unpaidTbody = document.querySelector('#view-unpaid .tbl tbody');
