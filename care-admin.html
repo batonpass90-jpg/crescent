@@ -235,8 +235,16 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
   .stat-grid{grid-template-columns:1fr 1fr;gap:10px}
   .grid2,.grid3{grid-template-columns:1fr}
   .form-row{grid-template-columns:1fr}
-  .sec-hd{flex-wrap:wrap;gap:10px}
-  .sec-hd-title{font-size:16px}
+  /* 섹션 헤더: 토픽바 제목과 중복 회피 + 버튼 잘림 방지 */
+  .sec-hd{flex-wrap:wrap;gap:10px;align-items:flex-start}
+  .sec-hd-title{display:none}              /* 토픽바에 이미 같은 제목 → 중복 제거 */
+  .sec-hd > div:first-child{flex:1;min-width:0}
+  .sec-hd-sub{font-size:13px;color:var(--navy);font-weight:600}  /* 서브타이틀이 메인이 됨 */
+  .sec-hd .btn{flex-shrink:0;font-size:12px;padding:8px 12px;white-space:nowrap}
+  /* 우측 액션 버튼이 폭 작을 때 다음 줄로 */
+  @media(max-width:380px){
+    .sec-hd .btn{width:100%}
+  }
   .content{padding:16px 12px}
   /* 표 가로 스크롤 - 모바일 핵심 */
   .tbl-wrap, .card .tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
