@@ -1033,6 +1033,8 @@ window.addEventListener('load', async () => {
     const doneVisits = allVisits.filter(v => v.status === 'completed');
     if (statCards[0]) statCards[0].textContent = allVisits.length + '건';
     if (statCards[1]) statCards[1].textContent = doneVisits.length + '건';
+    const vsub2 = document.getElementById('visitSubtitle');
+    if (vsub2) vsub2.textContent = allVisits.length > 0 ? `총 ${allVisits.length}건 예정` : '오늘 등록된 방문이 없습니다';
 
     // 사이드바 라이브 텍스트
     document.querySelector('.sb-live-txt').textContent =
@@ -1051,6 +1053,13 @@ function clearHardcoded() {
   if (statNums[1]) statNums[1].textContent = '0건';
   if (statNums[2]) statNums[2].textContent = '0건';
   if (statNums[3]) statNums[3].textContent = '0명';
+
+  // 사이드바 뱃지 숫자 초기화
+  document.querySelectorAll('.sb-badge').forEach(b => b.remove());
+
+  // 오늘 방문 현황 부제목 초기화
+  const vsub = document.getElementById('visitSubtitle');
+  if (vsub) vsub.textContent = '오늘 등록된 방문이 없습니다';
 
   // 대시보드 방문 현황 테이블 초기화
   const visitTbody = document.querySelector('#view-dashboard .tbl tbody');
