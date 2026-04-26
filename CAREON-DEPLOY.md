@@ -53,7 +53,7 @@ Supabase Dashboard → Project Settings → Edge Functions → Manage secrets:
 |---|---|
 | `VAPID_PUBLIC_KEY` | (위 Public Key) |
 | `VAPID_PRIVATE_KEY` | (위 Private Key) |
-| `VAPID_SUBJECT` | `mailto:hello@careon.kr` |
+| `VAPID_SUBJECT` | `mailto:batonpass90@gmail.com` |
 
 ---
 

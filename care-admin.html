@@ -17,6 +17,32 @@
 :root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--border:#e2e8f0;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--sidebar:220px}
 html,body{overflow-x:hidden;max-width:100vw}
 body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--g50);color:var(--navy);min-height:100vh}
+
+/* ===== 데이터 로딩 전 데모 콘텐츠 숨김 (FOUC 방지) =====
+   body에 .app-ready 클래스 붙기 전까지 데모 데이터 안 보이게 */
+body:not(.app-ready) .stat-num,
+body:not(.app-ready) .stat-change,
+body:not(.app-ready) .sb-badge,
+body:not(.app-ready) .bell-dot,
+body:not(.app-ready) #view-dashboard .tbl tbody tr,
+body:not(.app-ready) #view-dashboard .worker-item,
+body:not(.app-ready) #view-dashboard .unpaid-item,
+body:not(.app-ready) #view-unpaid .tbl tbody tr,
+body:not(.app-ready) #view-patients .tbl tbody tr,
+body:not(.app-ready) #view-workers .grid2 > .card,
+body:not(.app-ready) #view-visits .tbl tbody tr,
+body:not(.app-ready) #view-workorders .tbl tbody tr,
+body:not(.app-ready) #view-schedule .tbl tbody tr,
+body:not(.app-ready) #view-journal .tbl tbody tr,
+body:not(.app-ready) #view-revenue .tbl tbody tr,
+body:not(.app-ready) #view-salary .tbl tbody tr,
+body:not(.app-ready) #view-sms .tbl tbody tr{
+  visibility:hidden !important;
+}
+/* 통계 숫자 자리는 유지하되 글자만 안 보이게 (레이아웃 점프 방지) */
+body:not(.app-ready) .stat-num::before{
+  content:'';display:inline-block;width:60px;height:24px;background:#f1f5f9;border-radius:6px;visibility:visible
+}
 .layout{display:flex;min-height:100vh;max-width:100vw;overflow-x:hidden}
 .main{max-width:100vw;min-width:0}
 
@@ -791,7 +817,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
           </div>
           <div style="margin-top:12px;display:flex;gap:8px">
             <button onclick="openSmsCharge()" class="btn btn-primary" style="flex:1;font-size:12px">⚡ 문자 추가 충전</button>
-            <button onclick="toast('📞 플랜 변경은 담당자에게 문의해주세요.\nhello@careon.kr',3000)" class="btn btn-ghost-sm" style="flex:1;font-size:12px">플랜 업그레이드 문의</button>
+            <button onclick="toast('📞 플랜 변경은 담당자에게 문의해주세요.\nbatonpass90@gmail.com',3000)" class="btn btn-ghost-sm" style="flex:1;font-size:12px">플랜 업그레이드 문의</button>
           </div>
         </div>
       </div>
@@ -1348,6 +1374,9 @@ const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsI
 let sb;
 
 window.addEventListener('load', async () => {
+  // 안전장치: 4초 후에도 app-ready 안 붙으면 강제로 표시 (Supabase 실패 케이스)
+  setTimeout(() => document.body.classList.add('app-ready'), 4000);
+
   try {
     sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
 
@@ -1544,6 +1573,9 @@ function clearHardcoded() {
   if(smsSub2) smsSub2.textContent='이번달 사용량 로딩 중...';
   const smsHistTbody = document.getElementById('smsHistoryTbody');
   if(smsHistTbody) smsHistTbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--gray);padding:30px;font-size:13px">발송 내역이 없습니다</td></tr>';
+
+  // ★ 데모 데이터 정리 완료 → 실제 화면 노출 허용
+  document.body.classList.add('app-ready');
 }
 
 // ===== 보호사 렌더링 =====

@@ -8,7 +8,7 @@
 // 시크릿 설정 (Supabase Dashboard → Edge Functions → Secrets):
 //   VAPID_PUBLIC_KEY    = (npx web-push generate-vapid-keys 결과)
 //   VAPID_PRIVATE_KEY   = (위 명령 결과)
-//   VAPID_SUBJECT       = mailto:hello@careon.kr
+//   VAPID_SUBJECT       = mailto:batonpass90@gmail.com
 //   SOLAPI_API_KEY      = (Solapi 콘솔)
 //   SOLAPI_API_SECRET   = (Solapi 콘솔)
 //   SOLAPI_FROM_NUMBER  = 01090329090
@@ -63,7 +63,7 @@ async function tryWebPush(supabase: any, recipientId: string, payload: Payload):
   if (!subs || subs.length === 0) return false;
 
   webpush.setVapidDetails(
-    Deno.env.get("VAPID_SUBJECT") || "mailto:hello@careon.kr",
+    Deno.env.get("VAPID_SUBJECT") || "mailto:batonpass90@gmail.com",
     Deno.env.get("VAPID_PUBLIC_KEY")!,
     Deno.env.get("VAPID_PRIVATE_KEY")!
   );
