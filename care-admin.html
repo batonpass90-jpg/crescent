@@ -994,7 +994,7 @@ window.addEventListener('load', async () => {
       document.querySelector('.sb-pname').textContent = profile.name + ' 센터장';
     }
 
-    // ★ 하드코딩 데이터 전부 초기화
+    // ★ 하드코딩 데이터 전부 초기화 (제일 먼저!)
     clearHardcoded();
 
     // 보호사 목록 로드
@@ -1025,6 +1025,19 @@ window.addEventListener('load', async () => {
     // 미납금 수 통계 카드
     if (statCards[2]) statCards[2].textContent = (unpaid||[]).length + '건';
 
+    // 오늘 방문 건수 로드
+    const today = new Date().toISOString().split('T')[0];
+    const { data: todayVisits } = await sb.from('visits')
+      .select('*').eq('center_id', profile.center_id).eq('scheduled_date', today);
+    const allVisits = todayVisits || [];
+    const doneVisits = allVisits.filter(v => v.status === 'completed');
+    if (statCards[0]) statCards[0].textContent = allVisits.length + '건';
+    if (statCards[1]) statCards[1].textContent = doneVisits.length + '건';
+
+    // 사이드바 라이브 텍스트
+    document.querySelector('.sb-live-txt').textContent =
+      allVisits.length > 0 ? `방문 진행 중 ${allVisits.length}건` : '오늘 방문 없음';
+
   } catch(e) {
     console.error('초기화 오류:', e);
   }
@@ -1032,6 +1045,13 @@ window.addEventListener('load', async () => {
 
 // ===== 하드코딩 초기화 =====
 function clearHardcoded() {
+  // 통계 카드 4개 전부 0으로 초기화
+  const statNums = document.querySelectorAll('.stat-num');
+  if (statNums[0]) statNums[0].textContent = '0건';
+  if (statNums[1]) statNums[1].textContent = '0건';
+  if (statNums[2]) statNums[2].textContent = '0건';
+  if (statNums[3]) statNums[3].textContent = '0명';
+
   // 대시보드 방문 현황 테이블 초기화
   const visitTbody = document.querySelector('#view-dashboard .tbl tbody');
   if (visitTbody) visitTbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--gray);padding:20px;font-size:13px">오늘 등록된 방문이 없습니다</td></tr>';
