@@ -1536,33 +1536,50 @@ async function doLogout() {
           <span style="font-weight:700">잔여</span><span id="chargeRemain" style="font-weight:800;font-size:15px;color:var(--teal)">0건</span>
         </div>
       </div>
-      <!-- 충전 패키지 선택 -->
-      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">충전 패키지 선택</div>
+      <!-- 문자 유형 탭 -->
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">문자 유형 선택</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <div id="chargeTabSms" onclick="setChargeTab('sms')" style="border:2px solid var(--teal);border-radius:12px;padding:14px;cursor:pointer;background:var(--tl);text-align:center;transition:all .15s">
+          <div style="font-size:15px;font-weight:800;color:var(--teal)">단문 SMS</div>
+          <div style="font-size:22px;font-weight:800;color:var(--teal);margin:4px 0">25원<span style="font-size:12px;font-weight:600">/건</span></div>
+          <div style="font-size:10px;color:var(--teal)">90자 이내 · 부가세 포함</div>
+        </div>
+        <div id="chargeTabLms" onclick="setChargeTab('lms')" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;background:#fff;text-align:center;transition:all .15s">
+          <div style="font-size:15px;font-weight:800;color:var(--gray)">장문 LMS</div>
+          <div style="font-size:22px;font-weight:800;color:var(--gray);margin:4px 0">50원<span style="font-size:12px;font-weight:600">/건</span></div>
+          <div style="font-size:10px;color:var(--gray)">2,000자 이내 · 부가세 포함</div>
+        </div>
+      </div>
+      <!-- 수량 패키지 -->
+      <div style="font-size:12px;font-weight:700;color:var(--navy);margin-bottom:10px">충전 수량 선택</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px" id="chargePackages">
-        <div class="charge-pkg" data-count="100" data-price="900" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+        <div class="charge-pkg" data-count="100" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
           <div style="font-size:20px;font-weight:800;color:var(--navy)">100건</div>
-          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">900원</div>
-          <div style="font-size:10px;color:var(--gray)">건당 9원</div>
+          <div class="charge-price" style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">2,500원</div>
+          <div class="charge-unit" style="font-size:10px;color:var(--gray)">건당 25원</div>
         </div>
-        <div class="charge-pkg sel" data-count="300" data-price="2400" onclick="selectChargePkg(this)" style="border:2px solid var(--teal);border-radius:12px;padding:14px;cursor:pointer;background:var(--tl);transition:all .15s;text-align:center">
+        <div class="charge-pkg sel" data-count="300" onclick="selectChargePkg(this)" style="border:2px solid var(--teal);border-radius:12px;padding:14px;cursor:pointer;background:var(--tl);transition:all .15s;text-align:center">
           <div style="font-size:20px;font-weight:800;color:var(--teal)">300건</div>
-          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">2,400원</div>
-          <div style="font-size:10px;color:var(--teal);font-weight:700">🔥 건당 8원 (인기)</div>
+          <div class="charge-price" style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">7,500원</div>
+          <div class="charge-unit" style="font-size:10px;color:var(--teal);font-weight:700">🔥 건당 25원 (인기)</div>
         </div>
-        <div class="charge-pkg" data-count="500" data-price="3500" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+        <div class="charge-pkg" data-count="500" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
           <div style="font-size:20px;font-weight:800;color:var(--navy)">500건</div>
-          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">3,500원</div>
-          <div style="font-size:10px;color:var(--gray)">건당 7원</div>
+          <div class="charge-price" style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">12,500원</div>
+          <div class="charge-unit" style="font-size:10px;color:var(--gray)">건당 25원</div>
         </div>
-        <div class="charge-pkg" data-count="1000" data-price="6000" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
+        <div class="charge-pkg" data-count="1000" onclick="selectChargePkg(this)" style="border:2px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;transition:all .15s;text-align:center">
           <div style="font-size:20px;font-weight:800;color:var(--navy)">1,000건</div>
-          <div style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">6,000원</div>
-          <div style="font-size:10px;color:var(--gray)">건당 6원 (최저가)</div>
+          <div class="charge-price" style="font-size:18px;font-weight:700;color:var(--teal);margin:4px 0">25,000원</div>
+          <div class="charge-unit" style="font-size:10px;color:var(--gray)">건당 25원</div>
         </div>
       </div>
       <div style="margin-top:14px;background:var(--g50);border-radius:10px;padding:12px;display:flex;justify-content:space-between;align-items:center">
-        <span style="font-size:13px;font-weight:700">결제 금액</span>
-        <span style="font-size:20px;font-weight:800;color:var(--teal)" id="chargeTotal">2,400원</span>
+        <div>
+          <div style="font-size:13px;font-weight:700">결제 금액</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px" id="chargeSummaryTxt">단문 300건 · 건당 25원</div>
+        </div>
+        <span style="font-size:22px;font-weight:800;color:var(--teal)" id="chargeTotal">7,500원</span>
       </div>
     </div>
     <div class="modal-footer">
@@ -1801,9 +1818,19 @@ async function doLogout() {
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">문자 내용 <span style="color:var(--gray);font-weight:400;font-size:11px">(최대 90자)</span></label>
+        <label class="form-label">문자 유형</label>
+        <div class="radio-row">
+          <label class="radio-option selected" id="compose-sms" onclick="setSmsComposetype('sms')"><input type="radio" name="composetype" checked> 단문 SMS <span style="color:var(--teal);font-weight:800;margin-left:4px">25원/건</span></label>
+          <label class="radio-option" id="compose-lms" onclick="setSmsComposetype('lms')"><input type="radio" name="composetype"> 장문 LMS <span style="color:var(--gray);font-weight:800;margin-left:4px">50원/건</span></label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">문자 내용 <span style="color:var(--gray);font-weight:400;font-size:11px" id="smsLimitLabel">(단문 최대 90자)</span></label>
         <textarea class="form-input form-textarea" id="smsMsgBody" maxlength="90" style="min-height:100px" placeholder="발송할 문자 내용을 입력하세요..."></textarea>
-        <div style="text-align:right;font-size:11px;color:var(--gray);margin-top:4px"><span id="smsCharCount">0</span>/90자</div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-top:4px">
+          <span id="smsTypeWarning" style="color:var(--amber);font-weight:600;display:none">⚠ 90자 초과 시 장문(50원/건)으로 자동 전환됩니다</span>
+          <span style="margin-left:auto"><span id="smsCharCount">0</span>/<span id="smsCharLimit">90</span>자</span>
+        </div>
       </div>
     </div>
     <div class="modal-footer">
@@ -2100,10 +2127,34 @@ async function loadSmsRecipients(type) {
   }
 }
 
+let _smsComposeType = 'sms';
+function setSmsComposetype(type) {
+  _smsComposeType = type;
+  ['sms','lms'].forEach(t => {
+    document.getElementById('compose-'+t).classList.toggle('selected', t===type);
+  });
+  const body = document.getElementById('smsMsgBody');
+  const limit = type === 'sms' ? 90 : 2000;
+  body.maxLength = limit;
+  document.getElementById('smsCharLimit').textContent = limit;
+  document.getElementById('smsLimitLabel').textContent = type === 'sms' ? '(단문 최대 90자)' : '(장문 최대 2,000자)';
+  document.getElementById('smsTypeWarning').style.display = 'none';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const body = document.getElementById('smsMsgBody');
   if(body) body.addEventListener('input', () => {
-    document.getElementById('smsCharCount').textContent = body.value.length;
+    const len = body.value.length;
+    document.getElementById('smsCharCount').textContent = len;
+    // 90자 초과 → 장문 경고 표시
+    const warning = document.getElementById('smsTypeWarning');
+    if(_smsComposeType === 'sms' && len > 90) {
+      warning.style.display = 'inline';
+      body.maxLength = 2000; // 장문 한도로 확장
+      document.getElementById('smsCharLimit').textContent = '2000';
+    } else if(len <= 90) {
+      warning.style.display = 'none';
+    }
   });
 });
 
@@ -2289,8 +2340,12 @@ function openSmsCompose() {
 }
 
 // ===== 추가 충전 모달 =====
+// 단문 25원 / 장문 50원
+const SMS_UNIT_PRICE = { sms: 25, lms: 50 };
+const SMS_TYPE_NAME  = { sms: '단문 SMS', lms: '장문 LMS' };
+let _chargeType = 'sms'; // 현재 선택된 문자 유형
+
 function openSmsCharge() {
-  // 현재 사용량 현황 반영
   const plan = _smsQuotaData.plan || 'basic';
   const planQuota = SMS_PLAN_QUOTA[plan] || 100;
   const used = _smsQuotaData.used || 0;
@@ -2300,15 +2355,47 @@ function openSmsCharge() {
   document.getElementById('chargePlanQuota').textContent = planQuota + '건';
   document.getElementById('chargeUsed').textContent = used + '건';
   document.getElementById('chargeRemain').textContent = remain + '건';
-  // 기본 선택 패키지
+  _chargeType = 'sms';
+  setChargeTab('sms');
+  // 300건 기본 선택
+  selectChargePkgByCount('300');
+  document.getElementById('smsChargeModal').style.display = 'flex';
+}
+
+function setChargeTab(type) {
+  _chargeType = type;
+  const isSms = type === 'sms';
+  const unitPrice = SMS_UNIT_PRICE[type];
+  // 탭 스타일
+  const tabSms = document.getElementById('chargeTabSms');
+  const tabLms = document.getElementById('chargeTabLms');
+  tabSms.style.border = isSms ? '2px solid var(--teal)' : '2px solid var(--border)';
+  tabSms.style.background = isSms ? 'var(--tl)' : '#fff';
+  tabSms.querySelectorAll('div').forEach(d => d.style.color = isSms ? 'var(--teal)' : 'var(--gray)');
+  tabLms.style.border = !isSms ? '2px solid var(--teal)' : '2px solid var(--border)';
+  tabLms.style.background = !isSms ? 'var(--tl)' : '#fff';
+  tabLms.querySelectorAll('div').forEach(d => d.style.color = !isSms ? 'var(--teal)' : 'var(--gray)');
+  // 패키지 가격 재계산
   document.querySelectorAll('.charge-pkg').forEach(p => {
-    const isSel = p.dataset.count === '300';
+    const cnt = parseInt(p.dataset.count);
+    const price = cnt * unitPrice;
+    p.querySelector('.charge-price').textContent = price.toLocaleString() + '원';
+    p.querySelector('.charge-unit').textContent = `건당 ${unitPrice}원` + (cnt === 300 ? ' 🔥 인기' : '');
+  });
+  // 현재 선택 패키지 총액 갱신
+  const sel = document.querySelector('.charge-pkg.sel');
+  if (sel) updateChargeTotal(parseInt(sel.dataset.count), unitPrice);
+}
+
+function selectChargePkgByCount(count) {
+  document.querySelectorAll('.charge-pkg').forEach(p => {
+    const isSel = p.dataset.count === count;
     p.style.border = isSel ? '2px solid var(--teal)' : '2px solid var(--border)';
     p.style.background = isSel ? 'var(--tl)' : '#fff';
-    p.querySelector('div').style.color = isSel ? 'var(--teal)' : 'var(--navy)';
+    p.querySelectorAll('div')[0].style.color = isSel ? 'var(--teal)' : 'var(--navy)';
+    isSel ? p.classList.add('sel') : p.classList.remove('sel');
   });
-  document.getElementById('chargeTotal').textContent = '2,400원';
-  document.getElementById('smsChargeModal').style.display = 'flex';
+  updateChargeTotal(parseInt(count), SMS_UNIT_PRICE[_chargeType]);
 }
 
 function selectChargePkg(el) {
@@ -2316,20 +2403,27 @@ function selectChargePkg(el) {
     p.style.border = '2px solid var(--border)';
     p.style.background = '#fff';
     p.querySelectorAll('div')[0].style.color = 'var(--navy)';
+    p.classList.remove('sel');
   });
   el.style.border = '2px solid var(--teal)';
   el.style.background = 'var(--tl)';
   el.querySelectorAll('div')[0].style.color = 'var(--teal)';
-  const price = parseInt(el.dataset.price);
-  document.getElementById('chargeTotal').textContent = price.toLocaleString() + '원';
+  el.classList.add('sel');
+  updateChargeTotal(parseInt(el.dataset.count), SMS_UNIT_PRICE[_chargeType]);
+}
+
+function updateChargeTotal(count, unitPrice) {
+  const total = count * unitPrice;
+  document.getElementById('chargeTotal').textContent = total.toLocaleString() + '원';
+  document.getElementById('chargeSummaryTxt').textContent = `${SMS_TYPE_NAME[_chargeType]} ${count}건 · 건당 ${unitPrice}원`;
 }
 
 async function proceedCharge() {
-  const selected = document.querySelector('.charge-pkg[style*="var(--tl)"]');
+  const selected = document.querySelector('.charge-pkg.sel');
   const count = selected ? parseInt(selected.dataset.count) : 300;
-  const price = selected ? parseInt(selected.dataset.price) : 2400;
-  // 실제 결제 연동 전 안내
-  toast(`💳 ${count}건 · ${price.toLocaleString()}원 결제 페이지로 이동합니다.\n(결제 모듈 연동 후 활성화)`, 3000);
+  const unitPrice = SMS_UNIT_PRICE[_chargeType];
+  const total = count * unitPrice;
+  toast(`💳 ${SMS_TYPE_NAME[_chargeType]} ${count}건 · ${total.toLocaleString()}원\n결제 페이지로 이동합니다. (결제 모듈 연동 후 활성화)`, 3000);
   closeModal('smsChargeModal');
 }
 
