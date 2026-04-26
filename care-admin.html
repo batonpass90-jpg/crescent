@@ -242,6 +242,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
     <div class="sb-profile">
       <div class="sb-av">👤</div>
       <div><div class="sb-pname">홍길동 센터장</div><div class="sb-prole">햇살요양센터</div></div>
+      <button onclick="doLogout()" style="margin-left:auto;background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.6);border-radius:6px;padding:4px 8px;font-size:10px;cursor:pointer;font-family:inherit">로그아웃</button>
     </div>
   </div>
 </div>
@@ -955,6 +956,158 @@ function openWorkerModal(name){
       연락처: <strong>${d.phone}</strong><br>현재 상태: <strong style="color:var(--teal)">${d.status}</strong>
     </div>`;
   document.getElementById('workerModal').style.display='flex';
+}
+</script>
+
+<!-- ===== SUPABASE 연동 ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+const SUPA_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
+let sb;
+
+window.addEventListener('load', async () => {
+  try {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+
+    // 로그인 체크 - 없으면 로그인 페이지로
+    const { data: { session } } = await sb.auth.getSession();
+    if (!session) { location.href = 'care-login.html'; return; }
+
+    // 프로필 + 센터 정보 로드
+    const { data: profile } = await sb.from('profiles')
+      .select('*, centers(name, primary_color, phone, address)')
+      .eq('id', session.user.id).single();
+
+    if (profile?.centers) {
+      const c = profile.centers;
+      // 센터명 반영
+      document.querySelector('.sb-brand').textContent = c.name;
+      document.querySelector('.sb-prole').textContent = c.name;
+      document.title = c.name + ' · 센터장 대시보드';
+      // 센터 색상 반영
+      if (c.primary_color) {
+        document.documentElement.style.setProperty('--teal', c.primary_color);
+      }
+    }
+    if (profile?.name) {
+      document.querySelector('.sb-pname').textContent = profile.name + ' 센터장';
+    }
+
+    // 보호사 목록 로드
+    const { data: workers } = await sb.from('workers')
+      .select('*').eq('center_id', profile.center_id).eq('status','active');
+
+    if (workers?.length) {
+      renderWorkers(workers);
+      // 작업지시 모달 드롭다운 업데이트
+      const sel = document.getElementById('wo-worker');
+      sel.innerHTML = workers.map(w => `<option value="${w.id}">${w.name}</option>`).join('');
+    }
+
+    // 수급자 목록 로드
+    const { data: patients } = await sb.from('patients')
+      .select('*').eq('center_id', profile.center_id).eq('status','active');
+
+    if (patients?.length) {
+      // 통계 카드 업데이트
+      document.querySelector('.stat-num:last-of-type') && updateStatCard(patients.length);
+      renderPatients(patients);
+      // 작업지시 모달 드롭다운 업데이트
+      const sel = document.getElementById('wo-patient');
+      sel.innerHTML = patients.map(p => `<option value="${p.id}">${p.name} 어르신</option>`).join('');
+    }
+
+    // 미납금 로드
+    const { data: unpaid } = await sb.from('unpaid_fees')
+      .select('*, patients(name)').eq('center_id', profile.center_id).eq('status','unpaid');
+    if (unpaid?.length) renderUnpaid(unpaid);
+
+  } catch(e) {
+    console.error('초기화 오류:', e);
+  }
+});
+
+// ===== 보호사 렌더링 =====
+function renderWorkers(workers) {
+  const emojis = ['👩‍⚕️','👩','👩‍🦳','👩‍🦱','👨‍⚕️','👨'];
+  const colors = ['#f0fdfa','#fef9c3','#dbeafe','#fce7f3','#f0fdf4','#fef3c7'];
+  // 대시보드 보호사 카드
+  const cont = document.querySelector('#view-dashboard .worker-item')?.parentElement;
+  if (cont) {
+    cont.querySelectorAll('.worker-item').forEach(e=>e.remove());
+    workers.slice(0,4).forEach((w,i) => {
+      cont.insertAdjacentHTML('beforeend', `
+        <div class="worker-item" onclick="openWorkerModal('${w.name}','${w.id}')">
+          <div class="w-av" style="background:${colors[i%colors.length]}">${emojis[i%emojis.length]}</div>
+          <div><div class="w-name">${w.name}</div><div class="w-sub">요양보호사 ${w.experience_years}년</div></div>
+          <span class="w-status w-off">활동중</span>
+        </div>`);
+    });
+  }
+  // 사이드바 라이브 텍스트
+  document.querySelector('.sb-live-txt').textContent = `보호사 ${workers.length}명 활동중`;
+}
+
+// ===== 수급자 수 카드 업데이트 =====
+function updateStatCard(count) {
+  const cards = document.querySelectorAll('.stat-num');
+  if (cards[3]) cards[3].textContent = count + '명';
+}
+
+// ===== 수급자 렌더링 (수급자 관리 뷰) =====
+function renderPatients(patients) {
+  const tbody = document.querySelector('#view-patients .tbl tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  const emojis = ['👴','👵'];
+  const colors = ['#f0fdfa','#fef9c3','#dbeafe','#fce7f3','#f0fdf4'];
+  patients.forEach((p,i) => {
+    tbody.insertAdjacentHTML('beforeend', `
+      <tr onclick="toast('👴 ${p.name} 어르신 상세보기')">
+        <td><div class="avatar-cell"><div class="av-sm" style="background:${colors[i%colors.length]}">${emojis[i%2]}</div><b>${p.name}</b></div></td>
+        <td>${p.grade}등급</td>
+        <td>${p.address||'-'}</td>
+        <td>${p.guardian_name||'-'}</td>
+        <td>${p.guardian_phone||'-'}</td>
+        <td><span class="badge b-ing">이용중</span></td>
+        <td><span class="act-btn" onclick="event.stopPropagation();openNewWoModal()">작업지시</span></td>
+      </tr>`);
+  });
+  // 수급자 수 헤더 업데이트
+  const sub = document.querySelector('#view-patients .sec-hd-sub');
+  if (sub) sub.textContent = `총 ${patients.length}명 등록`;
+}
+
+// ===== 미납금 렌더링 =====
+function renderUnpaid(items) {
+  const total = items.reduce((s,i) => s+i.amount, 0);
+  // 대시보드 미납금 카드
+  const dashUnpaid = document.querySelector('#view-dashboard .unpaid-item')?.parentElement;
+  if (dashUnpaid) {
+    dashUnpaid.querySelectorAll('.unpaid-item').forEach(e=>e.remove());
+    items.slice(0,3).forEach(item => {
+      const days = Math.floor((Date.now()-new Date(item.created_at))/(1000*60*60*24));
+      dashUnpaid.insertAdjacentHTML('afterbegin', `
+        <div class="unpaid-item" onclick="openUnpaidModal('${item.patients?.name}','${item.amount}','${days}')">
+          <div><div class="unpaid-name">${item.patients?.name} 어르신</div><div class="unpaid-days">${days}일 경과</div></div>
+          <div class="unpaid-amt">${item.amount.toLocaleString()}원</div>
+        </div>`);
+    });
+    // 합계 업데이트
+    const totalEl = dashUnpaid.querySelector('strong[style*="red"]');
+    if (totalEl) totalEl.textContent = total.toLocaleString()+'원';
+  }
+  // 통계 카드 미납금 수 업데이트
+  const statCards = document.querySelectorAll('.stat-num');
+  if (statCards[2]) statCards[2].textContent = items.length+'건';
+}
+
+// ===== 로그아웃 =====
+async function doLogout() {
+  if (!sb) return;
+  await sb.auth.signOut();
+  location.href = 'care-login.html';
 }
 </script>
 </body>
