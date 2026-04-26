@@ -10,7 +10,7 @@
 
   // ⚠️ Supabase Functions Secrets에 설정한 VAPID 공개키와 동일해야 함
   // 발급: npx web-push generate-vapid-keys
-  const VAPID_PUBLIC_KEY = 'REPLACE_WITH_YOUR_VAPID_PUBLIC_KEY';
+  const VAPID_PUBLIC_KEY = 'BFNc5bFrOGwxPN-ZQw6hw1O0n_VupW9_TD_NRXzhO0j5syR0SQjCm4HJr020-xSCqvAaGmBfVeKkyUy8_BPNSQ0';
 
   function urlBase64ToUint8Array(base64) {
     const padding = '='.repeat((4 - base64.length % 4) % 4);
