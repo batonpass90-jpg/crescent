@@ -102,6 +102,16 @@ create table if not exists public.patients (
   note           text,
   created_at     timestamptz not null default now()
 );
+-- 기존 테이블 호환 (idempotent ALTER)
+alter table public.patients add column if not exists center_id uuid references public.centers(id) on delete cascade;
+alter table public.patients add column if not exists birth_date date;
+alter table public.patients add column if not exists phone text;
+alter table public.patients add column if not exists guardian_name text;
+alter table public.patients add column if not exists guardian_phone text;
+alter table public.patients add column if not exists address text;
+alter table public.patients add column if not exists care_grade text;
+alter table public.patients add column if not exists status text not null default 'active';
+alter table public.patients add column if not exists note text;
 alter table public.patients enable row level security;
 
 -- 핵심 격리: 반드시 같은 center_id만 접근
@@ -131,6 +141,15 @@ create table if not exists public.workers (
   base_salary integer,
   created_at  timestamptz not null default now()
 );
+-- 기존 테이블 호환 (idempotent ALTER)
+alter table public.workers add column if not exists center_id uuid references public.centers(id) on delete cascade;
+alter table public.workers add column if not exists profile_id uuid references public.profiles(id) on delete set null;
+alter table public.workers add column if not exists phone text;
+alter table public.workers add column if not exists birth_date date;
+alter table public.workers add column if not exists hire_date date;
+alter table public.workers add column if not exists status text not null default 'active';
+alter table public.workers add column if not exists specialty text;
+alter table public.workers add column if not exists base_salary integer;
 alter table public.workers enable row level security;
 
 create policy "workers_select" on public.workers
@@ -162,6 +181,18 @@ create table if not exists public.visits (
   gps_checkout_lng numeric(9,6),
   created_at     timestamptz not null default now()
 );
+-- 기존 테이블 호환 (idempotent ALTER)
+alter table public.visits add column if not exists center_id uuid references public.centers(id) on delete cascade;
+alter table public.visits add column if not exists worker_id uuid references public.workers(id) on delete set null;
+alter table public.visits add column if not exists patient_id uuid references public.patients(id) on delete cascade;
+alter table public.visits add column if not exists start_time time;
+alter table public.visits add column if not exists end_time time;
+alter table public.visits add column if not exists status text not null default 'scheduled';
+alter table public.visits add column if not exists care_log text;
+alter table public.visits add column if not exists gps_checkin_lat numeric(9,6);
+alter table public.visits add column if not exists gps_checkin_lng numeric(9,6);
+alter table public.visits add column if not exists gps_checkout_lat numeric(9,6);
+alter table public.visits add column if not exists gps_checkout_lng numeric(9,6);
 alter table public.visits enable row level security;
 
 create policy "visits_select" on public.visits

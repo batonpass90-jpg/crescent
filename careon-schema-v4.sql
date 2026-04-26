@@ -5,6 +5,13 @@
 -- 3) link_worker_account() RPC: 보호사 가입 시 이메일로 매칭
 -- ================================================================
 
+-- ── 0. workers 테이블 누락 컬럼 안전 추가 (이전 버전 호환) ─────
+alter table public.workers add column if not exists profile_id uuid references public.profiles(id) on delete set null;
+alter table public.workers add column if not exists status text not null default 'active';
+alter table public.workers add column if not exists hire_date date;
+alter table public.workers add column if not exists specialty text;
+alter table public.workers add column if not exists base_salary integer;
+
 -- ── 1. workers.email + 인덱스 ────────────────────────────────────
 alter table public.workers add column if not exists email text;
 create unique index if not exists workers_email_pending_idx
