@@ -1085,6 +1085,9 @@ function clearHardcoded() {
   document.querySelectorAll('#view-dashboard .unpaid-item').forEach(e=>e.remove());
   const totalEl = document.querySelector('#view-dashboard strong[style*="red"]');
   if (totalEl) totalEl.textContent = '0원';
+  // 대시보드 이번달 누계 방문건수 초기화
+  const monthVisitEl = document.querySelector('#view-dashboard strong[style*="teal"]');
+  if (monthVisitEl) monthVisitEl.textContent = '0건';
 
   // 오늘 방문 현황 뷰 초기화
   const visitViewTbody = document.querySelector('#view-visits .tbl tbody');
@@ -1119,7 +1122,13 @@ function clearHardcoded() {
 
   // 매출 현황 초기화
   document.querySelectorAll('#view-revenue .stat-num').forEach(el => el.textContent = '0원');
+  document.querySelectorAll('#view-revenue .stat-change').forEach(el => el.textContent = '-');
   document.querySelectorAll('#view-revenue .bar').forEach(el => el.style.height = '0%');
+  const revenueSub = document.querySelector('#view-revenue .sec-hd-sub');
+  if (revenueSub) revenueSub.textContent = '데이터 없음';
+  // 방문 현황 누계 텍스트
+  const visitCount = document.querySelector('#view-revenue .card strong');
+  if (visitCount) visitCount.textContent = '0건';
 
   // 급여 정산 초기화
   const salaryTbody = document.querySelector('#view-salary .tbl tbody');
