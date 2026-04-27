@@ -142,24 +142,46 @@ async function tryKakaoTalk(supabase: any, payload: Payload): Promise<boolean> {
 }
 
 // ── 3. SMS 시도 (Solapi) ────────────────────────────────────────
-async function trySms(supabase: any, payload: Payload): Promise<boolean> {
-  if (!payload.recipient_phone) return false;
+// 반환: { ok: boolean, error?: string, status?: number, body?: any }
+async function trySms(supabase: any, payload: Payload): Promise<{ ok: boolean; error?: string; status?: number; body?: any }> {
+  if (!payload.recipient_phone) return { ok: false, error: "recipient_phone 누락" };
   const { fromNumber, centerName } = await getCenterInfo(supabase, payload.center_id);
+  if (!fromNumber) return { ok: false, error: "발신번호 미설정 (SOLAPI_FROM_NUMBER 또는 centers.solapi_from_number)" };
+
   const text = `[${centerName}] ${payload.title}\n${payload.body}`;
   const auth = await solapiAuthHeader();
-  const res = await fetch("https://api.solapi.com/messages/v4/send", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Authorization: auth },
-    body: JSON.stringify({
-      message: {
-        to: payload.recipient_phone.replace(/-/g, ""),
-        from: fromNumber,
-        text,
-        type: text.length > 90 ? "LMS" : "SMS"
-      }
-    })
-  });
-  return res.ok;
+  const requestBody = {
+    message: {
+      to: payload.recipient_phone.replace(/-/g, ""),
+      from: fromNumber.replace(/-/g, ""),
+      text,
+      type: text.length > 90 ? "LMS" : "SMS"
+    }
+  };
+
+  console.log("[trySms] 발송 시도:", JSON.stringify({ to: requestBody.message.to, from: requestBody.message.from, type: requestBody.message.type }));
+
+  let res, body;
+  try {
+    res = await fetch("https://api.solapi.com/messages/v4/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: auth },
+      body: JSON.stringify(requestBody)
+    });
+    body = await res.json().catch(() => ({}));
+  } catch (e: any) {
+    console.error("[trySms] fetch 실패:", e.message);
+    return { ok: false, error: `네트워크 오류: ${e.message}` };
+  }
+
+  if (!res.ok) {
+    console.error("[trySms] Solapi 거부:", res.status, JSON.stringify(body));
+    const errMsg = body?.message || body?.errorMessage || `HTTP ${res.status}`;
+    return { ok: false, error: errMsg, status: res.status, body };
+  }
+
+  console.log("[trySms] 성공:", body?.statusCode, body?.statusMessage);
+  return { ok: true, body };
 }
 
 // ── 메인 핸들러 ─────────────────────────────────────────────────
@@ -220,17 +242,20 @@ Deno.serve(async (req) => {
 
   // 3) SMS
   try {
-    const ok = await trySms(supabase, payload);
-    attempts.push({ channel: "sms", status: ok ? "sent" : "failed" });
-    if (ok) {
+    const r = await trySms(supabase, payload);
+    attempts.push({ channel: "sms", status: r.ok ? "sent" : "failed", error: r.error });
+    if (r.ok) {
       await supabase.from("notifications").insert({ ...payload, channel: "sms", status: "sent", sent_at: new Date().toISOString() });
       return new Response(JSON.stringify({ delivered: "sms", attempts }), { status: 200, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
     }
   } catch (e: any) {
+    console.error("[handler] SMS catch:", e.message);
     attempts.push({ channel: "sms", status: "failed", error: e.message });
   }
 
-  // 모두 실패
-  await supabase.from("notifications").insert({ ...payload, channel: "sms", status: "failed", error_message: JSON.stringify(attempts) });
-  return new Response(JSON.stringify({ delivered: null, attempts }), { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
+  // 모두 실패 — 200으로 반환하되 delivered=null + 상세 에러 (Dashboard에서 본문 확인 가능)
+  try {
+    await supabase.from("notifications").insert({ ...payload, channel: "sms", status: "failed", error_message: JSON.stringify(attempts) });
+  } catch (e: any) { console.error("[handler] notifications insert 실패:", e.message); }
+  return new Response(JSON.stringify({ delivered: null, error: "모든 채널 실패", attempts }), { status: 200, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } });
 });
