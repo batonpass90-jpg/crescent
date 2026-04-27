@@ -68,11 +68,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 .feat-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
 .feat-desc{font-size:12px;color:var(--gray);line-height:1.5}
 
-.steps{position:relative;padding-left:32px}
-.steps::before{content:'';position:absolute;left:14px;top:8px;bottom:8px;width:2px;background:linear-gradient(180deg,var(--teal),var(--teal2));border-radius:2px}
-.step{position:relative;margin-bottom:24px}
+.steps{position:relative;padding-left:40px}
+/* 세로선: 동그라미 중심과 정확히 일치하도록 left=11px (동그라미가 0~24px이므로 중심 12px, 선 width 2px이라 left:11) */
+.steps::before{content:'';position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--teal),var(--teal2));border-radius:2px}
+.step{position:relative;margin-bottom:22px;min-height:24px}
 .step:last-child{margin-bottom:0}
-.step-dot{position:absolute;left:-32px;top:2px;width:20px;height:20px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;border:2px solid #fff;box-shadow:0 0 0 2px var(--teal)}
+/* 동그라미: 24x24, left=-40px (step 시작점 기준) → .steps 기준 0px → 중심 12px (선과 일치) */
+.step-dot{position:absolute;left:-40px;top:0;width:24px;height:24px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--teal)}
 .step-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
 .step-desc{font-size:12px;color:var(--gray);line-height:1.5}
 
