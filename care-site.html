@@ -86,6 +86,40 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 
 .footer{background:#f8fafc;padding:24px;font-size:12px;color:var(--gray);line-height:1.8;border-top:1px solid var(--border)}
 .footer strong{color:var(--navy);font-weight:700}
+
+/* Phase 2: 가격표 */
+.price-table{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.price-row{display:grid;grid-template-columns:1fr 1.2fr 1fr;padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.price-row:last-child{border-bottom:none}
+.price-row.head{background:var(--tl);font-weight:700;color:var(--teal);font-size:11px}
+.price-grade{font-weight:700;color:var(--navy)}
+.price-limit{color:var(--gray);font-size:12px}
+.price-self{color:var(--teal);font-weight:800;text-align:right}
+.price-note{font-size:11px;color:var(--gray);background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.6}
+
+/* Phase 2: 후기 */
+.review-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.review-stars{color:#facc15;font-size:14px;margin-bottom:8px}
+.review-text{font-size:13px;color:var(--navy);line-height:1.7;margin-bottom:10px}
+.review-author{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px}
+.review-author::before{content:'—'}
+
+/* Phase 2: 카카오맵 */
+.map-card{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.map-frame{width:100%;height:200px;border:none;display:block}
+.map-info{padding:14px 16px}
+.map-addr{font-size:13px;color:var(--navy);font-weight:600;margin-bottom:4px}
+.map-extra{font-size:11px;color:var(--gray);margin-bottom:10px}
+.map-btn{display:inline-block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none}
+
+/* Phase 2: 응급 안내 */
+.emergency-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:18px;padding:18px;margin-bottom:12px}
+.emergency-ttl{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#78350f;margin-bottom:8px}
+.emergency-desc{font-size:13px;color:#78350f;line-height:1.7;margin-bottom:10px}
+.emergency-btn{display:inline-block;background:#dc2626;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;text-decoration:none}
+
+/* Phase 2: 카카오톡 채널 */
+.btn-kakao-channel{background:#FEE500;color:#1B1B1B;border:none;border-radius:14px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;text-decoration:none}
 </style>
 </head>
 <body>
@@ -218,6 +252,130 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
   </div>
 </div>
 
+<div class="divider"></div>
+
+<!-- ===== Phase 2-1: 가격 / 본인부담금 ===== -->
+<div class="section">
+  <div class="sec-label">Pricing</div>
+  <h2 class="sec-title">이용 비용 안내</h2>
+  <div class="sec-sub">국민건강보험공단 장기요양보험 적용 — 본인부담금 15%만 내시면 됩니다</div>
+
+  <div class="price-table">
+    <div class="price-row head">
+      <div>등급</div><div>월 한도액</div><div>본인부담 15%</div>
+    </div>
+    <div class="price-row">
+      <div class="price-grade">1등급</div>
+      <div class="price-limit">2,069,900원</div>
+      <div class="price-self">월 약 31만원</div>
+    </div>
+    <div class="price-row">
+      <div class="price-grade">2등급</div>
+      <div class="price-limit">1,869,600원</div>
+      <div class="price-self">월 약 28만원</div>
+    </div>
+    <div class="price-row">
+      <div class="price-grade">3등급</div>
+      <div class="price-limit">1,455,800원</div>
+      <div class="price-self">월 약 22만원</div>
+    </div>
+    <div class="price-row">
+      <div class="price-grade">4등급</div>
+      <div class="price-limit">1,341,800원</div>
+      <div class="price-self">월 약 20만원</div>
+    </div>
+    <div class="price-row">
+      <div class="price-grade">5등급</div>
+      <div class="price-limit">1,151,600원</div>
+      <div class="price-self">월 약 17만원</div>
+    </div>
+  </div>
+  <div class="price-note">
+    💡 <b>기초생활수급자</b> 본인부담 면제 · <b>차상위·감경대상자</b> 본인부담 6~9%<br>
+    💡 위 금액은 2026년 기준 월 한도액 100% 이용 시 추정치이며, 실제 본인부담금은 등급·이용 시간·서비스 종류에 따라 달라집니다.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== Phase 2-3: 보호자 후기 ===== -->
+<div class="section">
+  <div class="sec-label">Reviews</div>
+  <h2 class="sec-title">보호자 후기</h2>
+  <div class="sec-sub">실제 가족분들이 남겨주신 솔직한 후기입니다</div>
+
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">
+      "어머니가 무릎이 안 좋아서 외출이 어려운데, 김미영 보호사님이 꼼꼼하게 챙겨주세요.
+      특히 GPS 알림으로 도착 시간 바로 알 수 있어서 직장에서도 안심돼요. 케어일지에 사진까지 올려주셔서 어머니 표정 보면 마음이 놓입니다."
+    </div>
+    <div class="review-author">박○○ 보호자 (어머니 케어, 6개월째)</div>
+  </div>
+
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">
+      "아버지 등급 신청부터 보호사 매칭까지 처음이라 막막했는데, 센터에서 처음부터 끝까지 안내해주셨어요.
+      등급 받기 전에도 신청 방법 친절히 설명해주신 게 인상 깊었습니다."
+    </div>
+    <div class="review-author">정○○ 보호자 (아버지 케어, 3개월째)</div>
+  </div>
+
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">
+      "보호사 교체 부탁드렸는데 다음 주에 바로 새 분을 보내주셨어요. 다른 센터는 한 달씩 걸린다고 하던데, 응대가 정말 빠릅니다."
+    </div>
+    <div class="review-author">최○○ 보호자 (어머니 케어, 1년째)</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== Phase 2-4: 위치 / 카카오맵 ===== -->
+<div class="section">
+  <div class="sec-label">Location</div>
+  <h2 class="sec-title">센터 위치</h2>
+  <div class="sec-sub">언제든 직접 방문하셔서 상담 받으실 수 있습니다</div>
+
+  <div class="map-card">
+    <iframe class="map-frame" id="kakaoMap"
+      src="about:blank"
+      title="센터 위치 지도"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade"></iframe>
+    <div class="map-info">
+      <div class="map-addr" data-bind="address">주소 정보 로딩 중...</div>
+      <div class="map-extra">서비스 지역: <span data-bind="area">분당구 / 수정구 / 중원구</span></div>
+      <a href="#" class="map-btn" id="mapDirBtn" target="_blank" rel="noopener">🗺️ 카카오맵 길찾기</a>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== Phase 2-6: 응급 / 야간 안내 ===== -->
+<div class="section">
+  <div class="sec-label">Emergency</div>
+  <h2 class="sec-title">응급 상황 안내</h2>
+  <div class="sec-sub">평일 업무 시간 외에도 긴급 대응 가능합니다</div>
+
+  <div class="emergency-card">
+    <div class="emergency-ttl">🚨 24시간 응급 핫라인</div>
+    <div class="emergency-desc">
+      야간·주말·공휴일 어르신께 응급 상황 발생 시 즉시 전화 연결됩니다.<br>
+      당직 직원이 보호사 출동 또는 119 동시 연락을 도와드립니다.
+    </div>
+    <a href="#" class="emergency-btn" id="emergencyBtn">📞 응급 핫라인 전화하기</a>
+  </div>
+
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:12px;color:var(--gray);line-height:1.7">
+    <b style="color:var(--navy)">📌 일반 상담은 평일 09:00 ~ 18:00 / 토요일 09:00 ~ 13:00</b><br>
+    그 외 시간엔 카카오톡 채널 또는 응급 핫라인 이용 부탁드립니다.
+  </div>
+</div>
+
 <div class="cta-sec">
   <div class="cta-tag">✨ 지금 바로 시작하세요</div>
   <div class="cta-ttl">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
@@ -231,7 +389,12 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 <div class="footer">
   <strong data-bind="name">CareOn 요양센터</strong><br>
   <span data-bind="address">주소 정보 로딩 중...</span><br>
+  대표자: <span data-bind="rep">-</span> · 사업자번호: <span data-bind="biznum">-</span><br>
+  장기요양기관 지정번호: <span data-bind="ltcnum">-</span><br>
   TEL: <a data-bind="phone" id="footerPhone" href="#" style="color:inherit;text-decoration:none">대표번호</a>
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:10px;color:#9ca3af">
+    Powered by <a href="https://crescentstudio.co.kr" style="color:var(--teal);text-decoration:none">CareOn</a> · 방문요양 통합 플랫폼
+  </div>
 </div>
 </main>
 
@@ -425,6 +588,50 @@ function setOgMeta(prop, content){
   setOgMeta('og:title', `${center.name} · 요양 통합 플랫폼 CareOn`);
   if(center.description) setOgMeta('og:description', center.description);
   setOgMeta('og:url', location.href);
+
+  // Phase 2 추가 data-bind (사업자등록 정보)
+  document.querySelectorAll('[data-bind]').forEach(el => {
+    const k = el.getAttribute('data-bind');
+    if(k === 'rep')    el.textContent = center.representative_name || '-';
+    if(k === 'biznum') el.textContent = center.business_number || '-';
+    if(k === 'ltcnum') el.textContent = center.ltc_license_number || '-';
+    if(k === 'area')   el.textContent = center.service_area || '-';
+  });
+
+  // 카카오맵 (좌표 있으면 임베드, 없으면 주소 텍스트만)
+  if(center.location_lat && center.location_lng){
+    const mapFrame = document.getElementById('kakaoMap');
+    if(mapFrame){
+      // 카카오맵 정적 임베드 URL
+      mapFrame.src = `https://map.kakao.com/?urlX=${center.location_lng}&urlY=${center.location_lat}&urlLevel=3&map_type=TYPE_MAP&itemId=&map_attribute=ROADVIEW`;
+    }
+  }
+  // 카카오맵 길찾기 버튼 (주소 기반)
+  const mapBtn = document.getElementById('mapDirBtn');
+  if(mapBtn && center.address){
+    mapBtn.href = `https://map.kakao.com/link/to/${encodeURIComponent(center.name)},${center.location_lat||0},${center.location_lng||0}`;
+    if(!center.location_lat){
+      // 좌표 없으면 주소 검색
+      mapBtn.href = `https://map.kakao.com/link/search/${encodeURIComponent(center.address)}`;
+    }
+  }
+
+  // 응급 핫라인 버튼
+  const emergBtn = document.getElementById('emergencyBtn');
+  if(emergBtn){
+    const emergPhone = center.emergency_phone || center.phone;
+    if(emergPhone) emergBtn.href = 'tel:' + emergPhone.replace(/-/g,'');
+    else emergBtn.style.display = 'none';
+  }
+
+  // 카카오톡 채널 버튼 (kakao_channel_url 있으면 직접 연결)
+  const kakaoBtn = document.querySelector('.btn-kakao');
+  if(center.kakao_channel_url){
+    kakaoBtn.onclick = () => window.open(center.kakao_channel_url, '_blank');
+  }
+
+  // 센터장 휴대폰 (상담 신청 시 알림 발송용)
+  window._centerOwnerPhone = center.phone;
 
   // footer 전화번호 링크 동작
   const fp = document.getElementById('footerPhone');
