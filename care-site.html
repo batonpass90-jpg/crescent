@@ -43,8 +43,8 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
 .hero-stats{display:flex;gap:0;padding:24px 24px 0;border-top:1px solid rgba(255,255,255,.1);margin-top:28px}
 .hero-stat{flex:1;text-align:center}
 .hero-stat+.hero-stat{border-left:1px solid rgba(255,255,255,.15)}
-.hs-num{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;color:#ccfbf1}
-.hs-label{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px}
+.hs-num{font-size:28px;font-weight:700;color:#ccfbf1;line-height:1}
+.hs-label{font-size:10px;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.4}
 
 .marquee{background:var(--tl);padding:12px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teal);font-weight:600;overflow:hidden;white-space:nowrap}
 .marquee-inner{display:flex;gap:40px;animation:marquee 18s linear infinite}
@@ -109,9 +109,9 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
     <button class="btn-ghost">센터 둘러보기</button>
   </div>
   <div class="hero-stats">
-    <div class="hero-stat"><div class="hs-num">8년</div><div class="hs-label">운영 경력</div></div>
-    <div class="hero-stat"><div class="hs-num">24명</div><div class="hs-label">전문 보호사</div></div>
-    <div class="hero-stat"><div class="hs-num">186명</div><div class="hs-label">현재 수급자</div></div>
+    <div class="hero-stat"><div class="hs-num">🛰️</div><div class="hs-label">GPS<br>실시간 확인</div></div>
+    <div class="hero-stat"><div class="hs-num">📲</div><div class="hs-label">가족 앱<br>케어 알림</div></div>
+    <div class="hero-stat"><div class="hs-num">🏥</div><div class="hs-label">국가자격증<br>보호사 배치</div></div>
   </div>
 </div>
 
@@ -247,26 +247,101 @@ function toast(msg,duration=2500){
 }
 function showModal(){
   const ov=document.createElement('div');
+  ov.id='consultationModal';
   ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center';
   ov.innerHTML=`<div style="background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:430px">
     <div style="text-align:center;margin-bottom:20px">
       <div style="font-size:18px;font-weight:800;color:#0F1B2D;margin-bottom:4px">입소 상담 신청</div>
       <div style="font-size:13px;color:#6b7280">24시간 이내 연락드립니다</div>
     </div>
+    <div id="consultMsg" style="display:none;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
     <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-      <input placeholder="어르신 성함" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
-      <input placeholder="보호자 연락처" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
-      <select style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#6b7280;background:#fff">
+      <input id="cf-name" placeholder="어르신 성함" maxlength="20" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <input id="cf-phone" type="tel" placeholder="보호자 연락처 (010-0000-0000)" maxlength="13" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <select id="cf-grade" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;background:#fff">
         <option value="">장기요양 등급 선택</option>
-        <option>1등급</option><option>2등급</option><option>3등급</option><option>4등급</option><option>5등급</option><option>등급 미신청 (신청 방법 안내 원함)</option>
+        <option value="1등급">1등급</option>
+        <option value="2등급">2등급</option>
+        <option value="3등급">3등급</option>
+        <option value="4등급">4등급</option>
+        <option value="5등급">5등급</option>
+        <option value="미신청">등급 미신청 (신청 방법 안내 원함)</option>
       </select>
+      <textarea id="cf-msg" rows="2" placeholder="요청사항이 있으면 적어주세요 (선택)" maxlength="500" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;resize:none"></textarea>
     </div>
+    <div style="font-size:11px;color:#9ca3af;line-height:1.5;margin-bottom:14px">상담 신청 시 개인정보가 해당 센터로 전달되며, 24시간 내 연락드립니다.</div>
     <button id="submitBtn" style="background:#0D9488;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;width:100%;cursor:pointer;font-family:inherit;margin-bottom:10px">상담 신청하기</button>
     <button id="cancelBtn" style="background:#f8fafc;color:#6b7280;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:600;width:100%;cursor:pointer;font-family:inherit">취소</button>
   </div>`;
-  ov.querySelector('#submitBtn').onclick=()=>{ov.remove();toast('📞 상담 신청 완료! 곧 연락드릴게요.',3000);};
-  ov.querySelector('#cancelBtn').onclick=()=>ov.remove();
-  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+
+  // 전화번호 자동 하이픈
+  const phoneInput = ov.querySelector('#cf-phone');
+  phoneInput.addEventListener('input', e => {
+    let v = e.target.value.replace(/[^0-9]/g, '');
+    if (v.length > 3 && v.length <= 7) v = v.replace(/(\d{3})(\d+)/, '$1-$2');
+    else if (v.length > 7) v = v.replace(/(\d{3})(\d{3,4})(\d+)/, '$1-$2-$3');
+    e.target.value = v;
+  });
+
+  ov.querySelector('#submitBtn').onclick = async () => {
+    const name = ov.querySelector('#cf-name').value.trim();
+    const phone = ov.querySelector('#cf-phone').value.trim();
+    const grade = ov.querySelector('#cf-grade').value;
+    const msg = ov.querySelector('#cf-msg').value.trim();
+    const errEl = ov.querySelector('#consultMsg');
+    const showErr = (text) => {
+      errEl.textContent = text;
+      errEl.style.cssText = 'display:block;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;background:#fee2e2;color:#dc2626';
+    };
+
+    if (name.length < 2) return showErr('어르신 성함을 입력해주세요');
+    const phoneNorm = phone.replace(/-/g, '');
+    if (!/^01[016789][0-9]{7,8}$/.test(phoneNorm)) return showErr('연락처 형식을 확인해주세요');
+
+    const slug = CenterRouter.detectSlug();
+    if (!slug) return showErr('센터 정보를 찾을 수 없습니다. URL을 확인해주세요');
+
+    const btn = ov.querySelector('#submitBtn');
+    btn.disabled = true; btn.textContent = '신청 중...';
+
+    const sb = window.supabase.createClient(
+      'https://swsemxzgzcwwrhowuaqz.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
+    );
+    const { data, error } = await sb.rpc('submit_consultation', {
+      p_center_slug: slug,
+      p_patient_name: name,
+      p_guardian_phone: phoneNorm,
+      p_care_grade: grade || null,
+      p_message: msg || null,
+      p_source_url: location.href
+    });
+
+    if (error || !data?.success) {
+      btn.disabled = false; btn.textContent = '상담 신청하기';
+      return showErr(data?.error || error?.message || '신청 실패. 잠시 후 다시 시도해주세요');
+    }
+
+    // 센터장에게 알림 발송 (Edge Function)
+    try {
+      await sb.functions.invoke('send-notification', {
+        body: {
+          type: 'new_consultation',
+          title: '🆕 신규 상담 신청',
+          body: `${name} 어르신 (${grade || '등급 미정'}) · ${phone}\n${msg ? '메모: ' + msg.slice(0, 50) : ''}`,
+          recipient_phone: window._centerOwnerPhone || null,
+          center_id: data.center_id,
+          url: '/care-admin.html?view=consultations'
+        }
+      });
+    } catch(e) { console.warn('알림 발송 실패:', e); }
+
+    ov.remove();
+    toast('✅ 상담 신청이 접수되었습니다!\n24시간 내 연락드릴게요.', 4000);
+  };
+
+  ov.querySelector('#cancelBtn').onclick = () => ov.remove();
+  ov.onclick = e => { if (e.target === ov) ov.remove(); };
   document.body.appendChild(ov);
 }
 document.querySelector('.nav-btn').onclick=()=>showModal();
@@ -295,18 +370,16 @@ document.querySelector('.btn-kakao').onclick=()=>{
     toast('💬 카카오톡 앱에서 직접 검색해주세요');
   }
 };
+// 서비스 카드 클릭 → 상담 신청 모달 (실제 전환 유도)
 document.querySelectorAll('.svc-card').forEach(card=>{
   card.style.cursor='pointer';
-  card.onclick=()=>toast('🏠 '+card.querySelector('.svc-ttl').textContent+' 자세히 알아보기');
+  card.setAttribute('role','button');
+  card.setAttribute('tabindex','0');
+  card.onclick = () => showModal();
+  card.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); showModal(); }});
 });
-document.querySelectorAll('.feat-card').forEach(card=>{
-  card.style.cursor='pointer';
-  card.onclick=()=>toast('✨ '+card.querySelector('.feat-ttl').textContent);
-});
-document.querySelectorAll('.step').forEach(step=>{
-  step.style.cursor='pointer';
-  step.onclick=()=>toast('👣 '+step.querySelector('.step-ttl').textContent);
-});
+// feature/step 카드는 정보 전달용 - 클릭 인터랙션 제거 (가짜 클릭 제거)
+// 모바일에서 hover 효과만 살짝
 
 // ===== 센터 정보 동적 로딩 (slug 기반) =====
 let _centerPhone = '';
