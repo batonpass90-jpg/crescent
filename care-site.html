@@ -555,24 +555,30 @@ document.querySelector('.btn-white').onclick=()=>showModal();
 document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
 
 // ===== 앱 진입점 (slug 유지) =====
-function appUrl(path){
+function appUrl(path, extraParams){
   const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
-  return slug ? `${path}?c=${encodeURIComponent(slug)}` : path;
+  const params = new URLSearchParams();
+  if(slug) params.set('c', slug);
+  if(extraParams) Object.entries(extraParams).forEach(([k,v]) => v && params.set(k, v));
+  const qs = params.toString();
+  return qs ? `${path}?${qs}` : path;
 }
 
 // 상단 nav 로그인 버튼 → care-login.html (역할 자동 라우팅)
 document.getElementById('navLoginBtn').onclick = () => location.href = appUrl('/care-login.html');
 
-// 기존 사용자 카드 (보호자/보호사/센터장)
-document.getElementById('goCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-customer.html'); };
-document.getElementById('goWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-worker.html'); };
-document.getElementById('goAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-admin.html'); };
+// 기존 사용자 카드: care-login.html로 보내되, role 힌트 전달
+// (이미 로그인되어 있으면 redirectByRole이 즉시 본인 앱으로 라우팅)
+// (미가입 사용자가 가입 탭 누르면 자동으로 해당 역할 선택됨)
+document.getElementById('goCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'guardian'}); };
+document.getElementById('goWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'worker'}); };
+document.getElementById('goAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'admin'}); };
 
-// footer 링크
-document.getElementById('footerCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-customer.html'); };
-document.getElementById('footerWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-worker.html'); };
-document.getElementById('footerAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-admin.html'); };
-document.getElementById('footerSignup').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html'); };
+// footer 링크 (동일 정책)
+document.getElementById('footerCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'guardian'}); };
+document.getElementById('footerWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'worker'}); };
+document.getElementById('footerAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'admin'}); };
+document.getElementById('footerSignup').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {tab:'signup'}); };
 document.getElementById('btnCallCenter').onclick=async ()=>{
   // 로드 완료 전이면 잠깐 대기
   if(!_centerLoaded){

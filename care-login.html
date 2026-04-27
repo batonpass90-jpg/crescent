@@ -274,15 +274,40 @@ window.addEventListener('load', async () => {
       'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
     );
 
-    // URL의 invite 파라미터 처리 → 보호자 가입 모드 자동 전환
+    // URL 파라미터 처리
     const qs = new URLSearchParams(location.search);
     const inviteFromUrl = qs.get('invite');
+    const roleHint = qs.get('role');     // care-site의 진입 카드에서 전달
+    const tabHint  = qs.get('tab');      // 'signup'이면 가입 탭으로 즉시 이동
+
+    // invite 코드가 있으면 자동으로 보호자 가입 모드
     if (inviteFromUrl) {
       switchTab('signup');
       selectRole('guardian');
       const inviteInput = document.getElementById('inviteCode');
       inviteInput.value = inviteFromUrl.toUpperCase();
       validateInvite(inviteFromUrl.toUpperCase());
+    }
+    // role 힌트만 있는 경우: 가입 탭의 역할 사전 선택 (탭 전환은 안 함, 로그인이 우선)
+    else if (roleHint && ['admin', 'worker', 'guardian'].includes(roleHint)) {
+      // 가입 탭 영역의 역할 버튼은 미리 선택해두기 (사용자가 가입 탭 누르면 즉시 보임)
+      selectRole(roleHint);
+      // ?tab=signup 명시되어 있을 때만 가입 탭으로 즉시 이동
+      if (tabHint === 'signup') switchTab('signup');
+      // 안내 메시지 표시
+      const roleNames = { admin: '센터장', worker: '보호사', guardian: '보호자' };
+      const tabsEl = document.querySelector('.tabs');
+      if (tabsEl && !document.getElementById('roleHintBanner')) {
+        const banner = document.createElement('div');
+        banner.id = 'roleHintBanner';
+        banner.style.cssText = 'background:var(--tl);color:var(--teal);font-size:12px;font-weight:600;padding:10px 14px;border-radius:10px;margin-bottom:14px;line-height:1.5';
+        banner.innerHTML = `🔐 <b>${roleNames[roleHint]}</b>로 진입하시려면 로그인하세요.<br><span style="font-size:11px;font-weight:400;color:var(--gray)">처음이신가요? 위 "센터 신규 등록" 탭으로 이동</span>`;
+        tabsEl.parentNode.insertBefore(banner, tabsEl.nextSibling);
+      }
+    }
+    // ?tab=signup만 있는 경우 (footer "신규 가입" 링크)
+    else if (tabHint === 'signup') {
+      switchTab('signup');
     }
 
     // 초대 코드 입력 시 실시간 검증
