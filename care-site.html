@@ -23,11 +23,23 @@ html{scroll-behavior:smooth}
 body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;color:#0F1B2D;max-width:430px;margin:0 auto;overflow-x:hidden}
 :root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--teal-dark:#0F766E;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e}
 
-.nav{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
+.nav{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 20px}
 .nav-logo{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--navy)}
 .nav-logo span{color:var(--teal)}
 .nav-badge{background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #99f6e4;margin-left:6px}
-.nav-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:8px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-login{background:transparent;color:var(--gray);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 10px}
+.nav-login:hover{color:var(--teal)}
+.nav-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+
+/* 기존 사용자용 진입 카드 */
+.users-card{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:1px solid #5eead4;border-radius:18px;padding:18px;margin:14px 24px}
+.users-ttl{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.users-desc{font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5}
+.users-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.users-btn{background:#fff;border:1px solid var(--teal);color:var(--teal);border-radius:10px;padding:10px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;transition:all .15s}
+.users-btn:hover{background:var(--teal);color:#fff}
+.users-btn-icon{font-size:18px;display:block;margin-bottom:3px}
 
 .hero{margin-top:56px;background:linear-gradient(160deg,#042f2e 0%,#134e4a 45%,#0f766e 80%,var(--teal2) 100%);min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 40px;position:relative;overflow:hidden}
 .hero-bg{position:absolute;font-family:'Noto Serif KR',serif;font-size:110px;color:rgba(255,255,255,.04);top:20px;right:-10px;line-height:1;pointer-events:none;white-space:nowrap}
@@ -131,7 +143,10 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
     <span class="nav-logo" data-bind="name">CareOn 요양센터</span>
     <span class="nav-badge">CareOn</span>
   </div>
-  <button class="nav-btn">입소 문의</button>
+  <div class="nav-right">
+    <button class="nav-login" id="navLoginBtn">로그인</button>
+    <button class="nav-btn">입소 문의</button>
+  </div>
 </nav>
 
 <main>
@@ -155,6 +170,26 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
   <div class="marquee-inner">
     <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
     <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
+  </div>
+</div>
+
+<!-- 기존 사용자 진입 카드 (보호자/보호사/센터장) -->
+<div class="users-card">
+  <div class="users-ttl">🔐 이미 이용 중이신 분</div>
+  <div class="users-desc">아래에서 본인 역할을 선택해 로그인하세요</div>
+  <div class="users-btns">
+    <a href="#" class="users-btn" id="goCustomer">
+      <span class="users-btn-icon">👨‍👩‍👧</span>
+      보호자 앱
+    </a>
+    <a href="#" class="users-btn" id="goWorker">
+      <span class="users-btn-icon">👩‍⚕️</span>
+      보호사 앱
+    </a>
+    <a href="#" class="users-btn" id="goAdmin">
+      <span class="users-btn-icon">📊</span>
+      센터장
+    </a>
   </div>
 </div>
 
@@ -394,7 +429,13 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;c
   대표자: <span data-bind="rep">-</span> · 사업자번호: <span data-bind="biznum">-</span><br>
   장기요양기관 지정번호: <span data-bind="ltcnum">-</span><br>
   TEL: <a data-bind="phone" id="footerPhone" href="#" style="color:inherit;text-decoration:none">대표번호</a>
-  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);font-size:10px;color:#9ca3af">
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;font-size:11px">
+    <a href="#" id="footerCustomer" style="color:var(--teal);text-decoration:none;font-weight:600">보호자 앱</a>
+    <a href="#" id="footerWorker" style="color:var(--teal);text-decoration:none;font-weight:600">보호사 앱</a>
+    <a href="#" id="footerAdmin" style="color:var(--teal);text-decoration:none;font-weight:600">센터장</a>
+    <a href="#" id="footerSignup" style="color:var(--teal);text-decoration:none;font-weight:600">신규 가입</a>
+  </div>
+  <div style="margin-top:10px;font-size:10px;color:#9ca3af">
     Powered by <a href="https://crescentstudio.co.kr" style="color:var(--teal);text-decoration:none">CareOn</a> · 방문요양 통합 플랫폼
   </div>
 </div>
@@ -512,6 +553,26 @@ function showModal(){
 document.querySelector('.nav-btn').onclick=()=>showModal();
 document.querySelector('.btn-white').onclick=()=>showModal();
 document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
+
+// ===== 앱 진입점 (slug 유지) =====
+function appUrl(path){
+  const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
+  return slug ? `${path}?c=${encodeURIComponent(slug)}` : path;
+}
+
+// 상단 nav 로그인 버튼 → care-login.html (역할 자동 라우팅)
+document.getElementById('navLoginBtn').onclick = () => location.href = appUrl('/care-login.html');
+
+// 기존 사용자 카드 (보호자/보호사/센터장)
+document.getElementById('goCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-customer.html'); };
+document.getElementById('goWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-worker.html'); };
+document.getElementById('goAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-admin.html'); };
+
+// footer 링크
+document.getElementById('footerCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-customer.html'); };
+document.getElementById('footerWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-worker.html'); };
+document.getElementById('footerAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-admin.html'); };
+document.getElementById('footerSignup').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html'); };
 document.getElementById('btnCallCenter').onclick=async ()=>{
   // 로드 완료 전이면 잠깐 대기
   if(!_centerLoaded){
