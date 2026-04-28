@@ -5,6 +5,10 @@
 -- 3) pg_cron job: 매일 19:00 KST = 10:00 UTC에 send-daily-report 트리거
 -- ================================================================
 
+-- ── 0. 의존 컬럼 안전장치 (이전 schema 부분 실행 케이스 대응) ───
+alter table public.visits add column if not exists care_log text;
+alter table public.visits add column if not exists photos jsonb default '[]'::jsonb;
+
 -- ── 1. notification_settings 테이블 ──────────────────────────────
 create table if not exists public.notification_settings (
   user_id              uuid primary key references auth.users(id) on delete cascade,
@@ -68,14 +72,19 @@ language sql security definer stable as $$
     count(*) filter (where v.status = 'completed')             as completed_count,
     -- 체크리스트 5종 × 완료된 visit 수 = 총 체크 가능 수
     count(*) filter (where v.status = 'completed') * 5         as total_checks,
-    -- 실제 완료한 체크 수 (care_log JSONB에서 done:true 카운트)
+    -- 실제 완료한 체크 수 (care_log가 빈 문자열/NULL이어도 안전하게)
     coalesce(sum(case when v.status = 'completed' then
-      (select count(*) from jsonb_each(coalesce(v.care_log::jsonb->'checks', '{}'::jsonb)) e
+      (select count(*) from jsonb_each(
+         coalesce(
+           nullif(v.care_log, '')::jsonb->'checks',
+           '{}'::jsonb
+         )
+      ) e
        where (e.value->>'done')::boolean is true)
     else 0 end), 0)                                            as done_checks,
     string_agg(distinct w.name, ', ')                          as worker_names,
     bool_or(jsonb_array_length(coalesce(v.photos, '[]'::jsonb)) > 0) as has_photos,
-    string_agg(distinct nullif(v.care_log::jsonb->>'memo', ''), ' / ') as memos
+    string_agg(distinct nullif(coalesce(nullif(v.care_log,'')::jsonb,'{}'::jsonb)->>'memo', ''), ' / ') as memos
   from public.patient_guardians pg
   join public.profiles g on g.id = pg.guardian_id
   join public.patients p on p.id = pg.patient_id
