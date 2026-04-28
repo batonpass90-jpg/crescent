@@ -149,7 +149,7 @@ story.append(Spacer(1, 14))
 story.append(Paragraph("🎬 데모 (각 시점별 직접 진입)", H2))
 demo_data = [
     ["시점", "URL", "설명"],
-    ["🌐 마케팅 (허브)", "care-site-demo.html", "방문자 시점"],
+    ["🌐 센터 홈페이지 (허브)", "care-site-demo.html", "방문자 시점 — 영업 시 이거 1개만 공유"],
     ["📊 센터장", "care-admin-demo.html", "햇살요양센터 — 8건 중 3 완료"],
     ["👩‍⚕️ 보호사", "care-worker-demo.html", "김미영 보호사 — 박종철 댁 방문중"],
     ["👨‍👩‍👧 보호자", "care-customer-demo.html", "박지영(자녀) — 케어 실시간 확인"],

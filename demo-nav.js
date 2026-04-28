@@ -9,7 +9,7 @@
   'use strict';
 
   const DEMOS = [
-    { id: 'site',     icon: '🌐', label: '마케팅 사이트', sub: '신규 가족 진입',     url: '/care-site-demo.html' },
+    { id: 'site',     icon: '🌐', label: '센터 홈페이지',  sub: '신규 가족 진입',     url: '/care-site-demo.html' },
     { id: 'customer', icon: '👨‍👩‍👧', label: '보호자 앱',    sub: '박지영(자녀) 시점',    url: '/care-customer-demo.html' },
     { id: 'worker',   icon: '👩‍⚕️', label: '보호사 앱',    sub: '김미영 보호사 시점',   url: '/care-worker-demo.html' },
     { id: 'admin',    icon: '📊', label: '센터장 대시보드', sub: '홍길동 센터장 시점',  url: '/care-admin-demo.html' }
