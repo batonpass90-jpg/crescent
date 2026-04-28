@@ -242,6 +242,32 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
       <div><b>소속 센터</b> <span id="meCenter" style="color:var(--gray);margin-left:8px">-</span></div>
     </div>
   </div>
+
+  <!-- 이번달 근무·급여 -->
+  <div class="card">
+    <div class="card-ttl"><span class="card-ttl-txt">💼 이번달 근무 · 예상 급여</span><span id="meMonthLabel" style="font-size:11px;color:var(--gray);font-weight:600">-</span></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div style="background:var(--tl);padding:14px;border-radius:12px;text-align:center">
+        <div id="meVisitCount" style="font-size:22px;font-weight:800;color:var(--teal)">-</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">방문 완료</div>
+      </div>
+      <div style="background:#fef9c3;padding:14px;border-radius:12px;text-align:center">
+        <div id="meHours" style="font-size:22px;font-weight:800;color:#92400e">-</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:2px">근무 시간</div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1.5px solid var(--teal);border-radius:12px;padding:14px;text-align:center">
+      <div style="font-size:11px;color:var(--gray);margin-bottom:4px">예상 급여 (<span id="meSalaryType">시급제</span>)</div>
+      <div id="meSalary" style="font-size:24px;font-weight:800;color:var(--teal)">-</div>
+      <div id="meSalaryDetail" style="font-size:11px;color:var(--gray);margin-top:4px">-</div>
+    </div>
+    <div style="font-size:11px;color:var(--gray);margin-top:10px;line-height:1.6;background:#f8fafc;padding:10px;border-radius:8px">
+      💡 위 금액은 자동 계산된 <b>예상치</b>입니다. 실제 급여는 매월 정산 후 확정됩니다.<br>
+      💡 시급/단가가 다르거나 누락된 시간이 있으면 아래 "변경 요청"으로 알려주세요.
+    </div>
+    <button class="complete-btn" style="background:#fff;color:var(--teal);box-shadow:none;border:1.5px solid var(--teal);margin-top:12px;padding:12px;font-size:13px" onclick="openSalaryInquiry()">✏️ 변경 요청 (센터장에게 문의)</button>
+  </div>
+
   <button class="complete-btn" style="background:var(--gray);box-shadow:none;margin-top:14px" onclick="enablePush()">🔔 알림 활성화</button>
   <button class="complete-btn" style="background:var(--red);box-shadow:none;margin-top:8px" onclick="doLogout()">🚪 로그아웃</button>
 </div>
@@ -552,11 +578,93 @@ async function loadMyPatients(){
 }
 
 // ===== 내 정보 =====
-function renderMyInfo(){
+async function renderMyInfo(){
   document.getElementById('meName').textContent = _profile?.name || '-';
   document.getElementById('mePhone').textContent = _profile?.phone || '-';
   document.getElementById('meHire').textContent = _worker?.hire_date || '-';
   document.getElementById('meCenter').textContent = _profile?.centers?.name || '-';
+
+  // 이번달 통계 RPC 호출
+  const month = new Date().toISOString().slice(0,7);
+  document.getElementById('meMonthLabel').textContent = `${month.slice(5)}월`;
+
+  const { data, error } = await sb.rpc('get_my_monthly_stats', { p_month: month });
+  if(error || !data || data.error){
+    document.getElementById('meVisitCount').textContent = '-';
+    document.getElementById('meHours').textContent = '-';
+    document.getElementById('meSalary').textContent = '조회 실패';
+    return;
+  }
+  document.getElementById('meVisitCount').textContent = (data.completed_count||0) + '건';
+  document.getElementById('meHours').textContent = (data.total_hours||0) + '시간';
+  document.getElementById('meSalary').textContent = (data.estimated_salary||0).toLocaleString() + '원';
+
+  const typeLabel = { hourly:'시급제', per_visit:'방문당', monthly:'월급제' }[data.salary_type] || '미설정';
+  document.getElementById('meSalaryType').textContent = typeLabel;
+
+  let detail = '';
+  if(data.salary_type === 'hourly')        detail = `시급 ${(data.hourly_rate||0).toLocaleString()}원 × ${data.total_hours}시간`;
+  else if(data.salary_type === 'per_visit') detail = `방문당 ${(data.per_visit_rate||0).toLocaleString()}원 × ${data.completed_count}건`;
+  else if(data.salary_type === 'monthly')   detail = `월급 (기본급 기준)`;
+  else                                       detail = '센터장이 급여 형태를 설정하지 않았습니다';
+  document.getElementById('meSalaryDetail').textContent = detail;
+}
+
+// ===== 급여 변경 요청 모달 =====
+function openSalaryInquiry(){
+  const month = new Date().toISOString().slice(0,7);
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML = `<div style="background:#fff;border-radius:24px 24px 0 0;padding:24px 20px 28px;width:100%;max-width:430px">
+    <div style="font-size:17px;font-weight:800;margin-bottom:4px;text-align:center">✏️ 급여 변경 요청</div>
+    <div style="font-size:12px;color:var(--gray);text-align:center;margin-bottom:14px">${month.slice(0,4)}년 ${month.slice(5)}월 정산 관련</div>
+    <div id="salInqMsg" style="display:none;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:8px">아래 내용 중 해당 항목을 적어주세요:<br>· 누락된 방문 / 시간이 다른 방문 / 시급 변경 요청 / 기타</div>
+    <textarea id="salInqInput" rows="4" maxlength="500" placeholder="예: 4월 15일 14:00 정동호 어르신 방문이 1시간으로 표시되었는데 실제로는 1.5시간 진행했습니다." style="width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px;font-size:13px;font-family:inherit;outline:none;resize:none;line-height:1.6"></textarea>
+    <div style="font-size:11px;color:var(--gray);margin:8px 0 14px">센터장에게 즉시 알림이 발송되며, 검토 후 답변드립니다 (보통 1~2일 내).</div>
+    <button id="salInqSubmit" class="complete-btn" style="margin-bottom:8px">📨 요청 보내기</button>
+    <button id="salInqCancel" class="complete-btn" style="background:#f8fafc;color:var(--gray);box-shadow:none">취소</button>
+  </div>`;
+
+  ov.querySelector('#salInqCancel').onclick = () => ov.remove();
+  ov.onclick = e => { if(e.target === ov) ov.remove(); };
+
+  ov.querySelector('#salInqSubmit').onclick = async () => {
+    const msg = ov.querySelector('#salInqInput').value.trim();
+    const errEl = ov.querySelector('#salInqMsg');
+    const showErr = (text) => {
+      errEl.textContent = text;
+      errEl.style.cssText = 'display:block;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;background:#fee2e2;color:#dc2626';
+    };
+    if(msg.length < 5) return showErr('내용을 5자 이상 입력해주세요');
+
+    const btn = ov.querySelector('#salInqSubmit');
+    btn.disabled = true; btn.textContent = '보내는 중...';
+
+    const { data, error } = await sb.rpc('submit_salary_inquiry', { p_month_year: month, p_message: msg });
+    if(error || !data?.success){
+      btn.disabled = false; btn.textContent = '📨 요청 보내기';
+      return showErr(data?.error || error?.message || '전송 실패');
+    }
+
+    // 센터장에게 알림 발송
+    try {
+      await sb.functions.invoke('send-notification', {
+        body: {
+          type: 'salary_inquiry',
+          title: '💼 급여 변경 요청',
+          body: `${_profile.name} 보호사가 ${month.slice(5)}월 급여 관련 요청을 보냈습니다`,
+          center_id: _worker?.center_id,
+          url: '/care-admin.html?view=salary'
+        }
+      });
+    } catch(e){}
+
+    ov.remove();
+    alert('✅ 요청이 접수되었습니다.\n센터장 검토 후 답변드립니다.');
+  };
+
+  document.body.appendChild(ov);
 }
 
 // ===== Haversine 거리 계산 (m 단위) =====
