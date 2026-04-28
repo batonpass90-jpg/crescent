@@ -309,12 +309,23 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f8faf
 
 </div>
 
-<!-- 알림 패널 -->
+<!-- 알림 패널 — 알림 정책: 도착 알림 1회 + 저녁 7시 일일 종합 보고서 -->
 <div id="notifPanel" style="display:none;position:fixed;top:80px;right:0;width:100%;max-width:430px;background:#fff;border-bottom:1px solid var(--border);z-index:200;box-shadow:0 4px 20px rgba(0,0,0,.1);max-height:80vh;overflow-y:auto">
-  <div style="padding:14px 18px;font-size:12px;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>새 알림 3건</span><span style="cursor:pointer;color:var(--teal)" onclick="closeNotifs()">✕</span></div>
-  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border)"><span style="font-size:22px">💊</span><div><div style="font-size:13px;font-weight:700">투약 진행 중</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 12:30 · 1분 전</div></div></div>
-  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border)"><span style="font-size:22px">✅</span><div><div style="font-size:13px;font-weight:700">스트레칭 완료</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 12:20 · 11분 전</div></div></div>
-  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start"><span style="font-size:22px">🛰️</span><div><div style="font-size:13px;font-weight:700">보호사 도착</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 11:30 · GPS 체크인 완료</div></div></div>
+  <div style="padding:14px 18px;font-size:12px;font-weight:700;color:var(--gray);border-bottom:1px solid var(--border);display:flex;justify-content:space-between"><span>알림</span><span style="cursor:pointer;color:var(--teal)" onclick="closeNotifs()">✕</span></div>
+  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--border);background:#f0fdfa">
+    <span style="font-size:22px">📋</span>
+    <div style="flex:1">
+      <div style="font-size:13px;font-weight:700">어제(4/27) 일일 케어 보고</div>
+      <div style="font-size:11px;color:var(--gray);margin-top:2px">박종철 어르신 · 오후 7:00</div>
+      <div style="font-size:11px;color:var(--navy);margin-top:6px;line-height:1.6;background:#fff;padding:8px 10px;border-radius:8px">
+        ✓ 케어 1회 완료 (5/5 100%)<br>
+        👩‍⚕️ 김미영 보호사<br>
+        📷 사진 3장 첨부<br>
+        📝 무릎 통증 호전 중
+      </div>
+    </div>
+  </div>
+  <div style="padding:14px 18px;display:flex;gap:12px;align-items:flex-start"><span style="font-size:22px">🛰️</span><div><div style="font-size:13px;font-weight:700">오늘 보호사 도착</div><div style="font-size:11px;color:var(--gray);margin-top:2px">김미영 보호사 · 11:30 · GPS 확인됨</div></div></div>
 </div>
 
 <!-- 라이트박스 -->

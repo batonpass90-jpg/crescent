@@ -408,7 +408,7 @@ function toggleCheck(idx){
   if(it.done){
     const now = new Date();
     it.time = String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
-    toast(`✅ ${it.title} 완료 - 보호자에게 알림 발송`);
+    toast(`✅ ${it.title} 완료 - 일지 자동 저장`);
   } else {
     it.time = null;
   }
@@ -446,8 +446,8 @@ function completeCare(){
   if(done < CHECKLIST.length){
     if(!confirm(`아직 ${CHECKLIST.length-done}개 항목이 미완료예요. 그래도 완료 처리할까요?`)) return;
   }
-  toast('⏳ GPS 체크아웃 + 케어일지 전송 중...');
-  setTimeout(() => toast('✅ 케어 완료! 박지영 (보호자)에게 알림 발송 완료'), 1500);
+  toast('⏳ GPS 체크아웃 + 케어일지 저장 중...');
+  setTimeout(() => toast('✅ 케어 완료!\n저녁 7시에 보호자에게 일일 보고서 자동 발송됩니다', 3500), 1500);
 }
 
 // 시계 (1초마다 갱신)
