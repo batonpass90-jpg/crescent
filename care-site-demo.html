@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>햇살요양센터 — 방문요양 전문 (데모)</title>
+<meta name="description" content="CareOn 데모 — 방문요양 통합 플랫폼 전체 기능을 한 페이지에서 확인하세요. GPS 실시간 케어, 가족 공유, 검증된 보호사.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="🎬 CareOn 데모 · 요양 통합 플랫폼">
+<meta property="og:description" content="마케팅 사이트 / 보호자 앱 / 보호사 앱 / 센터장 대시보드 — 4가지 시점을 모두 둘러볼 수 있는 데모">
+<meta property="og:image" content="https://crescentstudio.co.kr/careon-icon.svg">
+<meta property="og:url" content="https://crescentstudio.co.kr/care-site-demo.html">
+<meta property="og:site_name" content="CareOn">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0D9488">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;color:#0F1B2D;margin:0 auto;overflow-x:hidden;position:relative}
+.app{max-width:430px;margin:0 auto;background:#fff;position:relative;min-height:100vh}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--teal-dark:#0F766E;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e}
+
+@media(min-width:768px){
+  body{background:linear-gradient(135deg,#042f2e 0%,#0f766e 100%) fixed;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:30px 0}
+  .app{box-shadow:0 30px 80px rgba(0,0,0,.4);border-radius:24px;overflow:hidden}
+  .nav{max-width:430px;border-radius:24px 24px 0 0}
+}
+@media(min-width:1100px){
+  .desk-info{position:fixed;left:max(40px,calc(50% - 580px));top:50%;transform:translateY(-50%);width:280px;color:#fff;font-family:'Noto Serif KR',serif}
+  .desk-info-en{font-size:11px;letter-spacing:3px;color:rgba(255,255,255,.5);margin-bottom:12px;font-family:'Pretendard',sans-serif;font-weight:700}
+  .desk-info-ttl{font-size:32px;font-weight:700;line-height:1.3;margin-bottom:14px}
+  .desk-info-ttl span{color:#5eead4}
+  .desk-info-desc{font-size:13px;color:rgba(255,255,255,.65);line-height:1.7;font-family:'Pretendard',sans-serif;font-weight:400;margin-bottom:24px}
+  .desk-info-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;font-family:'Pretendard',sans-serif}
+  .desk-info-stat{background:rgba(255,255,255,.08);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,.1)}
+  .desk-info-stat-num{font-size:22px;font-weight:800;color:#5eead4}
+  .desk-info-stat-lbl{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px}
+  .desk-cta{position:fixed;right:max(40px,calc(50% - 580px));top:50%;transform:translateY(-50%);width:280px;color:#fff}
+  .desk-cta-card{background:rgba(255,255,255,.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:24px;margin-bottom:14px}
+  .desk-cta-ttl{font-size:14px;font-weight:800;margin-bottom:6px}
+  .desk-cta-desc{font-size:12px;color:rgba(255,255,255,.65);line-height:1.6;margin-bottom:14px}
+  .desk-cta-btn{background:var(--teal2);color:#fff;border:none;border-radius:12px;padding:12px;font-size:13px;font-weight:700;width:100%;cursor:pointer;font-family:inherit}
+  .desk-cta-btn.ghost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);margin-top:8px}
+}
+@media(max-width:1099px){.desk-info,.desk-cta{display:none}}
+
+/* 데모 알림 배너 */
+.demo-banner{background:linear-gradient(90deg,#fef3c7,#fde68a);color:#78350f;padding:10px 14px;font-size:12px;font-weight:600;text-align:center;border-bottom:1px solid #fcd34d;line-height:1.5}
+.demo-banner b{color:#92400e}
+
+.nav{position:sticky;top:0;width:100%;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 20px}
+.nav-logo{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--navy)}
+.nav-logo span{color:var(--teal)}
+.nav-badge{background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #99f6e4;margin-left:6px}
+.nav-right{display:flex;align-items:center;gap:6px}
+.nav-login{background:transparent;color:var(--gray);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 10px}
+.nav-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+
+.users-card{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:1px solid #5eead4;border-radius:18px;padding:18px;margin:14px 24px}
+.users-ttl{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.users-desc{font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5}
+.users-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.users-btn{background:#fff;border:1px solid var(--teal);color:var(--teal);border-radius:10px;padding:10px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;transition:all .15s}
+.users-btn:hover{background:var(--teal);color:#fff}
+.users-btn-icon{font-size:18px;display:block;margin-bottom:3px}
+
+.hero{background:linear-gradient(160deg,#042f2e 0%,#134e4a 45%,#0f766e 80%,var(--teal2) 100%);min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 40px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;font-family:'Noto Serif KR',serif;font-size:110px;color:rgba(255,255,255,.04);top:20px;right:-10px;line-height:1;pointer-events:none;white-space:nowrap}
+.hero-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:600;padding:5px 14px;border-radius:50px;display:inline-flex;align-items:center;gap:6px;margin:24px 24px 16px;width:fit-content}
+.hero-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hero-title{font-family:'Noto Serif KR',serif;font-size:32px;font-weight:700;color:#fff;line-height:1.25;padding:0 24px;margin-bottom:10px;letter-spacing:-.5px}
+.hero-title span{color:#5eead4}
+.hero-sub{font-size:13px;color:rgba(255,255,255,.65);padding:0 24px;margin-bottom:24px;line-height:1.7}
+.hero-cta{display:flex;gap:10px;padding:0 24px}
+.btn-white{background:#fff;color:var(--teal);border:none;border-radius:50px;padding:13px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;flex:1}
+.btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:50px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+.hero-stats{display:flex;gap:0;padding:24px 24px 0;border-top:1px solid rgba(255,255,255,.1);margin-top:28px}
+.hero-stat{flex:1;text-align:center}
+.hero-stat+.hero-stat{border-left:1px solid rgba(255,255,255,.15)}
+.hs-num{font-size:28px;font-weight:700;color:#ccfbf1;line-height:1}
+.hs-label{font-size:10px;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.4}
+
+.hero-preview{background:rgba(255,255,255,.95);border-radius:18px;padding:14px;margin:0 24px 24px;box-shadow:0 12px 32px rgba(0,0,0,.2)}
+.preview-header{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;margin-bottom:10px;font-size:11px;color:var(--gray)}
+.preview-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.5s infinite}
+.preview-time{flex:1;color:var(--teal);font-weight:700}
+.preview-app{font-weight:600;color:var(--navy)}
+.preview-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f8fafc}
+.preview-row:last-child{border-bottom:none}
+.preview-icon{font-size:22px;width:32px;text-align:center;flex-shrink:0}
+.preview-name{font-size:12px;font-weight:700;color:var(--navy);line-height:1.3}
+.preview-sub{font-size:10px;color:var(--gray);margin-top:2px}
+.preview-row > div{flex:1;min-width:0}
+.preview-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;white-space:nowrap}
+.preview-badge.done{background:#dcfce7;color:#16a34a}
+
+.marquee{background:var(--tl);padding:12px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teal);font-weight:600;overflow:hidden;white-space:nowrap}
+.marquee-inner{display:flex;gap:40px;animation:marquee 18s linear infinite}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+.section{padding:40px 24px}
+.sec-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:6px}
+.sec-sub{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:24px}
+.divider{height:1px;background:var(--border);margin:0 24px}
+
+.svc-card{background:#fff;border-radius:20px;border:1px solid var(--border);padding:22px;margin-bottom:12px;display:flex;align-items:flex-start;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.04);cursor:pointer}
+.svc-icon{width:48px;height:48px;border-radius:14px;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.svc-ttl{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.svc-desc{font-size:13px;color:var(--gray);line-height:1.6}
+.svc-tag{display:inline-block;background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:8px}
+
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat-card{background:var(--tl);border-radius:18px;padding:18px;border:1px solid #99f6e4}
+.feat-icon{font-size:26px;margin-bottom:10px}
+.feat-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
+.feat-desc{font-size:12px;color:var(--gray);line-height:1.5}
+
+.steps{position:relative;padding-left:40px}
+.steps::before{content:'';position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--teal),var(--teal2));border-radius:2px}
+.step{position:relative;margin-bottom:22px;min-height:24px}
+.step:last-child{margin-bottom:0}
+.step-dot{position:absolute;left:-40px;top:0;width:24px;height:24px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--teal)}
+.step-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
+.step-desc{font-size:12px;color:var(--gray);line-height:1.5}
+
+.cta-sec{background:linear-gradient(135deg,#042f2e,#0f766e);padding:44px 24px;text-align:center}
+.cta-tag{display:inline-block;background:rgba(255,255,255,.15);color:#5eead4;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px}
+.cta-ttl{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
+.cta-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:24px;line-height:1.6}
+.cta-btns{display:flex;flex-direction:column;gap:10px}
+.btn-teal{background:var(--teal2);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-kakao{background:#FEE500;color:#1B1B1B;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+
+.footer{background:#f8fafc;padding:24px;font-size:12px;color:var(--gray);line-height:1.8;border-top:1px solid var(--border)}
+.footer strong{color:var(--navy);font-weight:700}
+
+.price-table{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.price-row{display:grid;grid-template-columns:1fr 1.2fr 1fr;padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px}
+.price-row:last-child{border-bottom:none}
+.price-row.head{background:var(--tl);font-weight:700;color:var(--teal);font-size:11px}
+.price-grade{font-weight:700;color:var(--navy)}
+.price-limit{color:var(--gray);font-size:12px}
+.price-self{color:var(--teal);font-weight:800;text-align:right}
+.price-note{font-size:11px;color:var(--gray);background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.6}
+
+.review-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
+.review-stars{color:#facc15;font-size:14px;margin-bottom:8px}
+.review-text{font-size:13px;color:var(--navy);line-height:1.7;margin-bottom:10px}
+.review-author{font-size:11px;color:var(--gray)}
+.review-author::before{content:'— '}
+
+.map-card{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
+.map-img{width:100%;height:200px;background:linear-gradient(135deg,#dbeafe,#bfdbfe);display:flex;align-items:center;justify-content:center;color:#1d4ed8;font-size:13px;font-weight:600;flex-direction:column;gap:8px}
+.map-img-icon{font-size:40px}
+.map-info{padding:14px 16px}
+.map-addr{font-size:13px;color:var(--navy);font-weight:600;margin-bottom:4px}
+.map-extra{font-size:11px;color:var(--gray);margin-bottom:10px}
+.map-btn{display:inline-block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none;border:none;font-family:inherit;cursor:pointer}
+
+.emergency-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:18px;padding:18px;margin-bottom:12px}
+.emergency-ttl{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#78350f;margin-bottom:8px}
+.emergency-desc{font-size:13px;color:#78350f;line-height:1.7;margin-bottom:10px}
+.emergency-btn{display:inline-block;background:#dc2626;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;text-decoration:none;border:none;font-family:inherit;cursor:pointer}
+
+.faq-item{background:#fff;border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.faq-q{width:100%;background:none;border:none;padding:14px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.faq-q::after{content:'+';color:var(--teal);font-size:18px;font-weight:400;transition:transform .2s;flex-shrink:0}
+.faq-item.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 16px 14px;font-size:12px;color:var(--gray);line-height:1.7}
+.faq-item.open .faq-a{display:block}
+
+.sticky-cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:10px 14px 76px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 30%);z-index:150;display:none;pointer-events:none}
+.sticky-cta.show{display:block}
+.sticky-cta-inner{display:flex;gap:8px;background:#fff;border:1px solid var(--border);border-radius:50px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.12);pointer-events:auto}
+.sticky-cta-call{flex:0 0 44px;height:44px;border-radius:50%;background:var(--tl);color:var(--teal);border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
+.sticky-cta-main{flex:1;background:var(--teal);color:#fff;border:none;border-radius:50px;padding:0 18px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+@media(min-width:768px){.sticky-cta{display:none!important}}
+</style>
+</head>
+<body>
+
+<aside class="desk-info" aria-hidden="true">
+  <div class="desk-info-en">DEMO · CARE ON</div>
+  <div class="desk-info-ttl">햇살요양센터<br><span style="font-size:14px;font-family:'Pretendard';font-weight:600;color:#5eead4">데모 시연</span></div>
+  <div class="desk-info-desc">방문요양 통합 플랫폼<br>신규 가족 진입부터 케어 진행 모니터링까지<br>한 번에 둘러보세요.</div>
+  <div class="desk-info-stats">
+    <div class="desk-info-stat"><div class="desk-info-stat-num">🛰️</div><div class="desk-info-stat-lbl">GPS 실시간</div></div>
+    <div class="desk-info-stat"><div class="desk-info-stat-num">📲</div><div class="desk-info-stat-lbl">가족 알림</div></div>
+    <div class="desk-info-stat"><div class="desk-info-stat-num">📋</div><div class="desk-info-stat-lbl">디지털 일지</div></div>
+    <div class="desk-info-stat"><div class="desk-info-stat-num">🏥</div><div class="desk-info-stat-lbl">검증 보호사</div></div>
+  </div>
+</aside>
+
+<aside class="desk-cta" aria-hidden="true">
+  <div class="desk-cta-card">
+    <div class="desk-cta-ttl">🎬 데모 시연</div>
+    <div class="desk-cta-desc">우측 하단 버튼으로<br>다른 시점(보호자/보호사/센터장) 화면 확인</div>
+    <button class="desk-cta-btn" onclick="document.getElementById('demoNavBtn')?.click()">화면 전환</button>
+  </div>
+  <div class="desk-cta-card">
+    <div class="desk-cta-ttl">📞 도입 문의</div>
+    <div class="desk-cta-desc">크레센트 스튜디오</div>
+    <button class="desk-cta-btn ghost" onclick="window.open('https://crescentstudio.co.kr','_blank')">홈으로</button>
+  </div>
+</aside>
+
+<div class="app">
+
+<div class="demo-banner">🎬 <b>데모 페이지</b> — 가상 데이터입니다. 우측 하단 버튼으로 보호자/보호사/센터장 시점도 둘러보세요</div>
+
+<nav class="nav">
+  <div>
+    <span class="nav-logo">햇살<span>요양</span>센터</span>
+    <span class="nav-badge">DEMO</span>
+  </div>
+  <div class="nav-right">
+    <button class="nav-login" onclick="toast('🎬 데모에서는 로그인 비활성화')">로그인</button>
+    <button class="nav-btn" onclick="showModal()">입소 문의</button>
+  </div>
+</nav>
+
+<main>
+<div class="hero" role="banner">
+  <div class="hero-bg" aria-hidden="true">요양</div>
+  <div class="hero-badge"><span class="hero-dot" aria-hidden="true"></span> 지금 방문요양 진행 중</div>
+  <h1 class="hero-title">어르신의<br>편안한 일상을<br><span>함께합니다</span></h1>
+  <div class="hero-sub">24시간 전문 요양보호사가 함께합니다.<br>GPS 실시간 확인으로 가족도 안심하세요.</div>
+
+  <div class="hero-preview" aria-hidden="true">
+    <div class="preview-header">
+      <span class="preview-dot"></span>
+      <span class="preview-time">방금 전</span>
+      <span class="preview-app">CareOn 보호자 앱</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-icon">👴</span>
+      <div>
+        <div class="preview-name">박종철 어르신 케어 진행 중</div>
+        <div class="preview-sub">김미영 보호사 · 11:30 도착</div>
+      </div>
+      <span class="preview-badge">방문중</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-icon">✅</span>
+      <div>
+        <div class="preview-name">식사 보조 완료</div>
+        <div class="preview-sub">11:45 · 사진 1장 첨부</div>
+      </div>
+      <span class="preview-badge done">완료</span>
+    </div>
+    <div class="preview-row">
+      <span class="preview-icon">💊</span>
+      <div>
+        <div class="preview-name">투약 확인 진행 중</div>
+        <div class="preview-sub">12:30 · 혈압약</div>
+      </div>
+      <span class="preview-badge">진행중</span>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <button class="btn-white" onclick="showModal()">입소 상담 신청</button>
+    <button class="btn-ghost" onclick="document.querySelector('.section').scrollIntoView({behavior:'smooth'})">센터 둘러보기</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hs-num">🛰️</div><div class="hs-label">GPS<br>실시간 확인</div></div>
+    <div class="hero-stat"><div class="hs-num">📲</div><div class="hs-label">가족 앱<br>케어 알림</div></div>
+    <div class="hero-stat"><div class="hs-num">🏥</div><div class="hs-label">국가자격증<br>보호사 배치</div></div>
+  </div>
+</div>
+
+<div class="marquee">
+  <div class="marquee-inner">
+    <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
+    <span>🛰️ GPS 실시간 확인</span><span>📲 가족 케어 알림</span><span>👩‍⚕️ 전문 요양보호사</span><span>🕐 24시간 대응</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span>
+  </div>
+</div>
+
+<!-- 다른 시점 둘러보기 (데모 핵심 섹션) -->
+<div class="users-card">
+  <div class="users-ttl">🎬 다른 시점에서 보기</div>
+  <div class="users-desc">동일한 시점(2026-04-26 12:13)을 4가지 시점에서 확인하세요</div>
+  <div class="users-btns">
+    <a href="/care-customer-demo.html" class="users-btn">
+      <span class="users-btn-icon">👨‍👩‍👧</span>보호자 앱
+    </a>
+    <a href="/care-worker-demo.html" class="users-btn">
+      <span class="users-btn-icon">👩‍⚕️</span>보호사 앱
+    </a>
+    <a href="/care-admin-demo.html" class="users-btn">
+      <span class="users-btn-icon">📊</span>센터장
+    </a>
+  </div>
+</div>
+
+<div class="section">
+  <div class="sec-label">Services</div>
+  <h2 class="sec-title">제공 서비스</h2>
+  <div class="sec-sub">어르신의 상황에 맞는 맞춤 케어를 제공합니다</div>
+
+  <div class="svc-card" onclick="showModal()">
+    <div class="svc-icon">🏠</div>
+    <div>
+      <div class="svc-ttl">방문요양</div>
+      <div class="svc-desc">전문 요양보호사가 가정을 직접 방문하여 신체활동, 가사활동, 인지활동을 지원합니다.</div>
+      <span class="svc-tag">장기요양 1~5등급</span>
+    </div>
+  </div>
+  <div class="svc-card" onclick="showModal()">
+    <div class="svc-icon">🚿</div>
+    <div>
+      <div class="svc-ttl">방문목욕</div>
+      <div class="svc-desc">목욕 장비를 갖춘 전문 인력이 가정을 방문하여 입욕 서비스를 제공합니다.</div>
+      <span class="svc-tag">장기요양 1~5등급</span>
+    </div>
+  </div>
+  <div class="svc-card" onclick="showModal()">
+    <div class="svc-icon">💉</div>
+    <div>
+      <div class="svc-ttl">방문간호</div>
+      <div class="svc-desc">간호사 또는 간호조무사가 가정을 방문하여 건강 상태 체크, 투약 지도를 합니다.</div>
+      <span class="svc-tag">의사 지시서 필요</span>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Why Us</div>
+  <h2 class="sec-title">왜 햇살요양센터인가요?</h2>
+  <div class="sec-sub">다른 센터와 다른 이유가 있어요</div>
+  <div class="feat-grid">
+    <div class="feat-card"><div class="feat-icon">🛰️</div><div class="feat-ttl">GPS 케어 확인</div><div class="feat-desc">보호사 방문·출발을 가족 앱으로 실시간 알림</div></div>
+    <div class="feat-card"><div class="feat-icon">📲</div><div class="feat-ttl">가족 실시간 공유</div><div class="feat-desc">케어일지·사진을 앱으로 바로 확인</div></div>
+    <div class="feat-card"><div class="feat-icon">👩‍⚕️</div><div class="feat-ttl">검증된 보호사</div><div class="feat-desc">국가자격증 보유, 센터 직고용 보호사만 배치</div></div>
+    <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-ttl">빠른 매칭</div><div class="feat-desc">신청 후 평균 3일 내 서비스 시작 가능</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Process</div>
+  <h2 class="sec-title">이용 절차</h2>
+  <div class="sec-sub">5단계로 쉽게 시작하세요</div>
+  <div class="steps">
+    <div class="step"><div class="step-dot">1</div><div class="step-ttl">상담 신청</div><div class="step-desc">전화 또는 카카오톡으로 간단히 상담 신청</div></div>
+    <div class="step"><div class="step-dot">2</div><div class="step-ttl">등급 판정 확인</div><div class="step-desc">장기요양 등급 없으시면 신청 방법 안내 드려요</div></div>
+    <div class="step"><div class="step-dot">3</div><div class="step-ttl">케어 계획 수립</div><div class="step-desc">어르신 상태에 맞는 서비스 계획 함께 작성</div></div>
+    <div class="step"><div class="step-dot">4</div><div class="step-ttl">보호사 매칭</div><div class="step-desc">어르신과 가장 잘 맞는 보호사를 배치해 드려요</div></div>
+    <div class="step"><div class="step-dot">5</div><div class="step-ttl">케어 시작</div><div class="step-desc">첫 방문부터 가족 앱으로 실시간 확인 가능</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Pricing</div>
+  <h2 class="sec-title">이용 비용 안내</h2>
+  <div class="sec-sub">국민건강보험공단 장기요양보험 적용 — 본인부담금 15%만 내시면 됩니다</div>
+  <div class="price-table">
+    <div class="price-row head"><div>등급</div><div>월 한도액</div><div>본인부담 15%</div></div>
+    <div class="price-row"><div class="price-grade">1등급</div><div class="price-limit">2,069,900원</div><div class="price-self">월 약 31만원</div></div>
+    <div class="price-row"><div class="price-grade">2등급</div><div class="price-limit">1,869,600원</div><div class="price-self">월 약 28만원</div></div>
+    <div class="price-row"><div class="price-grade">3등급</div><div class="price-limit">1,455,800원</div><div class="price-self">월 약 22만원</div></div>
+    <div class="price-row"><div class="price-grade">4등급</div><div class="price-limit">1,341,800원</div><div class="price-self">월 약 20만원</div></div>
+    <div class="price-row"><div class="price-grade">5등급</div><div class="price-limit">1,151,600원</div><div class="price-self">월 약 17만원</div></div>
+  </div>
+  <div class="price-note">
+    💡 <b>기초생활수급자</b> 본인부담 면제 · <b>차상위·감경대상자</b> 6~9%<br>
+    💡 위 금액은 2026년 기준 월 한도액 100% 이용 시 추정치
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Reviews</div>
+  <h2 class="sec-title">보호자 후기</h2>
+  <div class="sec-sub">실제 가족분들이 남겨주신 솔직한 후기입니다</div>
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">"어머니가 무릎이 안 좋아서 외출이 어려운데, 김미영 보호사님이 꼼꼼하게 챙겨주세요. 특히 GPS 알림으로 도착 시간 바로 알 수 있어서 직장에서도 안심돼요. 케어일지에 사진까지 올려주셔서 어머니 표정 보면 마음이 놓입니다."</div>
+    <div class="review-author">박○○ 보호자 (어머니 케어, 6개월째)</div>
+  </div>
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">"아버지 등급 신청부터 보호사 매칭까지 처음이라 막막했는데, 센터에서 처음부터 끝까지 안내해주셨어요. 등급 받기 전에도 신청 방법 친절히 설명해주신 게 인상 깊었습니다."</div>
+    <div class="review-author">정○○ 보호자 (아버지 케어, 3개월째)</div>
+  </div>
+  <div class="review-card">
+    <div class="review-stars">★★★★★</div>
+    <div class="review-text">"보호사 교체 부탁드렸는데 다음 주에 바로 새 분을 보내주셨어요. 다른 센터는 한 달씩 걸린다고 하던데, 응대가 정말 빠릅니다."</div>
+    <div class="review-author">최○○ 보호자 (어머니 케어, 1년째)</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Location</div>
+  <h2 class="sec-title">센터 위치</h2>
+  <div class="sec-sub">언제든 직접 방문하셔서 상담 받으실 수 있습니다</div>
+  <div class="map-card">
+    <div class="map-img">
+      <div class="map-img-icon">🗺️</div>
+      <div>경기도 성남시 분당구 정자동</div>
+    </div>
+    <div class="map-info">
+      <div class="map-addr">경기도 성남시 분당구 정자동 123-45 (정자빌딩 4층)</div>
+      <div class="map-extra">서비스 지역: 성남시 분당구 / 수정구 / 중원구</div>
+      <button class="map-btn" onclick="window.open('https://map.kakao.com/link/search/'+encodeURIComponent('성남시 분당구 정자동'),'_blank')">🗺️ 카카오맵 길찾기</button>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">Emergency</div>
+  <h2 class="sec-title">응급 상황 안내</h2>
+  <div class="sec-sub">평일 업무 시간 외에도 긴급 대응 가능합니다</div>
+  <div class="emergency-card">
+    <div class="emergency-ttl">🚨 24시간 응급 핫라인</div>
+    <div class="emergency-desc">
+      야간·주말·공휴일 어르신께 응급 상황 발생 시 즉시 전화 연결됩니다.<br>
+      당직 직원이 보호사 출동 또는 119 동시 연락을 도와드립니다.
+    </div>
+    <button class="emergency-btn" onclick="toast('🎬 데모: 010-9032-9090 전화 연결')">📞 응급 핫라인 전화하기</button>
+  </div>
+  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:12px;color:var(--gray);line-height:1.7">
+    <b style="color:var(--navy)">📌 일반 상담은 평일 09:00 ~ 18:00 / 토요일 09:00 ~ 13:00</b><br>
+    그 외 시간엔 카카오톡 채널 또는 응급 핫라인 이용 부탁드립니다.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="section">
+  <div class="sec-label">FAQ</div>
+  <h2 class="sec-title">자주 묻는 질문</h2>
+  <div class="sec-sub">상담 전 궁금한 점을 미리 확인하실 수 있어요</div>
+  <div class="faq-item">
+    <button class="faq-q">장기요양 등급은 어떻게 신청하나요?</button>
+    <div class="faq-a">국민건강보험공단(1577-1000) 또는 가까운 지사에 등급 신청 가능합니다. 신청 → 방문 조사 → 등급 판정까지 평균 1~2개월 소요됩니다.<br><b>등급이 없으셔도 상담 가능</b>합니다. 신청 절차를 처음부터 안내해 드립니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">본인부담금은 얼마나 드나요?</button>
+    <div class="faq-a">국민건강보험공단 장기요양보험에서 85%를 부담하고, 본인부담금은 15%입니다.<br>예) 3등급 어르신 월 한도액 100% 이용 시 → 본인부담 약 22만원<br><b>기초생활수급자</b>는 본인부담 면제, <b>차상위·감경대상자</b>는 6~9%만 부담합니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">신청부터 케어 시작까지 얼마나 걸리나요?</button>
+    <div class="faq-a">등급이 이미 있으신 경우 <b>평균 3~5일</b> 내 시작 가능합니다.<br>① 상담 신청(즉시) → ② 케어 계획 수립(1~2일) → ③ 보호사 매칭(1~2일) → ④ 첫 방문<br>등급 미신청이신 경우 등급 판정 1~2개월 후 시작됩니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">보호사가 어르신과 안 맞으면 교체 가능한가요?</button>
+    <div class="faq-a">네, 언제든 가능합니다. 보호자님께서 센터에 요청하시면 <b>1주일 내</b>에 새 보호사를 매칭해 드립니다. 어르신 성향(여자/남자, 연령대, 성격 등)을 고려해 더 잘 맞는 분으로 배정합니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">가족 앱은 무료인가요?</button>
+    <div class="faq-a">네, 보호자 앱은 <b>완전 무료</b>입니다. 별도 구독료나 사용료 없습니다.<br>어르신 케어 진행 상황, 케어일지, 사진을 실시간으로 받아보실 수 있습니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">케어일지는 어떻게 확인하나요?</button>
+    <div class="faq-a">매 방문 종료 시 보호사가 작성한 <b>케어일지</b>가 자동으로 가족 앱에 전송됩니다. 체크리스트 5종(식사·체위변경·스트레칭·투약·청결)과 어르신 상태 메모, 활동 사진까지 확인 가능합니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">보호자 앱은 어떻게 받나요?</button>
+    <div class="faq-a">케어 시작 시 센터에서 <b>초대 코드 + 가입 링크</b>를 SMS 또는 카카오톡으로 보내드립니다. 가입 링크 클릭 후 이메일·비밀번호만 입력하시면 자동으로 어르신과 연결됩니다.</div>
+  </div>
+  <div class="faq-item">
+    <button class="faq-q">방문 시간 외 응급 상황엔 어떻게 하나요?</button>
+    <div class="faq-a">야간·주말·공휴일 응급 상황 발생 시 <b>24시간 응급 핫라인</b>으로 즉시 연락 가능합니다. 당직 직원이 상황 파악 후 보호사 출동 또는 119 동시 연락을 도와드립니다.</div>
+  </div>
+</div>
+
+<div class="cta-sec">
+  <div class="cta-tag">✨ 지금 바로 시작하세요</div>
+  <div class="cta-ttl">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
+  <div class="cta-sub">평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00<br>긴급 상황은 24시간 대응합니다</div>
+  <div class="cta-btns">
+    <button class="btn-teal" onclick="toast('🎬 데모: 031-682-9090 전화 연결')">📞 전화 상담 031-682-9090</button>
+    <button class="btn-kakao" onclick="toast('🎬 데모: 카카오톡 채널 연결')">💬 카카오톡 상담하기</button>
+  </div>
+</div>
+
+<div class="footer">
+  <strong>햇살요양센터</strong> <span style="background:#fef3c7;color:#92400e;font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-left:6px">DEMO</span><br>
+  경기도 성남시 분당구 정자동 123-45 (정자빌딩 4층)<br>
+  대표자: 홍길동 · 사업자번호: 123-45-67890<br>
+  장기요양기관 지정번호: 12345678<br>
+  TEL: 031-682-9090
+  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;font-size:11px">
+    <a href="/care-customer-demo.html" style="color:var(--teal);text-decoration:none;font-weight:600">보호자 앱</a>
+    <a href="/care-worker-demo.html" style="color:var(--teal);text-decoration:none;font-weight:600">보호사 앱</a>
+    <a href="/care-admin-demo.html" style="color:var(--teal);text-decoration:none;font-weight:600">센터장 데모</a>
+  </div>
+  <div style="margin-top:10px;font-size:10px;color:#9ca3af">
+    Powered by <a href="https://crescentstudio.co.kr" style="color:var(--teal);text-decoration:none">CareOn</a> · 방문요양 통합 플랫폼
+  </div>
+</div>
+</main>
+</div>
+
+<div class="sticky-cta" id="stickyCta">
+  <div class="sticky-cta-inner">
+    <button class="sticky-cta-call" onclick="toast('🎬 데모: 031-682-9090')">📞</button>
+    <button class="sticky-cta-main" onclick="showModal()">💬 입소 상담 신청</button>
+  </div>
+</div>
+
+<script>
+function toast(msg, duration=2500){
+  document.querySelectorAll('.t-msg').forEach(e=>e.remove());
+  const el=document.createElement('div');
+  el.className='t-msg';
+  el.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#0F1B2D;color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25)';
+  el.textContent=msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(),duration);
+}
+
+function showModal(){
+  const ov=document.createElement('div');
+  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center';
+  ov.innerHTML=`<div style="background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:430px">
+    <div style="background:#fef3c7;color:#78350f;font-size:11px;font-weight:600;padding:8px 12px;border-radius:8px;margin-bottom:14px;text-align:center">🎬 데모 — 실제 상담은 신청되지 않습니다</div>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:18px;font-weight:800;color:#0F1B2D;margin-bottom:4px">입소 상담 신청</div>
+      <div style="font-size:13px;color:#6b7280">24시간 이내 연락드립니다</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+      <input placeholder="어르신 성함" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <input placeholder="보호자 연락처 (010-0000-0000)" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
+      <select style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;background:#fff">
+        <option value="">장기요양 등급 선택</option>
+        <option>1등급</option><option>2등급</option><option>3등급</option><option>4등급</option><option>5등급</option><option>등급 미신청 (신청 방법 안내 원함)</option>
+      </select>
+    </div>
+    <button id="submitBtn" style="background:#0D9488;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;width:100%;cursor:pointer;font-family:inherit;margin-bottom:10px">상담 신청하기 (데모)</button>
+    <button id="cancelBtn" style="background:#f8fafc;color:#6b7280;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:600;width:100%;cursor:pointer;font-family:inherit">취소</button>
+  </div>`;
+  ov.querySelector('#submitBtn').onclick=()=>{ov.remove();toast('🎬 데모 — 실제 신청은 운영 페이지에서 동작합니다',3500);};
+  ov.querySelector('#cancelBtn').onclick=()=>ov.remove();
+  ov.onclick=e=>{if(e.target===ov)ov.remove();};
+  document.body.appendChild(ov);
+}
+
+// FAQ 아코디언
+document.querySelectorAll('.faq-q').forEach(btn => {
+  btn.onclick = () => btn.closest('.faq-item').classList.toggle('open');
+});
+
+// Sticky CTA
+const stickyCta = document.getElementById('stickyCta');
+function checkSticky(){
+  const hero = document.querySelector('.hero-cta');
+  const ctaSec = document.querySelector('.cta-sec');
+  if(!hero || !stickyCta) return;
+  const heroRect = hero.getBoundingClientRect();
+  const ctaRect = ctaSec ? ctaSec.getBoundingClientRect() : { top: Infinity };
+  const show = heroRect.bottom < 0 && ctaRect.top > window.innerHeight;
+  stickyCta.classList.toggle('show', show);
+}
+window.addEventListener('scroll', checkSticky, { passive:true });
+window.addEventListener('resize', checkSticky);
+checkSticky();
+</script>
+<script src="/demo-nav.js"></script>
+</body>
+</html>
