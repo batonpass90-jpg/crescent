@@ -559,7 +559,10 @@ body:not(.app-ready) .stat-num::before{
     <div class="view" id="view-patients">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👴 수급자 관리</div><div class="sec-hd-sub">총 28명 등록</div></div>
-        <button class="btn btn-primary" onclick="openPatientModal()">+ 수급자 등록</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost-sm" onclick="openBulkUploadModal('patients')">📥 일괄 등록</button>
+          <button class="btn btn-primary" onclick="openPatientModal()">+ 수급자 등록</button>
+        </div>
       </div>
       <div class="card">
         <table class="tbl">
@@ -579,7 +582,10 @@ body:not(.app-ready) .stat-num::before{
     <div class="view" id="view-workers">
       <div class="sec-hd">
         <div><div class="sec-hd-title">👩‍⚕️ 보호사 관리</div><div class="sec-hd-sub">총 4명 근무중</div></div>
-        <button class="btn btn-primary" onclick="openWorkerRegModal()">+ 보호사 등록</button>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost-sm" onclick="openBulkUploadModal('workers')">📥 일괄 등록</button>
+          <button class="btn btn-primary" onclick="openWorkerRegModal()">+ 보호사 등록</button>
+        </div>
       </div>
       <div class="grid2">
         <div class="card" onclick="openWorkerModal('김미영')" style="cursor:pointer">
@@ -715,7 +721,10 @@ body:not(.app-ready) .stat-num::before{
         <div style="display:flex;gap:8px">
           <button class="btn btn-ghost-sm" id="btnCalView" onclick="setSchedView('cal')" style="background:var(--tl);color:var(--teal);border-color:var(--teal)">📅 달력</button>
           <button class="btn btn-ghost-sm" id="btnListView" onclick="setSchedView('list')">📋 목록</button>
-          <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn btn-ghost-sm" onclick="openBulkUploadModal('visits')">📥 일괄 등록</button>
+            <button class="btn btn-primary" onclick="openSchedModal()">+ 일정 등록</button>
+          </div>
         </div>
       </div>
       <!-- 달력 뷰 -->
@@ -1437,6 +1446,7 @@ function setSchedView(mode) {
 <!-- ===== SUPABASE 연동 ===== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="https://js.tosspayments.com/v1/payment"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.20.3/dist/xlsx.full.min.js"></script>
 <script>
 const SUPA_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
@@ -2988,6 +2998,300 @@ async function sendInviteSms(){
   });
   if(error){ showRegMsg('inviteMsg','SMS 발송 실패: '+error.message,'error'); return; }
   showRegMsg('inviteMsg','✅ SMS가 발송되었습니다','success');
+}
+
+// ===================================================================
+// 📥 일괄 등록 (xlsx 업로드)
+// ===================================================================
+const BULK_CONFIG = {
+  workers: {
+    title: '👩‍⚕️ 보호사 일괄 등록',
+    template: '/careon-template-workers.xlsx',
+    sheetName: '보호사 등록',
+    columns: ['성함*','연락처*','이메일*','자격증','경력(년)','생년월일','입사일','주소','담당 지역','급여 형태','시급/단가/월급(원)','은행 계좌'],
+    map: row => ({
+      name: row['성함*'],
+      phone: row['연락처*'],
+      email: (row['이메일*']||'').toString().trim().toLowerCase(),
+      certificate_type: row['자격증'] || '요양보호사 1급',
+      experience_years: parseInt(row['경력(년)'])||0,
+      birth_date: parseDate(row['생년월일']),
+      hire_date: parseDate(row['입사일']),
+      address: row['주소'] || null,
+      service_area: row['담당 지역'] || null,
+      salary_type: ['hourly','per_visit','monthly'].includes(row['급여 형태']) ? row['급여 형태'] : 'hourly',
+      hourly_rate: row['급여 형태']==='hourly' ? (parseInt(row['시급/단가/월급(원)'])||12000) : null,
+      per_visit_rate: row['급여 형태']==='per_visit' ? (parseInt(row['시급/단가/월급(원)'])||30000) : null,
+      base_salary: row['급여 형태']==='monthly' ? (parseInt(row['시급/단가/월급(원)'])||0) : null,
+      bank_account: row['은행 계좌'] || null,
+      status: 'pending_signup'
+    }),
+    validate: r => {
+      if(!r.name) return '성함 누락';
+      if(!r.phone) return '연락처 누락';
+      if(!r.email || !r.email.includes('@')) return '이메일 형식 오류';
+      return null;
+    },
+    table: 'workers'
+  },
+  patients: {
+    title: '👴 수급자 일괄 등록',
+    template: '/careon-template-patients.xlsx',
+    sheetName: '수급자 등록',
+    columns: ['성함*','장기요양 등급*','생년월일','연락처','주소','담당 보호사 (이메일)','보호자 성함','보호자 연락처','보호자 관계','특이사항/메모'],
+    map: row => ({
+      name: row['성함*'],
+      care_grade: String(row['장기요양 등급*']||'').replace(/[^0-9인지지원]/g,'').slice(0,4) || null,
+      birth_date: parseDate(row['생년월일']),
+      phone: row['연락처'] || null,
+      address: row['주소'] || null,
+      _worker_email: (row['담당 보호사 (이메일)']||'').toString().trim().toLowerCase() || null,
+      guardian_name: row['보호자 성함'] || null,
+      guardian_phone: row['보호자 연락처'] || null,
+      _guardian_relationship: row['보호자 관계'] || '자녀',
+      note: row['특이사항/메모'] || null,
+      status: 'active'
+    }),
+    validate: r => {
+      if(!r.name) return '성함 누락';
+      if(!r.care_grade) return '등급 누락';
+      return null;
+    },
+    table: 'patients'
+  },
+  visits: {
+    title: '📅 방문 일정 일괄 등록',
+    template: '/careon-template-visits.xlsx',
+    sheetName: '방문 일정 등록',
+    columns: ['방문일*','시작 시간*','종료 시간','수급자 성함*','보호사 이메일*','서비스','메모'],
+    map: row => ({
+      _date: parseDate(row['방문일*']),
+      _start: parseTime(row['시작 시간*']),
+      _end: parseTime(row['종료 시간']),
+      _patient_name: row['수급자 성함*'],
+      _worker_email: (row['보호사 이메일*']||'').toString().trim().toLowerCase(),
+      service: row['서비스'] || '방문요양 90분',
+      care_log: row['메모'] ? JSON.stringify({memo: row['메모']}) : null,
+      status: 'scheduled'
+    }),
+    validate: r => {
+      if(!r._date) return '방문일 형식 오류';
+      if(!r._start) return '시작 시간 형식 오류';
+      if(!r._patient_name) return '수급자 성함 누락';
+      if(!r._worker_email) return '보호사 이메일 누락';
+      return null;
+    },
+    table: 'visits'
+  }
+};
+
+function parseDate(v){
+  if(!v) return null;
+  if(v instanceof Date) return v.toISOString().split('T')[0];
+  const s = String(v).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  // 엑셀 시리얼 숫자 처리
+  if(typeof v === 'number'){
+    const d = new Date(Date.UTC(1899, 11, 30) + v * 86400000);
+    return d.toISOString().split('T')[0];
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d.toISOString().split('T')[0];
+}
+function parseTime(v){
+  if(!v) return null;
+  const s = String(v).trim();
+  if(/^\d{1,2}:\d{2}/.test(s)) return s.length === 4 ? '0'+s : s.slice(0,5);
+  if(typeof v === 'number'){
+    const totalMin = Math.round(v * 24 * 60);
+    const h = Math.floor(totalMin/60), m = totalMin%60;
+    return String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+  }
+  return null;
+}
+
+let _bulkType = null;
+let _bulkRows = [];
+
+function openBulkUploadModal(type){
+  _bulkType = type;
+  _bulkRows = [];
+  const cfg = BULK_CONFIG[type];
+  if(!cfg){ alert('알 수 없는 타입'); return; }
+
+  // 모달 동적 생성
+  const ov = document.createElement('div');
+  ov.id = 'bulkModal';
+  ov.className = 'modal-overlay';
+  ov.style.display = 'flex';
+  ov.onclick = e => { if(e.target === ov) ov.remove(); };
+  ov.innerHTML = `
+    <div class="modal" style="max-width:680px">
+      <div class="modal-hd">
+        <div class="modal-title">${cfg.title}</div>
+        <button class="modal-close" onclick="document.getElementById('bulkModal').remove()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div style="background:var(--tl);border:1px solid #99f6e4;border-radius:10px;padding:14px;margin-bottom:14px;font-size:13px;line-height:1.7">
+          <b style="color:var(--teal)">📋 사용 방법</b><br>
+          1. 아래 ⬇️ <b>양식 다운로드</b> 클릭<br>
+          2. 엑셀에서 작성 (1행 헤더, 2행 예시, 3행부터 입력)<br>
+          3. 저장 후 ⬆️ <b>파일 선택</b>으로 업로드<br>
+          4. 미리보기 확인 후 <b>등록 확정</b>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <a href="${cfg.template}" download class="btn btn-ghost-sm" style="flex:1;min-width:140px;text-align:center;text-decoration:none">⬇️ 양식 다운로드</a>
+          <label class="btn btn-primary" style="flex:1;min-width:140px;text-align:center;cursor:pointer">
+            ⬆️ 파일 선택
+            <input type="file" id="bulkFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="handleBulkFile(this)">
+          </label>
+        </div>
+        <div id="bulkPreview"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost-sm" onclick="document.getElementById('bulkModal').remove()">취소</button>
+        <button class="btn btn-primary" id="bulkConfirmBtn" onclick="confirmBulkUpload()" disabled>등록 확정</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(ov);
+}
+
+async function handleBulkFile(input){
+  const file = input.files?.[0];
+  if(!file) return;
+
+  try {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type:'array', cellDates:true });
+    const cfg = BULK_CONFIG[_bulkType];
+    const ws = wb.Sheets[cfg.sheetName] || wb.Sheets[wb.SheetNames.find(n => n !== '📋 작성 안내')];
+    if(!ws) return alert('시트를 찾을 수 없습니다. 양식을 그대로 사용해주세요.');
+
+    const json = XLSX.utils.sheet_to_json(ws, { defval: '' });
+    // 예시 행(2행) 제거 — 첫 row가 김미영/박종철 같은 예시면 스킵
+    const filtered = json.filter((r,i) => {
+      const v = Object.values(r).some(x => x !== '' && x !== null);
+      return v;
+    });
+
+    const mapped = filtered.map((r,i) => {
+      const obj = cfg.map(r);
+      const err = cfg.validate(obj);
+      return { row: i+3, data: obj, error: err };
+    });
+
+    _bulkRows = mapped;
+    renderBulkPreview();
+  } catch(e){
+    alert('파일 읽기 실패: ' + e.message);
+  }
+}
+
+function renderBulkPreview(){
+  const wrap = document.getElementById('bulkPreview');
+  const valid = _bulkRows.filter(r => !r.error).length;
+  const invalid = _bulkRows.length - valid;
+  const cfg = BULK_CONFIG[_bulkType];
+
+  wrap.innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap">
+      <span style="background:#dcfce7;color:#16a34a;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:700">✅ 정상 ${valid}건</span>
+      ${invalid > 0 ? `<span style="background:#fee2e2;color:#dc2626;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:700">⚠️ 오류 ${invalid}건 (제외됨)</span>` : ''}
+    </div>
+    <div style="max-height:280px;overflow-y:auto;border:1px solid var(--border);border-radius:8px">
+      <table class="tbl" style="font-size:11px;min-width:auto">
+        <thead><tr><th>#</th><th>상태</th><th>주요 정보</th></tr></thead>
+        <tbody>
+          ${_bulkRows.map(r => {
+            const summary = _bulkType === 'workers' ? `${r.data.name||'-'} · ${r.data.email||'-'}` :
+                           _bulkType === 'patients' ? `${r.data.name||'-'} · ${r.data.care_grade||'-'}등급` :
+                           `${r.data._date||'-'} ${r.data._start||''} · ${r.data._patient_name||'-'} ← ${r.data._worker_email||'-'}`;
+            return `<tr>
+              <td>${r.row}</td>
+              <td>${r.error ? `<span style="color:#dc2626;font-weight:700">❌ ${r.error}</span>` : '<span style="color:#16a34a">✅</span>'}</td>
+              <td>${summary}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('bulkConfirmBtn').disabled = (valid === 0);
+  document.getElementById('bulkConfirmBtn').textContent = `${valid}건 등록 확정`;
+}
+
+async function confirmBulkUpload(){
+  const cfg = BULK_CONFIG[_bulkType];
+  const validRows = _bulkRows.filter(r => !r.error);
+  if(validRows.length === 0) return;
+  if(!confirm(`${validRows.length}건을 등록하시겠어요?`)) return;
+
+  const btn = document.getElementById('bulkConfirmBtn');
+  btn.disabled = true; btn.textContent = '등록 중...';
+
+  const { data: { session } } = await sb.auth.getSession();
+  const { data: profile } = await sb.from('profiles').select('center_id').eq('id', session.user.id).single();
+  if(!profile?.center_id){ alert('센터 정보 조회 실패'); btn.disabled=false; return; }
+
+  let success = 0, failed = 0, errors = [];
+
+  // visits/patients는 worker/patient 매칭 필요
+  let workerMap = {}, patientMap = {};
+  if(_bulkType === 'visits' || _bulkType === 'patients'){
+    const { data: workers } = await sb.from('workers').select('id, name, email').eq('center_id', profile.center_id);
+    (workers||[]).forEach(w => { if(w.email) workerMap[w.email.toLowerCase()] = w.id; });
+  }
+  if(_bulkType === 'visits'){
+    const { data: patients } = await sb.from('patients').select('id, name').eq('center_id', profile.center_id);
+    (patients||[]).forEach(p => { patientMap[p.name] = p.id; });
+  }
+
+  for(const r of validRows){
+    try {
+      let payload;
+      if(_bulkType === 'workers'){
+        payload = { ...r.data, center_id: profile.center_id };
+      } else if(_bulkType === 'patients'){
+        const { _worker_email, _guardian_relationship, ...patient } = r.data;
+        payload = { ...patient, center_id: profile.center_id };
+        // worker 매칭은 visits에서 처리 (patients엔 직접 컬럼 없음)
+      } else if(_bulkType === 'visits'){
+        const wId = workerMap[r.data._worker_email];
+        const pId = patientMap[r.data._patient_name];
+        if(!wId){ throw new Error(`등록되지 않은 보호사: ${r.data._worker_email}`); }
+        if(!pId){ throw new Error(`등록되지 않은 수급자: ${r.data._patient_name}`); }
+        const { _date, _start, _end, _patient_name, _worker_email, ...rest } = r.data;
+        payload = {
+          ...rest,
+          center_id: profile.center_id,
+          worker_id: wId,
+          patient_id: pId,
+          scheduled_date: _date,
+          start_time: _start,
+          end_time: _end || null
+        };
+      }
+
+      const { error } = await sb.from(cfg.table).insert(payload);
+      if(error) throw error;
+      success++;
+    } catch(e){
+      failed++;
+      errors.push(`행 ${r.row}: ${e.message}`);
+    }
+  }
+
+  document.getElementById('bulkModal').remove();
+
+  if(failed === 0){
+    toast(`✅ ${success}건 등록 완료!`, 3500);
+  } else {
+    alert(`완료: ${success}건 성공 / ${failed}건 실패\n\n실패 사유:\n${errors.slice(0,10).join('\n')}`);
+  }
+
+  // 화면 갱신
+  setTimeout(() => location.reload(), 1500);
 }
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
