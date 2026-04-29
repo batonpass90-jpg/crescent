@@ -71,6 +71,12 @@ alter table public.profiles add column if not exists name text;
 alter table public.profiles add column if not exists phone text;
 alter table public.profiles add column if not exists role text not null default 'admin';
 alter table public.profiles add column if not exists center_id uuid references public.centers(id) on delete set null;
+
+-- role 허용 값: 4가지로 제한 (idempotent)
+alter table public.profiles drop constraint if exists profiles_role_check;
+alter table public.profiles add constraint profiles_role_check
+  check (role in ('admin', 'worker', 'guardian', 'superadmin'));
+
 alter table public.profiles enable row level security;
 
 -- 자기 자신 + 같은 센터 구성원 + 슈퍼어드민
