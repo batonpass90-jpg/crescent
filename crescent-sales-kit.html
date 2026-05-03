@@ -302,42 +302,43 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
 
   <!-- 레퍼런스 초기 특가 -->
   <div class="card gold">
-    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">🎯 초기 레퍼런스 특가 (선착순 5건)</div>
+    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">🎯 초기 5개 파트너 면제 (선착순)</div>
     <div class="g2">
       <div>
-        <div style="font-size:12px;color:#92400e;margin-bottom:4px">웹앱</div>
-        <div style="font-size:28px;font-weight:900;color:var(--dark)">39만원</div>
-        <div style="font-size:11px;color:var(--mid)">정상가 79만원</div>
+        <div style="font-size:12px;color:#92400e;margin-bottom:4px">정상가 (제작비)</div>
+        <div style="font-size:28px;font-weight:900;color:var(--dark)">0원</div>
+        <div style="font-size:11px;color:var(--mid)">정상가 199만원 → 면제</div>
       </div>
       <div>
-        <div style="font-size:12px;color:#92400e;margin-bottom:4px">네이티브</div>
-        <div style="font-size:28px;font-weight:900;color:var(--dark)">49만원</div>
-        <div style="font-size:11px;color:var(--mid)">정상가 99~149만원</div>
+        <div style="font-size:12px;color:#92400e;margin-bottom:4px">6개월 구독료</div>
+        <div style="font-size:28px;font-weight:900;color:var(--dark)">0원</div>
+        <div style="font-size:11px;color:var(--mid)">Premium 9.9만 × 6 = 59.4만 → 면제</div>
       </div>
     </div>
     <div style="margin-top:14px;font-size:12px;color:#92400e;line-height:1.75">
+      ✓ 총 면제 금액 약 <strong>258만원</strong> (199 + 59.4)<br>
       ✓ 레퍼런스 사진·후기 활용 동의 조건<br>
-      ✓ 구독 플랜 정상가 그대로 적용<br>
-      ✓ 5건 이후 자동으로 정상가 전환
+      ✓ 6개월 이후 정상 구독료 전환 (해지 자유)
     </div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- 단가 로드맵 -->
-  <div class="tag">단가 로드맵</div>
-  <div class="sec-title" style="margin-bottom:16px">레퍼런스 따라 <em>단가 상승</em></div>
+  <!-- 가격 라인업 -->
+  <div class="tag">가격 라인업</div>
+  <div class="sec-title" style="margin-bottom:16px">제작비 <em>4단계</em></div>
   <table>
     <thead>
-      <tr><th>단계</th><th>기간</th><th>웹앱 가격</th><th>네이티브 가격</th><th>조건</th></tr>
+      <tr><th>라인업</th><th>가격</th><th>구성</th><th>영업자 수수료</th></tr>
     </thead>
     <tbody>
-      <tr><td><span style="font-weight:700;color:var(--gold)">론칭</span></td><td>지금~3개월</td><td class="gold-td">39만원</td><td class="gold-td">49만원</td><td>레퍼런스 5건 선착순</td></tr>
-      <tr><td><span style="font-weight:700">성장</span></td><td>3~6개월</td><td>79만원</td><td>99만원</td><td>레퍼런스 확보 후</td></tr>
-      <tr><td><span style="font-weight:700">안정</span></td><td>6~12개월</td><td>99만원</td><td>149만원</td><td>후기 + 입소문</td></tr>
-      <tr><td><span style="font-weight:700">확장</span></td><td>12개월+</td><td>149만원+</td><td>249만원+</td><td>브랜드 완성 후</td></tr>
+      <tr><td><span style="font-weight:700;color:var(--gold)">79만원</span></td><td class="gold-td">79만원</td><td>기본 (제작 + 세팅) — 프로모션 초특가</td><td class="gold-td">25만원</td></tr>
+      <tr><td><span style="font-weight:700">149만원</span></td><td>149만원</td><td>기본 + 영상 패키지 + 마케팅 대행</td><td class="gold-td">30만원</td></tr>
+      <tr><td><span style="font-weight:700">199만원</span></td><td>199만원</td><td>기본 (정상가)</td><td class="gold-td">35만원</td></tr>
+      <tr><td><span style="font-weight:700;color:#7c3aed">Enterprise</span></td><td>별도 협의</td><td>커스텀 제작 (다지점·외부 연동 등)</td><td class="gold-td">계약가 15%</td></tr>
     </tbody>
   </table>
+  <div style="font-size:11px;color:var(--light);margin-top:8px">※ 모든 판매에 MRR 10% 잔류 24개월 자동 정산 (누적 조건 없음)</div>
 </div>
 
 <!-- ══════════════════════════════
@@ -345,79 +346,75 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
 ══════════════════════════════ -->
 <div id="panel-sub" class="panel">
   <div class="tag">구독 플랜</div>
-  <div class="sec-title">4단계 <em>구독 플랜</em></div>
-  <div class="sec-desc">초기 제작비와 별도. 업체 규모와 니즈에 따라 선택. 연간 선계약 시 2개월 무료.</div>
+  <div class="sec-title">5단계 <em>구독 플랜</em></div>
+  <div class="sec-desc">초기 제작비와 별도. 업체 규모(고객/회원/직원 수)에 따라 자동 매칭. 부가서비스(알림톡 등) 사용량 차액 정산.</div>
 
   <div class="plan-cards">
     <div class="plan basic">
       <div class="plan-name">Basic</div>
       <div class="plan-price">2.9만</div>
-      <div class="plan-unit">원 / 월</div>
+      <div class="plan-unit">원 / 월 · 1~10명</div>
       <ul class="plan-list">
         <li>앱 서버 운영</li>
-        <li>버그 수정</li>
-        <li>기능 유지보수</li>
-        <li>24시간 내 처리 보장</li>
+        <li>버그 수정·유지보수</li>
+        <li>문자 100건 포함</li>
+        <li>초과 25원/건</li>
       </ul>
     </div>
     <div class="plan standard">
       <div class="plan-name">Standard</div>
-      <div class="plan-price">5.9만</div>
-      <div class="plan-unit">원 / 월</div>
+      <div class="plan-price">4.9만</div>
+      <div class="plan-unit">원 / 월 · 11~30명</div>
       <ul class="plan-list">
         <li>Basic 전체 포함</li>
-        <li>프로모션 기획 월 1회</li>
-        <li>문자 발송 100건</li>
-        <li>빈 시간대 분석</li>
+        <li>문자 200건 포함</li>
+        <li>초과 23원/건</li>
       </ul>
     </div>
     <div class="plan pro">
       <div class="plan-badge">인기</div>
-      <div class="plan-name">Pro</div>
-      <div class="plan-price">9.9만</div>
-      <div class="plan-unit">원 / 월</div>
+      <div class="plan-name">Plus</div>
+      <div class="plan-price">6.9만</div>
+      <div class="plan-unit">원 / 월 · 31~60명</div>
       <ul class="plan-list">
         <li>Standard 전체 포함</li>
-        <li>프로모션 기획 월 2회</li>
-        <li>문자 발송 300건</li>
-        <li>SNS 템플릿 제공</li>
-        <li>월간 매출 리포트</li>
+        <li>문자 350건 포함</li>
+        <li>초과 21원/건</li>
       </ul>
     </div>
     <div class="plan enterprise">
-      <div class="plan-name">Enterprise</div>
-      <div class="plan-price">19.9만</div>
-      <div class="plan-unit">원 / 월</div>
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">9.9만</div>
+      <div class="plan-unit">원 / 월 · 61명+</div>
       <ul class="plan-list">
-        <li>Pro 전체 포함</li>
+        <li>Plus 전체 포함</li>
+        <li>문자 500건 포함</li>
+        <li>초과 20원/건</li>
+      </ul>
+    </div>
+    <div class="plan enterprise" style="border-color:#7c3aed">
+      <div class="plan-name" style="color:#7c3aed">Enterprise</div>
+      <div class="plan-price" style="color:#7c3aed">별도</div>
+      <div class="plan-unit">커스텀 · 협의</div>
+      <ul class="plan-list">
+        <li>법인·다지점·체인</li>
+        <li>외부 시스템 연동</li>
         <li>전담 매니저 배정</li>
-        <li>리뷰 관리 대행</li>
-        <li>매출 컨설팅 포함</li>
       </ul>
     </div>
   </div>
-  <div class="plan-note">🎁 연간 선계약 시 2개월 무료 &nbsp;·&nbsp; 최소 계약 12개월 &nbsp;·&nbsp; 초기 제작비 49~249만원 별도</div>
-
-  <!-- 연간 혜택 -->
-  <div class="card gold" style="margin-bottom:20px">
-    <div style="font-size:13px;font-weight:700;color:#92400e;margin-bottom:10px">🎁 연간 선계약 시 2개월 무료</div>
-    <div class="g4">
-      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Basic 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">29만원</div><div style="font-size:10px;color:var(--mid)">월 2.4만원 효과</div></div>
-      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Standard 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">59만원</div><div style="font-size:10px;color:var(--mid)">월 4.9만원 효과</div></div>
-      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Pro 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">99만원</div><div style="font-size:10px;color:var(--mid)">월 8.25만원 효과</div></div>
-      <div><div style="font-size:11px;color:#92400e;margin-bottom:4px">Enterprise 연간</div><div style="font-size:18px;font-weight:800;color:var(--dark)">199만원</div><div style="font-size:10px;color:var(--mid)">월 16.6만원 효과</div></div>
-    </div>
-  </div>
+  <div class="plan-note">🌿 부가서비스(알림톡 등) 사용량 차액 정산 &nbsp;·&nbsp; 초기 제작비 79/149/199만원 별도 (Enterprise는 커스텀)</div>
 
   <!-- 업종별 추천 구독 -->
-  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">업종별 추천 구독 플랜</div>
+  <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">업체 규모별 추천 구독 플랜</div>
   <table>
-    <thead><tr><th>업체 규모</th><th>예시 업종</th><th>추천 플랜</th><th>이유</th></tr></thead>
+    <thead><tr><th>고객/직원 수</th><th>예시 업종</th><th>추천 플랜</th><th>월 구독료</th></tr></thead>
     <tbody>
-      <tr><td>1인 소규모</td><td>헤어샵, 세차장</td><td><span style="color:var(--basic);font-weight:700">Basic</span> or <span style="color:var(--standard);font-weight:700">Standard</span></td><td>앱 유지 + 프로모션 시작</td></tr>
-      <tr><td>직원 2~5명</td><td>학원, 식당, 카페</td><td><span style="color:var(--standard);font-weight:700">Standard</span> or <span style="color:var(--pro);font-weight:700">Pro</span></td><td>프로모션 + 리포트 필요</td></tr>
-      <tr><td>직원 5~10명</td><td>요양원, 보험GA</td><td><span style="color:var(--pro);font-weight:700">Pro</span></td><td>전체 관리 필요</td></tr>
-      <tr><td>법인/다지점</td><td>제조업, 프랜차이즈</td><td><span style="color:var(--enterprise);font-weight:700">Enterprise</span></td><td>전담 매니저 + 컨설팅 필수</td></tr>
+      <tr><td>1~10명</td><td>1인샵·소규모 센터</td><td><span style="color:var(--basic);font-weight:700">Basic</span></td><td>2.9만원</td></tr>
+      <tr><td>11~30명</td><td>중소 매장·센터</td><td><span style="color:var(--standard);font-weight:700">Standard</span></td><td>4.9만원</td></tr>
+      <tr><td>31~60명</td><td>요양원, 학원, GA</td><td><span style="color:var(--pro);font-weight:700">Plus</span></td><td>6.9만원</td></tr>
+      <tr><td>61명+</td><td>대형 시설·법인</td><td><span style="color:var(--pro);font-weight:700">Premium</span></td><td>9.9만원</td></tr>
+      <tr><td>법인/다지점</td><td>체인, 프랜차이즈</td><td><span style="color:var(--enterprise);font-weight:700">Enterprise</span></td><td>별도 협의</td></tr>
     </tbody>
   </table>
 </div>
@@ -433,14 +430,14 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
   <!-- 기본 수수료 -->
   <div class="g2" style="margin-bottom:20px">
     <div class="fee-big">
-      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">웹앱 계약 시</div>
-      <div class="fee-val">15만원</div>
-      <div class="fee-lbl">건당 고정 수수료</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">79만원 계약 시</div>
+      <div class="fee-val">25만원</div>
+      <div class="fee-lbl">프로모션 초특가 건당 고정</div>
     </div>
     <div class="fee-big">
-      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">네이티브 계약 시</div>
-      <div class="fee-val">25만원</div>
-      <div class="fee-lbl">건당 고정 수수료</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px">199만원 계약 시</div>
+      <div class="fee-val">35만원</div>
+      <div class="fee-lbl">정상가 건당 고정</div>
     </div>
   </div>
 
@@ -452,22 +449,28 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
     </thead>
     <tbody>
       <tr>
-        <td><span style="font-weight:800;color:var(--gold)">기본 — 웹앱</span></td>
-        <td>웹앱 신규 계약</td>
-        <td class="gold-td">건당 15만원</td>
-        <td style="color:var(--mid)">월 10건 = 150만원</td>
-      </tr>
-      <tr>
-        <td><span style="font-weight:800;color:var(--gold)">기본 — 네이티브</span></td>
-        <td>네이티브 신규 계약</td>
+        <td><span style="font-weight:800;color:var(--gold)">기본 — 79만원</span></td>
+        <td>프로모션 초특가 신규 계약</td>
         <td class="gold-td">건당 25만원</td>
-        <td style="color:var(--mid)">월 10건 = 250만원</td>
+        <td style="color:var(--mid)">월 5건 = 125만원</td>
       </tr>
       <tr>
-        <td><span style="font-weight:800">추가 — 업그레이드</span></td>
-        <td>웹앱→네이티브 전환</td>
-        <td class="gold-td">건당 10만원</td>
-        <td style="color:var(--mid)">기존 고객 업그레이드</td>
+        <td><span style="font-weight:800;color:var(--gold)">기본 — 149만원</span></td>
+        <td>프로모션 + 영상·마케팅 패키지</td>
+        <td class="gold-td">건당 30만원</td>
+        <td style="color:var(--mid)">월 5건 = 150만원</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800;color:var(--gold)">기본 — 199만원</span></td>
+        <td>정상가 신규 계약</td>
+        <td class="gold-td">건당 35만원</td>
+        <td style="color:var(--mid)">월 5건 = 175만원</td>
+      </tr>
+      <tr>
+        <td><span style="font-weight:800;color:#7c3aed">Enterprise</span></td>
+        <td>커스텀 제작 계약</td>
+        <td class="gold-td">계약가의 15%</td>
+        <td style="color:var(--mid)">500만원 계약 = 75만원</td>
       </tr>
       <tr>
         <td><span style="font-weight:800">추가 — 애드온</span></td>
@@ -478,20 +481,14 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
       <tr>
         <td><span style="font-weight:800">추가 — 2호점</span></td>
         <td>동일 고객 추가 지점</td>
-        <td class="gold-td">건당 15~25만원</td>
+        <td class="gold-td">건당 25~35만원</td>
         <td style="color:var(--mid)">신규 계약과 동일</td>
       </tr>
       <tr>
-        <td><span style="font-weight:800;color:var(--standard)">잔류 — 30건+</span></td>
-        <td>누적 30건 달성 후</td>
+        <td><span style="font-weight:800;color:var(--standard)">MRR 10% 잔류 (24개월)</span></td>
+        <td>모든 판매 동일 — 누적 조건 없음</td>
         <td class="gold-td">담당 MRR의 10%</td>
-        <td style="color:var(--mid)">30건 × 2.9만 = 월 8.7만</td>
-      </tr>
-      <tr>
-        <td><span style="font-weight:800;color:var(--pro)">잔류 — 50건+</span></td>
-        <td>누적 50건 달성 후</td>
-        <td class="gold-td">담당 MRR의 15%</td>
-        <td style="color:var(--mid)">50건 × 2.9만 = 월 21.75만</td>
+        <td style="color:var(--mid)">20건 × 4.9만(Standard) × 10% = 월 9.8만</td>
       </tr>
     </tbody>
   </table>
@@ -500,13 +497,13 @@ input[type=range] { width: 100%; accent-color: var(--gold); }
   <div style="font-size:14px;font-weight:700;color:var(--dark);margin-bottom:12px">월 수입 시뮬레이션</div>
   <table style="margin-bottom:20px">
     <thead>
-      <tr><th>시나리오</th><th>월 계약</th><th>수수료 수입</th><th>잔류 수수료 (30건 이후)</th><th>합계</th></tr>
+      <tr><th>시나리오</th><th>월 계약</th><th>수수료 수입</th><th>잔류 수수료 (MRR 10%)</th><th>합계</th></tr>
     </thead>
     <tbody>
-      <tr><td>웹앱만 10건</td><td>10건</td><td>150만원</td><td>+8.7만원</td><td class="gold-td">158.7만원</td></tr>
-      <tr><td>웹앱 10 + 네이티브 5</td><td>15건</td><td>275만원</td><td>+추가</td><td class="gold-td">280만원+</td></tr>
-      <tr><td>웹앱 15 + 네이티브 10</td><td>25건</td><td>475만원</td><td>+추가</td><td class="gold-td">490만원+</td></tr>
-      <tr><td>고단가 위주 (CareOn, FactoryOn)</td><td>10건</td><td>250만원+</td><td>+추가</td><td class="gold-td">260만원+</td></tr>
+      <tr><td>79만원만 5건</td><td>5건</td><td>125만원</td><td>+2.45만원</td><td class="gold-td">127.45만원</td></tr>
+      <tr><td>149만원 5건</td><td>5건</td><td>150만원</td><td>+2.45만원</td><td class="gold-td">152.45만원</td></tr>
+      <tr><td>199만원 5건</td><td>5건</td><td>175만원</td><td>+2.45만원</td><td class="gold-td">177.45만원</td></tr>
+      <tr><td>고단가 위주 + Enterprise 1건</td><td>5건+1</td><td>250만원+</td><td>+추가</td><td class="gold-td">260만원+</td></tr>
     </tbody>
   </table>
 
