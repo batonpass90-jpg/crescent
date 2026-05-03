@@ -480,10 +480,10 @@ input[type=range] { width: 100%; accent-color: var(--gold); height: 4px; }
         </tr>
         <tr>
           <td><span style="color:var(--care);font-weight:800">CareOn</span><div class="price-note">요양·복지</div></td>
-          <td class="gold">99만원</td>
-          <td class="gold">7.9만원</td>
+          <td class="gold">79만원~</td>
+          <td class="gold">2.9~9.9만원</td>
           <td class="gold">149만원</td>
-          <td class="gold">12.9만원</td>
+          <td class="gold">2.9~9.9만원</td>
           <td><span style="background:#f0fdf4;color:#166534;border:1px solid #86efac;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px">네이티브 권장</span><div class="price-note">보호사 현장 앱 필수</div></td>
         </tr>
         <tr>
@@ -677,7 +677,7 @@ const products = {
   car:     { name: 'CarOn',     color: '#ea580c', web:{setup:29,monthly:2.2}, native:{setup:79,monthly:4.9},  cat: '세차·정비',       market: '1만개',  pain: '예약 공백+이력 없음', roi: '차량 이력 = 재방문 유도' },
   edu:     { name: 'EduOn',     color: '#7c3aed', web:{setup:29,monthly:1.9}, native:{setup:79,monthly:4.9},  cat: '교육·학원',       market: '13만개', pain: '수납+출결 수동관리',  roi: '학부모 신뢰 = 원생 유지' },
   review:  { name: 'ReviewOn',  color: '#ca8a04', web:{setup:69,monthly:6.9}, native:{setup:69,monthly:6.9},  cat: '식당·F&B',        market: '70만개', pain: '나쁜 리뷰 = 매출 하락', roi: 'AI 답글 = 별점 회복' },
-  care:    { name: 'CareOn',    color: '#0f766e', web:{setup:99,monthly:7.9}, native:{setup:149,monthly:12.9}, cat: '요양·복지',       market: '5천개+', pain: '문의 응대+인력 관리',  roi: '신뢰감 = 입소 문의 증가' },
+  care:    { name: 'CareOn',    color: '#0f766e', web:{setup:79,monthly:4.9}, native:{setup:149,monthly:4.9}, cat: '요양·복지',       market: '5천개+', pain: '문의 응대+인력 관리',  roi: '신뢰감 = 입소 문의 증가' },
   insure:  { name: 'InsureOn',  color: '#1d4ed8', web:{setup:79,monthly:9.9}, native:{setup:129,monthly:14.9}, cat: '보험 영업인',     market: '60만명', pain: '갱신 놓침+약관 복잡',  roi: 'AI 분석 = 영업 효율 10x' },
   factory: { name: 'FactoryOn', color: '#374151', web:{setup:149,monthly:14.9},native:{setup:249,monthly:24.9},cat: '제조업',          market: '7만개',  pain: '엑셀 생산관리+실시간 불가', roi: 'MES 1/10 비용' },
 };

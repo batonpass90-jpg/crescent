@@ -51,6 +51,7 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
 .plan-basic{background:var(--tl);color:var(--teal)}
 .plan-pro{background:#dbeafe;color:#1d4ed8}
 .plan-premium{background:#fef9c3;color:#92400e}
+.plan-enterprise{background:#ede9fe;color:#6d28d9}
 .plan-none{background:var(--g100);color:var(--gray)}
 
 /* 셀렉트 */
@@ -145,10 +146,11 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
         <input type="text" class="search-input" id="searchInput" placeholder="센터명 검색..." oninput="filterTable()">
         <select id="planFilter" class="plan-select" onchange="filterTable()">
           <option value="">전체 플랜</option>
-          <option value="basic">베이직</option>
-          <option value="standard">스탠다드</option>
-          <option value="pro">프로</option>
-          <option value="premium">프리미엄</option>
+          <option value="basic">Basic</option>
+          <option value="standard">Standard</option>
+          <option value="plus">Plus</option>
+          <option value="premium">Premium</option>
+          <option value="enterprise">Enterprise</option>
         </select>
         <button class="btn btn-primary" onclick="loadCenters()">🔄 새로고침</button>
       </div>
@@ -179,34 +181,41 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
   <!-- 플랜별 요약 -->
   <div class="section">
     <div class="sec-hd"><div class="sec-title">플랜별 현황</div></div>
-    <div style="padding:20px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px" id="planSummary">
+    <div style="padding:20px;display:grid;grid-template-columns:repeat(5,1fr);gap:12px" id="planSummary">
       <div style="border:2px solid var(--border);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:4px">베이직</div>
-        <div style="font-size:10px;color:var(--gray);margin-bottom:8px">10인 미만 추천</div>
+        <div style="font-size:12px;font-weight:700;color:var(--gray);margin-bottom:4px">Basic</div>
+        <div style="font-size:10px;color:var(--gray);margin-bottom:8px">1~10명</div>
         <div style="font-size:28px;font-weight:800" id="basicCount">-</div>
-        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 19,900원</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 29,000원</div>
         <div style="font-size:10px;color:var(--gray)">문자 100건 · 초과 25원</div>
       </div>
       <div style="border:2px solid var(--tl);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">스탠다드</div>
-        <div style="font-size:10px;color:var(--teal);margin-bottom:8px">20인 미만 추천</div>
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:4px">Standard</div>
+        <div style="font-size:10px;color:var(--teal);margin-bottom:8px">11~30명</div>
         <div style="font-size:28px;font-weight:800;color:var(--teal)" id="standardCount">-</div>
-        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 39,900원</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 49,000원</div>
         <div style="font-size:10px;color:var(--gray)">문자 200건 · 초과 23원</div>
       </div>
       <div style="border:2px solid #dbeafe;border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:4px">프로</div>
-        <div style="font-size:10px;color:#1d4ed8;margin-bottom:8px">40인 미만 추천</div>
-        <div style="font-size:28px;font-weight:800;color:#1d4ed8" id="proCount">-</div>
-        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 69,900원</div>
+        <div style="font-size:12px;font-weight:700;color:#1d4ed8;margin-bottom:4px">Plus</div>
+        <div style="font-size:10px;color:#1d4ed8;margin-bottom:8px">31~60명</div>
+        <div style="font-size:28px;font-weight:800;color:#1d4ed8" id="plusCount">-</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:6px">월 69,000원</div>
         <div style="font-size:10px;color:var(--gray)">문자 350건 · 초과 21원</div>
       </div>
       <div style="border:2px solid #fef9c3;border-radius:12px;padding:16px;text-align:center">
-        <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:4px">프리미엄</div>
-        <div style="font-size:10px;color:#92400e;margin-bottom:8px">40인 이상 추천</div>
+        <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:4px">Premium</div>
+        <div style="font-size:10px;color:#92400e;margin-bottom:8px">61명+</div>
         <div style="font-size:28px;font-weight:800;color:#92400e" id="premiumCount">-</div>
         <div style="font-size:10px;color:var(--gray);margin-top:6px">월 99,000원</div>
         <div style="font-size:10px;color:var(--gray)">문자 500건 · 초과 20원</div>
+      </div>
+      <div style="border:2px solid #ede9fe;border-radius:12px;padding:16px;text-align:center">
+        <div style="font-size:12px;font-weight:700;color:#6d28d9;margin-bottom:4px">Enterprise</div>
+        <div style="font-size:10px;color:#6d28d9;margin-bottom:8px">커스텀 제작</div>
+        <div style="font-size:28px;font-weight:800;color:#6d28d9" id="enterpriseCount">-</div>
+        <div style="font-size:10px;color:var(--gray);margin-top:6px">별도 협의</div>
+        <div style="font-size:10px;color:var(--gray)">문자 정책 협의</div>
       </div>
     </div>
   </div>
@@ -225,10 +234,11 @@ body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:var(--
       <div class="form-group">
         <label class="form-label">변경할 플랜</label>
         <select class="form-input" id="planModalSelect">
-          <option value="basic">베이직 — 10인 미만 추천 · 월 19,900원 · 문자 100건 · 초과 25원/건</option>
-          <option value="standard">스탠다드 — 20인 미만 추천 · 월 39,900원 · 문자 200건 · 초과 23원/건</option>
-          <option value="pro">프로 — 40인 미만 추천 · 월 69,900원 · 문자 350건 · 초과 21원/건</option>
-          <option value="premium">프리미엄 — 40인 이상 추천 · 월 99,000원 · 문자 500건 · 초과 20원/건</option>
+          <option value="basic">Basic — 1~10명 · 월 29,000원 · 문자 100건 · 초과 25원/건</option>
+          <option value="standard">Standard — 11~30명 · 월 49,000원 · 문자 200건 · 초과 23원/건</option>
+          <option value="plus">Plus — 31~60명 · 월 69,000원 · 문자 350건 · 초과 21원/건</option>
+          <option value="premium">Premium — 61명+ · 월 99,000원 · 문자 500건 · 초과 20원/건</option>
+          <option value="enterprise">Enterprise — 커스텀 제작 · 별도 협의</option>
         </select>
       </div>
       <div class="form-group">
@@ -339,9 +349,9 @@ async function loadCenters() {
     const totalSms = _allCenters.reduce((s, c) => s + c.smsMonth, 0);
     const smsRevenue = totalSms * 25; // 단문 기준 25원
 
-    // 티어별 월 구독료
-    const TIER_MONTHLY = { basic: 19900, standard: 39900, pro: 69900, premium: 99000 };
-    const subRevenue = _allCenters.reduce((s, c) => s + (TIER_MONTHLY[c.plan] || TIER_MONTHLY.basic), 0);
+    // 티어별 월 구독료 (Enterprise는 별도 협의 — MRR 집계 제외)
+    const TIER_MONTHLY = { basic: 29000, standard: 49000, plus: 69000, premium: 99000, enterprise: 0 };
+    const subRevenue = _allCenters.reduce((s, c) => s + (TIER_MONTHLY[c.plan] ?? TIER_MONTHLY.basic), 0);
     const mrr = subRevenue + smsRevenue;
 
     document.getElementById('totalCenters').textContent = _allCenters.length + '개';
@@ -353,14 +363,16 @@ async function loadCenters() {
     document.getElementById('totalMRR').textContent = (mrr / 10000).toFixed(0) + '만원';
 
     // 플랜별 카운트
-    const basicCnt   = _allCenters.filter(c => !c.plan || c.plan === 'basic').length;
+    const basicCnt    = _allCenters.filter(c => !c.plan || c.plan === 'basic').length;
     const standardCnt = _allCenters.filter(c => c.plan === 'standard').length;
-    const proCnt     = _allCenters.filter(c => c.plan === 'pro').length;
-    const premiumCnt = _allCenters.filter(c => c.plan === 'premium').length;
-    document.getElementById('basicCount').textContent    = basicCnt + '개';
-    document.getElementById('standardCount').textContent = standardCnt + '개';
-    document.getElementById('proCount').textContent      = proCnt + '개';
-    document.getElementById('premiumCount').textContent  = premiumCnt + '개';
+    const plusCnt     = _allCenters.filter(c => c.plan === 'plus').length;
+    const premiumCnt  = _allCenters.filter(c => c.plan === 'premium').length;
+    const enterpriseCnt = _allCenters.filter(c => c.plan === 'enterprise').length;
+    document.getElementById('basicCount').textContent      = basicCnt + '개';
+    document.getElementById('standardCount').textContent   = standardCnt + '개';
+    document.getElementById('plusCount').textContent       = plusCnt + '개';
+    document.getElementById('premiumCount').textContent    = premiumCnt + '개';
+    document.getElementById('enterpriseCount').textContent = enterpriseCnt + '개';
 
     renderTable(_allCenters);
   } catch(e) {
@@ -376,10 +388,10 @@ function renderTable(centers) {
     tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:var(--gray);padding:40px">등록된 센터가 없습니다</td></tr>';
     return;
   }
-  const PLAN_LABEL = { basic:'베이직', standard:'스탠다드', pro:'프로', premium:'프리미엄' };
-  const PLAN_CLS   = { basic:'plan-none', standard:'plan-basic', pro:'plan-pro', premium:'plan-premium' };
-  const SMS_QUOTA  = { basic:100, standard:200, pro:350, premium:500 };
-  const OVER_PRICE = { basic:25, standard:23, pro:21, premium:20 };
+  const PLAN_LABEL = { basic:'Basic', standard:'Standard', plus:'Plus', premium:'Premium', enterprise:'Enterprise' };
+  const PLAN_CLS   = { basic:'plan-none', standard:'plan-basic', plus:'plan-pro', premium:'plan-premium', enterprise:'plan-enterprise' };
+  const SMS_QUOTA  = { basic:100, standard:200, plus:350, premium:500, enterprise:500 };
+  const OVER_PRICE = { basic:25, standard:23, plus:21, premium:20, enterprise:20 };
 
   tbody.innerHTML = centers.map(c => {
     const plan = c.plan || 'basic';
@@ -401,7 +413,7 @@ function renderTable(centers) {
       <td style="font-size:12px;color:var(--gray)">${createdAt}</td>
       <td>
         <button class="plan-badge ${PLAN_CLS[plan]||'plan-none'}" onclick="openPlanModal('${c.id}','${c.name}','${plan}',${c.sms_extra_quota||0})">
-          ${{basic:'①',standard:'②',pro:'③',premium:'④'}[plan]||'①'} ${PLAN_LABEL[plan]||'베이직'}
+          ${{basic:'①',standard:'②',plus:'③',premium:'④',enterprise:'⑤'}[plan]||'①'} ${PLAN_LABEL[plan]||'Basic'}
         </button>
       </td>
       <td style="text-align:center;font-weight:700">${c.patientCount}</td>

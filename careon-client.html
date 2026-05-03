@@ -133,7 +133,7 @@
   <div class="hero-ttl">서류·인력 관리 줄이고<br>케어 품질 높이는<br><span>요양기관 운영 시스템</span></div>
   <div class="hero-desc">보호사 GPS 출퇴근부터 케어일지 자동화, 가족 공유까지.<br>원장님만 쓰는 대시보드 하나로 운영이 달라집니다.</div>
   <a href="#sim" class="hero-btn">절감 효과 바로 계산해보기 →</a>
-  <div class="hero-sub">월 5.9만원 · 2주 내 세팅 완료 · 언제든 해지 가능</div>
+  <div class="hero-sub">월 2.9~9.9만원 (수급자 수 기준) · 2주 내 세팅 완료 · 언제든 해지 가능</div>
 </div>
 
 <hr class="divider">
@@ -241,30 +241,30 @@
   <div class="price-grid">
     <div class="price-card">
       <div class="price-name">초기 제작비</div>
-      <div class="price-amt">49만원~</div>
-      <div class="price-unit">시설 맞춤 세팅 1회</div>
+      <div class="price-amt">79만원~</div>
+      <div class="price-unit">프로모션 초특가 · 시설 맞춤 세팅 1회</div>
       <ul class="price-items">
-        <li>시설 홈페이지</li>
-        <li>원장님 관리 대시보드</li>
-        <li>브랜드 로고·색상 적용</li>
-        <li>2주 내 납품</li>
+        <li>센터 홈페이지 + 보호자/보호사 앱 + 센터장 대시보드</li>
+        <li>GPS 출퇴근·케어일지·가족 공유 전체 포함</li>
+        <li>149만원: + 영상 패키지 + 마케팅 대행</li>
+        <li>199만원 (정상가) / Enterprise 별도 협의</li>
       </ul>
     </div>
     <div class="price-card featured">
-      <div class="price-badge">추천</div>
-      <div class="price-name">월 구독 Pro</div>
-      <div class="price-amt">5.9만원</div>
+      <div class="price-badge">수급자 수 기준</div>
+      <div class="price-name">월 구독료</div>
+      <div class="price-amt">2.9~9.9만원</div>
       <div class="price-unit">/ 월 · 언제든 해지 가능</div>
       <ul class="price-items">
-        <li>보호사 GPS 출퇴근</li>
-        <li>케어일지 자동 공유</li>
-        <li>수납 자동 알림</li>
-        <li>월 500건 문자 포함</li>
-        <li>기능 업데이트 무료</li>
+        <li>Basic 1~10명 · 월 2.9만원 (문자 100건)</li>
+        <li>Standard 11~30명 · 월 4.9만원 (문자 200건)</li>
+        <li>Plus 31~60명 · 월 6.9만원 (문자 350건)</li>
+        <li>Premium 61명+ · 월 9.9만원 (문자 500건)</li>
+        <li>Enterprise 커스텀 · 별도 협의</li>
       </ul>
     </div>
   </div>
-  <div class="price-note">연간 결제 시 2개월 무료 · 초과 문자 건당 15원</div>
+  <div class="price-note">초과 문자 건당 20~25원 (티어별) · 부가서비스(알림톡 등) 사용량 별도 정산</div>
 </div>
 
 <hr class="divider">
@@ -317,7 +317,8 @@ function calc(){
   // 미납 회수: 건당 평균 30만원 중 60% 회수 개선
   const g4=Math.round(unpaid*0.6)*300000;
   const gtotal=g1+g2+g3+g4;
-  const sub=59000;
+  // 평균 구독료 기준(Standard 4.9만 기준)
+  const sub=49000;
   const roi=Math.round(gtotal/sub*10)/10;
 
   const maxB=Math.max(g1,g2,g3,g4,1);
@@ -337,7 +338,7 @@ function calc(){
   document.getElementById('res-total').textContent='+'+fmtM(gtotal);
 
   let color,tag,msg,sub2;
-  if(roi>=5){color='#0D9488';tag='구독료 대비 ROI '+roi+'배';msg='월 5.9만원으로 +'+fmtM(gtotal)+' 절감·회수';sub2='첫 달에 이미 본전이 나오는 구조예요.';}
+  if(roi>=5){color='#0D9488';tag='구독료 대비 ROI '+roi+'배';msg='월 4.9만원(평균)으로 +'+fmtM(gtotal)+' 절감·회수';sub2='첫 달에 이미 본전이 나오는 구조예요.';}
   else if(roi>=2){color='#2563EB';tag='ROI '+roi+'배';msg='구독료보다 '+roi+'배 더 절감되는 구조';sub2='서류 작업을 줄이는 것만으로도 충분히 본전입니다.';}
   else if(roi>=1){color='#D97706';tag='본전 이상';msg='구독료보다 절감 효과가 더 커요';sub2='입소자가 늘어날수록 효과가 커집니다.';}
   else{color='#D97706';tag='소규모 시설';msg='지금도 보호사 관리·서류 절감 효과가 있어요';sub2='입소자 수가 늘어나면 ROI가 빠르게 올라갑니다.';}

@@ -359,7 +359,7 @@ body:not(.app-ready) .stat-num::before{
       <div style="flex:1;min-width:0">
         <div class="sb-pname">홍길동 센터장</div>
         <div class="sb-prole">햇살요양센터</div>
-        <span id="sbPlanBadge" style="display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)">베이직</span>
+        <span id="sbPlanBadge" style="display:inline-block;margin-top:5px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.15);color:rgba(255,255,255,.8)">Basic</span>
       </div>
     </div>
     <button onclick="doLogout()" style="width:100%;margin-top:6px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.7);border-radius:8px;padding:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">🚪 로그아웃</button>
@@ -800,37 +800,42 @@ body:not(.app-ready) .stat-num::before{
         <div class="card" style="margin-bottom:0">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
             <div style="font-size:12px;font-weight:700;color:var(--gray)">📋 구독 플랜 현황</div>
-            <span id="myPlanBadge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--tl);color:var(--teal)">베이직</span>
+            <span id="myPlanBadge" style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:var(--tl);color:var(--teal)">Basic</span>
           </div>
           <!-- 플랜 비교 미니표 -->
           <div style="font-size:11px">
-            <div style="display:grid;grid-template-columns:1fr repeat(4,auto);gap:4px 8px;align-items:center;font-size:11px">
+            <div style="display:grid;grid-template-columns:1fr repeat(5,auto);gap:4px 8px;align-items:center;font-size:11px">
               <div style="color:var(--gray);font-weight:700">항목</div>
-              <div style="text-align:center;font-weight:700;color:var(--gray)">베이직</div>
-              <div style="text-align:center;font-weight:700;color:var(--teal)">스탠다드</div>
-              <div style="text-align:center;font-weight:700;color:#3b82f6">프로</div>
-              <div style="text-align:center;font-weight:700;color:#f59e0b">프리미엄</div>
+              <div style="text-align:center;font-weight:700;color:var(--gray)">Basic</div>
+              <div style="text-align:center;font-weight:700;color:var(--teal)">Standard</div>
+              <div style="text-align:center;font-weight:700;color:#3b82f6">Plus</div>
+              <div style="text-align:center;font-weight:700;color:#f59e0b">Premium</div>
+              <div style="text-align:center;font-weight:700;color:#6d28d9">Enterprise</div>
               <div style="grid-column:1/-1;height:1px;background:var(--border);margin:3px 0"></div>
               <div style="color:var(--gray)">수급자 수</div>
-              <div style="text-align:center">10인 미만 추천</div>
-              <div style="text-align:center;color:var(--teal)">20인 미만 추천</div>
-              <div style="text-align:center;color:#3b82f6">40인 미만 추천</div>
-              <div style="text-align:center;color:#f59e0b">40인 이상 추천</div>
+              <div style="text-align:center">1~10명</div>
+              <div style="text-align:center;color:var(--teal)">11~30명</div>
+              <div style="text-align:center;color:#3b82f6">31~60명</div>
+              <div style="text-align:center;color:#f59e0b">61명+</div>
+              <div style="text-align:center;color:#6d28d9">커스텀</div>
               <div style="color:var(--gray)">월 구독료</div>
-              <div style="text-align:center;font-weight:700">19,900원</div>
-              <div style="text-align:center;font-weight:700;color:var(--teal)">39,900원</div>
-              <div style="text-align:center;font-weight:700;color:#3b82f6">69,900원</div>
+              <div style="text-align:center;font-weight:700">29,000원</div>
+              <div style="text-align:center;font-weight:700;color:var(--teal)">49,000원</div>
+              <div style="text-align:center;font-weight:700;color:#3b82f6">69,000원</div>
               <div style="text-align:center;font-weight:700;color:#f59e0b">99,000원</div>
+              <div style="text-align:center;font-weight:700;color:#6d28d9">별도 협의</div>
               <div style="color:var(--gray)">기본 문자</div>
               <div style="text-align:center">100건</div>
               <div style="text-align:center;color:var(--teal)">200건</div>
               <div style="text-align:center;color:#3b82f6">350건</div>
               <div style="text-align:center;color:#f59e0b">500건</div>
+              <div style="text-align:center;color:#6d28d9">협의</div>
               <div style="color:var(--gray)">초과 단가</div>
               <div style="text-align:center">25원</div>
               <div style="text-align:center;color:var(--teal)">23원</div>
               <div style="text-align:center;color:#3b82f6">21원</div>
               <div style="text-align:center;color:#f59e0b">20원</div>
+              <div style="text-align:center;color:#6d28d9">협의</div>
             </div>
           </div>
           <div style="margin-top:12px;display:flex;gap:8px">
@@ -2648,9 +2653,9 @@ async function sendSalaryAll() {
 
 // ===== 문자 발송 뷰 로직 =====
 // 플랜별 기본 제공 문자 수
-const SMS_PLAN_QUOTA = { basic: 100, standard: 200, pro: 350, premium: 500 };
-const SMS_PLAN_LABEL = { basic: '베이직', standard: '스탠다드', pro: '프로', premium: '프리미엄' };
-const SMS_OVER_PRICE = { basic: 25, standard: 23, pro: 21, premium: 20 }; // 초과 단가
+const SMS_PLAN_QUOTA = { basic: 100, standard: 200, plus: 350, premium: 500, enterprise: 500 };
+const SMS_PLAN_LABEL = { basic: 'Basic', standard: 'Standard', plus: 'Plus', premium: 'Premium', enterprise: 'Enterprise' };
+const SMS_OVER_PRICE = { basic: 25, standard: 23, plus: 21, premium: 20, enterprise: 20 }; // 초과 단가
 
 let _smsHistory = [];
 let _smsQuotaData = { plan: 'basic', used: 0, extra: 0 };
@@ -2658,10 +2663,11 @@ let _smsQuotaData = { plan: 'basic', used: 0, extra: 0 };
 // ===== 플랜 배지 공통 업데이트 =====
 function applyPlanBadge(plan) {
   const PLAN_COLORS = {
-    basic:    { bg:'rgba(255,255,255,.15)', color:'rgba(255,255,255,.85)' },
-    standard: { bg:'rgba(20,184,166,.35)',  color:'#a7f3d0' },
-    pro:      { bg:'rgba(59,130,246,.35)',  color:'#bfdbfe' },
-    premium:  { bg:'rgba(245,158,11,.3)',   color:'#fde68a' }
+    basic:      { bg:'rgba(255,255,255,.15)', color:'rgba(255,255,255,.85)' },
+    standard:   { bg:'rgba(20,184,166,.35)',  color:'#a7f3d0' },
+    plus:       { bg:'rgba(59,130,246,.35)',  color:'#bfdbfe' },
+    premium:    { bg:'rgba(245,158,11,.3)',   color:'#fde68a' },
+    enterprise: { bg:'rgba(109,40,217,.3)',   color:'#ddd6fe' }
   };
   const col = PLAN_COLORS[plan] || PLAN_COLORS.basic;
   const label = SMS_PLAN_LABEL[plan] || plan;
@@ -2671,7 +2677,7 @@ function applyPlanBadge(plan) {
   // 문자 발송 뷰 배지
   const mb = document.getElementById('myPlanBadge');
   if (mb) {
-    const CARD_COLORS = { basic:'background:var(--g100);color:var(--gray)', standard:'background:var(--tl);color:var(--teal)', pro:'background:#dbeafe;color:#1d4ed8', premium:'background:#fef9c3;color:#92400e' };
+    const CARD_COLORS = { basic:'background:var(--g100);color:var(--gray)', standard:'background:var(--tl);color:var(--teal)', plus:'background:#dbeafe;color:#1d4ed8', premium:'background:#fef9c3;color:#92400e', enterprise:'background:#ede9fe;color:#6d28d9' };
     mb.textContent = label;
     mb.style.cssText = `font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;${CARD_COLORS[plan]||CARD_COLORS.basic}`;
   }

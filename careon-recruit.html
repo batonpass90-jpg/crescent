@@ -437,19 +437,19 @@
   <div class="section-title">💰 수익 구조</div>
   <div class="earn-grid">
     <div class="earn-card">
-      <div class="label">계약 1건당</div>
+      <div class="label">계약 1건당 (정상가 199만원)</div>
       <div class="amount">35만원</div>
-      <div class="sub">정상가 기준 수수료</div>
+      <div class="sub">79만원 25만 / 149만원 30만 / Enterprise 계약가 15%</div>
     </div>
     <div class="earn-card">
-      <div class="label">누적 20건 돌파 시</div>
-      <div class="amount">1만원/월</div>
-      <div class="sub">누적 계약 1건당 잔류</div>
+      <div class="label">모든 판매 동일 (24개월)</div>
+      <div class="amount">MRR 10%</div>
+      <div class="sub">구독 유지 잔류 — 누적 조건 없음</div>
     </div>
   </div>
   <div class="earn-note">
-    ✦ 누적 계약 20건 이상부터 → <strong style="color:var(--navy)">누적 전체 × 1만원/월</strong> 자동 정산<br>
-    ✦ 계약이 쌓일수록 매달 들어오는 구독 수익 증가 (추가 영업 불필요)
+    ✦ 계약 성사 즉시 다음 달 10일 일괄 지급<br>
+    ✦ MRR 10%는 모든 판매 동일하게 24개월간 매월 자동 정산 (계약이 쌓일수록 누적)
   </div>
 </div>
 
@@ -461,13 +461,13 @@
       <tr><th style="white-space:nowrap">기간</th><th style="white-space:nowrap">월/누적</th><th style="white-space:nowrap">계약수수료</th><th style="white-space:nowrap">구독잔류</th><th style="white-space:nowrap">월수익</th></tr>
     </thead>
     <tbody>
-      <tr><td>1개월</td><td>3/3건</td><td>105만원</td><td>—</td><td class="highlight">105만원</td></tr>
-      <tr><td>4개월</td><td>5/16건</td><td>175만원</td><td>—</td><td class="highlight">175만원</td></tr>
-      <tr><td>5개월</td><td>8/24건</td><td>280만원</td><td>24만원</td><td class="highlight">304만원</td></tr>
-      <tr><td>8개월</td><td>8/48건</td><td>280만원</td><td>48만원</td><td class="highlight">328만원</td></tr>
+      <tr><td>1개월</td><td>3/3건</td><td>105만원</td><td>1.5만원</td><td class="highlight">106.5만원</td></tr>
+      <tr><td>4개월</td><td>5/16건</td><td>175만원</td><td>7.9만원</td><td class="highlight">182.9만원</td></tr>
+      <tr><td>6개월</td><td>5/26건</td><td>175만원</td><td>12.9만원</td><td class="highlight">187.9만원</td></tr>
+      <tr><td>12개월</td><td>5/56건</td><td>175만원</td><td>27.7만원</td><td class="highlight">202.7만원</td></tr>
     </tbody>
   </table>
-  <div class="sim-note">* 누적 20건 돌파 이후 매달 누적 건수만큼 자동 정산 (복리 구조)</div>
+  <div class="sim-note">* 모든 정상가 199만원 계약 가정. 구독잔류 = 누적 건수 × 평균 월 4.95만(Standard~Plus 평균) × 10%. 24개월 잔류.</div>
 </div>
 
 <!-- 이런 분께 딱! -->
@@ -511,8 +511,8 @@
   <div style="display:grid;grid-template-columns:1fr;gap:12px;">
     <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
       <div style="font-size:12px;color:var(--gray);margin-bottom:4px">💰 가격 합리성</div>
-      <div style="font-weight:800;font-size:15px;margin-bottom:4px">외주 500만원 + 월 유지비 → CareOn <span style="text-decoration:line-through;color:var(--gray);font-weight:500">299만원</span> <span style="background:var(--yellow);color:var(--navy);padding:2px 8px;border-radius:99px;font-size:13px">149만원 PROMO</span> + 월 9.9만원</div>
-      <div style="font-size:13px;color:var(--gray)">월 구독료에 유지보수·서버·업데이트 전부 포함. 별도 청구 없음.</div>
+      <div style="font-weight:800;font-size:15px;margin-bottom:4px">외주 500만원+ → CareOn <span style="text-decoration:line-through;color:var(--gray);font-weight:500">정상가 199만원</span> <span style="background:var(--yellow);color:var(--navy);padding:2px 8px;border-radius:99px;font-size:13px">149만원 PROMO</span> + 월 2.9~9.9만원</div>
+      <div style="font-size:13px;color:var(--gray)">티어별 구독료에 유지보수·서버·업데이트 전부 포함. 별도 청구 없음.</div>
     </div>
     <div style="border-left:4px solid var(--yellow);background:var(--light);border-radius:0 10px 10px 0;padding:16px 18px;">
       <div style="font-size:12px;color:var(--gray);margin-bottom:4px">📋 업무 직결</div>
@@ -569,17 +569,16 @@
         <li>상담 목록·공지사항 관리</li>
       </ul>
       <div class="price-row">
-        <span>제작비 + 구독 Pro</span>
+        <span>제작비 + 월 구독</span>
         <div class="price-box">
           <div class="price-old-line">
-            <span class="price-strike">299만원</span>
-            <span class="price-strike">199만원</span>
+            <span class="price-strike">정상가 199만원</span>
           </div>
           <div class="price-now-line">
             <strong>149만원</strong>
             <span class="price-badge">PROMO</span>
           </div>
-          <div class="price-sub">+ 월 9.9만원 (구독 Pro)</div>
+          <div class="price-sub">+ 월 2.9~9.9만원 (티어별 구독)</div>
         </div>
       </div>
     </div>
@@ -668,7 +667,7 @@
     </details></li>
     <li><details class="faq-item">
       <summary>수수료는 언제 지급되나요?</summary>
-      <div class="faq-answer">계약일 <strong style="color:var(--navy)">익월 10일</strong>에 월 계약 수수료가 일괄 지급됩니다. 구독료 잔류 수익은 누적 20건 이상부터 <strong style="color:var(--navy)">누적 전체 × 월 1만원</strong>이 매달 자동 정산됩니다.</div>
+      <div class="faq-answer">계약일 <strong style="color:var(--navy)">익월 10일</strong>에 계약 수수료가 일괄 지급됩니다 (79만원 25만 / 149만원 30만 / 199만원 35만 / Enterprise 계약가 15%). 구독 MRR 10% 잔류는 <strong style="color:var(--navy)">모든 판매 동일하게 24개월간</strong> 매달 자동 정산됩니다 (누적 조건 없음).</div>
     </details></li>
     <li><details class="faq-item">
       <summary>제품 관련 질문은 누가 답하나요?</summary>

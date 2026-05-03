@@ -24,13 +24,19 @@ create table if not exists public.centers (
   owner_id      uuid references auth.users(id) on delete set null,
   phone         text,
   address       text,
-  plan          text not null default 'basic',  -- basic | standard | pro | premium
+  plan          text not null default 'basic',  -- basic | standard | plus | premium | enterprise
   sms_extra_quota integer not null default 0,
   primary_color text default '#0D9488',
   created_at    timestamptz not null default now()
 );
 -- 기존 테이블이 컬럼 없이 만들어진 경우를 위한 안전장치 (idempotent)
 alter table public.centers add column if not exists plan text not null default 'basic';
+-- pro → plus 마이그레이션 (구 정책에서 신 정책으로)
+update public.centers set plan = 'plus' where plan = 'pro';
+-- 신 정책 CHECK 제약 (basic | standard | plus | premium | enterprise)
+alter table public.centers drop constraint if exists centers_plan_check;
+alter table public.centers add constraint centers_plan_check
+  check (plan in ('basic','standard','plus','premium','enterprise'));
 alter table public.centers add column if not exists sms_extra_quota integer not null default 0;
 alter table public.centers add column if not exists primary_color text default '#0D9488';
 alter table public.centers add column if not exists phone text;
@@ -301,10 +307,12 @@ begin
     from public.patients
     where center_id = rec.id and status = 'active';
 
+    -- Enterprise는 자동 승격 대상 아님 (커스텀 제작 고객 전용)
     next_plan := case
-      when patient_cnt >= 40 and rec.plan != 'premium' then 'premium'
-      when patient_cnt >= 20 and rec.plan in ('basic','standard') and patient_cnt < 40 then 'pro'
-      when patient_cnt >= 10 and rec.plan = 'basic' and patient_cnt < 20 then 'standard'
+      when rec.plan = 'enterprise' then null
+      when patient_cnt >= 61 and rec.plan != 'premium' then 'premium'
+      when patient_cnt >= 31 and rec.plan in ('basic','standard') and patient_cnt <= 60 then 'plus'
+      when patient_cnt >= 11 and rec.plan = 'basic' and patient_cnt <= 30 then 'standard'
       else null
     end;
 
