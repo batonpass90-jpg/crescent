@@ -925,21 +925,12 @@ body:not(.app-ready) .stat-num::before{
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label">케어 항목 (복수 선택)</label>
-        <div class="check-grid">
-          <label class="check-option"><input type="checkbox" checked> 🍚 식사 보조</label>
-          <label class="check-option"><input type="checkbox" checked> 🤸 체위 변경</label>
-          <label class="check-option"><input type="checkbox"> 🧘 스트레칭</label>
-          <label class="check-option"><input type="checkbox"> 💊 투약 확인</label>
-          <label class="check-option"><input type="checkbox"> 🛁 청결 케어</label>
-          <label class="check-option"><input type="checkbox"> 🩺 혈압 체크</label>
-          <label class="check-option"><input type="checkbox"> 🧠 인지활동</label>
-          <label class="check-option"><input type="checkbox"> 🛏️ 침구 교체</label>
-        </div>
+        <label class="form-label">표준 케어 항목 <span style="font-weight:400;color:var(--gray);font-size:11px">(체크하면 보호사 앱 체크리스트로 자동 반영)</span></label>
+        <div id="wo-checklist" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px"></div>
       </div>
       <div class="form-group">
-        <label class="form-label">특별 지시사항</label>
-        <textarea class="form-input form-textarea" id="wo-memo" placeholder="어르신 상태, 주의사항, 특별 요청 등을 입력하세요..."></textarea>
+        <label class="form-label">추가 메모 <span style="font-weight:400;color:var(--gray);font-size:11px">(선택)</span></label>
+        <textarea class="form-input form-textarea" id="wo-memo" placeholder="예: 무릎 통증 호소 시 스트레칭 강도 줄이고 연고 도포."></textarea>
       </div>
       <div class="form-group">
         <label class="form-label">긴급도</label>
@@ -1181,6 +1172,46 @@ function toast(msg,duration=2500){
 // ===== 모달 =====
 function closeModal(id){document.getElementById(id).style.display='none';}
 
+// 작업지시 표준 체크리스트 (보호사 앱과 동일)
+const WO_CHECKLIST = [
+  { id:'meal',      icon:'🍱', label:'식사 보조' },
+  { id:'position',  icon:'🛌', label:'체위 변경' },
+  { id:'stretch',   icon:'🤸', label:'스트레칭' },
+  { id:'med',       icon:'💊', label:'투약 확인' },
+  { id:'hygiene',   icon:'🛁', label:'청결 케어' },
+  { id:'vitals',    icon:'🩺', label:'활력 체크' },
+  { id:'walk',      icon:'🚶', label:'외출·산책' },
+  { id:'cognitive', icon:'🧠', label:'인지 활동' },
+  { id:'photo',     icon:'📷', label:'일지 사진' }
+];
+
+// 수급자별 작업지시 데이터 (운영 데이터 연동 전 임시 mock — 실제론 Supabase work_orders 테이블에서 로드)
+const WO_PATIENT_DATA = {
+  '박종철': { items:['vitals','stretch'],            note:'무릎 통증 호소 중 → 스트레칭 강도 줄이고 연고 도포.' },
+  '이순자': { items:['vitals','cognitive','meal'],   note:'식사량 저하 시 센터장에게 즉시 보고.' },
+  '최영순': { items:['hygiene','photo'],             note:'청결 케어 후 침구 교체. 일지 사진 첨부 필수.' },
+  '정동호': { items:['meal','med'],                  note:'식사 보조 시 연하 곤란 주의. 죽 형태로 제공.' },
+  '강복순': { items:['meal','hygiene'],              note:'특이사항 있으면 즉시 보고.' },
+  '홍말순': { items:['vitals','cognitive'],          note:'기분 상태 확인 후 인지활동 진행.' }
+};
+
+// 체크박스 그리드 렌더 (preCheckedIds 미리 선택)
+function renderWoCheckboxes(preCheckedIds){
+  preCheckedIds = preCheckedIds || [];
+  const wrap = document.getElementById('wo-checklist');
+  if(!wrap) return;
+  wrap.innerHTML = WO_CHECKLIST.map(c=>{
+    const checked = preCheckedIds.includes(c.id);
+    const bg = checked ? 'var(--tl)' : '#fff';
+    const bd = checked ? 'var(--teal)' : 'var(--border)';
+    return `
+    <label style="display:flex;align-items:center;gap:6px;background:${bg};border:1.5px solid ${bd};border-radius:10px;padding:9px 10px;cursor:pointer;font-size:12px;font-weight:600;transition:all .15s">
+      <input type="checkbox" value="${c.id}" ${checked?'checked':''} style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer" onchange="this.parentElement.style.background=this.checked?'var(--tl)':'#fff';this.parentElement.style.borderColor=this.checked?'var(--teal)':'var(--border)'">
+      <span>${c.icon} ${c.label}</span>
+    </label>`;
+  }).join('');
+}
+
 // 작업지시 모달 (새로 작성)
 function openNewWoModal(worker=''){
   document.getElementById('woModalTitle').textContent='✏️ 작업지시 작성';
@@ -1189,6 +1220,8 @@ function openNewWoModal(worker=''){
     for(let i=0;i<sel.options.length;i++){if(sel.options[i].text===worker){sel.selectedIndex=i;break;}}
   }
   document.getElementById('wo-memo').value='';
+  renderWoCheckboxes([]);
+  document.getElementById('woModal').dataset.patient = '';
   document.getElementById('woModal').style.display='flex';
 }
 
@@ -1200,23 +1233,23 @@ function openWoEditModal(patient,worker,time,status){
   const ps=document.getElementById('wo-patient');
   for(let i=0;i<ps.options.length;i++){if(ps.options[i].text.includes(patient)){ps.selectedIndex=i;break;}}
   document.getElementById('wo-time').value=time.replace(':',':')||'11:30';
-  const memos={
-    '박종철':'오늘 방문 시 혈압 체크 필수. 무릎 통증 호소 중이므로 스트레칭 강도 줄이고 연고 도포 확인해주세요.',
-    '이순자':'혈압 체크 후 인지활동 진행. 식사량 저하 시 센터장에게 바로 보고해주세요.',
-    '최영순':'청결 케어 후 침구 교체. 방문 완료 후 일지 사진 첨부 필수.',
-    '정동호':'식사 보조 시 연하 곤란 주의. 죽 형태로 제공 확인. 투약 빠지지 않도록.',
-    '강복순':'기본 케어 진행. 특이사항 있으면 즉시 보고.',
-    '홍말순':'기본 케어 + 혈압 체크. 어르신 기분 상태 확인 후 인지활동 진행.'
-  };
-  document.getElementById('wo-memo').value=memos[patient]||'기본 케어 항목 진행해주세요.';
+  const data = WO_PATIENT_DATA[patient] || { items:[], note:'' };
+  document.getElementById('wo-memo').value = data.note;
+  renderWoCheckboxes(data.items);
+  document.getElementById('woModal').dataset.patient = patient;
   document.getElementById('woModal').style.display='flex';
 }
 
 function sendWorkOrder(){
   const worker=document.getElementById('wo-worker').value;
   const patient=document.getElementById('wo-patient').value;
+  const items = Array.from(document.querySelectorAll('#wo-checklist input[type=checkbox]:checked')).map(c=>c.value);
+  const note = document.getElementById('wo-memo').value.trim();
+  // 편집 대상이 있으면 mock 데이터에 즉시 반영 (실제론 Supabase upsert)
+  const editingPatient = document.getElementById('woModal').dataset.patient;
+  if(editingPatient) WO_PATIENT_DATA[editingPatient] = { items, note };
   closeModal('woModal');
-  toast(`✅ ${worker} 보호사에게\n${patient} 작업지시 발송 완료`,2800);
+  toast(`✅ ${worker} 보호사에게\n${patient} 작업지시 발송 완료 (${items.length}개 항목)`,2800);
 }
 
 function setUrgency(btn,level){
