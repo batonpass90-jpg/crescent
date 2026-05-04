@@ -943,9 +943,9 @@ body:not(.app-ready) .stat-num::before{
       <div class="form-group">
         <label class="form-label">전송 방법</label>
         <div class="radio-row">
-          <label class="radio-option selected" id="send-app" onclick="setSendMethod('app')"><input type="radio" name="send" value="app" checked> 📱 앱 알림</label>
-          <label class="radio-option" id="send-sms" onclick="setSendMethod('sms')"><input type="radio" name="send" value="sms"> 💬 문자(SMS)</label>
-          <label class="radio-option" id="send-both" onclick="setSendMethod('both')"><input type="radio" name="send" value="both"> 📱+💬 둘 다</label>
+          <label class="radio-option selected" id="send-both" onclick="setSendMethod('both')"><input type="radio" name="send" value="both" checked> 📱+💬 앱+문자 (권장)</label>
+          <label class="radio-option" id="send-app" onclick="setSendMethod('app')"><input type="radio" name="send" value="app"> 📱 앱 푸시만</label>
+          <label class="radio-option" id="send-sms" onclick="setSendMethod('sms')"><input type="radio" name="send" value="sms"> 💬 문자(SMS)만</label>
         </div>
       </div>
     </div>
