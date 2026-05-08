@@ -17,24 +17,25 @@ import type { Recipe } from "./recipe-source";
 import { SoyoFeatures, SoyoLinks } from "./soyo-tokens";
 
 export function recipeToCards(recipe: Recipe): CardNewsContent {
-  const dayLabel = inferDayLabel(recipe);
+  const seriesNo = String(parseInt(recipe.id, 10) || 1).padStart(2, "0");
+  const seriesLabel = `자취 5년차 한 끼 루틴 #${seriesNo}`;
 
   return {
-    title: `${dayLabel} ${recipe.name}`,
+    title: `${seriesLabel} — ${recipe.name}`,
     cards: [
-      // 01 커버
+      // 01 커버 — 페인 후크 + 음식 이름
       {
         headline: recipe.name,
-        body: `${recipe.time}분 컷, ${recipe.difficulty}\n${recipe.kcal} kcal · ${recipe.category}`,
+        body: coverHookBody(recipe),
         image_concept: `${recipe.name}, top down, warm lighting`,
-        subtitle: `오늘의 한 끼 · ${dayLabel}`,
+        subtitle: seriesLabel,
       },
 
       // 02 재료
       {
         headline: "재료",
-        subtitle: `${recipe.ingredients.length}가지 · 1인분`,
-        body: "마트에서 한 봉지에 살 수 있는 것들로.",
+        subtitle: `5년차 장보기 · ${recipe.ingredients.length}가지`,
+        body: "마트 한 봉지에 다 담기는 것들로.",
         rows: ingredientsToRows(recipe.ingredients),
         image_concept: "ingredients flatlay",
       },
@@ -42,7 +43,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
       // 03 조리 STEP
       {
         headline: "조리 STEP",
-        subtitle: `총 ${recipe.time}분 · ${recipe.difficulty}`,
+        subtitle: cookSubtitle(recipe),
         body: "",
         steps: recipe.steps.map(stripTrailingPunct),
         callout: recipe.tip
@@ -54,7 +55,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
       // 04 체크
       {
         headline: "체크",
-        subtitle: "이런 분께 추천",
+        subtitle: "5년차의 솔직 후기",
         body: "",
         rows: [
           {
@@ -73,7 +74,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
       {
         headline: "응용",
         subtitle: "한 레시피로 일주일",
-        body: "응용 3가지로 일주일 버티기.",
+        body: "5년차의 응용 3종.",
         rows: variationRows(recipe),
         image_concept: "variations",
       },
@@ -81,7 +82,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
       // 06 영양
       {
         headline: "영양",
-        subtitle: "1인분 기준 · 약",
+        subtitle: "5년차 영양 체크",
         body: "",
         rows: nutritionRows(recipe),
         callout: nutritionCallout(recipe),
@@ -91,7 +92,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
       // 07 보관
       {
         headline: "남으면",
-        subtitle: "보관 + 다시 먹기",
+        subtitle: "5년차 보관 노하우",
         body: "",
         rows: [
           { label: "냉장", value: "최대 2일" },
@@ -129,9 +130,33 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
 
 // ── 휴리스틱 헬퍼 ─────────────────────────────────────────
 
-function inferDayLabel(_recipe: Recipe): string {
-  const days = ["월", "화", "수", "목", "금", "토", "일"];
-  return days[new Date().getDay() === 0 ? 6 : new Date().getDay() - 1];
+/**
+ * 커버 body — 카테고리·시간·kcal 기반 페인 후크 + 메타 정보.
+ * 도전형 톤: "라면 대신 진짜 한 끼", "결국 이거" 등.
+ */
+function coverHookBody(recipe: Recipe): string {
+  const meta = `${recipe.time}분, ${recipe.kcal}kcal.`;
+  const cat = recipe.category;
+  const t = recipe.time;
+  if (cat === "한식" && t <= 10) return `라면 대신 진짜 한 끼.\n${meta}`;
+  if (cat === "한식" && t <= 15) return `자취 집밥, 결국 이거.\n${meta}`;
+  if (cat === "한식") return `시간 들여 만드는 집밥.\n${meta}`;
+  if (cat === "양식" && t <= 10) return `5천원 양식, 5분 컷.\n${meta}`;
+  if (cat === "양식") return `기분 전환 양식.\n${meta}`;
+  if (cat === "샐러드") return `다이어트 중에도 든든.\n${meta}`;
+  if (cat === "간식") return `심심할 때 5분 컷.\n${meta}`;
+  if (cat === "일식") return `자취 일식 한 끼.\n${meta}`;
+  return meta;
+}
+
+/**
+ * 조리 subtitle — 시간을 자취생이 체감하는 비유로.
+ */
+function cookSubtitle(recipe: Recipe): string {
+  if (recipe.time <= 5) return `총 ${recipe.time}분 · 라면보다 빨라`;
+  if (recipe.time <= 10) return `총 ${recipe.time}분 · 라면 끓일 시간`;
+  if (recipe.time <= 15) return `총 ${recipe.time}분 · 배달보다 빨라`;
+  return `총 ${recipe.time}분 · 주말 점심`;
 }
 
 function stripTrailingPunct(s: string): string {
