@@ -6,14 +6,22 @@ export default function HomePage() {
           Meal Insta Bot
         </h1>
         <p className="mt-2 text-neutral-600">
-          자취 식단 카드뉴스 자동 게시 시스템 (1단계: 셋업 완료)
+          소요 자취 식단 인스타 카드뉴스 자동 게시
         </p>
         <div className="mt-6 text-left text-sm text-neutral-700 max-w-md mx-auto">
           <ul className="list-disc list-inside space-y-1">
-            <li>POST <code>/api/generate-content</code> — 콘텐츠 생성 (2단계)</li>
-            <li>POST <code>/api/generate-image</code> — 카드 PNG 생성 (3단계)</li>
-            <li>POST <code>/api/publish-instagram</code> — IG 게시 (4단계)</li>
-            <li>GET <code>/api/cron/daily-publish</code> — 일일 자동 (5단계)</li>
+            <li>
+              GET <code>/preview</code> — 카드 시안 미리보기
+            </li>
+            <li>
+              GET <code>/render?source=recipe:1&i=0</code> — 단일 카드 native 렌더
+            </li>
+            <li>
+              POST <code>/api/publish</code> — 캡처·업로드·게시 일괄
+            </li>
+            <li>
+              GET <code>/api/cron/daily-publish</code> — 매일 18:00 KST 자동
+            </li>
           </ul>
         </div>
       </div>

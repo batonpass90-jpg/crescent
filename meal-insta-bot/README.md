@@ -8,7 +8,6 @@
 
 - Next.js 15 (App Router) + TypeScript
 - Tailwind CSS (카드 스타일)
-- Anthropic Claude SDK (콘텐츠 생성)
 - Puppeteer (HTML → 1080×1350 PNG)
   - 로컬: `puppeteer`
   - Vercel: `puppeteer-core` + `@sparticuz/chromium`
@@ -19,7 +18,7 @@
 ## 단계별 진행 현황
 
 - [x] **1단계** — Next.js + 환경변수 템플릿
-- [x] **2단계** — 콘텐츠 생성 (Claude API, `lib/content-generator.ts`)
+- [x] **2단계** — 콘텐츠: 소요 RECIPES 정적 데이터 + `recipeToCards()` 결정론적 변환
 - [x] **2.5단계** — 카드 컴포넌트 (V4+V5 하이브리드, `/preview`)
 - [x] **2.6단계** — 소요 앱 디자인 토큰 동기화 (`lib/soyo-tokens.ts`)
 - [x] **3단계** — Puppeteer 캡처 (`lib/screenshot.ts`, `/render`)
@@ -33,8 +32,7 @@
 |---|---|---|
 | GET | `/preview` | 카드 시안 미리보기 (V4+V5 하이브리드) |
 | GET | `/render?source=recipe:1&i=0` | 단일 카드 1080×1350 native 렌더 (Puppeteer 전용) |
-| POST | `/api/generate-content` | 카테고리·일자 → 카드 JSON (Claude) |
-| POST | `/api/publish` | recipeId → 캡처·업로드·게시 일괄 |
+| POST | `/api/publish` | recipeId → 캡처·업로드·게시 일괄 (`?dryRun=1`로 IG 생략) |
 | GET | `/api/cron/daily-publish` | Vercel Cron 진입점 (매일 18:00 KST) |
 
 ## 셋업
@@ -43,13 +41,12 @@
 
 | # | 항목 | 어디서 |
 |---|------|-------|
-| 1 | `ANTHROPIC_API_KEY` | console.anthropic.com → API Keys |
-| 2 | Instagram **Business/Creator** 계정 | 인스타 앱 → 일반 → 비즈니스 전환 |
-| 3 | Facebook 페이지 + Developer 앱 | developers.facebook.com → 앱 만들기 → "비즈니스" 유형 → Instagram Graph API 제품 추가 |
-| 4 | `IG_ACCESS_TOKEN` (60일 장기) | Graph API Explorer → 단기 토큰 → `oauth/access_token`으로 장기 교환 |
-| 5 | `IG_USER_ID` | `GET /me/accounts?fields=instagram_business_account` |
-| 6 | Supabase 프로젝트 + Storage 버킷 | supabase.com → New project → Storage → Bucket `card-images` (Public) |
-| 7 | Vercel 계정 | vercel.com → New Project (이 repo 연결) |
+| 1 | Instagram **Business/Creator** 계정 | 인스타 앱 → 일반 → 비즈니스 전환 |
+| 2 | Facebook 페이지 + Developer 앱 | developers.facebook.com → 앱 만들기 → "비즈니스" 유형 → Instagram Graph API 제품 추가 |
+| 3 | `IG_ACCESS_TOKEN` (60일 장기) | Graph API Explorer → 단기 토큰 → `oauth/access_token`으로 장기 교환 |
+| 4 | `IG_USER_ID` | `GET /me/accounts?fields=instagram_business_account` |
+| 5 | Supabase 프로젝트 + Storage 버킷 | supabase.com → New project → Storage → Bucket `card-images` (Public) |
+| 6 | Vercel 계정 | vercel.com → New Project (이 repo 연결) |
 
 ### 2) 로컬 개발
 
@@ -91,7 +88,6 @@ curl -X POST http://localhost:3000/api/publish \
 vercel --prod
 
 # 환경변수 등록 (Vercel 대시보드 또는 CLI)
-vercel env add ANTHROPIC_API_KEY production
 vercel env add IG_ACCESS_TOKEN production
 vercel env add IG_USER_ID production
 vercel env add PUBLIC_BASE_URL production  # https://your-app.vercel.app
