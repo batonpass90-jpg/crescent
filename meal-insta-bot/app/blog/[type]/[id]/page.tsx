@@ -14,6 +14,8 @@ import { notFound } from "next/navigation";
 import { RECIPES, findRecipe, photoFor } from "@/lib/recipe-source";
 import { WEEKLY_MENUS, findWeeklyMenu } from "@/lib/weekly-menus";
 import { DIET_INFOS, findDietInfo } from "@/lib/diet-infos";
+import { LIFESTYLE_POSTS, findLifestylePost } from "@/lib/lifestyle-posts";
+import { HACK_POSTS, findHackPost } from "@/lib/hack-posts";
 import { SoyoColors, SoyoLinks } from "@/lib/soyo-tokens";
 
 interface Params {
@@ -36,6 +38,8 @@ export async function generateStaticParams(): Promise<Params[]> {
     ...RECIPES.map((r) => ({ type: "recipe", id: r.id })),
     ...WEEKLY_MENUS.map((m) => ({ type: "weekly", id: m.id })),
     ...DIET_INFOS.map((d) => ({ type: "diet", id: d.id })),
+    ...LIFESTYLE_POSTS.map((p) => ({ type: "lifestyle", id: p.id })),
+    ...HACK_POSTS.map((h) => ({ type: "hack", id: h.id })),
   ];
 }
 
@@ -73,6 +77,26 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       openGraph: { title: topic, description: d.hookBody, images: [DIET_PHOTO] },
     };
   }
+  if (type === "lifestyle") {
+    const p = findLifestylePost(id);
+    if (!p) return {};
+    const topic = p.topic.replace(/\n/g, " ");
+    return {
+      title: topic,
+      description: p.hookBody.replace(/\n/g, " "),
+      openGraph: { title: topic, description: p.hookBody, images: [DIET_PHOTO] },
+    };
+  }
+  if (type === "hack") {
+    const h = findHackPost(id);
+    if (!h) return {};
+    const topic = h.topic.replace(/\n/g, " ");
+    return {
+      title: topic,
+      description: h.hookBody.replace(/\n/g, " "),
+      openGraph: { title: topic, description: h.hookBody, images: [WEEKLY_PHOTO] },
+    };
+  }
   return {};
 }
 
@@ -82,6 +106,8 @@ export default async function BlogDetail({ params }: PageProps) {
   if (type === "recipe") return <RecipePost id={id} />;
   if (type === "weekly") return <WeeklyPost id={id} />;
   if (type === "diet") return <DietPost id={id} />;
+  if (type === "lifestyle") return <LifestylePostPage id={id} />;
+  if (type === "hack") return <HackPostPage id={id} />;
   notFound();
 }
 
@@ -295,6 +321,118 @@ function DietPost({ id }: { id: string }) {
         <Callout tone="tip">{d.conclusion}</Callout>
       </Section>
 
+      <SoyoCTA />
+    </article>
+  );
+}
+
+// ── Lifestyle (페르소나·공감) ─────────────────────────────
+function LifestylePostPage({ id }: { id: string }) {
+  const p = findLifestylePost(id);
+  if (!p) notFound();
+  const photo = DIET_PHOTO;
+  return (
+    <article>
+      <Hero
+        photo={photo}
+        category="자취 라이프"
+        title={p.topic.replace(/\n/g, " ")}
+        meta={p.hookSubtitle}
+        intro={p.hookBody}
+      />
+      <Section title={p.intro.title}>
+        <table className="w-full text-sm">
+          <tbody>
+            {p.intro.rows.map((r, i) => (
+              <Row key={i} k={r.label} v={r.value} />
+            ))}
+          </tbody>
+        </table>
+      </Section>
+      {p.types.map((t, i) => (
+        <Section key={i} title={t.name}>
+          <p className="text-sm mb-3" style={{ color: SoyoColors.ink2 }}>
+            <strong>{t.trait}</strong>
+          </p>
+          <p className="text-sm mb-3" style={{ color: SoyoColors.ink3 }}>
+            특징 — {t.habit}
+          </p>
+          <Callout tone="tip">처방 — {t.prescription}</Callout>
+        </Section>
+      ))}
+      <Section title="결론">
+        <Callout tone="tip">{p.conclusion}</Callout>
+        <p className="text-sm mt-4" style={{ color: SoyoColors.ink3 }}>
+          {p.shareHook}
+        </p>
+      </Section>
+      <SoyoCTA />
+    </article>
+  );
+}
+
+// ── Hack (실용 꿀팁) ─────────────────────────────────────
+function HackPostPage({ id }: { id: string }) {
+  const h = findHackPost(id);
+  if (!h) notFound();
+  return (
+    <article>
+      <Hero
+        photo={WEEKLY_PHOTO}
+        category="자취 꿀팁"
+        title={h.topic.replace(/\n/g, " ")}
+        meta={h.hookSubtitle}
+        intro={h.hookBody}
+      />
+      <Section title={h.problem.title}>
+        <table className="w-full text-sm">
+          <tbody>
+            {h.problem.rows.map((r, i) => (
+              <Row key={i} k={r.label} v={r.value} />
+            ))}
+          </tbody>
+        </table>
+      </Section>
+      <Section title="5단계 해결법">
+        <ol className="space-y-4">
+          {h.steps.map((s, i) => (
+            <li key={i}>
+              <div className="flex gap-3 items-baseline mb-1">
+                <span
+                  className="shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold"
+                  style={{
+                    backgroundColor: SoyoColors.clay,
+                    color: SoyoColors.white,
+                  }}
+                >
+                  {s.label}
+                </span>
+                <span className="font-bold" style={{ color: SoyoColors.ink }}>
+                  {s.action}
+                </span>
+              </div>
+              <p
+                className="ml-10 text-sm"
+                style={{ color: SoyoColors.ink2 }}
+              >
+                {s.detail}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </Section>
+      <Section title={h.example.title}>
+        <table className="w-full text-sm">
+          <tbody>
+            {h.example.rows.map((r, i) => (
+              <Row key={i} k={r.label} v={r.value} />
+            ))}
+          </tbody>
+        </table>
+      </Section>
+      <Section title="저장하세요">
+        <Callout tone="tip">{h.saveHook}</Callout>
+      </Section>
       <SoyoCTA />
     </article>
   );

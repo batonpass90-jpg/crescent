@@ -31,11 +31,11 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
         subtitle: seriesLabel,
       },
 
-      // 02 재료
+      // 02 재료 — 강한 후크 (페인+약속, 알고리즘 첫 노출 백업)
       {
-        headline: "재료",
-        subtitle: `5년차 장보기 · ${recipe.ingredients.length}가지`,
-        body: "마트 한 봉지에 다 담기는 것들로.",
+        headline: "5천원 컷",
+        subtitle: `${recipe.ingredients.length}가지면 끝`,
+        body: ingredientHookBody(recipe),
         rows: ingredientsToRows(recipe.ingredients),
         image_concept: "ingredients flatlay",
       },
@@ -89,28 +89,25 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
         image_concept: "nutrition breakdown",
       },
 
-      // 07 보관
+      // 07 저장 유도 — 보관 정보 + 명시적 저장 CTA
       {
-        headline: "남으면",
-        subtitle: "5년차 보관 노하우",
+        headline: "다음 시장\n볼 때",
+        subtitle: "저장해두면 5분 컷",
         body: "",
         rows: [
-          { label: "냉장", value: "최대 2일" },
-          { label: "냉동", value: "최대 2주 (1회분씩 소분)" },
-          {
-            label: "재가열",
-            value: "전자레인지 1분 30초\n또는 팬에 30초 다시",
-          },
-          { label: "절대 X", value: "실온 4시간↑ — 식중독 위험" },
+          { label: "재료", value: `${recipe.ingredients.length}가지 · 5천원 미만` },
+          { label: "시간", value: `${recipe.time}분 · ${recipe.difficulty}` },
+          { label: "보관", value: "냉장 2일 / 냉동 2주" },
+          { label: "재가열", value: "전자레인지 1분 30초" },
         ],
         callout: {
           tone: "tip",
-          text: "처음부터 2인분 만들면 다음 끼니 3분 컷.\n자취 가성비 최강 루틴.",
+          text: "오른쪽 ⇲ 저장 — 다음 장보기 때 다시 꺼내보세요.",
         },
-        image_concept: "storage",
+        image_concept: "save for later",
       },
 
-      // 08 CTA — 소요 앱 4가지 핵심 기능 (자취인 페인포인트 매핑)
+      // 08 CTA — 소요 앱 + 명시적 행동 지침 (저장·공유·팔로우)
       {
         headline: "혼자서도\n잘 먹기",
         subtitle: "자취인 식단앱 · 소요",
@@ -118,7 +115,7 @@ export function recipeToCards(recipe: Recipe): CardNewsContent {
         rows: SoyoFeatures.map((f) => ({ label: f.name, value: f.pain })),
         callout: {
           tone: "tip",
-          text: "소요 앱에서\n오늘 먹은 음식 업로드해보세요.",
+          text: "저장 — 시장 볼 때 다시 꺼내기\n친구 태그 — 같이 자취 시작\n팔로우 — 매일 11:30 · 18:00",
         },
         image_concept: "soyo app feature CTA",
       },
@@ -157,6 +154,19 @@ function cookSubtitle(recipe: Recipe): string {
   if (recipe.time <= 10) return `총 ${recipe.time}분 · 라면 끓일 시간`;
   if (recipe.time <= 15) return `총 ${recipe.time}분 · 배달보다 빨라`;
   return `총 ${recipe.time}분 · 주말 점심`;
+}
+
+/**
+ * 재료 카드 body — 저장 가치 강조 (장보기 단순화 약속).
+ */
+function ingredientHookBody(recipe: Recipe): string {
+  if (recipe.ingredients.length <= 4) {
+    return "마트 한 봉지 · 5분이면 다 모임.";
+  }
+  if (recipe.ingredients.length <= 6) {
+    return "마트 5천원 한 바구니에 다 들어감.";
+  }
+  return "재료 많아 보여도 거의 다 자취 상비.";
 }
 
 function stripTrailingPunct(s: string): string {

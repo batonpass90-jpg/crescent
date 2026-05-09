@@ -35,11 +35,11 @@ export function weeklyMenuToCards(menu: WeeklyMenu): CardNewsContent {
         subtitle: seriesLabel,
       },
 
-      // 02 평일 (월·화·수)
+      // 02 평일 메뉴 — 강한 후크 (이번 주 핵심)
       {
-        headline: "월·화·수",
-        subtitle: "주중 식단",
-        body: "",
+        headline: "이번 주\n뭐 먹지?",
+        subtitle: `한 끼 ${estimatePerMeal(menu.budget)} 컷`,
+        body: "월·화·수 메뉴 — 미리 정해두면 고민 끝.",
         rows: menu.weekdays.slice(0, 3).map((m) => ({
           label: m.day,
           value: m.meal,
@@ -96,24 +96,25 @@ export function weeklyMenuToCards(menu: WeeklyMenu): CardNewsContent {
         image_concept: "budget breakdown",
       },
 
-      // 07 보관 팁
+      // 07 저장 유도 — 보관 + 명시적 저장 CTA
       {
-        headline: "보관 팁",
-        subtitle: "한 번에 사서 일주일",
+        headline: "다음 주말\n장보기",
+        subtitle: "저장하면 30분 단축",
         body: "",
         callout: {
           tone: "tip",
-          text: menu.storageTip,
+          text: "오른쪽 ⇲ 저장 — 마트 갈 때 다시 꺼내보세요.",
         },
         rows: [
           { label: "냉장", value: "단백질 3일 / 채소 5일" },
           { label: "냉동", value: "고기·만두 2주 (1회분 소분)" },
+          { label: "팁", value: menu.storageTip.split(".")[0] },
           { label: "주의", value: "실온 4시간↑ 절대 X" },
         ],
-        image_concept: "storage tips",
+        image_concept: "save weekly menu",
       },
 
-      // 08 CTA — 소요 앱
+      // 08 CTA — 소요 앱 + 명시적 행동 지침
       {
         headline: "혼자서도\n잘 먹기",
         subtitle: "자취인 식단앱 · 소요",
@@ -121,7 +122,7 @@ export function weeklyMenuToCards(menu: WeeklyMenu): CardNewsContent {
         rows: SoyoFeatures.map((f) => ({ label: f.name, value: f.pain })),
         callout: {
           tone: "tip",
-          text: "소요 앱에서\n오늘 먹은 음식 업로드해보세요.",
+          text: "저장 — 다음 주 장보기 때 다시\n친구 태그 — 같이 자취 시작\n팔로우 — 매일 11:30 · 18:00",
         },
         image_concept: "soyo app feature CTA",
       },

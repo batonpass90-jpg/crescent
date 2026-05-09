@@ -28,6 +28,10 @@ import { findWeeklyMenu } from "@/lib/weekly-menus";
 import { weeklyMenuToCards } from "@/lib/menu-to-cards";
 import { findDietInfo } from "@/lib/diet-infos";
 import { dietInfoToCards } from "@/lib/info-to-cards";
+import { findLifestylePost } from "@/lib/lifestyle-posts";
+import { lifestyleToCards } from "@/lib/lifestyle-to-cards";
+import { findHackPost } from "@/lib/hack-posts";
+import { hackToCards } from "@/lib/hack-to-cards";
 import { captureDeck } from "@/lib/screenshot";
 import { uploadDeck } from "@/lib/storage";
 import { publishCarousel } from "@/lib/instagram";
@@ -39,14 +43,16 @@ interface PublishBody {
   recipeId?: string;
   weeklyId?: string;
   dietId?: string;
+  lifestyleId?: string;
+  hackId?: string;
   dryRun?: boolean;
 }
 
 interface ResolvedSource {
-  source: string; // "recipe:1" | "weekly:1" | "diet:1" — captureDeck/uploadDeck용
-  label: string; // "두부 샐러드" | "단백질 위주" | "단백질, 얼마나?"
+  source: string;
+  label: string;
   deck: CardNewsContent;
-  category: "recipe" | "weekly" | "diet";
+  category: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
 }
 
 function resolveSource(body: PublishBody): ResolvedSource | { error: string } {
@@ -80,7 +86,27 @@ function resolveSource(body: PublishBody): ResolvedSource | { error: string } {
       category: "diet",
     };
   }
-  return { error: "Body must contain recipeId, weeklyId, or dietId" };
+  if (body.lifestyleId) {
+    const post = findLifestylePost(body.lifestyleId);
+    if (!post) return { error: `Lifestyle ${body.lifestyleId} not found` };
+    return {
+      source: `lifestyle:${post.id}`,
+      label: post.topic.replace(/\n/g, " "),
+      deck: lifestyleToCards(post),
+      category: "lifestyle",
+    };
+  }
+  if (body.hackId) {
+    const post = findHackPost(body.hackId);
+    if (!post) return { error: `Hack ${body.hackId} not found` };
+    return {
+      source: `hack:${post.id}`,
+      label: post.topic.replace(/\n/g, " "),
+      deck: hackToCards(post),
+      category: "hack",
+    };
+  }
+  return { error: "Body must contain recipeId / weeklyId / dietId / lifestyleId / hackId" };
 }
 
 function authorize(request: Request): boolean {

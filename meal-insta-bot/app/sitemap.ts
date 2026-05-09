@@ -9,6 +9,8 @@ import type { MetadataRoute } from "next";
 import { RECIPES } from "@/lib/recipe-source";
 import { WEEKLY_MENUS } from "@/lib/weekly-menus";
 import { DIET_INFOS } from "@/lib/diet-infos";
+import { LIFESTYLE_POSTS } from "@/lib/lifestyle-posts";
+import { HACK_POSTS } from "@/lib/hack-posts";
 
 const BASE_URL = process.env.PUBLIC_BASE_URL ?? "https://meal-insta-bot.vercel.app";
 
@@ -44,5 +46,26 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly",
   }));
 
-  return [...staticPages, ...recipePages, ...weeklyPages, ...dietPages];
+  const lifestylePages: MetadataRoute.Sitemap = LIFESTYLE_POSTS.map((p) => ({
+    url: `${BASE_URL}/blog/lifestyle/${p.id}`,
+    lastModified: now,
+    priority: 0.7,
+    changeFrequency: "weekly",
+  }));
+
+  const hackPages: MetadataRoute.Sitemap = HACK_POSTS.map((h) => ({
+    url: `${BASE_URL}/blog/hack/${h.id}`,
+    lastModified: now,
+    priority: 0.7,
+    changeFrequency: "weekly",
+  }));
+
+  return [
+    ...staticPages,
+    ...recipePages,
+    ...weeklyPages,
+    ...dietPages,
+    ...lifestylePages,
+    ...hackPages,
+  ];
 }

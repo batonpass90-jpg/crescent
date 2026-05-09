@@ -31,13 +31,13 @@ export function dietInfoToCards(info: DietInfo): CardNewsContent {
         subtitle: seriesLabel,
       },
 
-      // 02 기준·수치
+      // 02 기준·수치 — 강한 후크 (당신은 안전한가?)
       {
-        headline: info.criteria.title,
-        subtitle: "숫자로 보기",
-        body: "",
+        headline: "당신은\n어떤가?",
+        subtitle: info.criteria.title,
+        body: "지금 본인 수치 — 표 보고 빠르게 체크.",
         rows: info.criteria.rows,
-        image_concept: "data chart nutrition",
+        image_concept: "self check chart",
       },
 
       // 03 식재료별 정보
@@ -85,10 +85,10 @@ export function dietInfoToCards(info: DietInfo): CardNewsContent {
         image_concept: "key points",
       },
 
-      // 07 한 줄 결론
+      // 07 저장 유도 — 결론 + 명시적 저장 CTA
       {
-        headline: "결론",
-        subtitle: "한 줄로",
+        headline: "한 줄\n결론",
+        subtitle: "저장하면 평생 기억",
         body: "",
         callout: {
           tone: "tip",
@@ -96,14 +96,18 @@ export function dietInfoToCards(info: DietInfo): CardNewsContent {
         },
         rows: [
           {
-            label: "기억",
-            value: "어렵지 않아.\n매일 0.5초씩만.",
+            label: "다시 보기",
+            value: "오른쪽 ⇲ 저장\n다음 마트 갈 때 다시 꺼내기",
+          },
+          {
+            label: "공유",
+            value: "친구가 자취 중이면\n태그해서 같이 보기",
           },
         ],
-        image_concept: "conclusion",
+        image_concept: "save conclusion",
       },
 
-      // 08 CTA — 소요 앱
+      // 08 CTA — 소요 앱 + 명시적 행동 지침
       {
         headline: "혼자서도\n잘 먹기",
         subtitle: "자취인 식단앱 · 소요",
@@ -111,7 +115,7 @@ export function dietInfoToCards(info: DietInfo): CardNewsContent {
         rows: SoyoFeatures.map((f) => ({ label: f.name, value: f.pain })),
         callout: {
           tone: "tip",
-          text: "소요 앱에서\n오늘 먹은 음식 업로드해보세요.",
+          text: "저장 — 다시 꺼내볼 때\n친구 태그 — 같이 시작\n팔로우 — 매일 11:30 · 18:00",
         },
         image_concept: "soyo app feature CTA",
       },

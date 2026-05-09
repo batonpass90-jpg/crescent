@@ -45,35 +45,13 @@ export default function BlogLayout({
               소요 — 자취 식단 가이드
             </span>
           </Link>
-          <nav className="flex gap-4 text-sm font-medium">
-            <Link
-              href="/blog"
-              className="hover:underline"
-              style={{ color: SoyoColors.ink2 }}
-            >
-              전체
-            </Link>
-            <Link
-              href="/blog?category=recipe"
-              className="hover:underline"
-              style={{ color: SoyoColors.ink2 }}
-            >
-              레시피
-            </Link>
-            <Link
-              href="/blog?category=weekly"
-              className="hover:underline"
-              style={{ color: SoyoColors.ink2 }}
-            >
-              식단표
-            </Link>
-            <Link
-              href="/blog?category=diet"
-              className="hover:underline"
-              style={{ color: SoyoColors.ink2 }}
-            >
-              영양정보
-            </Link>
+          <nav className="flex gap-3 text-sm font-medium overflow-x-auto">
+            <Link href="/blog" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>전체</Link>
+            <Link href="/blog?category=recipe" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>레시피</Link>
+            <Link href="/blog?category=weekly" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>식단표</Link>
+            <Link href="/blog?category=diet" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>영양</Link>
+            <Link href="/blog?category=lifestyle" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>라이프</Link>
+            <Link href="/blog?category=hack" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>꿀팁</Link>
           </nav>
         </div>
       </header>

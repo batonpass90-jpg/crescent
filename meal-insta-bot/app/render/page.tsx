@@ -19,6 +19,10 @@ import { findWeeklyMenu } from "@/lib/weekly-menus";
 import { weeklyMenuToCards } from "@/lib/menu-to-cards";
 import { findDietInfo } from "@/lib/diet-infos";
 import { dietInfoToCards } from "@/lib/info-to-cards";
+import { findLifestylePost } from "@/lib/lifestyle-posts";
+import { lifestyleToCards } from "@/lib/lifestyle-to-cards";
+import { findHackPost } from "@/lib/hack-posts";
+import { hackToCards } from "@/lib/hack-to-cards";
 import { SoyoLinks } from "@/lib/soyo-tokens";
 import type { CardNewsContent, ContentCategory } from "@/lib/content-types";
 
@@ -66,6 +70,28 @@ function resolve(source: string): ResolvedDeck | null {
       category: "diet_info",
       photoUrl:
         "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1080&h=1350&fit=crop",
+    };
+  }
+  if (source.startsWith("lifestyle:")) {
+    const id = source.slice("lifestyle:".length);
+    const post = findLifestylePost(id);
+    if (!post) return null;
+    return {
+      content: lifestyleToCards(post),
+      category: "diet_info", // 컬러는 diet와 동일 (sky)
+      photoUrl:
+        "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=1080&h=1350&fit=crop",
+    };
+  }
+  if (source.startsWith("hack:")) {
+    const id = source.slice("hack:".length);
+    const post = findHackPost(id);
+    if (!post) return null;
+    return {
+      content: hackToCards(post),
+      category: "weekly_menu", // 컬러는 weekly와 동일 (sage)
+      photoUrl:
+        "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1080&h=1350&fit=crop",
     };
   }
   if (source.startsWith("sample:")) {

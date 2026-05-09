@@ -2,6 +2,8 @@ import Link from "next/link";
 import { RECIPES, photoFor } from "@/lib/recipe-source";
 import { WEEKLY_MENUS } from "@/lib/weekly-menus";
 import { DIET_INFOS } from "@/lib/diet-infos";
+import { LIFESTYLE_POSTS } from "@/lib/lifestyle-posts";
+import { HACK_POSTS } from "@/lib/hack-posts";
 import { SoyoColors } from "@/lib/soyo-tokens";
 
 interface BlogIndexProps {
@@ -9,7 +11,7 @@ interface BlogIndexProps {
 }
 
 interface PostCard {
-  type: "recipe" | "weekly" | "diet";
+  type: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
   id: string;
   title: string;
   description: string;
@@ -55,7 +57,29 @@ function buildPostList(): PostCard[] {
     tagColor: SoyoColors.sky,
   }));
 
-  return [...recipes, ...weeklies, ...diets];
+  const lifestyles: PostCard[] = LIFESTYLE_POSTS.map((p) => ({
+    type: "lifestyle",
+    id: p.id,
+    title: p.topic.replace(/\n/g, " "),
+    description: p.hookBody.replace(/\n/g, " "),
+    meta: p.hookSubtitle,
+    href: `/blog/lifestyle/${p.id}`,
+    tagLabel: "라이프",
+    tagColor: SoyoColors.purple,
+  }));
+
+  const hacks: PostCard[] = HACK_POSTS.map((h) => ({
+    type: "hack",
+    id: h.id,
+    title: h.topic.replace(/\n/g, " "),
+    description: h.hookBody.replace(/\n/g, " "),
+    meta: h.hookSubtitle,
+    href: `/blog/hack/${h.id}`,
+    tagLabel: "꿀팁",
+    tagColor: SoyoColors.gold,
+  }));
+
+  return [...recipes, ...weeklies, ...diets, ...lifestyles, ...hacks];
 }
 
 export default async function BlogIndex({ searchParams }: BlogIndexProps) {
@@ -64,7 +88,7 @@ export default async function BlogIndex({ searchParams }: BlogIndexProps) {
 
   const allPosts = buildPostList();
   const posts =
-    category && ["recipe", "weekly", "diet"].includes(category)
+    category && ["recipe", "weekly", "diet", "lifestyle", "hack"].includes(category)
       ? allPosts.filter((p) => p.type === category)
       : allPosts;
 
@@ -72,6 +96,8 @@ export default async function BlogIndex({ searchParams }: BlogIndexProps) {
     recipe: "한 끼 레시피",
     weekly: "주간 식단표",
     diet: "영양 정보",
+    lifestyle: "자취 라이프",
+    hack: "자취 꿀팁",
   };
 
   return (

@@ -13,15 +13,23 @@ import { NextResponse } from "next/server";
 import { RECIPES } from "@/lib/recipe-source";
 import { WEEKLY_MENUS } from "@/lib/weekly-menus";
 import { DIET_INFOS } from "@/lib/diet-infos";
+import { LIFESTYLE_POSTS } from "@/lib/lifestyle-posts";
+import { HACK_POSTS } from "@/lib/hack-posts";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
 interface PickedContent {
-  category: "recipe" | "weekly" | "diet";
+  category: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
   id: string;
   label: string;
-  body: { recipeId?: string; weeklyId?: string; dietId?: string };
+  body: {
+    recipeId?: string;
+    weeklyId?: string;
+    dietId?: string;
+    lifestyleId?: string;
+    hackId?: string;
+  };
 }
 
 function authorize(request: Request): boolean {
@@ -56,8 +64,31 @@ function pickContent(date: Date, slot: Slot): PickedContent {
   const doy = dayOfYear(date);
 
   // ── 점심 슬롯 (11:30 KST) ─────────────────────────────────
-  // 항상 한 끼 레시피, 가벼운 음식 우선
+  // 월/수/금: 한 끼 레시피 (가벼운 음식)
+  // 화/목: 자취 꿀팁 (저장 유도형)
+  // 토/일: 페르소나 진단 (공유 유도형)
   if (slot === "lunch") {
+    if (dow === 2 || dow === 4) {
+      const idx = Math.floor(doy / 3) % HACK_POSTS.length;
+      const hack = HACK_POSTS[idx];
+      return {
+        category: "hack",
+        id: hack.id,
+        label: `[점심:꿀팁] ${hack.topic.replace(/\n/g, " ")}`,
+        body: { hackId: hack.id },
+      };
+    }
+    if (dow === 0 || dow === 6) {
+      const idx = Math.floor(doy / 7) % LIFESTYLE_POSTS.length;
+      const post = LIFESTYLE_POSTS[idx];
+      return {
+        category: "lifestyle",
+        id: post.id,
+        label: `[점심:공감] ${post.topic.replace(/\n/g, " ")}`,
+        body: { lifestyleId: post.id },
+      };
+    }
+    // 월·수·금 점심 → 가벼운 한 끼 레시피
     const lunchPool = RECIPES.filter(
       (r) =>
         r.category === "양식" ||
@@ -77,7 +108,7 @@ function pickContent(date: Date, slot: Slot): PickedContent {
   }
 
   // ── 저녁 슬롯 (18:00 KST) ────────────────────────────────
-  // 월: 주간 식단표 / 화·목: 식단 정보 / 그 외: 묵직한 한식·일식
+  // 월: 주간 식단표 / 화·목: 식단 정보 / 수·금·토·일: 묵직한 저녁 레시피
 
   // 월요일 → 주간 식단표
   if (dow === 1) {
@@ -86,7 +117,7 @@ function pickContent(date: Date, slot: Slot): PickedContent {
     return {
       category: "weekly",
       id: menu.id,
-      label: `[저녁] 주간식단 — ${menu.theme}`,
+      label: `[저녁:식단표] ${menu.theme}`,
       body: { weeklyId: menu.id },
     };
   }
@@ -98,12 +129,12 @@ function pickContent(date: Date, slot: Slot): PickedContent {
     return {
       category: "diet",
       id: info.id,
-      label: `[저녁] 식단정보 — ${info.topic.replace(/\n/g, " ")}`,
+      label: `[저녁:정보] ${info.topic.replace(/\n/g, " ")}`,
       body: { dietId: info.id },
     };
   }
 
-  // 수·금·토·일 → 묵직한 한식·일식 (저녁용)
+  // 수·금·토·일 → 묵직한 한식·일식
   const dinnerPool = RECIPES.filter(
     (r) =>
       (r.category === "한식" && r.time > 10) || r.category === "일식",
