@@ -1,8 +1,24 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-const SITE_URL =
-  process.env.PUBLIC_BASE_URL ?? "https://meal-insta-bot.vercel.app";
+function resolveSiteUrl(): string {
+  const explicit = process.env.PUBLIC_BASE_URL?.trim();
+  if (explicit) return explicit;
+  const vercel = process.env.VERCEL_URL?.trim();
+  if (vercel) return `https://${vercel}`;
+  return "https://meal-insta-bot.vercel.app";
+}
+
+const SITE_URL = resolveSiteUrl();
+
+function buildVerification() {
+  const google = process.env.GOOGLE_SITE_VERIFICATION?.trim();
+  const naver = process.env.NAVER_SITE_VERIFICATION?.trim();
+  const verification: { google?: string; other?: Record<string, string> } = {};
+  if (google) verification.google = google;
+  if (naver) verification.other = { "naver-site-verification": naver };
+  return verification;
+}
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -46,12 +62,7 @@ export const metadata: Metadata = {
   },
   // 네이버·구글·다음 사이트 인증 메타태그 (env로 주입)
   // 각 콘솔에서 발급받은 인증 코드를 환경변수로 등록.
-  verification: {
-    google: process.env.GOOGLE_SITE_VERIFICATION,
-    other: {
-      "naver-site-verification": process.env.NAVER_SITE_VERIFICATION ?? "",
-    },
-  },
+  verification: buildVerification(),
   robots: {
     index: true,
     follow: true,
