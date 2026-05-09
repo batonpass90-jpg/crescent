@@ -3,6 +3,10 @@
   "crons": [
     {
       "path": "/api/cron/daily-publish",
+      "schedule": "30 2 * * *"
+    },
+    {
+      "path": "/api/cron/daily-publish",
       "schedule": "0 9 * * *"
     }
   ],

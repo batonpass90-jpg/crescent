@@ -1,13 +1,12 @@
 /**
  * GET /api/cron/daily-publish
  *
- * Vercel Cron이 매일 18:00 KST(=09:00 UTC) 호출.
- * 요일별로 다른 카테고리 게시:
- *   월(1)        → 주간 식단표 (weekly_menu)
- *   화(2)·목(4)  → 식단 정보 (diet_info)
- *   수(3)·금(5)·토(6)·일(0) → 오늘의 한 끼 (recipe)
+ * Vercel Cron이 하루 2회 호출:
+ *   02:30 UTC = 11:30 KST (점심) → 가벼운 한 끼 (양식·샐러드·간식·빠른 한식)
+ *   09:00 UTC = 18:00 KST (저녁) → 묵직한 한식·일식 + 월(weekly)·화목(diet)
  *
- * 각 풀에서 연중일자 % 풀크기로 라운드로빈 → 같은 날 재실행해도 같은 콘텐츠.
+ * UTC 시간으로 슬롯 자동 판별 (lunch / evening).
+ * 각 풀에서 연중일자 기준 라운드로빈으로 콘텐츠 선택.
  */
 
 import { NextResponse } from "next/server";
@@ -37,9 +36,48 @@ function dayOfYear(date: Date): number {
   return Math.floor((date.getTime() - start.getTime()) / 86_400_000);
 }
 
-function pickContent(date: Date): PickedContent {
-  const dow = date.getDay(); // 0(일) ~ 6(토)
+type Slot = "lunch" | "evening";
+
+/**
+ * UTC 시간 기준 슬롯 자동 판별.
+ * 02:30 UTC 호출 → "lunch" (오차 6시간 이내)
+ * 09:00 UTC 호출 → "evening"
+ * 수동 테스트 시간엔 query string ?slot=lunch 우선.
+ */
+function detectSlot(date: Date, urlParam?: string | null): Slot {
+  if (urlParam === "lunch" || urlParam === "evening") return urlParam;
+  const hourUtc = date.getUTCHours();
+  // 06:00 UTC 이전 호출은 점심 슬롯, 그 이후는 저녁
+  return hourUtc < 6 ? "lunch" : "evening";
+}
+
+function pickContent(date: Date, slot: Slot): PickedContent {
+  const dow = date.getDay();
   const doy = dayOfYear(date);
+
+  // ── 점심 슬롯 (11:30 KST) ─────────────────────────────────
+  // 항상 한 끼 레시피, 가벼운 음식 우선
+  if (slot === "lunch") {
+    const lunchPool = RECIPES.filter(
+      (r) =>
+        r.category === "양식" ||
+        r.category === "샐러드" ||
+        r.category === "간식" ||
+        (r.category === "한식" && r.time <= 10),
+    );
+    const pool = lunchPool.length > 0 ? lunchPool : RECIPES;
+    const idx = doy % pool.length;
+    const recipe = pool[idx];
+    return {
+      category: "recipe",
+      id: recipe.id,
+      label: `[점심] ${recipe.name}`,
+      body: { recipeId: recipe.id },
+    };
+  }
+
+  // ── 저녁 슬롯 (18:00 KST) ────────────────────────────────
+  // 월: 주간 식단표 / 화·목: 식단 정보 / 그 외: 묵직한 한식·일식
 
   // 월요일 → 주간 식단표
   if (dow === 1) {
@@ -48,31 +86,35 @@ function pickContent(date: Date): PickedContent {
     return {
       category: "weekly",
       id: menu.id,
-      label: menu.theme,
+      label: `[저녁] 주간식단 — ${menu.theme}`,
       body: { weeklyId: menu.id },
     };
   }
 
   // 화·목 → 식단 정보
   if (dow === 2 || dow === 4) {
-    // 일년 중 화·목 인덱스 (대략 doy/3.5)
     const idx = Math.floor(doy / 3) % DIET_INFOS.length;
     const info = DIET_INFOS[idx];
     return {
       category: "diet",
       id: info.id,
-      label: info.topic.replace(/\n/g, " "),
+      label: `[저녁] 식단정보 — ${info.topic.replace(/\n/g, " ")}`,
       body: { dietId: info.id },
     };
   }
 
-  // 수·금·토·일 → 한 끼 레시피
-  const idx = doy % RECIPES.length;
-  const recipe = RECIPES[idx];
+  // 수·금·토·일 → 묵직한 한식·일식 (저녁용)
+  const dinnerPool = RECIPES.filter(
+    (r) =>
+      (r.category === "한식" && r.time > 10) || r.category === "일식",
+  );
+  const pool = dinnerPool.length > 0 ? dinnerPool : RECIPES;
+  const idx = doy % pool.length;
+  const recipe = pool[idx];
   return {
     category: "recipe",
     id: recipe.id,
-    label: recipe.name,
+    label: `[저녁] ${recipe.name}`,
     body: { recipeId: recipe.id },
   };
 }
@@ -83,9 +125,11 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const picked = pickContent(now);
+  const slotParam = new URL(request.url).searchParams.get("slot");
+  const slot = detectSlot(now, slotParam);
+  const picked = pickContent(now, slot);
   console.log(
-    `[cron] ${now.toISOString()} (dow=${now.getDay()}) — ${picked.category}/${picked.label}`,
+    `[cron] ${now.toISOString()} slot=${slot} dow=${now.getDay()} — ${picked.category}/${picked.label}`,
   );
 
   const base =

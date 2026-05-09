@@ -101,7 +101,7 @@ vercel env add SLACK_WEBHOOK_URL production  # optional
 
 ### 5) 운영
 
-- 매일 09:00 UTC (18:00 KST) Vercel Cron이 `/api/cron/daily-publish` 호출
+- 매일 02:30 UTC (11:30 KST 점심) + 09:00 UTC (18:00 KST 저녁) — 하루 2회 Vercel Cron이 `/api/cron/daily-publish` 호출
 - 그날의 레시피 1개 자동 선택 (RECIPES 길이 모듈로 라운드로빈)
 - 8장 PNG 캡처 → Supabase 업로드 → 캐러셀 게시
 - Slack에 성공/실패 알림 (옵션)
