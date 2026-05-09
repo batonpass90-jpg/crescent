@@ -1,28 +1,59 @@
+import Link from "next/link";
+import { SoyoColors, SoyoLinks } from "@/lib/soyo-tokens";
+
 export default function HomePage() {
   return (
-    <main className="min-h-screen flex items-center justify-center bg-neutral-50">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-neutral-900">
-          Meal Insta Bot
+    <main
+      className="min-h-screen flex items-center justify-center px-5"
+      style={{ backgroundColor: SoyoColors.paper }}
+    >
+      <div className="text-center max-w-md">
+        <div
+          className="inline-block w-3 h-3 rounded-full mb-6"
+          style={{ backgroundColor: SoyoColors.clay }}
+        />
+        <h1
+          className="text-4xl font-black tracking-tight mb-3"
+          style={{ color: SoyoColors.ink, letterSpacing: "-0.02em" }}
+        >
+          소요
         </h1>
-        <p className="mt-2 text-neutral-600">
-          소요 자취 식단 인스타 카드뉴스 자동 게시
+        <p
+          className="mb-2 text-lg font-medium"
+          style={{ color: SoyoColors.ink2 }}
+        >
+          자취 식단 가이드
         </p>
-        <div className="mt-6 text-left text-sm text-neutral-700 max-w-md mx-auto">
-          <ul className="list-disc list-inside space-y-1">
-            <li>
-              GET <code>/preview</code> — 카드 시안 미리보기
-            </li>
-            <li>
-              GET <code>/render?source=recipe:1&i=0</code> — 단일 카드 native 렌더
-            </li>
-            <li>
-              POST <code>/api/publish</code> — 캡처·업로드·게시 일괄
-            </li>
-            <li>
-              GET <code>/api/cron/daily-publish</code> — 매일 18:00 KST 자동
-            </li>
-          </ul>
+        <p
+          className="mb-10 text-sm"
+          style={{ color: SoyoColors.ink3 }}
+        >
+          50+ 한 끼 레시피 · 주간 식단표 · 영양 정보 — 매일 11:30 / 18:00
+        </p>
+
+        <div className="flex flex-col gap-3 max-w-xs mx-auto">
+          <Link
+            href="/blog"
+            className="block px-6 py-3 rounded-xl font-bold transition hover:opacity-90"
+            style={{
+              backgroundColor: SoyoColors.clay,
+              color: SoyoColors.white,
+            }}
+          >
+            블로그 둘러보기 →
+          </Link>
+          <a
+            href={`https://www.instagram.com/${SoyoLinks.instagramHandle.replace("@", "")}/`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block px-6 py-3 rounded-xl font-bold border transition hover:bg-gray-100"
+            style={{
+              borderColor: SoyoColors.paper3,
+              color: SoyoColors.ink,
+            }}
+          >
+            Instagram {SoyoLinks.instagramHandle}
+          </a>
         </div>
       </div>
     </main>
