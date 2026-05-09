@@ -1,36 +1,86 @@
 /**
  * POST /api/publish
  *
- * 본문:
- *   { recipeId: "1" }  → soyo RECIPES[id=1]을 8장 카드로 캡처·업로드·게시
+ * 본문 (셋 중 하나):
+ *   { recipeId: "1" }   → soyo RECIPES[id=1] 한 끼 게시
+ *   { weeklyId: "1" }   → 주간 식단표 게시
+ *   { dietId: "1" }     → 식단 정보 게시
+ *
+ * 옵션:
+ *   { dryRun: true }    → IG·Supabase 우회, 로컬 PNG만 저장
  *
  * 흐름:
- *   1. recipeToCards(recipe) → 8장 카드 정의
- *   2. captureDeck → Puppeteer 8회 → PNG 8개 buffer
- *   3. uploadDeck → Supabase Storage 업로드 → public URL 8개
+ *   1. 소스 → 카드 정의 (recipeToCards / weeklyMenuToCards / dietInfoToCards)
+ *   2. captureDeck → Puppeteer로 8장 PNG
+ *   3. uploadDeck → Supabase Storage → public URL
  *   4. publishCarousel → IG Graph API
- *   5. 응답: { postId, urls, durationMs }
  *
- * 인증: 헤더 `x-cron-secret: <CRON_SECRET>` 또는 사람 호출시 사이트 인증.
- *       지금은 단순화 위해 CRON_SECRET 매치만 체크.
+ * 인증: 헤더 `x-cron-secret: <CRON_SECRET>`
  */
 
 import { NextResponse } from "next/server";
 import { promises as fs } from "fs";
 import path from "path";
+import type { CardNewsContent } from "@/lib/content-types";
 import { findRecipe } from "@/lib/recipe-source";
 import { recipeToCards } from "@/lib/recipe-to-cards";
+import { findWeeklyMenu } from "@/lib/weekly-menus";
+import { weeklyMenuToCards } from "@/lib/menu-to-cards";
+import { findDietInfo } from "@/lib/diet-infos";
+import { dietInfoToCards } from "@/lib/info-to-cards";
 import { captureDeck } from "@/lib/screenshot";
 import { uploadDeck } from "@/lib/storage";
 import { publishCarousel } from "@/lib/instagram";
 
 export const runtime = "nodejs";
-export const maxDuration = 300; // Puppeteer + IG 처리 시간
+export const maxDuration = 300;
 
 interface PublishBody {
   recipeId?: string;
-  /** true면 IG·Supabase 우회. PNG를 .dry-run/ 폴더에 저장 후 종료. */
+  weeklyId?: string;
+  dietId?: string;
   dryRun?: boolean;
+}
+
+interface ResolvedSource {
+  source: string; // "recipe:1" | "weekly:1" | "diet:1" — captureDeck/uploadDeck용
+  label: string; // "두부 샐러드" | "단백질 위주" | "단백질, 얼마나?"
+  deck: CardNewsContent;
+  category: "recipe" | "weekly" | "diet";
+}
+
+function resolveSource(body: PublishBody): ResolvedSource | { error: string } {
+  if (body.recipeId) {
+    const recipe = findRecipe(body.recipeId);
+    if (!recipe) return { error: `Recipe ${body.recipeId} not found` };
+    return {
+      source: `recipe:${recipe.id}`,
+      label: recipe.name,
+      deck: recipeToCards(recipe),
+      category: "recipe",
+    };
+  }
+  if (body.weeklyId) {
+    const menu = findWeeklyMenu(body.weeklyId);
+    if (!menu) return { error: `Weekly menu ${body.weeklyId} not found` };
+    return {
+      source: `weekly:${menu.id}`,
+      label: menu.theme,
+      deck: weeklyMenuToCards(menu),
+      category: "weekly",
+    };
+  }
+  if (body.dietId) {
+    const info = findDietInfo(body.dietId);
+    if (!info) return { error: `Diet info ${body.dietId} not found` };
+    return {
+      source: `diet:${info.id}`,
+      label: info.topic.replace(/\n/g, " "),
+      deck: dietInfoToCards(info),
+      category: "diet",
+    };
+  }
+  return { error: "Body must contain recipeId, weeklyId, or dietId" };
 }
 
 function authorize(request: Request): boolean {
@@ -55,53 +105,41 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const recipeId = body.recipeId;
-  if (!recipeId) {
-    return NextResponse.json(
-      { error: "recipeId is required" },
-      { status: 400 },
-    );
+  const resolved = resolveSource(body);
+  if ("error" in resolved) {
+    return NextResponse.json({ error: resolved.error }, { status: 400 });
   }
-
-  const recipe = findRecipe(recipeId);
-  if (!recipe) {
-    return NextResponse.json(
-      { error: `Recipe ${recipeId} not found` },
-      { status: 404 },
-    );
-  }
+  const { source, label, deck, category } = resolved;
 
   const startedAt = Date.now();
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
-  const source = `recipe:${recipe.id}`;
+  const today = new Date().toISOString().slice(0, 10);
   const dryRun =
     body.dryRun === true ||
     new URL(request.url).searchParams.get("dryRun") === "1";
 
   try {
-    // 1. 카드 정의
-    const deck = recipeToCards(recipe);
     console.log(
-      `[publish${dryRun ? ":dry-run" : ""}] ${recipe.name} — ${deck.cards.length} cards`,
+      `[publish${dryRun ? ":dry-run" : ""}] ${category}/${label} — ${deck.cards.length} cards`,
     );
 
-    // 2. 캡처
+    // 1. 캡처
     const buffers = await captureDeck({
       source,
       cardCount: deck.cards.length,
     });
     console.log(`[publish] captured ${buffers.length} PNGs`);
 
-    // 캡션 (dry-run에서도 검증용으로 만듦)
+    // 캡션
     const caption = deck.caption + "\n\n" + deck.hashtags.join(" ");
 
-    // 3-DRY. 로컬 폴더에 저장만 하고 종료
+    // 2-DRY. 로컬 폴더에 저장만
     if (dryRun) {
+      const sourceSlug = source.replace(":", "_");
       const outDir = path.join(
         process.cwd(),
         ".dry-run",
         today,
-        `recipe-${recipe.id}`,
+        sourceSlug,
       );
       await fs.mkdir(outDir, { recursive: true });
       const paths: string[] = [];
@@ -110,13 +148,13 @@ export async function POST(request: Request) {
         await fs.writeFile(p, buffers[i]);
         paths.push(p);
       }
-      const captionPath = path.join(outDir, "caption.txt");
-      await fs.writeFile(captionPath, caption, "utf-8");
+      await fs.writeFile(path.join(outDir, "caption.txt"), caption, "utf-8");
       console.log(`[publish:dry-run] saved ${paths.length} PNGs to ${outDir}`);
       return NextResponse.json({
         ok: true,
         dryRun: true,
-        recipe: { id: recipe.id, name: recipe.name },
+        category,
+        source: { type: category, label },
         cardCount: deck.cards.length,
         outDir,
         paths,
@@ -125,18 +163,19 @@ export async function POST(request: Request) {
       });
     }
 
-    // 3. 업로드
+    // 2. 업로드
     const urls = await uploadDeck(buffers, { date: today, source });
     console.log(`[publish] uploaded to Supabase: ${urls.length} URLs`);
 
-    // 4. 게시
+    // 3. 게시
     const result = await publishCarousel({ imageUrls: urls, caption });
     console.log(`[publish] IG post ${result.postId} published`);
 
     return NextResponse.json({
       ok: true,
       postId: result.postId,
-      recipe: { id: recipe.id, name: recipe.name },
+      category,
+      source: { type: category, label },
       cardCount: deck.cards.length,
       urls,
       durationMs: Date.now() - startedAt,
@@ -159,7 +198,10 @@ export async function POST(request: Request) {
 export async function GET() {
   return NextResponse.json({
     endpoint: "POST /api/publish",
-    body: { recipeId: "1" },
+    body: {
+      "(택1)": ["recipeId: 1~50", "weeklyId: 1~8", "dietId: 1~8"],
+      "옵션": "dryRun: true",
+    },
     auth: "header x-cron-secret: <CRON_SECRET>",
     durationEstimate: "약 60~120초 (Puppeteer 8회 + IG carousel 폴링)",
   });

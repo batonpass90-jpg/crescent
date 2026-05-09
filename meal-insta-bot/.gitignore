@@ -11,3 +11,5 @@ dist
 /public/generated
 .dry-run/
 tsconfig.tsbuildinfo
+
+.vercel

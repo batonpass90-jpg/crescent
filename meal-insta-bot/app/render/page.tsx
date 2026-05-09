@@ -15,6 +15,10 @@ import { CATEGORY_STYLES } from "@/lib/category-style";
 import { SAMPLE_BY_CATEGORY } from "@/lib/sample-content";
 import { findRecipe, photoFor } from "@/lib/recipe-source";
 import { recipeToCards } from "@/lib/recipe-to-cards";
+import { findWeeklyMenu } from "@/lib/weekly-menus";
+import { weeklyMenuToCards } from "@/lib/menu-to-cards";
+import { findDietInfo } from "@/lib/diet-infos";
+import { dietInfoToCards } from "@/lib/info-to-cards";
 import { SoyoLinks } from "@/lib/soyo-tokens";
 import type { CardNewsContent, ContentCategory } from "@/lib/content-types";
 
@@ -41,13 +45,33 @@ function resolve(source: string): ResolvedDeck | null {
       photoUrl: photoFor(recipe),
     };
   }
+  if (source.startsWith("weekly:")) {
+    const id = source.slice("weekly:".length);
+    const menu = findWeeklyMenu(id);
+    if (!menu) return null;
+    return {
+      content: weeklyMenuToCards(menu),
+      category: "weekly_menu",
+      // 주간 식단표 커버 사진 — 카테고리별 fallback
+      photoUrl:
+        "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1080&h=1350&fit=crop",
+    };
+  }
+  if (source.startsWith("diet:")) {
+    const id = source.slice("diet:".length);
+    const info = findDietInfo(id);
+    if (!info) return null;
+    return {
+      content: dietInfoToCards(info),
+      category: "diet_info",
+      photoUrl:
+        "https://images.unsplash.com/photo-1565958011703-44f9829ba187?w=1080&h=1350&fit=crop",
+    };
+  }
   if (source.startsWith("sample:")) {
     const cat = source.slice("sample:".length) as ContentCategory;
     const content = SAMPLE_BY_CATEGORY[cat];
     if (!content) return null;
-    // 샘플 카테고리별 사진은 preview 페이지의 PHOTO_BY_CATEGORY와 동일 매핑 필요.
-    // 여기선 첫 카드의 image_concept 키워드를 photoFor 우회로 사용 — 단순화.
-    // 실제로는 카테고리별 photoUrl을 별도 관리해야 함.
     return {
       content,
       category: cat,

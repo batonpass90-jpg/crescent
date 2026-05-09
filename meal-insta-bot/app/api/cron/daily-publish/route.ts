@@ -1,37 +1,80 @@
 /**
  * GET /api/cron/daily-publish
  *
- * Vercel Cron이 매일 오후 6시 KST(=09 UTC) 호출.
- * RECIPES 중 오늘의 레시피를 골라 /api/publish 호출.
+ * Vercel Cron이 매일 18:00 KST(=09:00 UTC) 호출.
+ * 요일별로 다른 카테고리 게시:
+ *   월(1)        → 주간 식단표 (weekly_menu)
+ *   화(2)·목(4)  → 식단 정보 (diet_info)
+ *   수(3)·금(5)·토(6)·일(0) → 오늘의 한 끼 (recipe)
  *
- * 인증: Vercel Cron은 자동으로 `Authorization: Bearer ${CRON_SECRET}` 헤더 추가.
- *
- * 레시피 선택 규칙: 날짜 기반 라운드로빈
- *   YYYY-MM-DD → ord(MM-DD) % RECIPES.length → 인덱스
- *   같은 날엔 같은 레시피 (재실행해도 idempotent — 단, IG 게시 자체는 중복 안 막음)
+ * 각 풀에서 연중일자 % 풀크기로 라운드로빈 → 같은 날 재실행해도 같은 콘텐츠.
  */
 
 import { NextResponse } from "next/server";
 import { RECIPES } from "@/lib/recipe-source";
+import { WEEKLY_MENUS } from "@/lib/weekly-menus";
+import { DIET_INFOS } from "@/lib/diet-infos";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
 
+interface PickedContent {
+  category: "recipe" | "weekly" | "diet";
+  id: string;
+  label: string;
+  body: { recipeId?: string; weeklyId?: string; dietId?: string };
+}
+
 function authorize(request: Request): boolean {
   const secret = process.env.CRON_SECRET;
-  if (!secret) return true; // dev mode
+  if (!secret) return true;
   const auth = request.headers.get("authorization") ?? "";
   return auth === `Bearer ${secret}`;
 }
 
-function pickTodaysRecipe(date: Date) {
-  // 연중 일자 (1~366) 기준 라운드로빈
+function dayOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 0);
-  const dayOfYear = Math.floor(
-    (date.getTime() - start.getTime()) / 86_400_000,
-  );
-  const idx = dayOfYear % RECIPES.length;
-  return RECIPES[idx];
+  return Math.floor((date.getTime() - start.getTime()) / 86_400_000);
+}
+
+function pickContent(date: Date): PickedContent {
+  const dow = date.getDay(); // 0(일) ~ 6(토)
+  const doy = dayOfYear(date);
+
+  // 월요일 → 주간 식단표
+  if (dow === 1) {
+    const idx = Math.floor(doy / 7) % WEEKLY_MENUS.length;
+    const menu = WEEKLY_MENUS[idx];
+    return {
+      category: "weekly",
+      id: menu.id,
+      label: menu.theme,
+      body: { weeklyId: menu.id },
+    };
+  }
+
+  // 화·목 → 식단 정보
+  if (dow === 2 || dow === 4) {
+    // 일년 중 화·목 인덱스 (대략 doy/3.5)
+    const idx = Math.floor(doy / 3) % DIET_INFOS.length;
+    const info = DIET_INFOS[idx];
+    return {
+      category: "diet",
+      id: info.id,
+      label: info.topic.replace(/\n/g, " "),
+      body: { dietId: info.id },
+    };
+  }
+
+  // 수·금·토·일 → 한 끼 레시피
+  const idx = doy % RECIPES.length;
+  const recipe = RECIPES[idx];
+  return {
+    category: "recipe",
+    id: recipe.id,
+    label: recipe.name,
+    body: { recipeId: recipe.id },
+  };
 }
 
 export async function GET(request: Request) {
@@ -40,12 +83,11 @@ export async function GET(request: Request) {
   }
 
   const now = new Date();
-  const recipe = pickTodaysRecipe(now);
+  const picked = pickContent(now);
   console.log(
-    `[cron] ${now.toISOString()} — picking ${recipe.name} (id=${recipe.id})`,
+    `[cron] ${now.toISOString()} (dow=${now.getDay()}) — ${picked.category}/${picked.label}`,
   );
 
-  // /api/publish 내부 호출
   const base =
     process.env.PUBLIC_BASE_URL ?? "http://localhost:3000";
   const res = await fetch(`${base}/api/publish`, {
@@ -54,27 +96,26 @@ export async function GET(request: Request) {
       "content-type": "application/json",
       "x-cron-secret": process.env.CRON_SECRET ?? "",
     },
-    body: JSON.stringify({ recipeId: recipe.id }),
+    body: JSON.stringify(picked.body),
   });
   const data = await res.json();
 
   if (!res.ok) {
-    // Slack 알림 (옵션)
     await notifySlack(
-      `🚨 [meal-insta-bot] cron 실패\n${recipe.name} — ${data.detail ?? data.error}`,
+      `🚨 [meal-insta-bot] cron 실패 (${picked.category}/${picked.label})\n${data.detail ?? data.error}`,
     );
     return NextResponse.json(
-      { ok: false, recipe: recipe.name, error: data },
+      { ok: false, picked, error: data },
       { status: 500 },
     );
   }
 
   await notifySlack(
-    `✅ [meal-insta-bot] ${recipe.name} 게시 완료\nIG postId: ${data.postId}\nDuration: ${data.durationMs}ms`,
+    `✅ [meal-insta-bot] ${picked.category}/${picked.label} 게시 완료\nIG postId: ${data.postId}\nDuration: ${data.durationMs}ms`,
   );
   return NextResponse.json({
     ok: true,
-    recipe: recipe.name,
+    picked,
     postId: data.postId,
   });
 }
