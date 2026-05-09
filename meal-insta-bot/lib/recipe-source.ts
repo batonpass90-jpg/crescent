@@ -76,13 +76,68 @@ export const FOOD_PHOTOS: Record<string, string> = {
     "https://images.unsplash.com/photo-1488477181946-6428a0291777" + UNSPLASH_OPT,
 };
 
+/**
+ * 카테고리별 사진 풀 — FOOD_PHOTOS 매핑 없는 음식의 fallback.
+ * recipe.id 기반 결정적 분배 → 같은 음식은 항상 같은 사진,
+ * 다른 음식은 풀 안에서 다른 사진을 받음.
+ *
+ * 모든 ID는 Unsplash food 카테고리 기반.
+ * 정확도 100% 보장 X — 잘못된 매칭 발견 시 lib/recipe-source.ts FOOD_PHOTOS에 직접 추가.
+ */
+const CATEGORY_POOLS: Record<Recipe["category"], string[]> = {
+  한식: [
+    "https://images.unsplash.com/photo-1583224964978-2257b960c3d3" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1580651315530-69c8e0903883" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1582450871972-ab5ca641643d" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1632789395770-20e6f63be806" + UNSPLASH_OPT,
+  ],
+  양식: [
+    "https://images.unsplash.com/photo-1551183053-bf91a1d81141" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1473093226795-af9932fe5856" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1525351484163-7529414344d8" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" + UNSPLASH_OPT,
+  ],
+  샐러드: [
+    "https://images.unsplash.com/photo-1512621776951-a57141f2eefd" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1540420773420-3366772f4999" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1490645935967-10de6ba17061" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1488477181946-6428a0291777" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1505253716362-afaea1d3d1af" + UNSPLASH_OPT,
+  ],
+  간식: [
+    "https://images.unsplash.com/photo-1626700051175-6818013e1d4f" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1559717865-a99cac1c95d8" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1585032226651-759b368d7246" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1488900128323-21503983a07e" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1571091655789-405eb7a3a3a8" + UNSPLASH_OPT,
+  ],
+  일식: [
+    "https://images.unsplash.com/photo-1606491956689-2ea866880c84" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1617196333958-f8f0eb4d7e2c" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1607330289024-1535c6b4e1c1" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1569718212165-3a8278d5f624" + UNSPLASH_OPT,
+    "https://images.unsplash.com/photo-1614436163996-25cee5f54290" + UNSPLASH_OPT,
+  ],
+};
+
 const GENERIC_FOOD_PHOTO =
   "https://images.unsplash.com/photo-1546069901-ba9599a7e63c" + UNSPLASH_OPT;
 
 export function photoFor(recipe: Recipe): string {
   if (recipe.photoUrl) return recipe.photoUrl;
+  // 1순위: 음식 이름 직접 매핑
   const key = recipe.name.replace(/\s+/g, "");
-  return FOOD_PHOTOS[key] ?? GENERIC_FOOD_PHOTO;
+  if (FOOD_PHOTOS[key]) return FOOD_PHOTOS[key];
+  // 2순위: 카테고리 풀에서 id 기반 결정적 선택 (같은 음식 = 항상 같은 사진)
+  const pool = CATEGORY_POOLS[recipe.category];
+  if (pool && pool.length > 0) {
+    const idx = (parseInt(recipe.id, 10) || 0) % pool.length;
+    return pool[idx];
+  }
+  // 3순위: 최종 fallback
+  return GENERIC_FOOD_PHOTO;
 }
 
 export function photoForName(name: string): string {
