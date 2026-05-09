@@ -55,15 +55,43 @@ function wikimedia(file: string, hashDir: string): string {
 }
 
 export const FOOD_PHOTOS: Record<string, string> = {
-  // ✅ Wikimedia 시각 확인: 빨간 볶음밥 + 계란프라이 + 콩나물 + 깨 (정확)
+  // ── 한식 (Wikimedia 검증) ───────────────────────────────
   김치볶음밥: wikimedia("Korean_cuisine-Kimchi_bokkeumbap-01.jpg", "0/0d"),
-
-  // 한식 (Wikimedia에 잘 정리된 음식들)
   김치찌개: wikimedia("Korean_stew-Kimchi_jjigae-02.jpg", "9/9b"),
-  달걀찜: wikimedia("Korean_steamed_egg-Gyeran_jjim-01.jpg", "0/0e"),
   냉동밥볶음밥: wikimedia("Bokkeumbap.jpg", "f/f6"),
+  미역국한끼: "https://upload.wikimedia.org/wikipedia/commons/3/36/Miyeok-guk.jpg",
+  된장찌개: "https://upload.wikimedia.org/wikipedia/commons/9/9a/Doenjang-jjigae.jpg",
+  라볶이: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Tteokbokki.JPG", // 떡 + 양념 가까움
+  잔반비빔밥: "https://upload.wikimedia.org/wikipedia/commons/4/44/Dolsot-bibimbap.jpg",
+  간단잡채: "https://upload.wikimedia.org/wikipedia/commons/c/c8/Polish_Korean_Cuisine_and_Culture_Exchanges_Gradmother%E2%80%99s_Recipes_05.jpg",
+  카레라이스: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Beef_curry_rice_003.jpg",
+  짜장밥: "https://upload.wikimedia.org/wikipedia/commons/7/78/Jajangmyeon.jpg",
+  간단부대찌개: "https://upload.wikimedia.org/wikipedia/commons/8/82/Budae_jjigae_%2828587380901%29.jpg",
+  간단닭볶음탕: "https://upload.wikimedia.org/wikipedia/commons/1/1b/Korean.food-Dakbokemtang-01.jpg",
+  만두국: "https://upload.wikimedia.org/wikipedia/commons/0/0c/%EB%A7%8C%EB%91%90.jpg",
+  전자레인지달걀찜: "https://upload.wikimedia.org/wikipedia/commons/2/20/Gyeranjjim.jpg",
 
-  // 양식·간식·샐러드 (Unsplash)
+  // ── 양식 (Wikimedia 검증) ───────────────────────────────
+  알리오올리오: "https://upload.wikimedia.org/wikipedia/commons/6/6f/Aglio_e_olio.jpg",
+  "1인까르보나라": "https://upload.wikimedia.org/wikipedia/commons/3/33/Espaguetis_carbonara.jpg",
+  그릴드치즈: "https://upload.wikimedia.org/wikipedia/commons/1/13/Classic_Grilled_Cheese_Sandwich_%2825791331763%29_%28cropped%29.jpg",
+  토르티야부리또: "https://upload.wikimedia.org/wikipedia/commons/6/60/Burrito.JPG",
+
+  // ── 간식 (Wikimedia 검증) ───────────────────────────────
+  떡볶이: "https://upload.wikimedia.org/wikipedia/commons/4/4d/Tteokbokki.JPG",
+  어묵탕: "https://upload.wikimedia.org/wikipedia/commons/f/fb/Fish_cakes_food_dinner.jpg",
+  즉석김밥: "https://upload.wikimedia.org/wikipedia/commons/0/0e/Gimbap_%28pixabay%29.jpg",
+  냉동만두굽기: "https://upload.wikimedia.org/wikipedia/commons/0/0c/%EB%A7%8C%EB%91%90.jpg",
+
+  // ── 일식 (Wikimedia 검증) ───────────────────────────────
+  오야코동: "https://upload.wikimedia.org/wikipedia/commons/2/29/Oyakodon_003.jpg",
+  간단가츠동: "https://upload.wikimedia.org/wikipedia/commons/a/ad/Katsudon_001.jpg",
+  간단우동: "https://upload.wikimedia.org/wikipedia/commons/9/97/Kakeudon.jpg",
+  야키소바: "https://upload.wikimedia.org/wikipedia/commons/4/42/Nagata_Honjoken_Bokkake_Yakisoba.jpg",
+  일본식카레: "https://upload.wikimedia.org/wikipedia/commons/3/3b/Beef_curry_rice_003.jpg",
+  간단미소국: "https://upload.wikimedia.org/wikipedia/commons/e/e8/Miso_Soup_001.jpg",
+
+  // ── 양식·간식·샐러드 (Unsplash, 시각 확인) ────────────
   계란후라이덮밥:
     "https://images.unsplash.com/photo-1761064776495-357b1f05dcca" + UNSPLASH_OPT,
   참치마요파스타:
