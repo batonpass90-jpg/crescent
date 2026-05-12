@@ -13,10 +13,12 @@
   "functions": {
     "app/api/publish/route.ts": {
       "maxDuration": 300,
+      "memory": 3009,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     },
     "app/api/cron/daily-publish/route.ts": {
       "maxDuration": 300,
+      "memory": 3009,
       "includeFiles": "node_modules/@sparticuz/chromium/**"
     }
   }
