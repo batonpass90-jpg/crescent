@@ -1,0 +1,72 @@
+name: Daily Instagram Publish
+
+# 매일 2회 자동 실행 (UTC 기준):
+#   02:30 UTC = 11:30 KST (점심)
+#   09:00 UTC = 18:00 KST (저녁)
+# 또는 GitHub UI에서 수동 실행 가능 (workflow_dispatch).
+on:
+  schedule:
+    - cron: "30 2 * * *"   # 점심
+    - cron: "0 9 * * *"    # 저녁
+  workflow_dispatch:
+    inputs:
+      slot:
+        description: "Slot to publish"
+        required: true
+        type: choice
+        options:
+          - lunch
+          - evening
+        default: evening
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: meal-insta-bot
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: meal-insta-bot/package-lock.json
+
+      - name: Install dependencies (include puppeteer full)
+        run: npm ci --include=dev
+        env:
+          # GitHub Actions에서는 dev dep의 puppeteer 풀버전 사용
+          # (자체 chromium 다운로드, libnss3 등 시스템 라이브러리 자동)
+          PUPPETEER_SKIP_DOWNLOAD: "false"
+
+      - name: Determine slot (manual vs scheduled)
+        id: slot
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            HOUR=$(date -u +%H)
+            if [ "$HOUR" -lt "6" ]; then
+              echo "slot=lunch" >> "$GITHUB_OUTPUT"
+            else
+              echo "slot=evening" >> "$GITHUB_OUTPUT"
+            fi
+          else
+            echo "slot=${{ inputs.slot }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run cron-publish
+        env:
+          SLOT: ${{ steps.slot.outputs.slot }}
+          PUBLIC_BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          NODE_ENV: development
+        run: npx tsx scripts/cron-publish.ts
