@@ -73,16 +73,24 @@ export async function captureCard({
 
 async function launchBrowser() {
   if (isProd) {
-    // Vercel/Lambda — @sparticuz/chromium
+    // Vercel/Lambda — @sparticuz/chromium v131+ 권장 패턴
     const [{ default: puppeteerCore }, { default: chromium }] =
       await Promise.all([
         import("puppeteer-core"),
         import("@sparticuz/chromium"),
       ]);
+    // 폰트 로딩 활성화 (한글 깨짐 방지)
+    await chromium.font(
+      "https://raw.githubusercontent.com/googlefonts/noto-cjk/main/Sans/OTF/Korean/NotoSansCJKkr-Regular.otf",
+    );
     return puppeteerCore.launch({
-      args: chromium.args,
+      args: [
+        ...chromium.args,
+        "--hide-scrollbars",
+        "--disable-web-security",
+      ],
       executablePath: await chromium.executablePath(),
-      headless: true,
+      headless: chromium.headless,
       defaultViewport: { width: CARD_WIDTH, height: CARD_HEIGHT },
     });
   }
