@@ -94,10 +94,16 @@ async function launchBrowser() {
       defaultViewport: { width: CARD_WIDTH, height: CARD_HEIGHT },
     });
   }
-  // 로컬 — full puppeteer
+  // 로컬·CI — full puppeteer (GitHub Actions Ubuntu 24 AppArmor 대응)
   const { default: puppeteer } = await import("puppeteer");
   return puppeteer.launch({
     headless: true,
+    args: [
+      "--no-sandbox",
+      "--disable-setuid-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-gpu",
+    ],
     defaultViewport: { width: CARD_WIDTH, height: CARD_HEIGHT },
   });
 }
