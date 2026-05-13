@@ -143,12 +143,22 @@ async function main() {
 
   console.log(`[cron-publish] ${now.toISOString()} slot=${slot} → ${picked.category}/${picked.label}`);
 
+  // 디버그 — env 검증
+  const baseUrl = (process.env.PUBLIC_BASE_URL ?? "").trim();
+  console.log(`[debug] PUBLIC_BASE_URL=[${baseUrl}] length=${baseUrl.length}`);
+  if (!baseUrl || !baseUrl.startsWith("http")) {
+    throw new Error(
+      `PUBLIC_BASE_URL invalid or missing: "${process.env.PUBLIC_BASE_URL}"`,
+    );
+  }
+
   try {
-    // 1. 캡처
-    console.log(`[1/3] capturing ${picked.deck.cards.length} cards...`);
+    // 1. 캡처 (baseUrl 명시 전달)
+    console.log(`[1/3] capturing ${picked.deck.cards.length} cards from ${baseUrl}...`);
     const buffers = await captureDeck({
       source: picked.source,
       cardCount: picked.deck.cards.length,
+      baseUrl,
     });
     console.log(`      OK — ${buffers.length} PNGs`);
 
