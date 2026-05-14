@@ -38,6 +38,15 @@ jobs:
           cache: npm
           cache-dependency-path: meal-insta-bot/package-lock.json
 
+      - name: Install Korean fonts (Ubuntu에 한글 폰트 없으면 카드뉴스 글자 깨짐)
+        working-directory: .
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk fonts-noto-cjk-extra fonts-nanum
+          fc-cache -fv
+          echo "--- installed Korean fonts ---"
+          fc-list :lang=ko | head -10
+
       - name: Install dependencies (include puppeteer full)
         run: npm ci --include=dev
         env:
