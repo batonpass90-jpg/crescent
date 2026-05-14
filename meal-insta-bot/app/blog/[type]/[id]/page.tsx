@@ -16,6 +16,9 @@ import { WEEKLY_MENUS, findWeeklyMenu } from "@/lib/weekly-menus";
 import { DIET_INFOS, findDietInfo } from "@/lib/diet-infos";
 import { LIFESTYLE_POSTS, findLifestylePost } from "@/lib/lifestyle-posts";
 import { HACK_POSTS, findHackPost } from "@/lib/hack-posts";
+import { CHALLENGE_POSTS, findChallengePost } from "@/lib/challenge-posts";
+import { COMPARE_POSTS, findComparePost } from "@/lib/compare-posts";
+import { TRUTH_POSTS, findTruthPost } from "@/lib/truth-posts";
 import { SoyoColors, SoyoLinks } from "@/lib/soyo-tokens";
 
 interface Params {
@@ -40,6 +43,9 @@ export async function generateStaticParams(): Promise<Params[]> {
     ...DIET_INFOS.map((d) => ({ type: "diet", id: d.id })),
     ...LIFESTYLE_POSTS.map((p) => ({ type: "lifestyle", id: p.id })),
     ...HACK_POSTS.map((h) => ({ type: "hack", id: h.id })),
+    ...CHALLENGE_POSTS.map((c) => ({ type: "challenge", id: c.id })),
+    ...COMPARE_POSTS.map((c) => ({ type: "compare", id: c.id })),
+    ...TRUTH_POSTS.map((t) => ({ type: "truth", id: t.id })),
   ];
 }
 
@@ -97,6 +103,36 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       openGraph: { title: topic, description: h.hookBody, images: [WEEKLY_PHOTO] },
     };
   }
+  if (type === "challenge") {
+    const c = findChallengePost(id);
+    if (!c) return {};
+    const topic = c.topic.replace(/\n/g, " ");
+    return {
+      title: topic,
+      description: c.hookBody.replace(/\n/g, " "),
+      openGraph: { title: topic, description: c.hookBody, images: [WEEKLY_PHOTO] },
+    };
+  }
+  if (type === "compare") {
+    const c = findComparePost(id);
+    if (!c) return {};
+    const topic = c.topic.replace(/\n/g, " ");
+    return {
+      title: topic,
+      description: c.hookBody.replace(/\n/g, " "),
+      openGraph: { title: topic, description: c.hookBody, images: [DIET_PHOTO] },
+    };
+  }
+  if (type === "truth") {
+    const t = findTruthPost(id);
+    if (!t) return {};
+    const topic = t.topic.replace(/\n/g, " ");
+    return {
+      title: topic,
+      description: t.hookBody.replace(/\n/g, " "),
+      openGraph: { title: topic, description: t.hookBody, images: [DIET_PHOTO] },
+    };
+  }
   return {};
 }
 
@@ -108,7 +144,141 @@ export default async function BlogDetail({ params }: PageProps) {
   if (type === "diet") return <DietPost id={id} />;
   if (type === "lifestyle") return <LifestylePostPage id={id} />;
   if (type === "hack") return <HackPostPage id={id} />;
+  if (type === "challenge") return <ChallengePostPage id={id} />;
+  if (type === "compare") return <ComparePostPage id={id} />;
+  if (type === "truth") return <TruthPostPage id={id} />;
   notFound();
+}
+
+// ── Challenge ────────────────────────────────────────────
+function ChallengePostPage({ id }: { id: string }) {
+  const c = findChallengePost(id);
+  if (!c) notFound();
+  return (
+    <article>
+      <Hero
+        photo={WEEKLY_PHOTO}
+        category="30일 챌린지"
+        title={c.topic.replace(/\n/g, " ")}
+        meta={c.hookSubtitle}
+        intro={c.hookBody}
+      />
+      <Section title={c.problem.title}>
+        <table className="w-full text-sm"><tbody>
+          {c.problem.rows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title="규칙">
+        <ol className="space-y-3">
+          {c.rules.map((r, i) => (
+            <li key={i} className="flex gap-3">
+              <span className="shrink-0 px-2 py-1 rounded text-xs font-bold whitespace-nowrap"
+                style={{ backgroundColor: SoyoColors.clay, color: SoyoColors.white }}>
+                {r.day}
+              </span>
+              <div className="flex-1">
+                <div className="font-bold mb-0.5" style={{ color: SoyoColors.ink }}>{r.rule}</div>
+                <div className="text-sm" style={{ color: SoyoColors.ink3 }}>{r.why}</div>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Section>
+      <Section title="실제 결과">
+        <table className="w-full text-sm"><tbody>
+          {c.results.map((r, i) => <Row key={i} k={r.metric} v={`${r.before} → ${r.after}`} />)}
+        </tbody></table>
+      </Section>
+      <Section title="참여하기">
+        <Callout tone="tip">{c.joinHook}</Callout>
+      </Section>
+      <SoyoCTA />
+    </article>
+  );
+}
+
+// ── Compare ─────────────────────────────────────────────
+function ComparePostPage({ id }: { id: string }) {
+  const c = findComparePost(id);
+  if (!c) notFound();
+  return (
+    <article>
+      <Hero
+        photo={DIET_PHOTO}
+        category="전후 비교"
+        title={c.topic.replace(/\n/g, " ")}
+        meta={c.hookSubtitle}
+        intro={c.hookBody}
+      />
+      <Section title="실험 조건">
+        <Callout tone="tip">{c.setup}</Callout>
+      </Section>
+      <Section title={c.itemA.label}>
+        <p className="text-sm mb-3" style={{ color: SoyoColors.ink3 }}>{c.itemA.summary}</p>
+        <table className="w-full text-sm"><tbody>
+          {c.itemA.rows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title={c.itemB.label}>
+        <p className="text-sm mb-3" style={{ color: SoyoColors.ink3 }}>{c.itemB.summary}</p>
+        <table className="w-full text-sm"><tbody>
+          {c.itemB.rows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title={c.diffTitle}>
+        <table className="w-full text-sm"><tbody>
+          {c.diffRows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title="결론">
+        <Callout tone="tip">{c.conclusion}</Callout>
+        <p className="text-sm mt-4" style={{ color: SoyoColors.ink3 }}>{c.shareHook}</p>
+      </Section>
+      <SoyoCTA />
+    </article>
+  );
+}
+
+// ── Truth ───────────────────────────────────────────────
+function TruthPostPage({ id }: { id: string }) {
+  const t = findTruthPost(id);
+  if (!t) notFound();
+  return (
+    <article>
+      <Hero
+        photo={DIET_PHOTO}
+        category="숨겨진 진실"
+        title={t.topic.replace(/\n/g, " ")}
+        meta={t.hookSubtitle}
+        intro={t.hookBody}
+      />
+      <Section title={t.setup.title}>
+        <table className="w-full text-sm"><tbody>
+          {t.setup.rows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title="5가지 진실">
+        <ol className="space-y-4">
+          {t.facts.map((f, i) => (
+            <li key={i}>
+              <div className="font-bold mb-1" style={{ color: SoyoColors.clay }}>{f.fact}</div>
+              <div className="text-sm" style={{ color: SoyoColors.ink2 }}>{f.evidence}</div>
+            </li>
+          ))}
+        </ol>
+      </Section>
+      <Section title={t.action.title}>
+        <table className="w-full text-sm"><tbody>
+          {t.action.rows.map((r, i) => <Row key={i} k={r.label} v={r.value} />)}
+        </tbody></table>
+      </Section>
+      <Section title="결론">
+        <Callout tone="tip">{t.conclusion}</Callout>
+        <p className="text-sm mt-4" style={{ color: SoyoColors.ink3 }}>{t.saveHook}</p>
+      </Section>
+      <SoyoCTA />
+    </article>
+  );
 }
 
 // ── Recipe ────────────────────────────────────────────────

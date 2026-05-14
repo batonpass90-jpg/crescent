@@ -4,6 +4,9 @@ import { WEEKLY_MENUS } from "@/lib/weekly-menus";
 import { DIET_INFOS } from "@/lib/diet-infos";
 import { LIFESTYLE_POSTS } from "@/lib/lifestyle-posts";
 import { HACK_POSTS } from "@/lib/hack-posts";
+import { CHALLENGE_POSTS } from "@/lib/challenge-posts";
+import { COMPARE_POSTS } from "@/lib/compare-posts";
+import { TRUTH_POSTS } from "@/lib/truth-posts";
 import { SoyoColors } from "@/lib/soyo-tokens";
 
 interface BlogIndexProps {
@@ -11,7 +14,7 @@ interface BlogIndexProps {
 }
 
 interface PostCard {
-  type: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
+  type: "recipe" | "weekly" | "diet" | "lifestyle" | "hack" | "challenge" | "compare" | "truth";
   id: string;
   title: string;
   description: string;
@@ -79,7 +82,49 @@ function buildPostList(): PostCard[] {
     tagColor: SoyoColors.gold,
   }));
 
-  return [...recipes, ...weeklies, ...diets, ...lifestyles, ...hacks];
+  const challenges: PostCard[] = CHALLENGE_POSTS.map((c) => ({
+    type: "challenge",
+    id: c.id,
+    title: c.topic.replace(/\n/g, " "),
+    description: c.hookBody.replace(/\n/g, " "),
+    meta: c.hookSubtitle,
+    href: `/blog/challenge/${c.id}`,
+    tagLabel: "챌린지",
+    tagColor: SoyoColors.clay,
+  }));
+
+  const compares: PostCard[] = COMPARE_POSTS.map((c) => ({
+    type: "compare",
+    id: c.id,
+    title: c.topic.replace(/\n/g, " "),
+    description: c.hookBody.replace(/\n/g, " "),
+    meta: c.hookSubtitle,
+    href: `/blog/compare/${c.id}`,
+    tagLabel: "비교",
+    tagColor: SoyoColors.sky,
+  }));
+
+  const truths: PostCard[] = TRUTH_POSTS.map((t) => ({
+    type: "truth",
+    id: t.id,
+    title: t.topic.replace(/\n/g, " "),
+    description: t.hookBody.replace(/\n/g, " "),
+    meta: t.hookSubtitle,
+    href: `/blog/truth/${t.id}`,
+    tagLabel: "진실",
+    tagColor: SoyoColors.clay,
+  }));
+
+  return [
+    ...truths, // 새 콘텐츠 우선 노출 (저장·공유 강력)
+    ...compares,
+    ...challenges,
+    ...recipes,
+    ...weeklies,
+    ...diets,
+    ...lifestyles,
+    ...hacks,
+  ];
 }
 
 export default async function BlogIndex({ searchParams }: BlogIndexProps) {
@@ -88,7 +133,7 @@ export default async function BlogIndex({ searchParams }: BlogIndexProps) {
 
   const allPosts = buildPostList();
   const posts =
-    category && ["recipe", "weekly", "diet", "lifestyle", "hack"].includes(category)
+    category && ["recipe", "weekly", "diet", "lifestyle", "hack", "challenge", "compare", "truth"].includes(category)
       ? allPosts.filter((p) => p.type === category)
       : allPosts;
 
@@ -98,6 +143,9 @@ export default async function BlogIndex({ searchParams }: BlogIndexProps) {
     diet: "영양 정보",
     lifestyle: "자취 라이프",
     hack: "자취 꿀팁",
+    challenge: "30일 챌린지",
+    compare: "전후 비교",
+    truth: "숨겨진 진실",
   };
 
   return (

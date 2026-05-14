@@ -11,6 +11,9 @@ import { WEEKLY_MENUS } from "@/lib/weekly-menus";
 import { DIET_INFOS } from "@/lib/diet-infos";
 import { LIFESTYLE_POSTS } from "@/lib/lifestyle-posts";
 import { HACK_POSTS } from "@/lib/hack-posts";
+import { CHALLENGE_POSTS } from "@/lib/challenge-posts";
+import { COMPARE_POSTS } from "@/lib/compare-posts";
+import { TRUTH_POSTS } from "@/lib/truth-posts";
 
 const BASE_URL = process.env.PUBLIC_BASE_URL ?? "https://meal-insta-bot.vercel.app";
 
@@ -60,6 +63,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "weekly",
   }));
 
+  const extras = [
+    ...CHALLENGE_POSTS.map((p) => ({ type: "challenge", id: p.id })),
+    ...COMPARE_POSTS.map((p) => ({ type: "compare", id: p.id })),
+    ...TRUTH_POSTS.map((p) => ({ type: "truth", id: p.id })),
+  ].map<MetadataRoute.Sitemap[number]>(({ type, id }) => ({
+    url: `${BASE_URL}/blog/${type}/${id}`,
+    lastModified: now,
+    priority: 0.75, // 신규 콘텐츠 약간 더 높임
+    changeFrequency: "weekly",
+  }));
+
   return [
     ...staticPages,
     ...recipePages,
@@ -67,5 +81,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...dietPages,
     ...lifestylePages,
     ...hackPages,
+    ...extras,
   ];
 }

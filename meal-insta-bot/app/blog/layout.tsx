@@ -47,11 +47,14 @@ export default function BlogLayout({
           </Link>
           <nav className="flex gap-3 text-sm font-medium overflow-x-auto">
             <Link href="/blog" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>전체</Link>
+            <Link href="/blog?category=truth" className="hover:underline whitespace-nowrap font-bold" style={{ color: SoyoColors.clay }}>진실</Link>
+            <Link href="/blog?category=compare" className="hover:underline whitespace-nowrap font-bold" style={{ color: SoyoColors.sky }}>비교</Link>
+            <Link href="/blog?category=challenge" className="hover:underline whitespace-nowrap font-bold" style={{ color: SoyoColors.clay }}>챌린지</Link>
             <Link href="/blog?category=recipe" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>레시피</Link>
             <Link href="/blog?category=weekly" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>식단표</Link>
-            <Link href="/blog?category=diet" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>영양</Link>
-            <Link href="/blog?category=lifestyle" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>라이프</Link>
             <Link href="/blog?category=hack" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>꿀팁</Link>
+            <Link href="/blog?category=lifestyle" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>라이프</Link>
+            <Link href="/blog?category=diet" className="hover:underline whitespace-nowrap" style={{ color: SoyoColors.ink2 }}>영양</Link>
           </nav>
         </div>
       </header>

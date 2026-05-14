@@ -32,6 +32,12 @@ import { findLifestylePost } from "@/lib/lifestyle-posts";
 import { lifestyleToCards } from "@/lib/lifestyle-to-cards";
 import { findHackPost } from "@/lib/hack-posts";
 import { hackToCards } from "@/lib/hack-to-cards";
+import { findChallengePost } from "@/lib/challenge-posts";
+import { challengeToCards } from "@/lib/challenge-to-cards";
+import { findComparePost } from "@/lib/compare-posts";
+import { compareToCards } from "@/lib/compare-to-cards";
+import { findTruthPost } from "@/lib/truth-posts";
+import { truthToCards } from "@/lib/truth-to-cards";
 import { captureDeck } from "@/lib/screenshot";
 import { uploadDeck } from "@/lib/storage";
 import { publishCarousel } from "@/lib/instagram";
@@ -45,6 +51,9 @@ interface PublishBody {
   dietId?: string;
   lifestyleId?: string;
   hackId?: string;
+  challengeId?: string;
+  compareId?: string;
+  truthId?: string;
   dryRun?: boolean;
 }
 
@@ -52,7 +61,15 @@ interface ResolvedSource {
   source: string;
   label: string;
   deck: CardNewsContent;
-  category: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
+  category:
+    | "recipe"
+    | "weekly"
+    | "diet"
+    | "lifestyle"
+    | "hack"
+    | "challenge"
+    | "compare"
+    | "truth";
 }
 
 function resolveSource(body: PublishBody): ResolvedSource | { error: string } {
@@ -106,7 +123,40 @@ function resolveSource(body: PublishBody): ResolvedSource | { error: string } {
       category: "hack",
     };
   }
-  return { error: "Body must contain recipeId / weeklyId / dietId / lifestyleId / hackId" };
+  if (body.challengeId) {
+    const post = findChallengePost(body.challengeId);
+    if (!post) return { error: `Challenge ${body.challengeId} not found` };
+    return {
+      source: `challenge:${post.id}`,
+      label: post.topic.replace(/\n/g, " "),
+      deck: challengeToCards(post),
+      category: "challenge",
+    };
+  }
+  if (body.compareId) {
+    const post = findComparePost(body.compareId);
+    if (!post) return { error: `Compare ${body.compareId} not found` };
+    return {
+      source: `compare:${post.id}`,
+      label: post.topic.replace(/\n/g, " "),
+      deck: compareToCards(post),
+      category: "compare",
+    };
+  }
+  if (body.truthId) {
+    const post = findTruthPost(body.truthId);
+    if (!post) return { error: `Truth ${body.truthId} not found` };
+    return {
+      source: `truth:${post.id}`,
+      label: post.topic.replace(/\n/g, " "),
+      deck: truthToCards(post),
+      category: "truth",
+    };
+  }
+  return {
+    error:
+      "Body must contain recipeId/weeklyId/dietId/lifestyleId/hackId/challengeId/compareId/truthId",
+  };
 }
 
 function authorize(request: Request): boolean {

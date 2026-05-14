@@ -23,6 +23,12 @@ import { findLifestylePost } from "@/lib/lifestyle-posts";
 import { lifestyleToCards } from "@/lib/lifestyle-to-cards";
 import { findHackPost } from "@/lib/hack-posts";
 import { hackToCards } from "@/lib/hack-to-cards";
+import { findChallengePost } from "@/lib/challenge-posts";
+import { challengeToCards } from "@/lib/challenge-to-cards";
+import { findComparePost } from "@/lib/compare-posts";
+import { compareToCards } from "@/lib/compare-to-cards";
+import { findTruthPost } from "@/lib/truth-posts";
+import { truthToCards } from "@/lib/truth-to-cards";
 import { SoyoLinks } from "@/lib/soyo-tokens";
 import type { CardNewsContent, ContentCategory } from "@/lib/content-types";
 
@@ -36,6 +42,10 @@ interface ResolvedDeck {
   content: CardNewsContent;
   category: ContentCategory;
   photoUrl: string;
+  /** 상단 카테고리 라벨 override (CATEGORY_STYLES 대신 사용) */
+  labelOverride?: string;
+  /** 밴드 컬러 override */
+  bandColorOverride?: string;
 }
 
 function resolve(source: string): ResolvedDeck | null {
@@ -90,8 +100,40 @@ function resolve(source: string): ResolvedDeck | null {
     return {
       content: hackToCards(post),
       category: "weekly_menu", // 컬러는 weekly와 동일 (sage)
-      photoUrl:
-        "https://images.unsplash.com/photo-1606787366850-de6330128bfc?w=1080&h=1350&fit=crop",
+      photoUrl: "",
+    };
+  }
+  if (source.startsWith("challenge:")) {
+    const id = source.slice("challenge:".length);
+    const post = findChallengePost(id);
+    if (!post) return null;
+    return {
+      content: challengeToCards(post),
+      category: "today_meal",
+      photoUrl: "",
+      labelOverride: "30일 챌린지",
+    };
+  }
+  if (source.startsWith("compare:")) {
+    const id = source.slice("compare:".length);
+    const post = findComparePost(id);
+    if (!post) return null;
+    return {
+      content: compareToCards(post),
+      category: "diet_info",
+      photoUrl: "",
+      labelOverride: "전후 비교",
+    };
+  }
+  if (source.startsWith("truth:")) {
+    const id = source.slice("truth:".length);
+    const post = findTruthPost(id);
+    if (!post) return null;
+    return {
+      content: truthToCards(post),
+      category: "today_meal",
+      photoUrl: "",
+      labelOverride: "숨겨진 진실",
     };
   }
   if (source.startsWith("sample:")) {
@@ -141,6 +183,8 @@ export default async function RenderPage({
   }
 
   const style = CATEGORY_STYLES[deck.category];
+  const categoryLabel = deck.labelOverride ?? style.label;
+  const bandColor = deck.bandColorOverride ?? style.bandColor;
   const total = deck.content.cards.length;
 
   return (
@@ -160,8 +204,8 @@ export default async function RenderPage({
           card={card}
           index={i}
           total={total}
-          categoryLabel={style.label}
-          bandColor={style.bandColor}
+          categoryLabel={categoryLabel}
+          bandColor={bandColor}
           handle={handle}
           photoUrl={deck.photoUrl}
         />
@@ -170,8 +214,8 @@ export default async function RenderPage({
           card={card}
           index={i}
           total={total}
-          categoryLabel={style.label}
-          bandColor={style.bandColor}
+          categoryLabel={categoryLabel}
+          bandColor={bandColor}
           handle={handle}
         />
       )}

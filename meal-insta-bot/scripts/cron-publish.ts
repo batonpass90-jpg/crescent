@@ -16,11 +16,17 @@ import { WEEKLY_MENUS } from "../lib/weekly-menus";
 import { DIET_INFOS } from "../lib/diet-infos";
 import { LIFESTYLE_POSTS } from "../lib/lifestyle-posts";
 import { HACK_POSTS } from "../lib/hack-posts";
+import { CHALLENGE_POSTS } from "../lib/challenge-posts";
+import { COMPARE_POSTS } from "../lib/compare-posts";
+import { TRUTH_POSTS } from "../lib/truth-posts";
 import { recipeToCards } from "../lib/recipe-to-cards";
 import { weeklyMenuToCards } from "../lib/menu-to-cards";
 import { dietInfoToCards } from "../lib/info-to-cards";
 import { lifestyleToCards } from "../lib/lifestyle-to-cards";
 import { hackToCards } from "../lib/hack-to-cards";
+import { challengeToCards } from "../lib/challenge-to-cards";
+import { compareToCards } from "../lib/compare-to-cards";
+import { truthToCards } from "../lib/truth-to-cards";
 import { captureDeck } from "../lib/screenshot";
 import { uploadDeck } from "../lib/storage";
 import { publishCarousel } from "../lib/instagram";
@@ -29,7 +35,15 @@ import type { CardNewsContent } from "../lib/content-types";
 type Slot = "lunch" | "evening";
 
 interface Picked {
-  category: "recipe" | "weekly" | "diet" | "lifestyle" | "hack";
+  category:
+    | "recipe"
+    | "weekly"
+    | "diet"
+    | "lifestyle"
+    | "hack"
+    | "challenge"
+    | "compare"
+    | "truth";
   source: string;
   label: string;
   deck: CardNewsContent;
@@ -40,12 +54,65 @@ function dayOfYear(date: Date): number {
   return Math.floor((date.getTime() - start.getTime()) / 86_400_000);
 }
 
+/**
+ * 알고리즘 친화 콘텐츠 분배.
+ *
+ * 핵심 원칙:
+ * - 매일 다른 카테고리 (질림 방지)
+ * - 강한 후크 콘텐츠 (truth·compare·challenge) 비중 ↑
+ * - 정보형 (recipe·weekly·diet) 비중 ↓
+ * - 페르소나·꿀팁은 보조
+ *
+ * 주간 분배 (14회 게시):
+ *   월 점심: truth      | 월 저녁: weekly_menu (식단표)
+ *   화 점심: compare    | 화 저녁: diet_info
+ *   수 점심: challenge  | 수 저녁: recipe (한 끼)
+ *   목 점심: hack       | 목 저녁: diet_info
+ *   금 점심: lifestyle  | 금 저녁: recipe
+ *   토 점심: truth      | 토 저녁: recipe (주말)
+ *   일 점심: compare    | 일 저녁: challenge
+ */
 function pickContent(date: Date, slot: Slot): Picked {
-  const dow = date.getDay();
+  const dow = date.getDay(); // 0=일, 1=월, ..., 6=토
   const doy = dayOfYear(date);
 
+  // 점심 슬롯 — 강한 후크 콘텐츠 우선 (저장·공유 트리거)
   if (slot === "lunch") {
-    if (dow === 2 || dow === 4) {
+    // 월·토: truth (호기심 폭발 — 주 시작·주말 시작)
+    if (dow === 1 || dow === 6) {
+      const idx = Math.floor(doy / 7) % TRUTH_POSTS.length;
+      const p = TRUTH_POSTS[idx];
+      return {
+        category: "truth",
+        source: `truth:${p.id}`,
+        label: `[점심:진실] ${p.topic.replace(/\n/g, " ")}`,
+        deck: truthToCards(p),
+      };
+    }
+    // 화·일: compare (객관적 비교 — 의사결정 도움)
+    if (dow === 2 || dow === 0) {
+      const idx = Math.floor(doy / 7) % COMPARE_POSTS.length;
+      const p = COMPARE_POSTS[idx];
+      return {
+        category: "compare",
+        source: `compare:${p.id}`,
+        label: `[점심:비교] ${p.topic.replace(/\n/g, " ")}`,
+        deck: compareToCards(p),
+      };
+    }
+    // 수: challenge (한 주 도전 — 동기부여)
+    if (dow === 3) {
+      const idx = Math.floor(doy / 7) % CHALLENGE_POSTS.length;
+      const p = CHALLENGE_POSTS[idx];
+      return {
+        category: "challenge",
+        source: `challenge:${p.id}`,
+        label: `[점심:챌린지] ${p.topic.replace(/\n/g, " ")}`,
+        deck: challengeToCards(p),
+      };
+    }
+    // 목: hack (실용 꿀팁)
+    if (dow === 4) {
       const idx = Math.floor(doy / 3) % HACK_POSTS.length;
       const h = HACK_POSTS[idx];
       return {
@@ -55,33 +122,19 @@ function pickContent(date: Date, slot: Slot): Picked {
         deck: hackToCards(h),
       };
     }
-    if (dow === 0 || dow === 6) {
-      const idx = Math.floor(doy / 7) % LIFESTYLE_POSTS.length;
-      const p = LIFESTYLE_POSTS[idx];
-      return {
-        category: "lifestyle",
-        source: `lifestyle:${p.id}`,
-        label: `[점심:공감] ${p.topic.replace(/\n/g, " ")}`,
-        deck: lifestyleToCards(p),
-      };
-    }
-    const lunchPool = RECIPES.filter(
-      (r) =>
-        r.category === "양식" ||
-        r.category === "샐러드" ||
-        r.category === "간식" ||
-        (r.category === "한식" && r.time <= 10),
-    );
-    const pool = lunchPool.length > 0 ? lunchPool : RECIPES;
-    const recipe = pool[doy % pool.length];
+    // 금: lifestyle (공감·페르소나)
+    const idx = Math.floor(doy / 7) % LIFESTYLE_POSTS.length;
+    const p = LIFESTYLE_POSTS[idx];
     return {
-      category: "recipe",
-      source: `recipe:${recipe.id}`,
-      label: `[점심] ${recipe.name}`,
-      deck: recipeToCards(recipe),
+      category: "lifestyle",
+      source: `lifestyle:${p.id}`,
+      label: `[점심:라이프] ${p.topic.replace(/\n/g, " ")}`,
+      deck: lifestyleToCards(p),
     };
   }
 
+  // 저녁 슬롯 — 정보·실행 (저녁 메뉴 결정 + 내일 계획)
+  // 월 → weekly_menu
   if (dow === 1) {
     const idx = Math.floor(doy / 7) % WEEKLY_MENUS.length;
     const m = WEEKLY_MENUS[idx];
@@ -92,6 +145,7 @@ function pickContent(date: Date, slot: Slot): Picked {
       deck: weeklyMenuToCards(m),
     };
   }
+  // 화·목 → diet_info
   if (dow === 2 || dow === 4) {
     const idx = Math.floor(doy / 3) % DIET_INFOS.length;
     const info = DIET_INFOS[idx];
@@ -102,6 +156,18 @@ function pickContent(date: Date, slot: Slot): Picked {
       deck: dietInfoToCards(info),
     };
   }
+  // 일 → challenge (다음 주 미리 도전)
+  if (dow === 0) {
+    const idx = (Math.floor(doy / 7) + 1) % CHALLENGE_POSTS.length;
+    const p = CHALLENGE_POSTS[idx];
+    return {
+      category: "challenge",
+      source: `challenge:${p.id}`,
+      label: `[저녁:챌린지] ${p.topic.replace(/\n/g, " ")}`,
+      deck: challengeToCards(p),
+    };
+  }
+  // 수·금·토 → 묵직한 저녁 한 끼
   const dinnerPool = RECIPES.filter(
     (r) =>
       (r.category === "한식" && r.time > 10) || r.category === "일식",
