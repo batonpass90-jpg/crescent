@@ -27,7 +27,7 @@ export interface TruthPost {
 export const TRUTH_POSTS: TruthPost[] = [
   {
     id: "1",
-    topic: "편의점이\n안 알려주는 5",
+    topic: "편의점이\n안 알려주는\n5가지",
     hookSubtitle: "자취 진실 #01",
     hookBody:
       "편의점 도시락 영양표시 뒤집어보면.\n5가지 충격 사실.",
@@ -121,7 +121,7 @@ export const TRUTH_POSTS: TruthPost[] = [
   },
   {
     id: "3",
-    topic: "마트가\n안 알려주는 5",
+    topic: "마트가\n안 알려주는\n5가지",
     hookSubtitle: "자취 진실 #03",
     hookBody:
       "동선·진열·가격 책정의 비밀.\n자취생 통장이 새는 5가지 함정.",
@@ -168,7 +168,7 @@ export const TRUTH_POSTS: TruthPost[] = [
   },
   {
     id: "4",
-    topic: "한식 5년차도\n모르는 5",
+    topic: "한식 5년차도\n모르는\n5가지",
     hookSubtitle: "자취 진실 #04",
     hookBody:
       "엄마는 알지만 자취생은 모르는 것.\n5가지 한식 비밀.",
@@ -216,7 +216,7 @@ export const TRUTH_POSTS: TruthPost[] = [
   },
   {
     id: "5",
-    topic: "배달앱이\n안 알려주는 5",
+    topic: "배달앱이\n안 알려주는\n5가지",
     hookSubtitle: "자취 진실 #05",
     hookBody:
       "배달비·최소주문·할인 — 다 계산된 함정.\n5가지 진실.",
@@ -310,7 +310,7 @@ export const TRUTH_POSTS: TruthPost[] = [
   },
   {
     id: "7",
-    topic: "전기료\n자취 5",
+    topic: "전기료\n자취\n5가지",
     hookSubtitle: "자취 진실 #07",
     hookBody:
       "냉장고·전자레인지·인덕션 — 자취 전기료의 진실.\n5가지.",
