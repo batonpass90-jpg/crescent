@@ -588,15 +588,47 @@ const STATE = { answers:{}, currentIdx:0, centerSlug:null, centerData:null, resu
 // ============================
 // 초기화
 // ============================
-function init(){
+async function init(){
   const params = new URLSearchParams(location.search);
   STATE.centerSlug = params.get('c') || 'demo';
+
+  // 기본값 (demo 또는 로딩 중)
   STATE.centerData = {
     slug: STATE.centerSlug,
-    name: STATE.centerSlug === 'demo' ? '햇살요양센터 (데모)' : STATE.centerSlug,
-    phone: '031-682-9090',
-    address: '경기도 성남시 분당구'
+    name: STATE.centerSlug === 'demo' ? '햇살요양센터 (데모)' : '센터 확인 중...',
+    phone: '031-682-9090'
   };
+
+  // demo 외 슬러그면 Supabase에서 센터 정보 조회
+  if(STATE.centerSlug !== 'demo'){
+    try {
+      const res = await fetch(SUPABASE_URL + '/rest/v1/centers?slug=eq.' + encodeURIComponent(STATE.centerSlug) + '&select=name,phone,credit_balance,site_published&limit=1', {
+        headers: { 'apikey': SUPABASE_ANON_KEY, 'Authorization': 'Bearer ' + SUPABASE_ANON_KEY }
+      });
+      const arr = await res.json();
+      if(Array.isArray(arr) && arr.length > 0){
+        const c = arr[0];
+        if(c.site_published === false){
+          STATE.centerData = { slug: STATE.centerSlug, name: '비공개 사이트', phone:'' };
+          document.querySelector('.intro-title').innerHTML = '준비 중인 센터입니다';
+          document.querySelector('.intro-sub').innerHTML = '담당 센터의 홈페이지가 아직 공개되지 않았습니다.<br>잠시 후 다시 방문해주세요.';
+          document.querySelector('.btn-primary').style.display = 'none';
+          document.getElementById('stickyCta').style.display = 'none';
+          return;
+        }
+        STATE.centerData = { slug: STATE.centerSlug, name: c.name, phone: c.phone || '', balance: c.credit_balance };
+      } else {
+        // 슬러그 없음 → demo 폴백
+        STATE.centerSlug = 'demo';
+        STATE.centerData = { slug:'demo', name:'햇살요양센터 (데모)', phone:'031-682-9090' };
+      }
+    } catch(e){
+      console.warn('[center fetch failed, fallback to demo]', e);
+      STATE.centerSlug = 'demo';
+      STATE.centerData = { slug:'demo', name:'햇살요양센터 (데모)', phone:'031-682-9090' };
+    }
+  }
+
   document.getElementById('centerLabel').textContent = STATE.centerData.name;
   document.getElementById('leadCenterName').textContent =
     STATE.centerData.name + '에서 신청 서류·공단 조사 대비·보호사 매칭까지 한 번에 안내받으세요.';
@@ -1053,6 +1085,10 @@ async function submitLead(){
   }
 }
 
+// Supabase Edge Function endpoint
+const SUPABASE_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
+
 async function saveLead(payload){
   const lead = {
     center_slug: STATE.centerSlug,
@@ -1061,12 +1097,40 @@ async function saveLead(payload){
     parent_phone: payload.phone,
     preferred_time: payload.preferredTime,
     answers: STATE.answers,
-    result: STATE.result,
-    created_at: new Date().toISOString()
+    result: STATE.result
   };
-  console.log('[lead]', lead);
-  await new Promise(r=>setTimeout(r,500));
-  return true;
+  console.log('[lead submit]', lead);
+
+  // demo 모드는 실제 전송 안 함
+  if(STATE.centerSlug === 'demo'){
+    await new Promise(r=>setTimeout(r,500));
+    return true;
+  }
+
+  try {
+    const res = await fetch(SUPABASE_URL + '/functions/v1/submit-lead', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+        'apikey': SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify(lead)
+    });
+    const data = await res.json();
+    if(!res.ok || !data.ok){
+      console.error('[lead submit failed]', data);
+      // 잔액 부족이면 별도 표시
+      if(data?.error === 'insufficient_credit'){
+        toast('현재 상담 신청이 일시 마감되었습니다. 직접 전화 부탁드립니다.');
+      }
+      return false;
+    }
+    return true;
+  } catch(e){
+    console.error('[lead submit error]', e);
+    return false;
+  }
 }
 
 function toast(msg){

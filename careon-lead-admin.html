@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>상담 신청 게시판 — CareOn</title>
+<meta name="theme-color" content="#0D9488">
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f5f0;color:#0F1B2D;-webkit-font-smoothing:antialiased}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--border:#e5e7eb;--green:#22c55e;--amber:#f59e0b;--rose:#f43f5e;--blue:#3b82f6}
+
+/* 60대 친화: 글자 크게 */
+body{font-size:16px}
+
+.app{max-width:780px;margin:0 auto;min-height:100vh;background:#fff}
+
+/* 상단 */
+.header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:#fff;position:sticky;top:0;z-index:50}
+.header-left{display:flex;align-items:center;gap:10px}
+.logo{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--navy)}
+.logo span{color:var(--teal)}
+.center-name{font-size:12px;color:var(--gray);font-weight:600}
+.logout-btn{background:transparent;color:var(--gray);border:1px solid var(--border);font-size:13px;font-weight:600;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:inherit}
+
+/* 헬로 카드 */
+.hero{padding:24px 20px;background:linear-gradient(135deg,#0F1B2D 0%,#0f766e 100%);color:#fff}
+.hero-greet{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:6px}
+.hero-name{font-size:22px;font-weight:800;margin-bottom:14px;letter-spacing:-.3px}
+.hero-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.hero-stat{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:14px;text-align:center}
+.hero-stat-val{font-size:22px;font-weight:900;color:#ccfbf1;line-height:1}
+.hero-stat-lbl{font-size:11px;color:rgba(255,255,255,.7);margin-top:6px;font-weight:600}
+.hero-stat.warn .hero-stat-val{color:#fde047}
+
+/* 알림 배너 */
+.notice{margin:14px 20px;padding:14px 16px;background:#fef9c3;border:1px solid #fde68a;border-radius:12px;font-size:13px;color:#78350f;line-height:1.6}
+.notice b{font-weight:800}
+.notice.urgent{background:#fee2e2;border-color:#fca5a5;color:#991b1b}
+
+/* 섹션 */
+.section{padding:24px 20px 0}
+.sec-hd{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.sec-ttl{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.2px}
+.sec-sub{font-size:13px;color:var(--gray);margin-top:4px}
+.sec-action{font-size:13px;color:var(--teal);font-weight:700;cursor:pointer;text-decoration:none;background:transparent;border:none;font-family:inherit;padding:0}
+
+/* 탭 */
+.tabs{display:flex;gap:6px;border-bottom:1.5px solid var(--border);padding:0 20px;background:#fff;overflow-x:auto}
+.tab{background:transparent;border:none;font-size:14px;font-weight:700;color:var(--gray);padding:14px 14px 12px;cursor:pointer;font-family:inherit;border-bottom:2.5px solid transparent;margin-bottom:-1.5px;white-space:nowrap}
+.tab.active{color:var(--navy);border-bottom-color:var(--teal)}
+.tab-badge{background:var(--rose);color:#fff;font-size:10px;font-weight:800;padding:1px 7px;border-radius:99px;margin-left:4px}
+
+/* 리스트 카드 */
+.lead-list{padding:8px 20px 40px}
+.lead-card{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:18px;margin-bottom:10px;cursor:pointer;transition:all .15s}
+.lead-card:hover{border-color:var(--navy);box-shadow:0 4px 12px rgba(0,0,0,.06)}
+.lead-card.new{border-color:#fdba74;background:#fff7ed}
+.lead-card.urgent{border-color:var(--rose);background:#fff1f2}
+.lc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px}
+.lc-name{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.2px}
+.lc-name .new-dot{display:inline-block;width:8px;height:8px;background:#fdba74;border-radius:50%;margin-right:6px;vertical-align:middle;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.lc-time{font-size:12px;color:var(--gray);font-weight:600;flex-shrink:0;white-space:nowrap}
+.lc-grade{display:inline-block;background:var(--tl);color:var(--teal);font-size:12px;font-weight:800;padding:4px 10px;border-radius:99px;margin-bottom:8px}
+.lc-grade.urgent{background:#fee2e2;color:#991b1b}
+.lc-phone{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px;font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.lc-summary{font-size:13px;color:#374151;line-height:1.6;margin-bottom:10px}
+.lc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.lc-tag{font-size:10px;font-weight:700;background:var(--g100);color:#475569;padding:3px 8px;border-radius:99px}
+.lc-tag.warn{background:#fef3c7;color:#92400e}
+.lc-tag.cost{background:#dbeafe;color:#1d4ed8}
+.lc-actions{display:flex;gap:8px;padding-top:10px;border-top:1px solid var(--g100)}
+.lc-btn{flex:1;padding:11px;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:none;display:flex;align-items:center;justify-content:center;gap:6px}
+.lc-btn-call{background:var(--teal);color:#fff}
+.lc-btn-call:hover{background:#0f766e}
+.lc-btn-more{background:var(--g100);color:var(--navy)}
+.lc-btn-more:hover{background:var(--g200)}
+
+/* 빈 상태 */
+.empty{padding:60px 24px;text-align:center;color:var(--gray)}
+.empty-icon{font-size:48px;margin-bottom:14px;opacity:.5}
+.empty-ttl{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.empty-sub{font-size:13px;color:var(--gray);line-height:1.7}
+
+/* 모달 */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+.modal-hd{padding:20px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:5}
+.modal-title{font-size:18px;font-weight:800;color:var(--navy)}
+.modal-close{background:var(--g100);border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--gray)}
+.modal-body{padding:22px}
+.mb-section{margin-bottom:20px}
+.mb-label{font-size:11px;font-weight:800;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;margin-bottom:8px}
+.mb-value{font-size:16px;font-weight:700;color:var(--navy);line-height:1.5}
+.mb-row{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--g100);font-size:14px}
+.mb-row:last-child{border-bottom:none}
+.mb-row-lbl{color:var(--gray);font-weight:600}
+.mb-row-val{color:var(--navy);font-weight:700}
+.mb-tip{background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:12px;font-size:12px;color:#78350f;line-height:1.7;margin-top:12px}
+.modal-footer{padding:16px 22px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--g50);position:sticky;bottom:0}
+.mf-btn{flex:1;padding:13px;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:none}
+.mf-btn-primary{background:var(--teal);color:#fff}
+.mf-btn-secondary{background:#fff;color:var(--navy);border:1.5px solid var(--border)}
+.mf-btn-danger{background:#fee2e2;color:#991b1b;border:1.5px solid #fca5a5}
+
+/* 상태 선택 */
+.status-options{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+.status-opt{padding:10px;font-size:13px;font-weight:700;background:#fff;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;text-align:center}
+.status-opt:hover{border-color:var(--navy)}
+.status-opt.selected{border-color:var(--teal);background:var(--tl);color:var(--teal)}
+
+/* 충전 */
+.topup-box{margin:14px 20px;padding:18px;background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #fcd34d;border-radius:14px;display:flex;justify-content:space-between;align-items:center}
+.topup-info{font-size:13px;color:#78350f;line-height:1.5}
+.topup-info b{font-size:18px;color:#7c2d12;font-weight:900;display:block;margin-bottom:2px}
+.topup-btn{background:var(--navy);color:#fff;border:none;border-radius:10px;padding:11px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:13px 24px;border-radius:99px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* 로그인 화면 */
+.login-screen{padding:60px 24px;text-align:center;max-width:420px;margin:0 auto}
+.login-emoji{font-size:54px;margin-bottom:20px}
+.login-ttl{font-size:24px;font-weight:800;margin-bottom:8px}
+.login-sub{font-size:14px;color:var(--gray);margin-bottom:30px;line-height:1.6}
+.login-input{width:100%;padding:14px 16px;font-size:15px;border:1.5px solid var(--border);border-radius:12px;font-family:inherit;margin-bottom:10px;outline:none}
+.login-input:focus{border-color:var(--teal)}
+.login-btn{width:100%;padding:14px;font-size:15px;font-weight:800;background:var(--navy);color:#fff;border:none;border-radius:12px;cursor:pointer;font-family:inherit}
+.login-btn:hover{background:#1e293b}
+
+@media(min-width:768px){
+  body{padding:20px}
+  .app{border-radius:20px;box-shadow:0 16px 48px rgba(0,0,0,.06)}
+}
+</style>
+</head>
+<body>
+
+<!-- 로그인 -->
+<div id="loginScreen" style="display:none">
+  <div class="login-screen">
+    <div class="login-emoji">🔐</div>
+    <div class="login-ttl">CareOn 센터장 로그인</div>
+    <div class="login-sub">상담 신청 게시판에 접속하려면<br>이메일·비밀번호를 입력해주세요.</div>
+    <input type="email" class="login-input" id="loginEmail" placeholder="이메일">
+    <input type="password" class="login-input" id="loginPw" placeholder="비밀번호" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" onclick="doLogin()">로그인</button>
+  </div>
+</div>
+
+<!-- 메인 -->
+<div class="app" id="mainApp" style="display:none">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">Care<span>On</span></div>
+      <div class="center-name" id="centerNameLabel">—</div>
+    </div>
+    <button class="logout-btn" onclick="doLogout()">로그아웃</button>
+  </div>
+
+  <!-- 잔액 -->
+  <div class="hero">
+    <div class="hero-greet" id="greetText">안녕하세요</div>
+    <div class="hero-name" id="ownerName">센터장님</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val" id="statBalance">—</div>
+        <div class="hero-stat-lbl">남은 잔액 (원)</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val" id="statTotal">—</div>
+        <div class="hero-stat-lbl">이번 달 신규 DB</div>
+      </div>
+      <div class="hero-stat warn">
+        <div class="hero-stat-val" id="statNew">—</div>
+        <div class="hero-stat-lbl">미확인 DB</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 잔액 부족 알림 -->
+  <div class="topup-box" id="topupBox" style="display:none">
+    <div class="topup-info">
+      <b id="topupBalance">충전 필요</b>
+      잔액이 떨어지면 신규 보호자 상담 신청이 자동 차단됩니다
+    </div>
+    <button class="topup-btn" onclick="showTopupGuide()">충전 안내</button>
+  </div>
+
+  <!-- 탭 -->
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('all')" data-tab="all">전체</button>
+    <button class="tab" onclick="setTab('new')" data-tab="new">신규<span class="tab-badge" id="newCnt">0</span></button>
+    <button class="tab" onclick="setTab('contacted')" data-tab="contacted">연락 완료</button>
+    <button class="tab" onclick="setTab('contracted')" data-tab="contracted">계약</button>
+  </div>
+
+  <!-- 리스트 -->
+  <div class="lead-list" id="leadList">
+    <div class="empty">
+      <div class="empty-icon">📭</div>
+      <div class="empty-ttl">아직 신청이 없습니다</div>
+      <div class="empty-sub">홈페이지 방문자가 진단을 마치고 신청하면<br>여기에 표시됩니다.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- DB 상세 모달 -->
+<div class="modal-overlay" id="leadModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="modalTitle">상담 신청 상세</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="mf-btn mf-btn-secondary" onclick="closeModal()">닫기</button>
+      <button class="mf-btn mf-btn-primary" id="callBtn" onclick="callLead()">📞 바로 전화</button>
+    </div>
+  </div>
+</div>
+
+<!-- 충전 안내 모달 -->
+<div class="modal-overlay" id="topupModal" onclick="if(event.target===this)document.getElementById('topupModal').classList.remove('show')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">💳 충전 안내</div>
+      <button class="modal-close" onclick="document.getElementById('topupModal').classList.remove('show')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="mb-section">
+        <div class="mb-label">충전 금액 (원)</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+          <button class="status-opt" onclick="setTopupAmount(50000)">5만원<br><span style="font-size:10px;color:var(--gray)">10건</span></button>
+          <button class="status-opt" onclick="setTopupAmount(100000)">10만원<br><span style="font-size:10px;color:var(--gray)">20건</span></button>
+          <button class="status-opt" onclick="setTopupAmount(300000)">30만원<br><span style="font-size:10px;color:var(--gray)">60건</span></button>
+        </div>
+      </div>
+      <div class="mb-section">
+        <div class="mb-label">입금 정보</div>
+        <div style="background:var(--g50);padding:14px;border-radius:10px;font-size:14px;line-height:1.8">
+          <b>예금주:</b> 크레센트 스튜디오 (조성호)<br>
+          <b>은행:</b> 카카오뱅크<br>
+          <b>계좌번호:</b> 3333-29-3553298<br>
+          <b>입금자명:</b> <span id="depositName" style="color:var(--teal);font-weight:800">센터명 입력</span>
+        </div>
+      </div>
+      <div class="mb-tip">
+        💡 입금 후 1영업일 이내에 충전됩니다.<br>
+        급한 경우 카카오톡 또는 010-9032-9090으로 연락 주세요.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
+
+let sb, _profile, _center, _leads = [], _currentTab = 'all', _currentLead;
+
+window.addEventListener('load', async () => {
+  try {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    const { data: { session } } = await sb.auth.getSession();
+    if(!session) return showLogin();
+    await loadProfile();
+  } catch(e){
+    console.error(e);
+    showLogin();
+  }
+});
+
+function showLogin(){
+  document.getElementById('loginScreen').style.display = '';
+  document.getElementById('mainApp').style.display = 'none';
+}
+
+async function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim();
+  const pw = document.getElementById('loginPw').value;
+  if(!email || !pw){ toast('이메일·비밀번호 입력'); return; }
+  const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+  if(error){ toast('로그인 실패: ' + error.message); return; }
+  await loadProfile();
+}
+
+async function doLogout(){
+  await sb.auth.signOut();
+  location.reload();
+}
+
+async function loadProfile(){
+  const { data: { user } } = await sb.auth.getUser();
+  if(!user) return showLogin();
+
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  if(!profile){ toast('프로필 없음'); return showLogin(); }
+  _profile = profile;
+
+  if(profile.role === 'superadmin'){
+    // 슈퍼어드민은 슈퍼어드민 페이지로
+    location.href = '/care-superadmin.html';
+    return;
+  }
+  if(profile.role !== 'admin' || !profile.center_id){
+    toast('센터장 권한이 없습니다');
+    return showLogin();
+  }
+
+  const { data: center } = await sb.from('centers').select('*').eq('id', profile.center_id).single();
+  if(!center){ toast('센터 정보 없음'); return showLogin(); }
+  _center = center;
+
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('mainApp').style.display = '';
+  document.getElementById('centerNameLabel').textContent = center.name;
+  document.getElementById('ownerName').textContent = profile.name + ' 센터장님';
+  document.getElementById('depositName').textContent = center.name;
+
+  await loadLeads();
+}
+
+async function loadLeads(){
+  const { data, error } = await sb.from('leads')
+    .select('*')
+    .eq('center_id', _center.id)
+    .order('created_at', { ascending: false });
+  if(error){ console.error(error); toast('DB 조회 실패'); return; }
+  _leads = data || [];
+
+  // 통계
+  const now = new Date();
+  const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const thisMonthLeads = _leads.filter(l=>new Date(l.created_at) >= thisMonthStart);
+  const newLeads = _leads.filter(l=>l.status === 'new');
+
+  document.getElementById('statBalance').textContent = (_center.credit_balance || 0).toLocaleString();
+  document.getElementById('statTotal').textContent = thisMonthLeads.length + '건';
+  document.getElementById('statNew').textContent = newLeads.length + '건';
+  document.getElementById('newCnt').textContent = newLeads.length;
+
+  // 잔액 부족 경고
+  const minBalance = (_center.lead_unit_price || 5000) * 3;
+  if(_center.credit_balance < minBalance){
+    document.getElementById('topupBox').style.display = '';
+    document.getElementById('topupBalance').textContent = '잔액 ' + (_center.credit_balance||0).toLocaleString() + '원';
+  }
+
+  renderLeads();
+}
+
+function setTab(tab){
+  _currentTab = tab;
+  document.querySelectorAll('.tab').forEach(t=>{
+    t.classList.toggle('active', t.dataset.tab === tab);
+  });
+  renderLeads();
+}
+
+function renderLeads(){
+  let list = _leads;
+  if(_currentTab === 'new') list = list.filter(l=>l.status === 'new');
+  else if(_currentTab === 'contacted') list = list.filter(l=>l.status === 'contacted' || l.status === 'consulted');
+  else if(_currentTab === 'contracted') list = list.filter(l=>l.status === 'contracted');
+
+  const wrap = document.getElementById('leadList');
+  if(list.length === 0){
+    wrap.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-ttl">${_currentTab==='all'?'아직 신청이 없습니다':'해당 상태 없음'}</div><div class="empty-sub">홈페이지 방문자가 진단을 마치고 신청하면<br>여기에 표시됩니다.</div></div>`;
+    return;
+  }
+
+  wrap.innerHTML = list.map(l=>{
+    const r = l.raw_result || {};
+    const tags = [];
+    if(l.has_dementia) tags.push('<span class="lc-tag warn">치매</span>');
+    if(l.has_stroke) tags.push('<span class="lc-tag warn">뇌졸중</span>');
+    if(l.has_parkinson) tags.push('<span class="lc-tag warn">파킨슨</span>');
+    if(l.has_arthritis) tags.push('<span class="lc-tag">관절염</span>');
+    if(l.medical_need) tags.push('<span class="lc-tag warn">의료처치</span>');
+    const cost = r.minCost ? `<span class="lc-tag cost">월 ${r.minCost}~${r.maxCost}만원</span>` : '';
+    tags.push(cost);
+
+    const isNew = l.status === 'new';
+    const isUrgent = l.has_dementia || l.medical_need;
+    const cardCls = isUrgent ? 'urgent' : (isNew ? 'new' : '');
+    const gradeCls = isUrgent ? 'urgent' : '';
+
+    return `
+      <div class="lead-card ${cardCls}" onclick="openLead('${l.id}')">
+        <div class="lc-top">
+          <div class="lc-name">${isNew?'<span class="new-dot"></span>':''}${l.parent_name || '(이름 미입력)'}</div>
+          <div class="lc-time">${relTime(l.created_at)}</div>
+        </div>
+        <span class="lc-grade ${gradeCls}">${l.predicted_grade || '—'}</span>
+        <div class="lc-phone">📞 ${l.parent_phone || '(전화 상담만)'}</div>
+        <div class="lc-summary">${l.patient_summary || '—'}${l.preferred_time?'<br>⏰ 통화 가능: '+l.preferred_time:''}</div>
+        <div class="lc-tags">${tags.join('')}</div>
+        <div class="lc-actions">
+          <button class="lc-btn lc-btn-call" onclick="event.stopPropagation();callDirect('${l.parent_phone||''}')">📞 바로 전화</button>
+          <button class="lc-btn lc-btn-more" onclick="event.stopPropagation();openLead('${l.id}')">상세 보기 →</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function relTime(ts){
+  if(!ts) return '—';
+  const d = new Date(ts), now = new Date();
+  const diff = (now - d) / 1000;
+  if(diff < 60) return '방금 전';
+  if(diff < 3600) return Math.floor(diff/60)+'분 전';
+  if(diff < 86400) return Math.floor(diff/3600)+'시간 전';
+  if(diff < 86400*7) return Math.floor(diff/86400)+'일 전';
+  return d.toLocaleDateString('ko-KR', { month:'short', day:'numeric' });
+}
+
+function openLead(id){
+  const lead = _leads.find(l=>l.id === id);
+  if(!lead) return;
+  _currentLead = lead;
+  const r = lead.raw_result || {};
+  const a = lead.raw_answers || {};
+
+  const STATUS_LABEL = {'new':'미확인','contacted':'연락 완료','consulted':'상담 완료','contracted':'계약 체결','refunded':'환불','spam':'스팸'};
+
+  document.getElementById('modalTitle').textContent = (lead.parent_name || '익명') + ' 상담 신청 상세';
+  document.getElementById('modalBody').innerHTML = `
+    <div class="mb-section">
+      <div class="mb-label">연락 정보</div>
+      <div class="mb-row"><span class="mb-row-lbl">이름</span><span class="mb-row-val">${lead.parent_name || '—'}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">연락처</span><span class="mb-row-val" style="font-size:17px;color:var(--teal)">${lead.parent_phone || '(전화 신청)'}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">통화 가능</span><span class="mb-row-val">${lead.preferred_time || '제한 없음'}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">신청 시간</span><span class="mb-row-val">${new Date(lead.created_at).toLocaleString('ko-KR')}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">접수 방식</span><span class="mb-row-val">${lead.method === 'call' ? '직접 전화 연결' : '폼 입력'}</span></div>
+    </div>
+
+    <div class="mb-section">
+      <div class="mb-label">진단 결과</div>
+      <div class="mb-row"><span class="mb-row-lbl">예상 등급</span><span class="mb-row-val">${lead.predicted_grade || '—'}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">예상 점수</span><span class="mb-row-val">${lead.predicted_score || '—'}점</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">예상 비용</span><span class="mb-row-val">월 ${lead.predicted_cost_min||0}~${lead.predicted_cost_max||0}만원</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">상태 요약</span><span class="mb-row-val">${lead.patient_summary || '—'}</span></div>
+    </div>
+
+    <div class="mb-section">
+      <div class="mb-label">상세 답변 (참고)</div>
+      <div class="mb-row"><span class="mb-row-lbl">식사</span><span class="mb-row-val">${labelOf('meal', a.meal)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">목욕</span><span class="mb-row-val">${labelOf('bath', a.bath)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">화장실</span><span class="mb-row-val">${labelOf('toilet', a.toilet)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">이동</span><span class="mb-row-val">${labelOf('mobility', a.mobility)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">기억력</span><span class="mb-row-val">${labelOf('memory', a.memory)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">감정·행동</span><span class="mb-row-val">${labelOf('behavior', a.behavior)}</span></div>
+      <div class="mb-row"><span class="mb-row-lbl">보험료</span><span class="mb-row-val">${lead.insurance_rate === 0 ? '기초생활 (0%)' : (lead.insurance_rate === 0.09 ? '감면 9%' : '일반 15%')}</span></div>
+    </div>
+
+    <div class="mb-section">
+      <div class="mb-label">상태 변경</div>
+      <div class="status-options">
+        ${['new','contacted','consulted','contracted','spam'].map(s=>
+          `<button class="status-opt ${lead.status===s?'selected':''}" onclick="updateStatus('${s}')">${STATUS_LABEL[s]}</button>`
+        ).join('')}
+      </div>
+    </div>
+
+    <div class="mb-tip">
+      💡 <b>통화 팁</b><br>
+      처음 인사 → "사이트로 진단해주신 ${lead.parent_name||'보호자'}님 맞으시죠?"<br>
+      어르신 상태 확인 → "어머님/아버님 ${lead.patient_summary?'('+lead.patient_summary+') ':''}맞으신가요?"<br>
+      다음 단계 → "등급 신청부터 도와드릴게요. 한 번 방문 상담 어떠세요?"
+    </div>
+  `;
+
+  document.getElementById('callBtn').onclick = ()=>callDirect(lead.parent_phone);
+  document.getElementById('leadModal').classList.add('show');
+}
+
+function labelOf(qid, val){
+  if(!val) return '—';
+  const labels = {
+    meal: ['혼자 잘 드심','부분 도움','전적 도움'],
+    bath: ['혼자 잘 함','부분 도움','전적 도움'],
+    toilet: ['혼자 가능','부축 필요','기저귀'],
+    mobility: ['혼자 거동','벽 의지','누워서 못 뒤집음'],
+    memory: ['정상','자주 헷갈림','자녀 못 알아봄'],
+    behavior: ['평소처럼','의심·짜증','배회·소리'],
+  };
+  const idx = val.idx;
+  if(idx === undefined) return '—';
+  return labels[qid] ? labels[qid][idx] : '—';
+}
+
+async function updateStatus(newStatus){
+  if(!_currentLead) return;
+  const { error } = await sb.from('leads').update({ status: newStatus }).eq('id', _currentLead.id);
+  if(error){ toast('상태 변경 실패'); return; }
+  _currentLead.status = newStatus;
+  toast('상태 변경: ' + newStatus);
+  await loadLeads();
+  openLead(_currentLead.id);
+}
+
+function callLead(){
+  if(_currentLead) callDirect(_currentLead.parent_phone);
+}
+
+function callDirect(phone){
+  if(!phone) return toast('전화번호가 없습니다');
+  location.href = 'tel:' + phone.replace(/-/g,'');
+}
+
+function closeModal(){
+  document.getElementById('leadModal').classList.remove('show');
+}
+
+function showTopupGuide(){
+  document.getElementById('topupModal').classList.add('show');
+}
+
+function setTopupAmount(amt){
+  toast(amt.toLocaleString() + '원 충전 — 위 계좌로 입금');
+}
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove('show'), 2400);
+}
+</script>
+</body>
+</html>
