@@ -6,7 +6,7 @@
 
 ### 새 모델 = DB 사업
 - 무료 홈페이지 + AI 진단 → 보호자 DB 판매 (건당 5,000원 선불)
-- 5곳 한정 모집 (월 20건 무료 보너스)
+- 무료 사이트 모집 (월 20건 무료 보너스)
 - 영업자 파트너 모집 페이지(careon-recruit / careon-partner-recruit) `noindex` 처리
 
 ### 신규 파일
@@ -15,7 +15,7 @@
 | `care-diagnosis.html` | 보호자용 11문항 무료 진단 (인스타스토리 UX) |
 | `careon-lead-admin.html` | 센터장 게시판 (받은 DB 목록·관리, 60대 친화 큰 글자) |
 | `careon-db-superadmin.html` | 운영자 — 센터 등록·충전·환불 + 매출 통계 |
-| `careon-founding.html` | 5곳 한정 모집 영업 페이지 (전면 재작성) |
+| `careon-founding.html` | 무료 사이트 모집 영업 페이지 (전면 재작성) |
 | `careon-schema-v10.sql` | DB 스키마 (centers 확장 + leads + credit_transactions + RPC) |
 | `supabase/functions/submit-lead/index.ts` | Lead 제출 Edge Function (잔액 차감 + 센터장 SMS) |
 
