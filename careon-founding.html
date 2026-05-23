@@ -2,1144 +2,448 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>CareOn 초기 파트너 센터 모집 — 센터 실무 지원 시스템</title>
-<meta name="description" content="방문요양 센터 실무 지원 시스템 'CareOn'. 기존 청구 프로그램과 별도로 실무 시간을 줄이고 매출을 키웁니다. 초기 파트너 5개 센터에 258.4만원 전액 면제.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>방문요양센터 무료 홈페이지 5곳 한정 모집 — CareOn</title>
+<meta name="description" content="홈페이지 없는 방문요양센터에 AI 등급 진단 사이트를 무료로 제작해드립니다. 신규 보호자가 직접 진단 후 연락하는 자동 영업 사이트, 5곳 선착순.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="센터 실무 지원 시스템 'CareOn' 초기 파트너 모집">
-<meta property="og:description" content="실무 시간을 줄이고 매출을 키우는 시스템. 초기 5개 센터에 정상가 199만원 + 6개월 구독료 약 258만원 상당 전액 면제.">
+<meta property="og:title" content="🏥 방문요양센터 무료 홈페이지 5곳 한정 모집">
+<meta property="og:description" content="AI 등급 진단으로 신규 수급자 자동 유입. 제작·운영비 전부 무료. 광고비도 안 듭니다.">
 <meta property="og:image" content="https://crescentstudio.co.kr/careon-icon.svg">
 <meta property="og:url" content="https://crescentstudio.co.kr/careon-founding.html">
-<meta property="og:site_name" content="CareOn">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="preconnect" href="https://cdn.jsdelivr.net">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.css">
+<meta name="theme-color" content="#0D9488">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
-  a { color: inherit; text-decoration: none; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;color:#0F1B2D;-webkit-font-smoothing:antialiased;line-height:1.6}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--border:#e5e7eb;--green:#22c55e;--amber:#f59e0b;--rose:#f43f5e}
 
-  :root {
-    --navy: #0F1B2D;
-    --navy-soft: #1c2a42;
-    --ink: #1A202C;
-    --body: #4A5568;
-    --muted: #718096;
-    --yellow: #F5C842;
-    --yellow-soft: #FDF5D9;
-    --green: #4A8F6E;
-    --green-soft: #E8F3EC;
-    --cream: #FAF8F3;
-    --bg-soft: #F7FAFC;
-    --line: #E2E8F0;
-    --line-soft: #EDF2F7;
-  }
+.wrap{max-width:780px;margin:0 auto;padding:0 24px}
 
-  body {
-    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    background: #FFFFFF;
-    color: var(--ink);
-    line-height: 1.7;
-    font-size: 15px;
-    -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.015em;
-    overflow-x: hidden;
-    width: 100%;
-  }
+.nav{padding:18px 0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);position:sticky;top:0;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);z-index:50}
+.nav-logo{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--navy)}
+.nav-logo span{color:var(--teal)}
+.nav-cta{background:var(--navy);color:#fff;border:none;border-radius:99px;padding:9px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
 
-  .wrap { width: 100%; max-width: 100%; padding: 0 20px; }
+.hero{padding:64px 0 48px;text-align:center}
+.hero-tag{display:inline-block;background:#fee2e2;color:#991b1b;font-size:12px;font-weight:800;padding:7px 16px;border-radius:99px;margin-bottom:24px;letter-spacing:.3px}
+.hero-tag .live-dot{display:inline-block;width:6px;height:6px;background:#dc2626;border-radius:50%;margin-right:5px;animation:pulse 1.5s infinite;vertical-align:middle}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-ttl{font-size:42px;font-weight:900;line-height:1.25;letter-spacing:-1.2px;margin-bottom:20px}
+.hero-ttl span{color:var(--teal)}
+.hero-sub{font-size:17px;color:var(--gray);line-height:1.7;margin-bottom:36px;max-width:580px;margin-left:auto;margin-right:auto}
+.hero-sub b{color:var(--navy);font-weight:800}
+.hero-stats{display:flex;justify-content:center;gap:16px;margin-bottom:32px;flex-wrap:wrap}
+.hero-stat{background:var(--tl);border:1px solid #99f6e4;border-radius:14px;padding:14px 18px;text-align:center;min-width:140px}
+.hero-stat-val{font-size:24px;font-weight:900;color:var(--teal);line-height:1;margin-bottom:4px}
+.hero-stat-lbl{font-size:11px;color:#0f766e;font-weight:700}
+.hero-stat.warn{background:#fef3c7;border-color:#fcd34d}
+.hero-stat.warn .hero-stat-val{color:#7c2d12}
+.hero-stat.warn .hero-stat-lbl{color:#92400e}
+.cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn-primary{background:var(--navy);color:#fff;border:none;border-radius:99px;padding:18px 32px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;gap:8px}
+.btn-primary:hover{background:#1e293b;transform:translateY(-1px);box-shadow:0 8px 20px rgba(15,27,45,.2)}
+.btn-secondary{background:transparent;color:var(--navy);border:1.5px solid var(--border);border-radius:99px;padding:18px 28px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit}
 
-  /* Topbar */
-  .topbar {
-    padding: 16px 0;
-    background: #fff;
-    border-bottom: 1px solid var(--line-soft);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .topbar-inner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-  }
-  .brand {
-    font-weight: 700;
-    font-size: 15px;
-    color: var(--navy);
-    letter-spacing: -0.02em;
-  }
-  .topbar-cta {
-    background: var(--navy);
-    color: #fff;
-    padding: 9px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 700;
-    white-space: nowrap;
-  }
+.section{padding:64px 0;border-top:1px solid var(--g100)}
+.section-eyebrow{font-size:12px;font-weight:800;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;text-align:center}
+.section-ttl{font-size:32px;font-weight:900;line-height:1.3;text-align:center;letter-spacing:-.8px;margin-bottom:14px}
+.section-sub{font-size:15px;color:var(--gray);line-height:1.7;text-align:center;margin-bottom:48px;max-width:560px;margin-left:auto;margin-right:auto}
 
-  /* Hero — Final CTA 스타일 */
-  .hero {
-    background: var(--navy);
-    color: #fff;
-    padding: 56px 0 64px;
-    text-align: center;
-  }
-  .hero-tag {
-    display: inline-block;
-    background: rgba(245, 200, 66, 0.15);
-    color: var(--yellow);
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    letter-spacing: -0.01em;
-  }
-  .hero h1 {
-    font-size: 26px;
-    font-weight: 800;
-    line-height: 1.45;
-    color: #fff;
-    margin-bottom: 14px;
-    letter-spacing: -0.03em;
-    word-break: keep-all;
-  }
-  .hero h1 .yellow { color: var(--yellow); }
-  .hero-sub {
-    font-size: 15px;
-    color: #C9D1E0;
-    line-height: 1.7;
-    word-break: keep-all;
-    margin-bottom: 36px;
-  }
-  .hero-sub strong { color: #fff; font-weight: 700; }
+.prob-list{display:grid;grid-template-columns:1fr;gap:14px}
+.prob-card{padding:24px;background:var(--g50);border-left:4px solid var(--rose);border-radius:0 14px 14px 0}
+.prob-q{font-size:18px;font-weight:800;color:var(--navy);margin-bottom:8px}
+.prob-a{font-size:14px;color:var(--gray);line-height:1.7}
 
-  .hero-summary {
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 12px;
-    padding: 16px 20px;
-    margin-bottom: 24px;
-    text-align: left;
-  }
-  .hero-summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 8px 0;
-    font-size: 14px;
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-  }
-  .hero-summary-row:last-child { border-bottom: none; }
-  .hero-summary-label { color: #A8B3C7; }
-  .hero-summary-value { color: #fff; font-weight: 700; }
-  .hero-summary-value .strike {
-    color: #6B7588;
-    text-decoration: line-through;
-    font-weight: 400;
-    font-size: 12px;
-    margin-right: 6px;
-  }
-  .hero-summary-value .free { color: var(--yellow); }
+.how{display:grid;grid-template-columns:1fr;gap:12px;counter-reset:step}
+.how-step{background:#fff;border:1.5px solid var(--border);border-radius:18px;padding:24px;position:relative;counter-increment:step}
+.how-step::before{content:counter(step);position:absolute;top:24px;right:24px;font-size:60px;font-weight:900;color:var(--g100);line-height:1;font-family:'Noto Serif KR',serif}
+.how-step-ttl{font-size:17px;font-weight:800;color:var(--navy);margin-bottom:8px;position:relative;z-index:1}
+.how-step-desc{font-size:14px;color:var(--gray);line-height:1.7;position:relative;z-index:1}
+.how-step-desc b{color:var(--navy);font-weight:700}
 
-  .hero-cta {
-    display: inline-flex;
-    background: var(--yellow);
-    color: var(--navy);
-    padding: 14px 32px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 700;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    transition: background 0.15s;
-  }
-  .hero-cta:hover { background: #ffd653; }
+.demo-card{background:linear-gradient(135deg,#0F1B2D,#0f766e);color:#fff;border-radius:24px;padding:36px 28px;margin:24px 0;text-align:center;position:relative;overflow:hidden}
+.demo-card::before{content:'';position:absolute;top:-60px;right:-60px;width:200px;height:200px;background:rgba(255,255,255,.05);border-radius:50%}
+.demo-tag{display:inline-block;background:rgba(255,255,255,.15);color:#a7f3d0;font-size:11px;font-weight:800;padding:6px 14px;border-radius:99px;margin-bottom:14px;letter-spacing:.5px;position:relative;z-index:1}
+.demo-ttl{font-size:24px;font-weight:900;margin-bottom:10px;letter-spacing:-.4px;position:relative;z-index:1}
+.demo-sub{font-size:14px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:22px;position:relative;z-index:1}
+.demo-btn{background:#fff;color:var(--navy);border:none;border-radius:99px;padding:14px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;position:relative;z-index:1}
 
-  /* Section */
-  section.block {
-    padding: 44px 0;
-    border-top: 1px solid var(--line-soft);
-    scroll-margin-top: 80px;
-  }
-  section.block:first-of-type { border-top: none; }
-  .eyebrow {
-    display: inline-block;
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  h2 {
-    font-size: 22px;
-    font-weight: 800;
-    line-height: 1.35;
-    color: var(--navy);
-    margin-bottom: 14px;
-    letter-spacing: -0.03em;
-    word-break: keep-all;
-  }
-  h2 .leaf { color: var(--green); }
-  h3 {
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--navy);
-    margin-bottom: 6px;
-    letter-spacing: -0.02em;
-    word-break: keep-all;
-  }
-  section.block p {
-    font-size: 14.5px;
-    color: var(--body);
-    line-height: 1.75;
-    word-break: keep-all;
-  }
-  section.block p strong { color: var(--navy); font-weight: 700; }
-  section.block p + p { margin-top: 10px; }
+.benefits{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.benefit{background:#fff;border:1.5px solid var(--border);border-radius:16px;padding:22px}
+.benefit-icon{font-size:28px;margin-bottom:12px}
+.benefit-ttl{font-size:15px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.benefit-desc{font-size:13px;color:var(--gray);line-height:1.65}
+.benefit-desc b{color:var(--navy);font-weight:700}
 
-  /* Why — 4종 세트 카드 */
-  .why-sub-tag {
-    display: inline-block;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    margin-left: 4px;
-    letter-spacing: -0.01em;
-  }
-  .why-set {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 22px;
-  }
-  .why-card {
-    background: linear-gradient(180deg, #fff 0%, var(--bg-soft) 100%);
-    border: 1.5px solid var(--line);
-    border-radius: 14px;
-    padding: 22px 18px;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .why-card:hover {
-    border-color: var(--green);
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(74, 143, 110, 0.12);
-  }
-  .why-card-icon {
-    width: 32px;
-    height: 32px;
-    background: var(--navy);
-    color: var(--yellow);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 14px;
-    opacity: 0.85;
-  }
-  .why-card-icon svg {
-    width: 16px;
-    height: 16px;
-  }
-  .why-card-num {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--green);
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-  .why-card-title {
-    font-size: 18px;
-    font-weight: 800;
-    color: var(--navy);
-    margin-bottom: 8px;
-    letter-spacing: -0.025em;
-    word-break: keep-all;
-    line-height: 1.3;
-  }
-  .why-card-desc {
-    font-size: 13px;
-    color: var(--body);
-    line-height: 1.55;
-    word-break: keep-all;
-  }
+.price-card{background:linear-gradient(135deg,var(--tl),#ccfbf1);border:2px solid var(--teal);border-radius:20px;padding:36px 28px;text-align:center;margin:0 auto;max-width:520px;position:relative;overflow:hidden}
+.price-card::before{content:'5곳 한정';position:absolute;top:14px;right:14px;background:var(--rose);color:#fff;font-size:11px;font-weight:800;padding:5px 12px;border-radius:99px;letter-spacing:.3px}
+.price-tag{font-size:11px;font-weight:800;color:var(--teal);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+.price-big{font-size:54px;font-weight:900;color:var(--navy);line-height:1;margin-bottom:8px;letter-spacing:-2px}
+.price-strike{font-size:16px;font-weight:600;color:var(--gray);text-decoration:line-through;margin-bottom:14px}
+.price-features{text-align:left;display:flex;flex-direction:column;gap:10px;margin:24px 0;padding:0 8px}
+.price-feat{font-size:14px;color:var(--navy);display:flex;align-items:flex-start;gap:10px;line-height:1.6}
+.price-feat::before{content:'✓';color:var(--teal);font-weight:900;flex-shrink:0;font-size:18px;line-height:1.4}
+.price-feat b{font-weight:800}
+.price-meta{font-size:12px;color:var(--gray);margin-top:20px;line-height:1.7;padding-top:20px;border-top:1px solid #99f6e4}
 
-  /* Benefit */
-  .benefit-headline {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
-    margin-top: 14px;
-  }
-  .benefit-hl {
-    background: var(--navy);
-    color: #fff;
-    border-radius: 12px;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .benefit-hl-left .label {
-    font-size: 11px;
-    color: var(--yellow);
-    font-weight: 700;
-    margin-bottom: 4px;
-    letter-spacing: 0.02em;
-  }
-  .benefit-hl-left .desc { font-size: 11px; color: #A8B3C7; }
-  .benefit-hl-right { text-align: right; }
-  .benefit-hl-right .strike {
-    font-size: 12px;
-    color: #A8B3C7;
-    text-decoration: line-through;
-    margin-bottom: 2px;
-  }
-  .benefit-hl-right .new {
-    font-size: 24px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-    line-height: 1;
-  }
-  .benefit-total {
-    margin-top: 10px;
-    padding: 16px 20px;
-    background: var(--yellow);
-    color: var(--navy);
-    border-radius: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .benefit-total .tl-label { font-size: 13px; font-weight: 700; }
-  .benefit-total .tl-amount { font-size: 19px; font-weight: 800; letter-spacing: -0.03em; }
+.revenue-box{background:#fef9c3;border:1px solid #fde68a;border-radius:16px;padding:24px;margin:24px 0}
+.revenue-ttl{font-size:15px;font-weight:800;color:#78350f;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.revenue-desc{font-size:13px;color:#92400e;line-height:1.7}
+.revenue-desc b{font-weight:800}
 
-  .benefit-table {
-    width: 100%;
-    margin-top: 18px;
-    border-collapse: collapse;
-    background: #fff;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 1px solid var(--line);
-  }
-  .benefit-table th {
-    background: var(--bg-soft);
-    padding: 11px 14px;
-    text-align: left;
-    font-weight: 700;
-    font-size: 12px;
-    color: var(--navy);
-    border-bottom: 1px solid var(--line);
-  }
-  .benefit-table th:last-child { text-align: right; }
-  .benefit-table td {
-    padding: 12px 14px;
-    border-top: 1px solid var(--line-soft);
-    font-size: 13.5px;
-    color: var(--body);
-  }
-  .benefit-table td:first-child { color: var(--navy); font-weight: 500; }
-  .benefit-table td:last-child {
-    text-align: right;
-    color: var(--green);
-    font-weight: 700;
-  }
-  .benefit-note {
-    margin-top: 12px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.65;
-    word-break: keep-all;
-  }
+.faq{background:#fff;border:1.5px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden}
+.faq-q{width:100%;background:none;border:none;padding:18px 22px;text-align:left;font-size:15px;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.faq-q::after{content:'+';color:var(--teal);font-size:22px;font-weight:400;flex-shrink:0;transition:transform .2s}
+.faq.open .faq-q::after{transform:rotate(45deg)}
+.faq-a{display:none;padding:0 22px 18px;font-size:13px;color:var(--gray);line-height:1.8}
+.faq.open .faq-a{display:block}
+.faq-a b{color:var(--navy);font-weight:700}
 
-  /* Roles */
-  .roles-grid { display: grid; gap: 8px; margin-top: 16px; }
-  .role-item {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    padding: 14px 16px;
-    display: flex;
-    gap: 14px;
-    align-items: flex-start;
-  }
-  .role-num {
-    color: var(--green);
-    font-size: 12px;
-    font-weight: 700;
-    flex-shrink: 0;
-    width: 24px;
-    padding-top: 2px;
-  }
-  .role-body { flex: 1; min-width: 0; }
-  .role-body strong {
-    display: block;
-    color: var(--navy);
-    font-weight: 700;
-    margin-bottom: 2px;
-    font-size: 14px;
-    word-break: keep-all;
-  }
-  .role-body span {
-    font-size: 13px;
-    color: var(--body);
-    line-height: 1.6;
-    word-break: keep-all;
-  }
+.apply{background:var(--navy);color:#fff;padding:64px 0;text-align:center}
+.apply-ttl{font-size:32px;font-weight:900;line-height:1.3;margin-bottom:14px;letter-spacing:-.5px}
+.apply-sub{font-size:15px;color:rgba(255,255,255,.7);margin-bottom:32px;line-height:1.7}
+.form-card{background:#fff;color:var(--navy);max-width:480px;margin:0 auto;border-radius:20px;padding:32px 28px;text-align:left}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:800;color:var(--navy);margin-bottom:6px}
+.form-input{width:100%;padding:14px 16px;font-size:15px;border:1.5px solid var(--border);border-radius:12px;font-family:inherit;background:#fff;outline:none}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.form-submit{width:100%;background:var(--navy);color:#fff;border:none;border-radius:99px;padding:16px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-top:8px}
+.form-submit:hover{background:#1e293b}
+.form-note{font-size:11px;color:var(--gray);text-align:center;margin-top:14px;line-height:1.7}
 
-  /* Compare */
-  .compare-wrap {
-    margin-top: 16px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-  }
-  .compare-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: #fff;
-    min-width: 480px;
-  }
-  .compare-table th {
-    padding: 11px 14px;
-    text-align: left;
-    font-weight: 700;
-    font-size: 12px;
-    border-bottom: 1px solid var(--line);
-    background: var(--bg-soft);
-    color: var(--navy);
-  }
-  .compare-table th:nth-child(3) {
-    background: var(--navy);
-    color: var(--yellow);
-  }
-  .compare-table td {
-    padding: 13px 14px;
-    border-top: 1px solid var(--line-soft);
-    font-size: 13px;
-    color: var(--body);
-    vertical-align: top;
-    line-height: 1.6;
-    word-break: keep-all;
-  }
-  .compare-table td:first-child {
-    font-weight: 700;
-    color: var(--navy);
-    background: var(--bg-soft);
-    width: 70px;
-    font-size: 12px;
-    white-space: nowrap;
-  }
-  .compare-table td:nth-child(3) {
-    background: #fffdf7;
-    border-left: 2px solid var(--yellow);
-  }
-  .compare-table td strong { color: var(--navy); font-weight: 700; }
+.footer{padding:32px 0;text-align:center;font-size:12px;color:var(--gray);border-top:1px solid var(--border)}
+.footer a{color:var(--teal);text-decoration:none;font-weight:600}
 
-  .tenant-callout {
-    background: var(--navy);
-    color: #fff;
-    border-radius: 12px;
-    padding: 22px;
-    margin-top: 16px;
-  }
-  .tenant-callout-title {
-    color: var(--yellow);
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  .tenant-callout h3 {
-    color: #fff;
-    font-size: 17px;
-    margin-bottom: 12px;
-    line-height: 1.4;
-  }
-  .tenant-compare { display: grid; gap: 8px; }
-  .tenant-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-size: 13.5px;
-  }
-  .tenant-row:last-child { border-bottom: none; }
-  .tenant-row .tk { color: #A8B3C7; font-size: 12px; }
-  .tenant-row .tv { color: #fff; font-weight: 600; }
-  .tenant-row .tv-hl { color: var(--yellow); font-weight: 700; }
+@media(min-width:680px){
+  .hero-ttl{font-size:54px}
+  .prob-list{grid-template-columns:1fr 1fr}
+  .how{grid-template-columns:1fr 1fr}
+  .benefits{grid-template-columns:repeat(4,1fr)}
+  .section-ttl{font-size:38px}
+}
 
-  /* Features */
-  .features { display: grid; gap: 10px; margin-top: 16px; }
-  .feature {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 18px 20px;
-  }
-  .feature-num {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    background: var(--green-soft);
-    color: var(--green);
-    border-radius: 7px;
-    font-weight: 800;
-    font-size: 12px;
-    margin-bottom: 10px;
-  }
-  .feature h3 { margin-bottom: 6px; font-size: 15px; }
-  .feature p {
-    font-size: 13.5px;
-    color: var(--body);
-    line-height: 1.7;
-    word-break: keep-all;
-  }
-
-  /* Criteria */
-  .criteria-list {
-    list-style: none;
-    margin-top: 14px;
-    background: var(--cream);
-    border-radius: 12px;
-    padding: 8px 22px;
-  }
-  .criteria-list li {
-    padding: 12px 0 12px 24px;
-    position: relative;
-    font-size: 14px;
-    color: var(--body);
-    border-bottom: 1px dashed var(--line);
-    word-break: keep-all;
-    line-height: 1.6;
-  }
-  .criteria-list li:last-child { border-bottom: none; }
-  .criteria-list li:before {
-    content: "✓";
-    position: absolute;
-    left: 0;
-    top: 13px;
-    color: var(--navy);
-    background: var(--yellow);
-    width: 17px;
-    height: 17px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    font-weight: 800;
-  }
-  .criteria-list li strong { color: var(--navy); font-weight: 700; }
-
-  /* Process */
-  .process-grid { display: grid; gap: 8px; margin-top: 16px; }
-  .step {
-    display: flex;
-    gap: 14px;
-    background: #fff;
-    padding: 14px 16px;
-    border-radius: 10px;
-    border: 1px solid var(--line);
-    align-items: center;
-  }
-  .step-num {
-    background: var(--navy);
-    color: var(--yellow);
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 800;
-    font-size: 12px;
-  }
-  .step-body { flex: 1; min-width: 0; }
-  .step-title { font-weight: 700; color: var(--navy); font-size: 14px; }
-  .step-desc {
-    font-size: 12.5px;
-    color: var(--body);
-    line-height: 1.5;
-    margin-top: 1px;
-    word-break: keep-all;
-  }
-
-  /* FAQ */
-  .faq-list { margin-top: 16px; }
-  details {
-    background: #fff;
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-  details[open] { border-color: var(--navy); }
-  summary {
-    padding: 14px 16px;
-    font-weight: 700;
-    color: var(--navy);
-    cursor: pointer;
-    list-style: none;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 12px;
-    word-break: keep-all;
-    line-height: 1.5;
-  }
-  summary::-webkit-details-marker { display: none; }
-  summary:after {
-    content: "+";
-    font-size: 18px;
-    color: var(--green);
-    font-weight: 400;
-    flex-shrink: 0;
-  }
-  details[open] summary:after { content: "−"; }
-  details p {
-    padding: 0 16px 16px;
-    color: var(--body);
-    font-size: 13.5px;
-    line-height: 1.75;
-    margin: 0;
-    word-break: keep-all;
-  }
-
-  /* Final CTA */
-  .final-cta {
-    background: var(--navy);
-    color: #fff;
-    padding: 48px 24px;
-    text-align: center;
-    border-radius: 16px;
-    margin: 48px 0 0;
-  }
-  .final-cta h2 {
-    color: #fff;
-    font-size: 22px;
-    margin-bottom: 10px;
-    line-height: 1.4;
-  }
-  .final-cta h2 .leaf { color: var(--yellow); }
-  .final-cta p {
-    color: #A8B3C7;
-    font-size: 13px;
-    margin-bottom: 22px;
-    line-height: 1.7;
-  }
-  .final-cta .hero-cta { width: 100%; }
-  .final-cta-contact {
-    margin-top: 22px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    font-size: 12px;
-    color: #A8B3C7;
-  }
-
-  /* Footer */
-  footer {
-    border-top: 1px solid var(--line-soft);
-    padding: 24px 0;
-    text-align: center;
-    color: var(--muted);
-    font-size: 12px;
-    line-height: 1.7;
-  }
-  footer a { color: var(--navy); font-weight: 600; }
-  .footer-sub { margin-top: 4px; font-size: 11px; }
-
-  /* Tablet+ */
-  @media (min-width: 640px) {
-    body { font-size: 16px; }
-    .wrap { padding: 0 32px; max-width: 720px; margin: 0 auto; }
-    .topbar-cta { padding: 10px 20px; font-size: 14px; }
-    .brand { font-size: 16px; }
-    .hero { padding: 80px 0 88px; }
-    .hero-tag { font-size: 13px; padding: 6px 14px; }
-    .hero h1 { font-size: 36px; }
-    .hero-sub { font-size: 16.5px; margin-bottom: 32px; }
-    .hero-summary { padding: 20px 24px; }
-    .hero-summary-row { font-size: 15px; padding: 10px 0; }
-    .hero-summary-value .strike { font-size: 13px; }
-    .hero-cta { width: auto; padding: 16px 40px; font-size: 16px; }
-    section.block { padding: 64px 0; }
-    h2 { font-size: 26px; }
-    h3 { font-size: 17px; }
-    section.block p { font-size: 15.5px; }
-    .why-point { font-size: 15px; padding: 16px 0; }
-    .why-set { grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 26px; }
-    .why-card { padding: 28px 22px; }
-    .why-card-icon { width: 36px; height: 36px; margin-bottom: 18px; border-radius: 9px; }
-    .why-card-icon svg { width: 18px; height: 18px; }
-    .why-card-num { font-size: 12px; margin-bottom: 8px; }
-    .why-card-title { font-size: 20px; margin-bottom: 10px; }
-    .why-card-desc { font-size: 14px; }
-    .why-sub-tag { font-size: 14px; }
-    .benefit-headline { grid-template-columns: 1fr 1fr; gap: 12px; }
-    .benefit-hl { padding: 22px 24px; }
-    .benefit-hl-right .new { font-size: 28px; }
-    .benefit-total { padding: 18px 22px; }
-    .benefit-total .tl-amount { font-size: 22px; }
-    .benefit-table th, .benefit-table td { font-size: 14px; padding: 14px 16px; }
-    .role-item { padding: 16px 20px; }
-    .role-body strong { font-size: 15px; }
-    .role-body span { font-size: 14px; }
-    .compare-table { min-width: 560px; }
-    .compare-table th { font-size: 13px; padding: 14px 16px; }
-    .compare-table td { font-size: 13.5px; padding: 16px; }
-    .compare-table td:first-child { width: 90px; font-size: 13px; }
-    .tenant-callout { padding: 26px 28px; }
-    .tenant-callout h3 { font-size: 19px; }
-    .tenant-row { font-size: 14.5px; padding: 8px 0; }
-    .tenant-row .tk { font-size: 13px; }
-    .feature { padding: 22px 24px; }
-    .feature h3 { font-size: 16px; }
-    .feature p { font-size: 14.5px; }
-    .feature-num { width: 30px; height: 30px; font-size: 13px; }
-    .criteria-list { padding: 10px 26px; }
-    .criteria-list li { font-size: 14.5px; padding-left: 28px; padding-top: 14px; padding-bottom: 14px; }
-    .step { padding: 16px 20px; }
-    .step-title { font-size: 15px; }
-    .step-desc { font-size: 13.5px; }
-    .step-num { width: 30px; height: 30px; font-size: 13px; }
-    summary { font-size: 15px; padding: 16px 20px; }
-    details p { font-size: 14px; padding: 0 20px 18px; }
-    .final-cta { padding: 60px 40px; margin: 64px 0 0; }
-    .final-cta h2 { font-size: 26px; }
-    .final-cta p { font-size: 14.5px; }
-    .final-cta .hero-cta { width: auto; }
-  }
-
-  /* Desktop+ */
-  @media (min-width: 1024px) {
-    .wrap { max-width: 760px; padding: 0 40px; }
-    .hero { padding: 100px 0 110px; }
-    .hero h1 { font-size: 42px; line-height: 1.35; }
-    .hero-sub { font-size: 17.5px; }
-    section.block { padding: 80px 0; }
-    h2 { font-size: 30px; }
-  }
+.mobile-cta{position:fixed;bottom:0;left:0;right:0;padding:12px 16px;background:#fff;border-top:1px solid var(--border);z-index:100;box-shadow:0 -4px 12px rgba(0,0,0,.06)}
+.mobile-cta button{width:100%;background:var(--navy);color:#fff;border:none;border-radius:99px;padding:15px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit}
+@media(min-width:680px){.mobile-cta{display:none}}
+@media(max-width:679px){body{padding-bottom:80px}}
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
-<div class="topbar">
-  <div class="wrap topbar-inner">
-    <a href="https://crescentstudio.co.kr" class="brand">Crescent Studio</a>
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdbBtF34m5AQU0PzN5I9tNAxAVnRsjUf0LxiGIOeVum8AxYQg/viewform?usp=sharing" class="topbar-cta" target="_blank" rel="noopener">참여 신청</a>
+<div class="wrap">
+
+<nav class="nav">
+  <div class="nav-logo">Care<span>On</span></div>
+  <button class="nav-cta" onclick="scrollToApply()">신청하기 →</button>
+</nav>
+
+<div class="hero">
+  <div class="hero-tag"><span class="live-dot"></span>5곳 한정 · 선착순 모집 중</div>
+  <h1 class="hero-ttl">홈페이지 없는 방문요양센터에<br><span>AI 진단 사이트</span><br>무료로 만들어드립니다</h1>
+  <p class="hero-sub">
+    신규 보호자가 부모님 등급을 <b>직접 진단하고 연락처를 남기는</b> 자동 영업 사이트.<br>
+    제작비·운영비 모두 <b>무료</b>입니다. 전단지 돌리실 필요 없습니다.
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat">
+      <div class="hero-stat-val">0원</div>
+      <div class="hero-stat-lbl">제작비 · 운영비</div>
+    </div>
+    <div class="hero-stat">
+      <div class="hero-stat-val">11문항</div>
+      <div class="hero-stat-lbl">AI 등급 진단기 탑재</div>
+    </div>
+    <div class="hero-stat warn">
+      <div class="hero-stat-val">5곳</div>
+      <div class="hero-stat-lbl">선착순 한정</div>
+    </div>
+  </div>
+  <div class="cta-row">
+    <button class="btn-primary" onclick="scrollToApply()">5곳 한정 — 지금 신청하기 →</button>
+    <button class="btn-secondary" onclick="window.open('/care-diagnosis.html?c=demo','_blank')">데모 진단 체험</button>
   </div>
 </div>
 
-<!-- Hero -->
-<section class="hero">
-  <div class="wrap">
-    <div class="hero-tag">🌿 초기 파트너 5개 센터 모집 — 2026년 5월</div>
-    <h1>센터 실무 지원 시스템<br><span class="yellow">'CareOn'</span> 파트너를<br>모집합니다.</h1>
-    <p class="hero-sub">방문요양 센터의 매일 운영을 도와주는 시스템.<br>기존 청구 프로그램과는 별도로 <strong>실무 시간을 줄이고 매출을 키웁니다.</strong></p>
-
-    <div class="hero-summary">
-      <div class="hero-summary-row">
-        <span class="hero-summary-label">앱 제작비 정상가 (센터 전용 맞춤)</span>
-        <span class="hero-summary-value"><span class="strike">199만원</span> <span class="free">0원</span></span>
-      </div>
-      <div class="hero-summary-row">
-        <span class="hero-summary-label">6개월 구독료 (Premium 월 9.9만 × 6)</span>
-        <span class="hero-summary-value"><span class="strike">59.4만원</span> <span class="free">0원</span></span>
-      </div>
-      <div class="hero-summary-row">
-        <span class="hero-summary-label">총 면제 금액</span>
-        <span class="hero-summary-value"><span class="free">258.4만원 전액 면제</span></span>
-      </div>
+<div class="section">
+  <div class="section-eyebrow">CENTER PAIN</div>
+  <h2 class="section-ttl">센터장님 이런 고민 있으시죠?</h2>
+  <p class="section-sub">현장의 방문요양 센터장님들이 가장 많이 하시는 말씀입니다.</p>
+  <div class="prob-list">
+    <div class="prob-card">
+      <div class="prob-q">"전단지 돌려도 전화가 안 와요"</div>
+      <div class="prob-a">월 50~100만원씩 들여 전단지·블로그 광고해도 정작 신규 수급자 문의는 한 달에 1~2건. 광고비만 빠지는 느낌.</div>
     </div>
-
-    <a href="https://docs.google.com/forms/d/e/1FAIpQLSdbBtF34m5AQU0PzN5I9tNAxAVnRsjUf0LxiGIOeVum8AxYQg/viewform?usp=sharing" class="hero-cta" id="apply-form" target="_blank" rel="noopener">무료로 참여 신청하기 →</a>
-  </div>
-</section>
-
-<!-- Why -->
-<section id="why" class="block">
-  <div class="wrap">
-    <div class="eyebrow">어떤 프로그램인가요?</div>
-    <h2>센터 전용 앱 4종을<br>한 번에 제공합니다.</h2>
-    <p style="margin-bottom:0;color:var(--body);font-size:14px;">웹사이트 · 보호자 앱 · 보호사 앱 · 센터장 대시보드. 센터 이름과 로고가 들어간 전용 서비스입니다.</p>
-    <div class="why-set">
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><circle cx="6.5" cy="6.5" r="0.5" fill="currentColor"/><circle cx="8.5" cy="6.5" r="0.5" fill="currentColor"/></svg>
-        </div>
-        <div class="why-card-num">01</div>
-        <div class="why-card-title">센터 웹사이트</div>
-        <div class="why-card-desc">신규 보호자에게 가장 먼저 보여지는 센터의 얼굴</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2"/><line x1="10" y1="18" x2="14" y2="18"/><path d="M9 7h6M9 10h6M9 13h4"/></svg>
-        </div>
-        <div class="why-card-num">02</div>
-        <div class="why-card-title">보호자 앱</div>
-        <div class="why-card-desc">케어일지 현황 공유 및 요약으로 안심 케어</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
-        </div>
-        <div class="why-card-num">03</div>
-        <div class="why-card-title">보호사 앱</div>
-        <div class="why-card-desc">보호사 일정 · 길찾기 · 일지 작성을 한 앱에서</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="5" rx="1"/><rect x="13" y="10" width="8" height="11" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/></svg>
-        </div>
-        <div class="why-card-num">04</div>
-        <div class="why-card-title">센터장 대시보드</div>
-        <div class="why-card-desc">보호사 · 보호자 · 매출 현황을 한눈에</div>
-      </div>
+    <div class="prob-card">
+      <div class="prob-q">"홈페이지 만들자니 너무 부담"</div>
+      <div class="prob-a">외주 업체는 150~300만원 부르고, 만들어도 그냥 회사 소개만 띡 있어서 보호자 문의 끌어오는 데 도움이 안 됨.</div>
+    </div>
+    <div class="prob-card">
+      <div class="prob-q">"네이버 광고도 어렵고"</div>
+      <div class="prob-a">컴퓨터 잘 못 하는데 광고 키워드·예산 설정하기 막막. 대행사 맡기면 또 월 30~50만원.</div>
+    </div>
+    <div class="prob-card">
+      <div class="prob-q">"보호자들은 케어닥만 봐요"</div>
+      <div class="prob-a">대기업 플랫폼만 검색해서 들어가니, 우리 동네 작은 센터는 존재 자체를 모름. 경쟁이 안 됨.</div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Impact (어떻게 도움이 되나요?) -->
-<section id="impact" class="block">
-  <div class="wrap">
-    <div class="eyebrow">어떻게 도움이 되나요?</div>
-    <h2>센터장이 직접 챙기던 일,<br>시스템이 대신 합니다.</h2>
-    <p style="margin-bottom:0;color:var(--body);font-size:14px;">실무에 바로 적용되는 4가지 효과.</p>
-    <div class="why-set" style="margin-top:32px">
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-        </div>
-        <div class="why-card-num">01</div>
-        <div class="why-card-title">보호자 문의 응대 시간 감소</div>
-        <div class="why-card-desc">케어일지 자동 공유로 "오늘 어떠셨어요?" 전화 줄어듭니다.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        </div>
-        <div class="why-card-num">02</div>
-        <div class="why-card-title">근태 분쟁 · 정산 부담 감소</div>
-        <div class="why-card-desc">GPS 자동 출퇴근 기록으로 "내가 언제 갔다" 분쟁 사라집니다.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-        </div>
-        <div class="why-card-num">03</div>
-        <div class="why-card-title">보호자 신뢰 형성, 클레임 감소</div>
-        <div class="why-card-desc">투명한 케어 기록 공유로 신뢰가 쌓이고 클레임이 줄어듭니다.</div>
-      </div>
-      <div class="why-card">
-        <div class="why-card-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg>
-        </div>
-        <div class="why-card-num">04</div>
-        <div class="why-card-title">센터장의 시간 · 일 절감</div>
-        <div class="why-card-desc">직접 챙기던 운영 업무가 자동화되어 본업에 집중할 수 있습니다.</div>
-      </div>
+<div class="section">
+  <div class="section-eyebrow">HOW IT WORKS</div>
+  <h2 class="section-ttl">이렇게 작동합니다</h2>
+  <p class="section-sub">센터장님은 아무것도 하실 필요 없습니다.<br>보호자가 알아서 진단하고, 연락처를 남기고, 센터로 전화 옵니다.</p>
+  <div class="how">
+    <div class="how-step">
+      <div class="how-step-ttl">신청·정보 제공</div>
+      <div class="how-step-desc">아래 폼에 <b>센터명·주소·전화·로고</b>만 보내주시면 됩니다. 5분이면 끝.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-ttl">사이트 자동 생성</div>
+      <div class="how-step-desc">크레센트 스튜디오가 <b>전용 도메인</b>으로 사이트 세팅. 1~2일 내 오픈.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-ttl">보호자 진단 시작</div>
+      <div class="how-step-desc">보호자가 사이트 방문 → <b>11문항 AI 진단</b> 후 예상 등급·비용 확인.</div>
+    </div>
+    <div class="how-step">
+      <div class="how-step-ttl">센터장에게 즉시 알림</div>
+      <div class="how-step-desc">보호자가 "상담 신청" 누르면 <b>센터장 휴대폰으로 SMS</b> 발송. 이름·번호·통화 가능 시간 포함.</div>
     </div>
   </div>
-</section>
 
-<!-- Benefit -->
-<section id="benefit" class="block">
-  <div class="wrap">
-    <div class="eyebrow">파트너 혜택</div>
-    <h2>총 258.4만원,<br>전액 면제합니다.</h2>
-    <p>초기 파트너 5개 센터에만 적용됩니다. 자리가 차면 종료됩니다.</p>
-
-    <div class="benefit-headline">
-      <div class="benefit-hl">
-        <div class="benefit-hl-left">
-          <div class="label">앱 제작비</div>
-          <div class="desc">센터 전용 맞춤</div>
-        </div>
-        <div class="benefit-hl-right">
-          <div class="strike">199만원</div>
-          <div class="new">0원</div>
-        </div>
-      </div>
-      <div class="benefit-hl">
-        <div class="benefit-hl-left">
-          <div class="label">6개월 구독료</div>
-          <div class="desc">Premium 월 9.9만 × 6</div>
-        </div>
-        <div class="benefit-hl-right">
-          <div class="strike">59.4만원</div>
-          <div class="new">0원</div>
-        </div>
-      </div>
-    </div>
-    <div class="benefit-total">
-      <span class="tl-label">총 면제 금액</span>
-      <span class="tl-amount">258.4만원</span>
-    </div>
-
-    <table class="benefit-table">
-      <thead>
-        <tr><th>포함 항목</th><th>파트너 센터</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>센터 전용 웹사이트</td><td>포함</td></tr>
-        <tr><td>보호자 앱 (센터 전용)</td><td>포함</td></tr>
-        <tr><td>보호사 앱 (GPS 출퇴근)</td><td>포함</td></tr>
-        <tr><td>센터장 대시보드</td><td>포함</td></tr>
-        <tr><td>세팅 · 교육</td><td>포함</td></tr>
-        <tr><td>6개월 유지보수</td><td>포함</td></tr>
-      </tbody>
-    </table>
-    <p class="benefit-note">※ 모든 제작물은 해당 센터 브랜드 · 디자인 · 기능에 맞춰 개별 제작.<br>※ 6개월 이후 정상 구독가(월 9.9만원)로 전환해서 유지 가능. 해지는 자유.</p>
+  <div class="demo-card">
+    <div class="demo-tag">🩺 데모 진단 체험</div>
+    <div class="demo-ttl">3분이면 끝나는 진단,<br>한번 직접 해보세요</div>
+    <div class="demo-sub">보호자 입장에서 11문항 진단을 끝까지 받아보시고<br>예상 등급·비용·맞춤 케어 가이드가 어떻게 나오는지 확인하실 수 있습니다.</div>
+    <button class="demo-btn" onclick="window.open('/care-diagnosis.html?c=demo','_blank')">데모 진단 시작 →</button>
   </div>
-</section>
+</div>
 
-<!-- Roles -->
-<section id="roles" class="block">
-  <div class="wrap">
-    <div class="eyebrow">협조 사항</div>
-    <h2>저희가 부탁드리는 것은<br>딱 세 가지입니다.</h2>
-    <p>많은 시간을 요구하지 않습니다. 실제 사용 경험을 솔직하게 나눠주시면 됩니다.</p>
-    <div class="roles-grid">
-      <div class="role-item">
-        <div class="role-num">01</div>
-        <div class="role-body">
-          <strong>월 1회 30분 피드백 미팅</strong>
-          <span>화상 · 이메일 · 대면 · 6개월간</span>
-        </div>
+<div class="section">
+  <div class="section-eyebrow">5곳 한정 혜택</div>
+  <h2 class="section-ttl">선착순 5곳이 받는 것</h2>
+  <p class="section-sub">정상가 약 250만원 상당의 패키지를 무료로 제공합니다.</p>
+  <div class="benefits">
+    <div class="benefit">
+      <div class="benefit-icon">🌐</div>
+      <div class="benefit-ttl">센터 전용 홈페이지</div>
+      <div class="benefit-desc">반응형 모바일 사이트 + 자체 도메인. <b>정상가 199만원</b></div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon">🧠</div>
+      <div class="benefit-ttl">AI 등급 진단기</div>
+      <div class="benefit-desc">11문항 + 7개 개인화 섹션. <b>정상가 30만원</b></div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon">📲</div>
+      <div class="benefit-ttl">SMS 자동 알림</div>
+      <div class="benefit-desc">신규 보호자 즉시 센터장 휴대폰으로. <b>6개월 무료</b></div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-icon">🛡️</div>
+      <div class="benefit-ttl">유지·보수·서버비</div>
+      <div class="benefit-desc">서버·도메인·업데이트 전부 <b>평생 무료</b></div>
+    </div>
+  </div>
+
+  <div class="price-card" style="margin-top:32px">
+    <div class="price-tag">5곳 한정 · 선착순</div>
+    <div class="price-strike">정상가 약 250만원</div>
+    <div class="price-big">0원</div>
+    <div style="font-size:14px;color:var(--gray);margin-bottom:8px">제작비·운영비·유지비 전부 무료</div>
+    <div class="price-features">
+      <div class="price-feat">전용 도메인 + 모바일 반응형 홈페이지</div>
+      <div class="price-feat">AI 등급 진단기 (11문항 + 결과 가이드 7종)</div>
+      <div class="price-feat">신규 DB <b>월 20건까지 무료</b> (이후 건당 5,000원)</div>
+      <div class="price-feat">센터장 게시판 + SMS 자동 알림</div>
+      <div class="price-feat">유지보수·서버·도메인 평생 무료</div>
+    </div>
+    <div class="price-meta">
+      ※ 무료 DB 20건 소진 후 건당 5,000원 (선불 충전제)<br>
+      ※ 광고비 의무 없음 — 네이버 지도 무료 등록 대행
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-eyebrow">왜 무료로 드릴 수 있나요?</div>
+  <h2 class="section-ttl">서로 윈윈하는 구조니까요</h2>
+  <p class="section-sub">초기 5곳의 실제 운영 데이터를 함께 만들어가는 파트너로 모십니다.</p>
+
+  <div class="revenue-box">
+    <div class="revenue-ttl">💰 우리의 수익 구조</div>
+    <div class="revenue-desc">
+      처음 <b>20건</b>은 무료. 이후 보호자 한 명이 진단을 마치고 상담 신청할 때마다 <b>건당 5,000원</b>씩 차감되는 선불 충전제입니다.
+      어르신 한 분 계약 시 센터 평균 매출이 <b>수백만 원</b> 이상이니, 5,000원은 무시할 수 있는 비용입니다.
+    </div>
+  </div>
+
+  <div class="revenue-box" style="background:#eef2ff;border-color:#c7d2fe">
+    <div class="revenue-ttl" style="color:#3730a3">📊 센터장님이 얻는 것</div>
+    <div class="revenue-desc" style="color:#312e81">
+      신규 수급자 1명 = 월 수십만원 매출 × 평균 2~3년 = <b>수백만 원 ~ 1천만 원 LTV</b>.
+      한 달에 DB 5건만 잡혀도 <b>1명 계약 → 본전 회수</b>. 전단지 50만원 쓰던 거 그대로 환승하면 됩니다.
+    </div>
+  </div>
+
+  <div class="revenue-box" style="background:#f0fdf4;border-color:#86efac">
+    <div class="revenue-ttl" style="color:#14532d">🤝 우리가 함께 만들어가는 것</div>
+    <div class="revenue-desc" style="color:#166534">
+      초기 5곳의 운영 데이터(어떤 진단 결과가 계약으로 잘 연결되는지)를 함께 만듭니다.
+      그 데이터로 진단 알고리즘을 더 정교하게 다듬어 6번째 센터부터는 더 좋은 서비스를 제공합니다.
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-eyebrow">FAQ</div>
+  <h2 class="section-ttl">자주 묻는 질문</h2>
+  <div style="margin-top:32px">
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">정말 0원인가요? 숨겨진 비용 없나요?</button>
+      <div class="faq-a">
+        네. 제작비·도메인·서버·유지보수 전부 무료입니다. 무료 DB 20건이 소진된 이후에만 <b>건당 5,000원</b>이 차감됩니다.
+        선불 충전제라 매달 자동결제 같은 거 없고, 잔액이 떨어지면 신규 상담 신청만 자동 차단됩니다.
       </div>
-      <div class="role-item">
-        <div class="role-num">02</div>
-        <div class="role-body">
-          <strong>케이스 스터디 협조</strong>
-          <span>영상 또는 서면 인터뷰</span>
-        </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">AI 진단이 틀리면 어떡하나요?</button>
+      <div class="faq-a">
+        진단 결과는 항상 <b>"AI 모의 시뮬레이션"</b>이라고 명시하고, <b>"3등급 유력 (확률 85%) / 월 17~21만원 예상"</b> 식으로
+        확정이 아닌 <b>범위·확률</b>로 표시합니다. 결과 화면에도 "실제 등급은 의사 소견서와 공단 조사 후 결정"이라는
+        면책 문구가 들어가 있어 법적 리스크가 없습니다.
       </div>
-      <div class="role-item">
-        <div class="role-num">03</div>
-        <div class="role-body">
-          <strong>센터명 · 로고 공개 허락</strong>
-          <span>크레센트 웹사이트 및 자료</span>
-        </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">제 정보를 어떻게 입력하나요?</button>
+      <div class="faq-a">
+        아래 폼에 <b>센터명·전화·주소·로고</b>만 보내주시면 됩니다. 어려운 거 전혀 없습니다. 컴퓨터 잘 못 하셔도 되고,
+        카카오톡으로 로고 사진 한 장 보내주시면 저희가 알아서 사이트에 박아드립니다.
+      </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">홈페이지 주소(URL)는 어떻게 되나요?</button>
+      <div class="faq-a">
+        기본적으로 <b>crescentstudio.co.kr/care/센터이름</b> 형태로 제공됩니다.
+        센터에서 자체 도메인(예: haetsalcare.co.kr)을 가지고 계시면 연결해드릴 수도 있습니다 (도메인 비용은 별도).
+      </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">제 컴퓨터에 뭘 깔아야 하나요?</button>
+      <div class="faq-a">
+        <b>아무것도 깔 필요 없습니다</b>. 스마트폰으로 SMS만 받으시면 됩니다. 신규 보호자가 진단을 마치고 신청하면
+        센터장님 휴대폰으로 문자가 와서 이름·번호·통화 가능 시간이 적혀 있습니다. 그 번호로 전화만 거시면 끝.
+      </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">5곳 모집 마감되면요?</button>
+      <div class="faq-a">
+        선착순 5곳 모집이 끝나면 정상 가격(<b>제작비 199만원 + 건당 5,000원</b>)으로 전환됩니다.
+        이번 무료 모집 기간에만 받을 수 있는 혜택입니다.
+      </div>
+    </div>
+    <div class="faq">
+      <button class="faq-q" onclick="this.closest('.faq').classList.toggle('open')">계약서나 약정 있나요?</button>
+      <div class="faq-a">
+        <b>의무 약정 없습니다</b>. 언제든 중단 가능하고, 충전금은 환불됩니다. 다만 무료 혜택의 조건으로
+        <b>이용 사례 후기 1건</b>(센터장님 짧은 인터뷰 또는 사진)을 부탁드릴 예정입니다.
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Compare -->
-<section id="compare" class="block">
+</div>
+
+<div class="apply" id="apply">
   <div class="wrap">
-    <div class="eyebrow">기존 프로그램과의 차이</div>
-    <h2>이지케어 같은 청구 프로그램과<br>겹치지 않습니다.</h2>
+    <div class="section-eyebrow" style="color:#5eead4">SIGNUP</div>
+    <div class="apply-ttl">5곳 한정 — 지금 신청하세요</div>
+    <div class="apply-sub">먼저 신청하시는 5곳에 무료 사이트를 제공합니다.<br>마감되면 정상가로 전환되니 서둘러 주세요.</div>
 
-    <div class="compare-wrap">
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th>구분</th>
-            <th>이지케어 등 청구 프로그램</th>
-            <th>CareOn</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>목적</td>
-            <td>공단 청구 · 회계</td>
-            <td><strong>센터 내부 운영 자동화</strong></td>
-          </tr>
-          <tr>
-            <td>주 사용자</td>
-            <td>사무장 · 회계 담당</td>
-            <td><strong>센터장 · 보호사 · 가족</strong></td>
-          </tr>
-          <tr>
-            <td>해결 문제</td>
-            <td>청구 · 서류</td>
-            <td><strong>출퇴근 · 가족 응대 · 방문 기록</strong></td>
-          </tr>
-          <tr>
-            <td>앱 형태</td>
-            <td>전국 공용</td>
-            <td><strong>센터 전용 맞춤</strong></td>
-          </tr>
-          <tr>
-            <td>관계</td>
-            <td colspan="2"><strong>병행 사용.</strong> 기존 프로그램 그대로 + CareOn 추가.</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="tenant-callout">
-      <div class="tenant-callout-title">중요한 차이</div>
-      <h3>공용 앱 아닙니다</h3>
-      <div class="tenant-compare">
-        <div class="tenant-row">
-          <span class="tk">기존 프로그램</span>
-          <span class="tv">전국 공용 · 같은 화면</span>
-        </div>
-        <div class="tenant-row">
-          <span class="tk">CareOn</span>
-          <span class="tv-hl">우리 센터 전용</span>
-        </div>
-        <div class="tenant-row">
-          <span class="tk">보호자 앱</span>
-          <span class="tv-hl">센터 이름 · 로고 적용</span>
-        </div>
+    <div class="form-card">
+      <div class="form-group">
+        <label class="form-label">센터 이름</label>
+        <input class="form-input" id="applyName" placeholder="예: 햇살요양센터">
+      </div>
+      <div class="form-group">
+        <label class="form-label">센터장 성함</label>
+        <input class="form-input" id="applyOwner" placeholder="예: 홍길동">
+      </div>
+      <div class="form-group">
+        <label class="form-label">연락처</label>
+        <input class="form-input" id="applyPhone" type="tel" placeholder="010-0000-0000" maxlength="13">
+      </div>
+      <div class="form-group">
+        <label class="form-label">센터 주소</label>
+        <input class="form-input" id="applyAddr" placeholder="예: 경기도 성남시 분당구 ...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">기관 지정번호 (선택)</label>
+        <input class="form-input" id="applyLicense" placeholder="장기요양기관 지정번호">
+      </div>
+      <button class="form-submit" onclick="submitApply()">무료 사이트 신청하기 →</button>
+      <div class="form-note">
+        ※ 신청 후 24시간 이내 카카오톡 또는 전화로 연락드립니다.<br>
+        ※ 문의: <a href="tel:01090329090" style="color:var(--teal);font-weight:700">010-9032-9090</a> · batonpass90@gmail.com
       </div>
     </div>
   </div>
-</section>
+</div>
 
-<!-- Criteria -->
-<section id="criteria" class="block">
+<div class="footer">
   <div class="wrap">
-    <div class="eyebrow">선정 기준</div>
-    <h2>이런 센터라면<br>지금 바로 신청하세요.</h2>
-    <ul class="criteria-list">
-      <li><strong>방문요양 센터</strong></li>
-      <li><strong>수급자 5명 이상</strong> 운영</li>
-      <li><strong>서울 · 경기 수도권</strong> 우선</li>
-      <li><strong>2026년 5월 중 세팅 시작</strong> 가능</li>
-    </ul>
-    <p style="margin-top:18px;font-size:13px;color:var(--body);background:var(--green-soft);border-left:3px solid var(--green);padding:14px 16px;border-radius:6px;line-height:1.7">
-      💡 단순 무료 제공이 아니라, 센터에 맞춰 다듬어 가는 과정이기에 <strong>5곳까지만</strong> 모십니다.<br>
-      신청해 주시면 <strong>4일 내</strong>로 선정하여 개별 연락드립니다.
-    </p>
+    © 2026 Crescent Studio · <a href="/">crescentstudio.co.kr</a><br>
+    CareOn은 크레센트 스튜디오의 방문요양 신규 수급자 유치 솔루션입니다.
   </div>
-</section>
+</div>
 
-<!-- Process -->
-<section id="process" class="block">
-  <div class="wrap">
-    <div class="eyebrow">진행 순서</div>
-    <h2>신청부터 운영까지</h2>
-    <div class="process-grid">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">신청 접수</div>
-          <div class="step-desc">하단 폼 작성 · 5분 이내</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">선정 + 1차 상담</div>
-          <div class="step-desc">4일 내 개별 연락 · 화상 30분</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">선정 통보 및 계약</div>
-          <div class="step-desc">초기 파트너 센터 계약 체결</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <div class="step-title">센터 전용 서비스 세팅 완료</div>
-          <div class="step-desc">피드백 및 검수</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          <div class="step-title">교육 및 운영 시작</div>
-          <div class="step-desc">보호사 · 가족 앱 배포</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+<div class="mobile-cta">
+  <button onclick="scrollToApply()">5곳 한정 — 신청하기 →</button>
+</div>
 
-<!-- FAQ -->
-<section id="faq" class="block">
-  <div class="wrap">
-    <div class="eyebrow">자주 묻는 질문</div>
-    <h2>FAQ</h2>
-    <div class="faq-list">
-      <details>
-        <summary>정말 6개월간 모두 무료인가요?</summary>
-        <p>네. 제작비 0원, 구독료 0원입니다. 6개월 이후 정상 구독가(월 9.9만원)로 전환해서 유지 가능하며, 해지는 자유입니다.</p>
-      </details>
-      <details>
-        <summary>이지케어와 뭐가 다른가요?</summary>
-        <p>이지케어는 <strong>공단 청구 · 법정 서류 제출용</strong>입니다. CareOn은 <strong>센터 실무(출퇴근 · 보호자 응대 · 방문 기록 · 매출 관리)</strong>를 지원합니다. 대체가 아니라 <strong>병행 사용</strong>입니다.</p>
-      </details>
-      <details>
-        <summary>보호자에게 알림이 너무 자주 가지 않나요?</summary>
-        <p>알림은 <strong>어르신당 하루 최대 2회</strong>만 발송됩니다.<br>① 보호사 도착 알림 (가족 안심용 1회)<br>② 저녁 7시 일일 케어 보고서 (그날 케어 요약 1회)<br>매번 체크리스트 완료할 때마다 보내는 수시 알림은 <strong>없습니다</strong>. 보호자도 부담없고 보호사도 자연스럽게 일할 수 있습니다.</p>
-      </details>
-      <details>
-        <summary>공용 앱인가요?</summary>
-        <p>아니요. <strong>센터 전용 맞춤 앱</strong>입니다. 보호자 앱에 센터 이름과 로고가 들어가고, 센터별로 별도 운영됩니다.</p>
-      </details>
-      <details>
-        <summary>이지케어 청구 자료를 도와주나요?</summary>
-        <p>CareOn에서 보호사가 기록한 방문 일시 · 케어 내용을 정리된 형태로 내려받을 수 있어 청구 자료 준비에 활용 가능합니다. 단, 청구 자체는 이지케어에서 진행하셔야 합니다.</p>
-      </details>
-      <details>
-        <summary>6개월 후 해지하면?</summary>
-        <p>해지 가능합니다. 데이터 이관 절차는 협조 부탁드립니다.</p>
-      </details>
-      <details>
-        <summary>센터 이름 공개가 부담스러운데요.</summary>
-        <p>공개 허락은 참여 조건입니다. 다만 공개 범위(로고만 / 상호 포함 / 대표자 이름)는 협의 가능합니다.</p>
-      </details>
-      <details>
-        <summary>보호사들이 스마트폰을 잘 못 쓰시는데요.</summary>
-        <p>보호사 앱은 출근 · 퇴근 버튼과 케어일지 입력이 전부입니다. 카톡 사용 가능 수준이면 충분합니다. 30분 현장 교육 제공.</p>
-      </details>
-      <details>
-        <summary>5개 센터가 채워지면?</summary>
-        <p>대기자 명단에 올려드리고 일반 영업 시작 시 특별 조건으로 연락드립니다.</p>
-      </details>
-      <details>
-        <summary>피드백 미팅이 부담스럽지 않을까요?</summary>
-        <p>월 1회 30분, 영상통화 · 이메일 · 대면 등 편하신 방식. "써보니 이런 게 불편하더라" 정도 대화로 충분합니다.</p>
-      </details>
-    </div>
-  </div>
-</section>
+<script>
+function scrollToApply(){
+  document.getElementById('apply').scrollIntoView({ behavior:'smooth' });
+}
 
-<!-- Final CTA -->
-<section id="apply" class="block" style="border-top: none;">
-  <div class="wrap">
-    <div class="final-cta">
-      <h2>초기 파트너 <span class="leaf">5곳</span>까지만 모십니다.</h2>
-      <p>신청 5분 · 4일 내 선정 후 개별 연락 · 258.4만원 전액 면제<br>자리가 차면 추가 모집 없이 일반 영업으로 전환됩니다.</p>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSdbBtF34m5AQU0PzN5I9tNAxAVnRsjUf0LxiGIOeVum8AxYQg/viewform?usp=sharing" class="hero-cta" target="_blank" rel="noopener">무료로 참여 신청하기 →</a>
-      <div class="final-cta-contact">📩 batonpass90@gmail.com · 이메일로 문의해도 됩니다.</div>
-    </div>
-  </div>
-</section>
+document.addEventListener('input', e=>{
+  if(e.target.id === 'applyPhone'){
+    let v = e.target.value.replace(/[^\d]/g,'');
+    if(v.length >= 11) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+    else if(v.length >= 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+    else if(v.length >= 4) v = v.slice(0,3)+'-'+v.slice(3);
+    e.target.value = v;
+  }
+});
 
-<!-- Footer -->
-<footer>
-  <div class="wrap">
-    <p>© 2026 Crescent Studio · <a href="https://crescentstudio.co.kr">crescentstudio.co.kr</a></p>
-    <p class="footer-sub">CareOn은 크레센트 스튜디오의 방문요양 센터 전용 운영 자동화 솔루션입니다.</p>
-  </div>
-</footer>
+async function submitApply(){
+  const name = document.getElementById('applyName').value.trim();
+  const owner = document.getElementById('applyOwner').value.trim();
+  const phone = document.getElementById('applyPhone').value.trim();
+  const addr = document.getElementById('applyAddr').value.trim();
+  const license = document.getElementById('applyLicense').value.trim();
 
+  if(!name || !owner || !phone || !addr){
+    alert('필수 정보를 모두 입력해주세요');
+    return;
+  }
 
+  const subject = encodeURIComponent('[CareOn 5곳 한정 신청] ' + name);
+  const body = encodeURIComponent(
+    '센터 이름: ' + name + '\n' +
+    '센터장: ' + owner + '\n' +
+    '연락처: ' + phone + '\n' +
+    '주소: ' + addr + '\n' +
+    '지정번호: ' + (license || '(미입력)') + '\n\n' +
+    '— CareOn 무료 사이트 신청 폼에서 자동 전송 —'
+  );
+  location.href = 'mailto:batonpass90@gmail.com?subject=' + subject + '&body=' + body;
+
+  setTimeout(()=>{
+    alert('신청해주셔서 감사합니다!\n\n24시간 이내 카톡 또는 전화로 연락드리겠습니다.\n급한 문의는 010-9032-9090으로 연락 부탁드립니다.');
+  }, 500);
+}
+</script>
 </body>
 </html>
