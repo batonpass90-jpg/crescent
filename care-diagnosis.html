@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>부모님 요양 등급 무료 진단 (3분) — CareOn</title>
+<meta name="description" content="11개 질문 3분 진단으로 부모님 장기요양 등급과 본인부담금을 알려드립니다.">
+<meta name="theme-color" content="#0D9488">
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fafaf7;color:#0F1B2D;overflow-x:hidden}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--teal-dark:#0F766E;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--g300:#cbd5e1;--border:#e5e7eb;--green:#22c55e;--amber:#f59e0b}
+
+.app{max-width:520px;margin:0 auto;min-height:100vh;background:#fff;display:flex;flex-direction:column;box-shadow:0 0 0 1px var(--border)}
+
+/* Top bar */
+.topbar{padding:14px 20px 10px;display:flex;align-items:center;justify-content:space-between;background:#fff;position:sticky;top:0;z-index:50}
+.topbar-brand{display:flex;align-items:center;gap:8px}
+.topbar-logo{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;color:var(--navy)}
+.topbar-logo span{color:var(--teal)}
+.topbar-center{font-size:11px;color:var(--gray);font-weight:600}
+.topbar-back{background:transparent;border:none;font-size:18px;color:var(--gray);cursor:pointer;padding:4px 8px;border-radius:8px}
+.topbar-back:hover{background:var(--g100)}
+
+/* Progress */
+.progress-wrap{padding:0 20px 14px}
+.progress-bar{height:6px;background:var(--g100);border-radius:99px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--teal2));border-radius:99px;transition:width .4s ease}
+.progress-text{font-size:11px;color:var(--gray);margin-top:6px;font-weight:600;text-align:right}
+
+/* Intro screen */
+.intro{flex:1;padding:32px 24px 40px;display:flex;flex-direction:column;justify-content:center}
+.intro-emoji{font-size:64px;text-align:center;margin-bottom:18px}
+.intro-title{font-family:'Noto Serif KR',serif;font-size:26px;font-weight:700;text-align:center;line-height:1.3;margin-bottom:12px}
+.intro-title span{color:var(--teal)}
+.intro-sub{font-size:14px;color:var(--gray);text-align:center;line-height:1.7;margin-bottom:28px}
+.intro-features{background:var(--tl);border:1px solid #99f6e4;border-radius:14px;padding:18px;margin-bottom:24px}
+.intro-feat{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;color:var(--navy);line-height:1.6}
+.intro-feat-icon{font-size:18px;flex-shrink:0;line-height:1.2}
+.intro-feat b{color:var(--teal-dark)}
+.btn-primary{background:var(--teal);color:#fff;border:none;border-radius:14px;padding:16px 24px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;width:100%;transition:transform .1s}
+.btn-primary:hover{background:var(--teal-dark)}
+.btn-primary:active{transform:scale(.98)}
+.intro-note{font-size:11px;color:var(--gray);text-align:center;margin-top:14px;line-height:1.6}
+
+/* Question screen */
+.question{flex:1;padding:24px 24px 40px;display:flex;flex-direction:column}
+.q-step{display:inline-block;background:var(--tl);color:var(--teal);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;width:fit-content;margin-bottom:14px;letter-spacing:.5px}
+.q-text{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;line-height:1.4;margin-bottom:8px;color:var(--navy)}
+.q-hint{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:28px}
+.q-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.q-opt{background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:16px 18px;text-align:left;font-size:14px;font-weight:600;color:var(--navy);cursor:pointer;font-family:inherit;line-height:1.5;transition:all .15s;display:flex;align-items:center;gap:12px}
+.q-opt:hover{border-color:var(--teal);background:var(--tl);transform:translateX(2px)}
+.q-opt.selected{border-color:var(--teal);background:var(--tl);font-weight:700}
+.q-opt-num{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--g100);color:var(--gray);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.q-opt:hover .q-opt-num,.q-opt.selected .q-opt-num{background:var(--teal);color:#fff}
+.q-multi-hint{font-size:11px;color:var(--gray);margin-top:-12px;margin-bottom:14px}
+.q-next{margin-top:auto;display:flex;gap:10px;padding-top:14px}
+.btn-back{background:#fff;color:var(--gray);border:1.5px solid var(--border);border-radius:14px;padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;flex-shrink:0}
+.btn-back:hover{background:var(--g50)}
+.btn-next{flex:1;background:var(--teal);color:#fff;border:none;border-radius:14px;padding:14px;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+.btn-next:disabled{background:var(--g300);cursor:not-allowed}
+.btn-next:not(:disabled):hover{background:var(--teal-dark)}
+
+/* Result screen */
+.result{flex:1;padding:0 0 30px}
+.result-hero{background:linear-gradient(160deg,#042f2e 0%,#0f766e 100%);color:#fff;padding:32px 24px;text-align:center}
+.result-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#5eead4;font-size:11px;font-weight:700;padding:5px 14px;border-radius:99px;margin-bottom:14px}
+.result-grade{font-family:'Noto Serif KR',serif;font-size:34px;font-weight:700;line-height:1.2;margin-bottom:6px}
+.result-conf{font-size:13px;color:rgba(255,255,255,.7);margin-bottom:18px}
+.result-cost{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:14px;padding:16px;margin-top:18px}
+.result-cost-label{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:6px;letter-spacing:.5px}
+.result-cost-value{font-size:22px;font-weight:800;color:#ccfbf1}
+.result-cost-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:6px}
+
+.result-body{padding:24px}
+.result-section{background:var(--g50);border-radius:14px;padding:18px;margin-bottom:14px}
+.result-section-ttl{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.result-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;border-bottom:1px solid #e2e8f0}
+.result-row:last-child{border-bottom:none}
+.result-row-lbl{color:var(--gray)}
+.result-row-val{font-weight:700;color:var(--navy)}
+
+.disclaimer{background:#fef9c3;border:1px solid #fde68a;border-radius:12px;padding:14px;font-size:12px;color:#78350f;line-height:1.7;margin-bottom:20px}
+.disclaimer b{font-weight:800}
+
+/* Lead capture */
+.lead-section{padding:0 24px}
+.lead-ttl{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;text-align:center;line-height:1.4;margin-bottom:6px}
+.lead-sub{font-size:13px;color:var(--gray);text-align:center;line-height:1.6;margin-bottom:22px}
+
+.lead-options{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.lead-opt{background:#fff;border:2px solid var(--border);border-radius:16px;padding:18px;cursor:pointer;transition:all .15s;text-align:left}
+.lead-opt:hover{border-color:var(--teal)}
+.lead-opt.urgent{background:linear-gradient(135deg,#fef3c7,#fde68a);border-color:#f59e0b}
+.lead-opt-top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.lead-opt-icon{font-size:22px}
+.lead-opt-ttl{font-size:15px;font-weight:800;color:var(--navy)}
+.lead-opt-ttl.urgent{color:#92400e}
+.lead-opt-sub{font-size:12px;color:var(--gray);line-height:1.6;padding-left:32px}
+.lead-opt.urgent .lead-opt-sub{color:#78350f}
+
+.lead-form{display:none}
+.lead-form.show{display:block;animation:slideDown .25s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.form-group{margin-bottom:14px}
+.form-label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.form-input{width:100%;padding:13px 16px;font-size:15px;border:1.5px solid var(--border);border-radius:12px;font-family:inherit;background:#fff;color:var(--navy);outline:none}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.form-consent{display:flex;align-items:flex-start;gap:8px;background:var(--g50);padding:12px 14px;border-radius:10px;font-size:12px;color:var(--gray);line-height:1.6;margin-bottom:14px;cursor:pointer}
+.form-consent input{margin-top:2px;accent-color:var(--teal);width:16px;height:16px;flex-shrink:0;cursor:pointer}
+.form-consent b{color:var(--navy)}
+.form-consent .detail-toggle{color:var(--teal);text-decoration:underline;font-size:11px;margin-left:4px;cursor:pointer}
+.form-consent-detail{display:none;background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px;font-size:11px;color:var(--gray);line-height:1.7;margin-bottom:14px}
+.form-consent-detail.show{display:block}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:13px 24px;border-radius:99px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.25);opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* Loading */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;margin-right:6px;vertical-align:middle}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Final thank-you */
+.thanks{flex:1;padding:40px 24px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.thanks-emoji{font-size:72px;margin-bottom:18px}
+.thanks-ttl{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;line-height:1.4;margin-bottom:10px}
+.thanks-sub{font-size:14px;color:var(--gray);line-height:1.8;margin-bottom:24px}
+
+/* Mobile-first; expand a bit on desktop */
+@media(min-width:640px){
+  .app{margin:40px auto;min-height:calc(100vh - 80px);border-radius:24px;overflow:hidden}
+  body{padding:0}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <button class="topbar-back" id="backBtn" onclick="goBack()" style="opacity:0;pointer-events:none">←</button>
+    <div class="topbar-brand">
+      <span class="topbar-logo">Care<span>On</span></span>
+      <span class="topbar-center" id="centerLabel">무료 진단</span>
+    </div>
+    <div style="width:32px"></div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-wrap" id="progressWrap" style="display:none">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-text" id="progressText">0 / 11</div>
+  </div>
+
+  <!-- ===== Intro ===== -->
+  <div class="intro" id="screenIntro">
+    <div class="intro-emoji">👴👵</div>
+    <h1 class="intro-title">3분 만에 알아보는<br>부모님 <span>요양 등급</span></h1>
+    <p class="intro-sub">11개의 간단한 질문에 답하시면<br>예상 등급과 월 본인부담금을 알려드립니다.</p>
+
+    <div class="intro-features">
+      <div class="intro-feat"><span class="intro-feat-icon">📋</span><div><b>공단 인정조사 기준</b>으로 점수 계산</div></div>
+      <div class="intro-feat"><span class="intro-feat-icon">💰</span><div>본인부담금 <b>10원 단위</b>까지 투명하게</div></div>
+      <div class="intro-feat"><span class="intro-feat-icon">🤝</span><div>진단 후 <b>전문 센터장</b>과 무료 상담 연결</div></div>
+      <div class="intro-feat"><span class="intro-feat-icon">🔒</span><div>입력 정보는 <b>본 상담 목적 외 사용 금지</b></div></div>
+    </div>
+
+    <button class="btn-primary" onclick="startDiagnosis()">진단 시작 →</button>
+    <div class="intro-note">※ 본 진단은 시뮬레이션입니다. 실제 등급은 공단 심사에 따라 달라질 수 있습니다.</div>
+  </div>
+
+  <!-- ===== Question (dynamic) ===== -->
+  <div class="question" id="screenQuestion" style="display:none">
+    <div class="q-step" id="qStep">질문 1 / 11</div>
+    <div class="q-text" id="qText"></div>
+    <div class="q-hint" id="qHint"></div>
+    <div class="q-options" id="qOptions"></div>
+    <div class="q-multi-hint" id="qMultiHint" style="display:none">※ 해당되는 항목을 모두 선택해주세요 (복수 가능)</div>
+    <div class="q-next">
+      <button class="btn-back" onclick="prevQuestion()">이전</button>
+      <button class="btn-next" id="qNextBtn" onclick="nextQuestion()" disabled>다음 →</button>
+    </div>
+  </div>
+
+  <!-- ===== Result + Lead capture ===== -->
+  <div class="result" id="screenResult" style="display:none">
+    <div class="result-hero">
+      <div class="result-badge">AI 모의 진단 결과</div>
+      <div class="result-grade" id="resultGrade">3등급 유력</div>
+      <div class="result-conf" id="resultConf">확률 85%</div>
+      <div class="result-cost">
+        <div class="result-cost-label">예상 월 본인부담금</div>
+        <div class="result-cost-value" id="resultCost">월 약 17~21만원</div>
+        <div class="result-cost-sub" id="resultCostSub">일반 건강보험 가입자 기준 (15% 부담)</div>
+      </div>
+    </div>
+
+    <div class="result-body">
+      <div class="result-section">
+        <div class="result-section-ttl">📋 진단 요약</div>
+        <div class="result-row"><span class="result-row-lbl">예상 인정점수</span><span class="result-row-val" id="resultScore">—</span></div>
+        <div class="result-row"><span class="result-row-lbl">월 한도액 (등급 기준)</span><span class="result-row-val" id="resultLimit">—</span></div>
+        <div class="result-row"><span class="result-row-lbl">본인부담률</span><span class="result-row-val" id="resultRate">—</span></div>
+        <div class="result-row"><span class="result-row-lbl">신청 권장도</span><span class="result-row-val" id="resultUrgency">—</span></div>
+      </div>
+
+      <div class="disclaimer">
+        <b>⚠️ 안내</b>: 본 결과는 국민건강보험공단 판정 기준을 바탕으로 한 <b>AI 모의 시뮬레이션</b>입니다.
+        실제 등급은 의사 소견서와 공단 직원의 현장 조사를 거쳐 최종 결정되며, 위 추정치와 다를 수 있습니다.
+        정확한 판정과 신청 방법은 전문 센터장과의 무료 상담으로 확인하실 수 있습니다.
+      </div>
+
+      <div class="lead-section">
+        <div class="lead-ttl">전문 센터장과<br>무료 상담 받기</div>
+        <div class="lead-sub" id="leadCenterName">담당 센터에서 정확한 등급 판정 및 신청 절차를 안내해드립니다.</div>
+
+        <div class="lead-options">
+          <div class="lead-opt urgent" onclick="chooseContact('call')">
+            <div class="lead-opt-top">
+              <span class="lead-opt-icon">📞</span>
+              <span class="lead-opt-ttl urgent">지금 바로 전화 상담</span>
+            </div>
+            <div class="lead-opt-sub">센터장님과 즉시 통화 연결 (영업시간 평일 9시~18시)</div>
+          </div>
+          <div class="lead-opt" onclick="chooseContact('form')">
+            <div class="lead-opt-top">
+              <span class="lead-opt-icon">💬</span>
+              <span class="lead-opt-ttl">상담 가능한 시간에 연락받기</span>
+            </div>
+            <div class="lead-opt-sub">번호 남겨주시면 센터장님이 직접 전화드립니다</div>
+          </div>
+        </div>
+
+        <div class="lead-form" id="leadForm">
+          <div class="form-group">
+            <label class="form-label">보호자 성함</label>
+            <input class="form-input" id="formName" placeholder="예: 김보호" maxlength="20">
+          </div>
+          <div class="form-group">
+            <label class="form-label">연락처</label>
+            <input class="form-input" id="formPhone" type="tel" placeholder="010-0000-0000" maxlength="13">
+          </div>
+          <div class="form-group">
+            <label class="form-label">통화 가능 시간 (선택)</label>
+            <input class="form-input" id="formTime" placeholder="예: 오후 2시 이후 / 평일 저녁">
+          </div>
+          <label class="form-consent">
+            <input type="checkbox" id="formConsent">
+            <div>
+              <b>[필수]</b> 개인정보(이름·연락처) 매칭 센터로 상담 목적 제공에 동의합니다.
+              <span class="detail-toggle" onclick="event.preventDefault();toggleConsent()">자세히</span>
+            </div>
+          </label>
+          <div class="form-consent-detail" id="consentDetail">
+            • 수집 항목: 보호자 성함, 연락처, 통화 가능 시간, 진단 답변 요약<br>
+            • 이용 목적: 매칭된 요양센터의 상담 연락<br>
+            • 보유 기간: 동의일로부터 3개월 또는 삭제 요청 시까지<br>
+            • 제공 대상: 본 진단 사이트를 운영하는 단일 요양센터<br>
+            • 거부 시: 상담 연결이 불가능합니다.
+          </div>
+          <button class="btn-primary" id="submitBtn" onclick="submitLead()">상담 신청하기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Thanks ===== -->
+  <div class="thanks" id="screenThanks" style="display:none">
+    <div class="thanks-emoji">✅</div>
+    <h2 class="thanks-ttl">상담 신청이 완료되었습니다</h2>
+    <p class="thanks-sub" id="thanksSub">담당 센터장님이 곧 연락드릴 예정입니다.<br>편안한 시간에 받아주세요.</p>
+    <button class="btn-primary" onclick="location.reload()">처음으로 돌아가기</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================
+// 질문 정의 (공단 인정조사 11개 항목 기반)
+// ============================
+const QUESTIONS = [
+  { id:'meal', step:'신체 1/5',
+    text:'부모님 식사는 요즘 어떠신가요?',
+    hint:'평소 식사하시는 모습을 떠올려 보세요.',
+    options:[
+      { label:'혼자서 숟가락 들고 잘 드신다', score:1 },
+      { label:'반찬 집어드리거나 수저 챙겨드려야 한다', score:2 },
+      { label:'씹거나 삼키지 못해 옆에서 전적으로 먹여드린다', score:3 }
+    ]},
+  { id:'bath', step:'신체 2/5',
+    text:'세수나 목욕은 어떠신가요?',
+    hint:'',
+    options:[
+      { label:'혼자서 깨끗이 잘 하신다', score:1 },
+      { label:'등이나 손 안 닿는 곳만 도와드린다', score:2 },
+      { label:'씻는 과정 전체를 다 씻겨드려야 한다', score:3 }
+    ]},
+  { id:'toilet', step:'신체 3/5',
+    text:'화장실 이용은 혼자서 가능하신가요?',
+    hint:'',
+    options:[
+      { label:'혼자서 무리 없이 다녀오신다', score:1 },
+      { label:'부축해주거나 옷 내릴 때 도움이 필요하다', score:2 },
+      { label:'기저귀를 차고 계시거나 전적으로 도와야 한다', score:3 }
+    ]},
+  { id:'mobility', step:'신체 4/5',
+    text:'집안에서 움직이거나 일어날 때는요?',
+    hint:'',
+    options:[
+      { label:'혼자서 잘 일어나고 걸어다니신다', score:1 },
+      { label:'벽이나 가구를 붙잡아야 겨우 일어나신다', score:2 },
+      { label:'누워서 스스로 몸을 뒤집기도 힘들어하신다', score:3 }
+    ]},
+  { id:'outing', step:'신체 5/5',
+    text:'집 밖 산책이나 병원 외출은 가능하신가요?',
+    hint:'',
+    options:[
+      { label:'혼자서 동네 마트나 병원을 다녀오신다', score:1 },
+      { label:'휠체어 타거나 부축해야 겨우 나가실 수 있다', score:2 },
+      { label:'아예 외부 출입을 못 하고 침대에만 계신다', score:3 }
+    ]},
+  { id:'memory', step:'인지 1/3',
+    text:'최근 기억이나 가족을 알아보시나요?',
+    hint:'',
+    options:[
+      { label:'전혀 문제없이 기억력이 좋으시다', score:1 },
+      { label:'오늘 며칠인지 자주 헷갈리거나 질문을 반복하신다', score:2 },
+      { label:'자녀 얼굴이나 이름을 못 알아볼 때가 있다', score:3 }
+    ]},
+  { id:'direction', step:'인지 2/3',
+    text:'익숙한 곳에서 길을 잃은 적 있나요?',
+    hint:'',
+    options:[
+      { label:'한 번도 없다', score:1 },
+      { label:'동네 길을 순간적으로 못 찾고 헤맨 적이 있다', score:2 },
+      { label:'집 안에서도 화장실 위치를 헷갈려 하신다', score:3 }
+    ]},
+  { id:'behavior', step:'인지 3/3',
+    text:'평소와 다른 감정 기복이나 의심 증상이 있나요?',
+    hint:'',
+    options:[
+      { label:'평소처럼 온화하고 차분하시다', score:1 },
+      { label:'"누가 내 물건 훔쳐갔다"고 의심하거나 짜증이 늘었다', score:2 },
+      { label:'밤에 안 자고 밖으로 나가려 하거나 소리를 지르신다', score:3 }
+    ]},
+  { id:'disease', step:'질환 1/2', multi:true,
+    text:'진단받으신 노인성 질환이 있나요?',
+    hint:'해당되는 항목을 모두 선택해주세요.',
+    options:[
+      { label:'치매', score:0, key:'dementia' },
+      { label:'뇌졸중 (중풍)', score:0, key:'stroke' },
+      { label:'파킨슨병', score:0, key:'parkinson' },
+      { label:'만성 관절염', score:0, key:'arthritis' },
+      { label:'해당 없음', score:0, key:'none', exclusive:true }
+    ]},
+  { id:'medical', step:'질환 2/2',
+    text:'집에서 정기적으로 받아야 하는 치료가 있나요?',
+    hint:'',
+    options:[
+      { label:'없다 (약 챙겨드시는 정도)', score:1 },
+      { label:'욕창 관리, 위관 영양, 도뇨관 등 관리가 필요하다', score:3 }
+    ]},
+  { id:'insurance', step:'환경',
+    text:'부모님 건강보험료 납부 상태가 어떻게 되시나요?',
+    hint:'본인부담금 비율이 달라집니다.',
+    options:[
+      { label:'일반 가입자 (해당 없음)', score:1, rate:0.15 },
+      { label:'차상위 계층 또는 의료급여 수급권자', score:1, rate:0.09 },
+      { label:'기초생활수급자', score:1, rate:0 }
+    ]}
+];
+
+// ============================
+// 상태
+// ============================
+const STATE = {
+  answers: {},   // { meal: 2, disease: ['dementia','arthritis'], insurance: { score:1, rate:0.15 } }
+  currentIdx: 0,
+  centerSlug: null,
+  centerData: null,
+  result: null
+};
+
+// ============================
+// 초기화
+// ============================
+function init(){
+  const params = new URLSearchParams(location.search);
+  STATE.centerSlug = params.get('c') || 'demo';
+  // 실제 운영 시 Supabase에서 센터 정보 fetch
+  // 일단 demo 모드는 햇살요양센터로 표시
+  STATE.centerData = {
+    slug: STATE.centerSlug,
+    name: STATE.centerSlug === 'demo' ? '햇살요양센터 (데모)' : STATE.centerSlug,
+    phone: '031-682-9090',
+    address: '경기도 성남시 분당구'
+  };
+  document.getElementById('centerLabel').textContent = STATE.centerData.name;
+  document.getElementById('leadCenterName').textContent =
+    STATE.centerData.name + ' 센터장님이 정확한 등급 판정 및 신청 절차를 안내해드립니다.';
+}
+
+// ============================
+// 화면 전환
+// ============================
+function showScreen(id){
+  ['screenIntro','screenQuestion','screenResult','screenThanks'].forEach(s=>{
+    document.getElementById(s).style.display = (s===id) ? '' : 'none';
+  });
+  document.getElementById('progressWrap').style.display = (id==='screenQuestion') ? '' : 'none';
+  document.getElementById('backBtn').style.opacity = (id==='screenQuestion') ? '1' : '0';
+  document.getElementById('backBtn').style.pointerEvents = (id==='screenQuestion') ? '' : 'none';
+  window.scrollTo(0,0);
+}
+
+function startDiagnosis(){
+  STATE.currentIdx = 0;
+  STATE.answers = {};
+  showScreen('screenQuestion');
+  renderQuestion();
+}
+
+// ============================
+// 질문 렌더
+// ============================
+function renderQuestion(){
+  const q = QUESTIONS[STATE.currentIdx];
+  document.getElementById('qStep').textContent = q.step;
+  document.getElementById('qText').textContent = q.text;
+  document.getElementById('qHint').textContent = q.hint || '';
+  document.getElementById('qHint').style.display = q.hint ? '' : 'none';
+  document.getElementById('qMultiHint').style.display = q.multi ? '' : 'none';
+
+  // 진행률
+  const idx = STATE.currentIdx + 1;
+  document.getElementById('progressFill').style.width = ((idx-1)/QUESTIONS.length*100)+'%';
+  document.getElementById('progressText').textContent = idx+' / '+QUESTIONS.length;
+
+  // 옵션
+  const wrap = document.getElementById('qOptions');
+  wrap.innerHTML = '';
+  const existingAnswer = STATE.answers[q.id];
+  q.options.forEach((opt,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'q-opt';
+    let selected = false;
+    if(q.multi){
+      const arr = Array.isArray(existingAnswer) ? existingAnswer : [];
+      selected = arr.includes(opt.key);
+    } else {
+      if(typeof existingAnswer === 'object' && existingAnswer !== null){
+        selected = existingAnswer.idx === i;
+      } else if(typeof existingAnswer === 'number'){
+        selected = existingAnswer === opt.score;
+      }
+    }
+    if(selected) btn.classList.add('selected');
+    btn.innerHTML = `<span class="q-opt-num">${i+1}</span><span>${opt.label}</span>`;
+    btn.onclick = ()=>selectOption(i);
+    wrap.appendChild(btn);
+  });
+
+  updateNextBtn();
+}
+
+function selectOption(optIdx){
+  const q = QUESTIONS[STATE.currentIdx];
+  const opt = q.options[optIdx];
+
+  if(q.multi){
+    let arr = Array.isArray(STATE.answers[q.id]) ? STATE.answers[q.id].slice() : [];
+    // exclusive option (예: '해당 없음')
+    if(opt.exclusive){
+      arr = arr.includes(opt.key) ? [] : [opt.key];
+    } else {
+      // exclusive 제거
+      arr = arr.filter(k=>!q.options.find(o=>o.key===k && o.exclusive));
+      if(arr.includes(opt.key)){
+        arr = arr.filter(k=>k!==opt.key);
+      } else {
+        arr.push(opt.key);
+      }
+    }
+    STATE.answers[q.id] = arr;
+  } else {
+    STATE.answers[q.id] = { idx:optIdx, score:opt.score, rate:opt.rate };
+    // 단일 선택은 자동 다음 (Q에 따라)
+    setTimeout(()=>nextQuestion(), 250);
+  }
+  renderQuestion();
+}
+
+function updateNextBtn(){
+  const q = QUESTIONS[STATE.currentIdx];
+  const ans = STATE.answers[q.id];
+  const valid = q.multi ? (Array.isArray(ans) && ans.length>0) : (ans !== undefined);
+  document.getElementById('qNextBtn').disabled = !valid;
+}
+
+function nextQuestion(){
+  const q = QUESTIONS[STATE.currentIdx];
+  const ans = STATE.answers[q.id];
+  if(!ans || (q.multi && !ans.length)) return;
+
+  if(STATE.currentIdx < QUESTIONS.length - 1){
+    STATE.currentIdx++;
+    renderQuestion();
+  } else {
+    // 진행률 100%
+    document.getElementById('progressFill').style.width = '100%';
+    document.getElementById('progressText').textContent = QUESTIONS.length+' / '+QUESTIONS.length;
+    setTimeout(()=>showResult(), 200);
+  }
+}
+
+function prevQuestion(){
+  if(STATE.currentIdx > 0){
+    STATE.currentIdx--;
+    renderQuestion();
+  } else {
+    showScreen('screenIntro');
+  }
+}
+
+function goBack(){ prevQuestion(); }
+
+// ============================
+// 점수 계산 (Rule-based)
+// ============================
+function calculateGrade(){
+  const a = STATE.answers;
+
+  // ADL 5문항 점수 합 (5~15)
+  const adlScore = ['meal','bath','toilet','mobility','outing']
+    .map(k => a[k]?.score || 1).reduce((s,v)=>s+v, 0);
+
+  // 인지 3문항 점수 합 (3~9)
+  const cogScore = ['memory','direction','behavior']
+    .map(k => a[k]?.score || 1).reduce((s,v)=>s+v, 0);
+
+  // 질환 가산
+  const diseases = Array.isArray(a.disease) ? a.disease : [];
+  const hasDementia = diseases.includes('dementia');
+  let diseaseBonus = 0;
+  if(hasDementia) diseaseBonus += 2;
+  if(diseases.includes('stroke')) diseaseBonus += 1;
+  if(diseases.includes('parkinson')) diseaseBonus += 1;
+  if(diseases.includes('arthritis')) diseaseBonus += 0.5;
+
+  // 의료처치 가산
+  const medicalBonus = (a.medical?.score === 3) ? 2 : 0;
+
+  // 인정점수 환산 (45~100 범위 매핑)
+  // ADL 5~15 → 0~50점, 인지 3~9 → 0~30점, 가산 → 최대 +10점
+  const adlPoints = ((adlScore - 5) / 10) * 50;
+  const cogPoints = ((cogScore - 3) / 6) * 30;
+  let totalScore = 45 + adlPoints + cogPoints + diseaseBonus + medicalBonus;
+  totalScore = Math.max(40, Math.min(100, Math.round(totalScore)));
+
+  // 등급 산정
+  let grade, gradeLabel, gradeIcon, confidence;
+  if(totalScore >= 95){ grade='1'; gradeLabel='1등급 유력'; }
+  else if(totalScore >= 75){ grade='2'; gradeLabel='2등급 유력'; }
+  else if(totalScore >= 60){ grade='3'; gradeLabel='3등급 유력'; }
+  else if(totalScore >= 51){ grade='4'; gradeLabel='4등급 유력'; }
+  else if(totalScore >= 45){ grade='5'; gradeLabel='5등급 유력'; }
+  else if(hasDementia){ grade='cog'; gradeLabel='인지지원등급 가능'; }
+  else { grade='none'; gradeLabel='등급 외 가능성'; }
+
+  // 신뢰도 (점수가 등급 중앙이면 높음, 경계면 낮음)
+  const boundaries = [95, 75, 60, 51, 45];
+  const distToBoundary = Math.min(...boundaries.map(b=>Math.abs(totalScore-b)));
+  if(distToBoundary >= 8) confidence = 90;
+  else if(distToBoundary >= 5) confidence = 80;
+  else if(distToBoundary >= 3) confidence = 70;
+  else confidence = 60;
+
+  // 월 한도액 (2026 기준)
+  const LIMITS = {'1':2069900,'2':1869600,'3':1455800,'4':1341800,'5':1151600,'cog':643400,'none':0};
+  const limit = LIMITS[grade];
+
+  // 본인부담률
+  const rate = a.insurance?.rate ?? 0.15;
+  const rateLabel = rate === 0 ? '0% (기초생활수급자)' : (rate === 0.09 ? '9% (감면 대상자)' : (rate === 0.06 ? '6% (감면 대상자)' : '15% (일반)'));
+
+  // 본인부담금 범위 (사용률 75% ~ 92%)
+  const minCost = Math.round(limit * 0.75 * rate / 10000);
+  const maxCost = Math.round(limit * 0.92 * rate / 10000);
+  let costLabel;
+  if(rate === 0){
+    costLabel = '월 0원 (전액 국가 지원)';
+  } else if(limit === 0){
+    costLabel = '— (등급 외)';
+  } else {
+    costLabel = '월 약 '+minCost+'만~'+maxCost+'만원';
+  }
+
+  // 신청 권장도
+  let urgency;
+  if(adlScore >= 12 || cogScore >= 7 || hasDementia){
+    urgency = '🔥 즉시 신청 권장';
+  } else if(adlScore >= 9 || cogScore >= 5){
+    urgency = '⚠️ 빠른 신청 권장';
+  } else {
+    urgency = '📋 상태 확인 후 신청';
+  }
+
+  return {
+    grade, gradeLabel, confidence,
+    totalScore, adlScore, cogScore,
+    limit, rate, rateLabel,
+    costLabel, minCost, maxCost,
+    urgency, hasDementia, diseases
+  };
+}
+
+// ============================
+// 결과 화면
+// ============================
+function showResult(){
+  const r = calculateGrade();
+  STATE.result = r;
+
+  document.getElementById('resultGrade').textContent = r.gradeLabel;
+  document.getElementById('resultConf').textContent = '확률 약 '+r.confidence+'%';
+  document.getElementById('resultCost').textContent = r.costLabel;
+  document.getElementById('resultCostSub').textContent = r.rateLabel + ' 기준';
+  document.getElementById('resultScore').textContent = r.totalScore+' 점';
+  document.getElementById('resultLimit').textContent = r.limit ? (r.limit.toLocaleString()+'원') : '—';
+  document.getElementById('resultRate').textContent = r.rateLabel;
+  document.getElementById('resultUrgency').textContent = r.urgency;
+
+  showScreen('screenResult');
+}
+
+// ============================
+// Lead 수집
+// ============================
+function chooseContact(method){
+  if(method === 'call'){
+    // 통화 시도 + DB 저장 (status: called_directly)
+    saveLead({ method:'call', name:null, phone:null });
+    location.href = 'tel:' + (STATE.centerData?.phone || '').replace(/-/g,'');
+  } else {
+    document.getElementById('leadForm').classList.add('show');
+    document.querySelector('.lead-form').scrollIntoView({behavior:'smooth', block:'center'});
+  }
+}
+
+function toggleConsent(){
+  document.getElementById('consentDetail').classList.toggle('show');
+}
+
+document.addEventListener('input', e=>{
+  if(e.target.id === 'formPhone'){
+    let v = e.target.value.replace(/[^\d]/g,'');
+    if(v.length >= 11) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7,11);
+    else if(v.length >= 7) v = v.slice(0,3)+'-'+v.slice(3,7)+'-'+v.slice(7);
+    else if(v.length >= 4) v = v.slice(0,3)+'-'+v.slice(3);
+    e.target.value = v;
+  }
+});
+
+async function submitLead(){
+  const name = document.getElementById('formName').value.trim();
+  const phone = document.getElementById('formPhone').value.trim();
+  const time = document.getElementById('formTime').value.trim();
+  const consent = document.getElementById('formConsent').checked;
+
+  if(!name){ toast('보호자 성함을 입력해주세요'); return; }
+  if(!phone || phone.length < 12){ toast('연락처를 정확히 입력해주세요'); return; }
+  if(!consent){ toast('개인정보 제공 동의가 필요합니다'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>전송 중...';
+
+  const ok = await saveLead({ method:'form', name, phone, preferredTime: time });
+
+  if(ok){
+    document.getElementById('thanksSub').innerHTML =
+      (STATE.centerData?.name || '담당 센터') + '에서<br>편안한 시간에 연락드릴 예정입니다.<br><br>' +
+      '<b>'+phone+'</b>로 전화 받아주세요.';
+    showScreen('screenThanks');
+  } else {
+    btn.disabled = false;
+    btn.textContent = '상담 신청하기';
+    toast('전송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+  }
+}
+
+async function saveLead(payload){
+  // TODO: Supabase Edge Function 호출
+  // 현재는 콘솔에만 로깅 (다음 commit에서 backend 연결)
+  const lead = {
+    center_slug: STATE.centerSlug,
+    method: payload.method,
+    parent_name: payload.name,
+    parent_phone: payload.phone,
+    preferred_time: payload.preferredTime,
+    answers: STATE.answers,
+    result: STATE.result,
+    created_at: new Date().toISOString()
+  };
+  console.log('[lead]', lead);
+
+  // 실제 운영 시:
+  // const res = await fetch('/api/submit-lead', { method:'POST', body: JSON.stringify(lead) });
+  // return res.ok;
+
+  // 데모: 항상 성공
+  await new Promise(r=>setTimeout(r,500));
+  return true;
+}
+
+// ============================
+// Toast
+// ============================
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove('show'), 2400);
+}
+
+// 시작
+init();
+</script>
+</body>
+</html>
