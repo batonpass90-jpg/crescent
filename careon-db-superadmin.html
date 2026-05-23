@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DB 사업 운영 — CareOn 슈퍼어드민</title>
+<meta name="robots" content="noindex">
+<link rel="apple-touch-icon" href="/careon-icon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&family=Pretendard:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#f5f5f0;color:#0F1B2D;-webkit-font-smoothing:antialiased}
+:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--navy:#0F1B2D;--gray:#6b7280;--g50:#f8fafc;--g100:#f1f5f9;--g200:#e2e8f0;--border:#e5e7eb;--green:#22c55e;--amber:#f59e0b;--rose:#f43f5e}
+
+.app{max-width:1200px;margin:0 auto;padding:24px;min-height:100vh}
+
+/* Top */
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.top-left{display:flex;align-items:center;gap:14px}
+.logo{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--navy)}
+.logo span{color:var(--teal)}
+.top-badge{background:var(--navy);color:#fff;font-size:11px;font-weight:800;padding:4px 10px;border-radius:99px}
+.top-actions{display:flex;gap:8px}
+.btn{padding:10px 16px;font-size:13px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:1.5px solid var(--border);background:#fff;color:var(--navy)}
+.btn:hover{background:var(--g50)}
+.btn-primary{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn-primary:hover{background:#1e293b}
+.btn-teal{background:var(--teal);color:#fff;border-color:var(--teal)}
+.btn-teal:hover{background:#0f766e}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:#fff;border:1px solid var(--border);border-radius:14px;padding:18px}
+.stat-lbl{font-size:11px;color:var(--gray);font-weight:700;margin-bottom:6px;letter-spacing:.5px;text-transform:uppercase}
+.stat-val{font-size:28px;font-weight:900;color:var(--navy);letter-spacing:-.5px;line-height:1}
+.stat-sub{font-size:11px;color:var(--gray);margin-top:6px}
+.stat.teal .stat-val{color:var(--teal)}
+.stat.warn .stat-val{color:#c2410c}
+
+/* Section */
+.section{background:#fff;border:1px solid var(--border);border-radius:14px;padding:0;margin-bottom:20px;overflow:hidden}
+.sec-hd{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.sec-ttl{font-size:16px;font-weight:800;color:var(--navy)}
+.sec-body{padding:0}
+
+/* Table */
+table{width:100%;border-collapse:collapse}
+thead{background:var(--g50)}
+th{padding:12px 16px;text-align:left;font-size:11px;color:var(--gray);font-weight:700;letter-spacing:.3px;text-transform:uppercase;border-bottom:1px solid var(--border)}
+td{padding:14px 16px;font-size:13px;color:var(--navy);border-bottom:1px solid var(--g100)}
+tr:hover{background:var(--g50)}
+.balance-cell{font-weight:800;font-variant-numeric:tabular-nums}
+.balance-low{color:#dc2626}
+.balance-ok{color:var(--teal)}
+.slug-cell{font-family:'Menlo','Monaco',monospace;font-size:12px;color:var(--gray);background:var(--g100);padding:2px 8px;border-radius:6px;display:inline-block}
+.status-badge{display:inline-block;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:700}
+.status-pub{background:#dcfce7;color:#166534}
+.status-draft{background:#fef3c7;color:#92400e}
+.action-btn{background:transparent;border:1px solid var(--border);color:var(--navy);font-size:12px;font-weight:600;padding:5px 10px;border-radius:8px;cursor:pointer;font-family:inherit;margin-right:4px}
+.action-btn:hover{background:var(--g50);border-color:var(--navy)}
+.action-btn.primary{background:var(--teal);color:#fff;border-color:var(--teal)}
+
+/* Empty */
+.empty{padding:60px 20px;text-align:center;color:var(--gray)}
+.empty-icon{font-size:42px;margin-bottom:14px;opacity:.5}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;justify-content:center;z-index:200;padding:20px}
+.modal-overlay.show{display:flex}
+.modal{background:#fff;border-radius:18px;width:100%;max-width:520px;max-height:88vh;overflow-y:auto}
+.modal-hd{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;background:#fff;z-index:5}
+.modal-title{font-size:17px;font-weight:800}
+.modal-close{background:var(--g100);border:none;width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;color:var(--gray)}
+.modal-body{padding:20px 22px}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form-label{display:block;font-size:12px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.form-input{width:100%;padding:11px 14px;font-size:14px;border:1.5px solid var(--border);border-radius:10px;font-family:inherit;background:#fff;outline:none}
+.form-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.form-hint{font-size:11px;color:var(--gray);margin-top:4px;line-height:1.5}
+.amount-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.amount-btn{padding:10px;font-size:13px;font-weight:700;background:#fff;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-family:inherit}
+.amount-btn:hover,.amount-btn.selected{border-color:var(--teal);background:var(--tl);color:var(--teal)}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--g50);position:sticky;bottom:0}
+.mf-btn{flex:1;padding:12px;font-size:14px;font-weight:700;border-radius:10px;cursor:pointer;font-family:inherit;border:none}
+.mf-btn-primary{background:var(--navy);color:#fff}
+.mf-btn-secondary{background:#fff;color:var(--navy);border:1.5px solid var(--border)}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:13px 24px;border-radius:99px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+@media(max-width:768px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .form-row{grid-template-columns:1fr}
+  table{font-size:12px}
+  th,td{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="top">
+    <div class="top-left">
+      <div class="logo">Care<span>On</span></div>
+      <div class="top-badge">DB 사업 운영</div>
+    </div>
+    <div class="top-actions">
+      <button class="btn" onclick="location.href='/care-superadmin.html'">← 운영 SaaS</button>
+      <button class="btn btn-primary" onclick="openCenterModal()">+ 센터 등록</button>
+    </div>
+  </div>
+
+  <!-- 통계 -->
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-lbl">전체 센터</div>
+      <div class="stat-val" id="statCenters">—</div>
+      <div class="stat-sub" id="statCentersSub">공개 / 비공개</div>
+    </div>
+    <div class="stat teal">
+      <div class="stat-lbl">이번달 신규 DB</div>
+      <div class="stat-val" id="statLeads">—</div>
+      <div class="stat-sub">건당 5,000원 차감 기준</div>
+    </div>
+    <div class="stat teal">
+      <div class="stat-lbl">이번달 매출</div>
+      <div class="stat-val" id="statRevenue">—</div>
+      <div class="stat-sub">DB 차감 합계</div>
+    </div>
+    <div class="stat warn">
+      <div class="stat-lbl">잔액 부족 센터</div>
+      <div class="stat-val" id="statLowBalance">—</div>
+      <div class="stat-sub">충전 필요</div>
+    </div>
+  </div>
+
+  <!-- 센터 목록 -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-ttl">📋 센터 목록</div>
+      <button class="btn btn-teal" onclick="openCenterModal()">+ 신규 센터 등록</button>
+    </div>
+    <div id="centersList">
+      <div class="empty">
+        <div class="empty-icon">🏢</div>
+        <div>아직 등록된 센터가 없습니다</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 최근 충전·차감 이력 -->
+  <div class="section">
+    <div class="sec-hd">
+      <div class="sec-ttl">💳 최근 거래 이력 (최근 50건)</div>
+    </div>
+    <div id="txList">
+      <div class="empty"><div class="empty-icon">📊</div><div>거래 이력 없음</div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 센터 등록 모달 -->
+<div class="modal-overlay" id="centerModal" onclick="if(event.target===this)closeModal('centerModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="centerModalTitle">신규 센터 등록</div>
+      <button class="modal-close" onclick="closeModal('centerModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editCenterId">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">센터 이름 *</label>
+          <input class="form-input" id="cmName" placeholder="햇살요양센터">
+        </div>
+        <div class="form-group">
+          <label class="form-label">슬러그 (URL용) *</label>
+          <input class="form-input" id="cmSlug" placeholder="haetsal-care">
+          <div class="form-hint">영문 소문자·숫자·하이픈만. URL: /care-diagnosis.html?c=슬러그</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">대표 전화 *</label>
+        <input class="form-input" id="cmPhone" placeholder="031-682-9090">
+      </div>
+      <div class="form-group">
+        <label class="form-label">알림 수신 휴대폰 (센터장) *</label>
+        <input class="form-input" id="cmAlertPhone" placeholder="010-0000-0000">
+        <div class="form-hint">신규 보호자 DB 발생 시 이 번호로 SMS 발송</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">주소</label>
+        <input class="form-input" id="cmAddress" placeholder="경기도 성남시 분당구 ...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">DB 단가 (원)</label>
+          <input class="form-input" id="cmUnitPrice" type="number" value="5000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">초기 충전금 (원)</label>
+          <input class="form-input" id="cmInitialBalance" type="number" value="100000">
+          <div class="form-hint">5곳 한정 시 10만원 보너스</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">공개 상태</label>
+        <select class="form-input" id="cmPublished">
+          <option value="false">비공개 (초안)</option>
+          <option value="true">공개 (사이트 활성화)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mf-btn mf-btn-secondary" onclick="closeModal('centerModal')">취소</button>
+      <button class="mf-btn mf-btn-primary" onclick="saveCenter()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 충전 모달 -->
+<div class="modal-overlay" id="topupModal" onclick="if(event.target===this)closeModal('topupModal')">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title" id="topupTitle">충전</div>
+      <button class="modal-close" onclick="closeModal('topupModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="topupCenterId">
+      <div class="form-group">
+        <label class="form-label">현재 잔액</label>
+        <div style="font-size:22px;font-weight:900" id="topupCurrent">—</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">충전 금액 (원) *</label>
+        <div class="amount-grid">
+          <button class="amount-btn" onclick="setAmount(50000)">5만</button>
+          <button class="amount-btn" onclick="setAmount(100000)">10만</button>
+          <button class="amount-btn" onclick="setAmount(300000)">30만</button>
+          <button class="amount-btn" onclick="setAmount(500000)">50만</button>
+        </div>
+        <input class="form-input" id="topupAmount" type="number" placeholder="직접 입력" style="margin-top:8px">
+      </div>
+      <div class="form-group">
+        <label class="form-label">메모 (선택)</label>
+        <input class="form-input" id="topupMemo" placeholder="예: 1차 충전 / 카카오뱅크 입금 확인">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="mf-btn mf-btn-secondary" onclick="closeModal('topupModal')">취소</button>
+      <button class="mf-btn mf-btn-primary" onclick="doTopup()">충전하기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPA_URL = 'https://swsemxzgzcwwrhowuaqz.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q';
+
+let sb, _centers = [], _txs = [];
+
+window.addEventListener('load', async () => {
+  try {
+    sb = window.supabase.createClient(SUPA_URL, SUPA_KEY);
+    const { data: { session } } = await sb.auth.getSession();
+    if(!session){ location.href = '/care-login.html'; return; }
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', session.user.id).single();
+    if(profile?.role !== 'superadmin'){
+      alert('슈퍼어드민 권한 필요');
+      location.href = '/care-login.html';
+      return;
+    }
+    await refresh();
+  } catch(e){ console.error(e); toast('초기화 실패: ' + e.message); }
+});
+
+async function refresh(){
+  await Promise.all([loadCenters(), loadTxs()]);
+}
+
+async function loadCenters(){
+  const { data, error } = await sb.from('centers').select('*').order('created_at', { ascending: false });
+  if(error){ console.error(error); return; }
+  _centers = data || [];
+
+  const pub = _centers.filter(c=>c.site_published).length;
+  const draft = _centers.length - pub;
+  const lowBal = _centers.filter(c=>(c.credit_balance||0) < (c.lead_unit_price||5000)*3).length;
+  document.getElementById('statCenters').textContent = _centers.length + '개';
+  document.getElementById('statCentersSub').textContent = `공개 ${pub} / 비공개 ${draft}`;
+  document.getElementById('statLowBalance').textContent = lowBal + '개';
+
+  renderCenters();
+}
+
+async function loadTxs(){
+  const { data, error } = await sb.from('credit_transactions')
+    .select('*, centers(name, slug), leads(parent_name)')
+    .order('created_at', { ascending: false })
+    .limit(50);
+  if(error){ console.error(error); return; }
+  _txs = data || [];
+
+  // 이번 달 매출
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const monthCharges = _txs.filter(t=>t.reason==='lead_charge' && new Date(t.created_at) >= monthStart);
+  const revenue = monthCharges.reduce((s,t)=>s + Math.abs(t.amount), 0);
+  document.getElementById('statLeads').textContent = monthCharges.length + '건';
+  document.getElementById('statRevenue').textContent = revenue.toLocaleString() + '원';
+
+  renderTxs();
+}
+
+function renderCenters(){
+  const wrap = document.getElementById('centersList');
+  if(_centers.length === 0){
+    wrap.innerHTML = `<div class="empty"><div class="empty-icon">🏢</div><div>아직 등록된 센터가 없습니다</div></div>`;
+    return;
+  }
+  wrap.innerHTML = `
+    <table>
+      <thead>
+        <tr><th>센터</th><th>슬러그</th><th>전화</th><th>알림 휴대폰</th><th>잔액</th><th>상태</th><th></th></tr>
+      </thead>
+      <tbody>
+        ${_centers.map(c=>{
+          const lowBal = (c.credit_balance||0) < (c.lead_unit_price||5000)*3;
+          return `
+            <tr>
+              <td><b>${c.name||'(이름 없음)'}</b></td>
+              <td><span class="slug-cell">${c.slug||'—'}</span></td>
+              <td>${c.phone||'—'}</td>
+              <td>${c.alert_phone||c.phone||'—'}</td>
+              <td class="balance-cell ${lowBal?'balance-low':'balance-ok'}">${(c.credit_balance||0).toLocaleString()}</td>
+              <td><span class="status-badge ${c.site_published?'status-pub':'status-draft'}">${c.site_published?'공개':'비공개'}</span></td>
+              <td>
+                <button class="action-btn primary" onclick="openTopupModal('${c.id}', '${c.name}', ${c.credit_balance||0})">충전</button>
+                <button class="action-btn" onclick="editCenter('${c.id}')">편집</button>
+                <button class="action-btn" onclick="window.open('/care-diagnosis.html?c=${encodeURIComponent(c.slug||'')}','_blank')">보기</button>
+              </td>
+            </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function renderTxs(){
+  const wrap = document.getElementById('txList');
+  if(_txs.length === 0){
+    wrap.innerHTML = `<div class="empty"><div class="empty-icon">📊</div><div>거래 이력 없음</div></div>`;
+    return;
+  }
+  const REASON = {
+    topup: '💳 충전', lead_charge: '🩺 DB 차감',
+    refund: '↩️ 환불', admin_adjustment: '⚙️ 조정', signup_bonus: '🎁 가입 보너스'
+  };
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>시간</th><th>센터</th><th>사유</th><th>금액</th><th>잔액</th><th>비고</th></tr></thead>
+      <tbody>
+        ${_txs.map(t=>`
+          <tr>
+            <td>${new Date(t.created_at).toLocaleString('ko-KR', {month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</td>
+            <td><b>${t.centers?.name||'—'}</b></td>
+            <td>${REASON[t.reason]||t.reason}</td>
+            <td class="balance-cell ${t.amount>0?'balance-ok':'balance-low'}">${t.amount>0?'+':''}${t.amount.toLocaleString()}</td>
+            <td class="balance-cell">${t.balance_after.toLocaleString()}</td>
+            <td style="color:var(--gray);font-size:12px">${t.memo||t.leads?.parent_name||'—'}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+function openCenterModal(){
+  document.getElementById('centerModalTitle').textContent = '신규 센터 등록';
+  document.getElementById('editCenterId').value = '';
+  ['cmName','cmSlug','cmPhone','cmAlertPhone','cmAddress'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('cmUnitPrice').value = 5000;
+  document.getElementById('cmInitialBalance').value = 100000;
+  document.getElementById('cmPublished').value = 'false';
+  document.getElementById('centerModal').classList.add('show');
+}
+
+function editCenter(id){
+  const c = _centers.find(x=>x.id===id);
+  if(!c) return;
+  document.getElementById('centerModalTitle').textContent = '센터 편집 · ' + c.name;
+  document.getElementById('editCenterId').value = id;
+  document.getElementById('cmName').value = c.name||'';
+  document.getElementById('cmSlug').value = c.slug||'';
+  document.getElementById('cmPhone').value = c.phone||'';
+  document.getElementById('cmAlertPhone').value = c.alert_phone||'';
+  document.getElementById('cmAddress').value = c.address||'';
+  document.getElementById('cmUnitPrice').value = c.lead_unit_price||5000;
+  document.getElementById('cmInitialBalance').value = c.credit_balance||0;
+  document.getElementById('cmPublished').value = c.site_published ? 'true' : 'false';
+  document.getElementById('centerModal').classList.add('show');
+}
+
+async function saveCenter(){
+  const id = document.getElementById('editCenterId').value;
+  const name = document.getElementById('cmName').value.trim();
+  const slug = document.getElementById('cmSlug').value.trim().toLowerCase();
+  const phone = document.getElementById('cmPhone').value.trim();
+  const alert_phone = document.getElementById('cmAlertPhone').value.trim();
+  const address = document.getElementById('cmAddress').value.trim();
+  const unit = parseInt(document.getElementById('cmUnitPrice').value) || 5000;
+  const balance = parseInt(document.getElementById('cmInitialBalance').value) || 0;
+  const published = document.getElementById('cmPublished').value === 'true';
+
+  if(!name || !slug || !phone || !alert_phone){ toast('필수 항목 입력'); return; }
+  if(!/^[a-z0-9-]+$/.test(slug)){ toast('슬러그는 영문 소문자·숫자·하이픈만'); return; }
+
+  const payload = {
+    name, slug, phone, alert_phone, address,
+    lead_unit_price: unit, site_published: published
+  };
+
+  let result;
+  if(id){
+    // 편집 (잔액은 별도 충전으로만 변경)
+    const { error } = await sb.from('centers').update(payload).eq('id', id);
+    result = { error };
+  } else {
+    // 신규: 초기 잔액 포함
+    payload.credit_balance = balance;
+    const { data, error } = await sb.from('centers').insert(payload).select().single();
+    result = { error, data };
+    // 초기 잔액 이력 기록
+    if(!error && balance > 0){
+      await sb.from('credit_transactions').insert({
+        center_id: data.id, amount: balance, balance_after: balance,
+        reason: 'signup_bonus', memo: '신규 등록 초기 충전'
+      });
+    }
+  }
+
+  if(result.error){ toast('저장 실패: ' + result.error.message); return; }
+  toast(id ? '센터 정보 저장 완료' : '신규 센터 등록 완료');
+  closeModal('centerModal');
+  await refresh();
+}
+
+function openTopupModal(id, name, current){
+  document.getElementById('topupCenterId').value = id;
+  document.getElementById('topupTitle').textContent = '충전 · ' + name;
+  document.getElementById('topupCurrent').textContent = current.toLocaleString() + '원';
+  document.getElementById('topupAmount').value = '';
+  document.getElementById('topupMemo').value = '';
+  document.querySelectorAll('.amount-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('topupModal').classList.add('show');
+}
+
+function setAmount(amt){
+  document.getElementById('topupAmount').value = amt;
+  document.querySelectorAll('.amount-btn').forEach(b=>{
+    b.classList.toggle('selected', b.textContent.includes((amt/10000)+'만'));
+  });
+}
+
+async function doTopup(){
+  const id = document.getElementById('topupCenterId').value;
+  const amt = parseInt(document.getElementById('topupAmount').value);
+  const memo = document.getElementById('topupMemo').value.trim();
+  if(!amt || amt <= 0){ toast('금액 입력'); return; }
+
+  const { data, error } = await sb.rpc('topup_credit', {
+    p_center_id: id, p_amount: amt, p_memo: memo
+  });
+  if(error){ toast('충전 실패: ' + error.message); return; }
+  if(!data?.ok){ toast('충전 실패: ' + data?.error); return; }
+  toast(`✅ ${amt.toLocaleString()}원 충전 완료 (잔액 ${data.balance_after.toLocaleString()}원)`);
+  closeModal('topupModal');
+  await refresh();
+}
+
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>el.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
