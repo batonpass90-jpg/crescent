@@ -1290,6 +1290,53 @@ document.querySelectorAll('.svc-card').forEach(card => {
     _centerLoaded = true;
     return;
   }
+
+  // demo 폴백 (DB 조회 없이 하드코딩 데이터)
+  if(slug === 'demo'){
+    const demoCenter = {
+      slug:'demo',
+      name:'햇살요양센터',
+      phone:'031-682-9090',
+      address:'경기도 성남시 분당구 정자동 정자빌딩 4층',
+      service_area:'분당구 / 수정구 / 중원구',
+      business_hours:'평일 09:00~18:00 · 토요일 09:00~13:00',
+      representative_name:'홍길동',
+      business_number:'123-45-67890',
+      ltc_license_number:'12345678',
+      description:'방문요양 전문 — 검증된 보호사 · 1:1 맞춤 케어',
+      emergency_phone:'010-9032-9090',
+      location_lat:37.366,
+      location_lng:127.108
+    };
+    CenterRouter.applyCenterToDOM(demoCenter);
+    _centerPhone = demoCenter.phone;
+    document.title = demoCenter.name + ' (샘플) — 방문요양 전문';
+    document.querySelectorAll('[data-bind]').forEach(el => {
+      const k = el.getAttribute('data-bind');
+      if(k === 'rep')    el.textContent = demoCenter.representative_name;
+      if(k === 'biznum') el.textContent = demoCenter.business_number;
+      if(k === 'ltcnum') el.textContent = demoCenter.ltc_license_number;
+      if(k === 'area')   el.textContent = demoCenter.service_area;
+    });
+    const mapBtn = document.getElementById('mapDirBtn');
+    if(mapBtn) mapBtn.href = `https://map.kakao.com/link/search/${encodeURIComponent(demoCenter.address)}`;
+    const mapFrame = document.getElementById('kakaoMap');
+    if(mapFrame) mapFrame.src = `https://map.kakao.com/?urlX=${demoCenter.location_lng}&urlY=${demoCenter.location_lat}&urlLevel=3`;
+    const emergContact = document.getElementById('emergencyContact');
+    const emergPhoneText = document.getElementById('emergPhoneText');
+    if(emergContact){
+      emergContact.style.display = 'block';
+      if(emergPhoneText){
+        emergPhoneText.innerHTML = `<a href="tel:${demoCenter.emergency_phone.replace(/-/g,'')}" style="color:var(--accent-dark);font-weight:800;text-decoration:none">${demoCenter.emergency_phone}</a>`;
+      }
+    }
+    window._centerOwnerPhone = demoCenter.phone;
+    const fp = document.getElementById('footerPhone');
+    if(fp) fp.href = 'tel:' + demoCenter.phone.replace(/-/g,'');
+    _centerLoaded = true;
+    return;
+  }
+
   const center = await CenterRouter.loadCenterBySlug(sb, slug);
   if(!center){
     document.querySelectorAll('[data-bind]').forEach(el=>{
