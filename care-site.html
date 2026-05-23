@@ -2,879 +2,1130 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>CareOn — 방문요양 전문</title>
-<meta name="description" content="투명한 케어일지, 도착 알림, 일일 케어 보고서 — 어르신을 위한 스마트 방문요양 서비스">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-bind="title">CareOn 파트너 센터 — 방문요양 전문</title>
+<meta name="description" content="검증된 요양보호사가 직접 방문하는 방문요양 전문 센터. 부모님 등급·비용 무료 진단, 24시간 이내 상담.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="요양 통합 플랫폼 · CareOn">
-<meta property="og:description" content="🛰️ GPS 자동 출퇴근 · 📲 도착 알림 · 📋 일일 케어 보고서 · 👩‍⚕️ 검증된 보호사">
+<meta property="og:title" content="방문요양 전문 센터">
+<meta property="og:description" content="검증된 요양보호사 · 1:1 맞춤 케어 · 24시간 이내 상담">
 <meta property="og:image" content="https://crescentstudio.co.kr/careon-icon.svg">
-<meta property="og:site_name" content="CareOn">
-<meta name="twitter:card" content="summary_large_image">
-<link rel="manifest" href="/manifest.json">
 <meta name="theme-color" content="#0D9488">
 <link rel="apple-touch-icon" href="/careon-icon.svg">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<link rel="icon" type="image/svg+xml" href="/careon-icon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@600;700&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/center-router.js"></script>
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;background:#fff;color:#0F1B2D;margin:0 auto;overflow-x:hidden;position:relative}
-.app{max-width:430px;margin:0 auto;background:#fff;position:relative;min-height:100vh}
-:root{--teal:#0D9488;--teal2:#14B8A6;--tl:#F0FDFA;--teal-dark:#0F766E;--navy:#0F1B2D;--gray:#6b7280;--border:#f0f0f0;--green:#22c55e}
+body{
+  font-family:'Pretendard','Apple SD Gothic Neo',sans-serif;
+  background:#fff;
+  color:#0F1B2D;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.6;
+  letter-spacing:-.2px;
+}
+:root{
+  --navy:#0F1B2D;
+  --ink:#1F2937;
+  --gray-1:#4B5563;
+  --gray-2:#6B7280;
+  --gray-3:#9CA3AF;
+  --bg:#FFFFFF;
+  --bg-soft:#FAFAF7;
+  --bg-card:#F8FAFC;
+  --line:#E5E7EB;
+  --line-soft:#F1F5F9;
+  --accent:#0D9488;
+  --accent-dark:#0F766E;
+  --accent-tint:#F0FDFA;
+  --accent-tint-2:#CCFBF1;
+}
 
-/* PC에서는 좌우 사이드 패널 숨김 (실제 사이트처럼 펼치는 컨셉) */
-.desk-info,.desk-cta{display:none}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
 
-.nav{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:rgba(255,255,255,.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 20px}
-.nav-logo{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--navy)}
-.nav-logo span{color:var(--teal)}
-.nav-badge{background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;border:1px solid #99f6e4;margin-left:6px}
-.nav-right{display:flex;align-items:center;gap:6px}
-.nav-login{background:transparent;color:var(--gray);border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:6px 10px}
-.nav-login:hover{color:var(--teal)}
-.nav-btn{background:var(--teal);color:#fff;border:none;border-radius:50px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.container{max-width:1200px;margin:0 auto;padding:0 32px}
 
-/* 기존 사용자용 진입 카드 */
-.users-card{background:linear-gradient(135deg,#f0fdfa,#ccfbf1);border:1px solid #5eead4;border-radius:18px;padding:18px;margin:14px 24px}
-.users-ttl{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.users-desc{font-size:12px;color:var(--gray);margin-bottom:12px;line-height:1.5}
-.users-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
-.users-btn{background:#fff;border:1px solid var(--teal);color:var(--teal);border-radius:10px;padding:10px 6px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;text-align:center;text-decoration:none;transition:all .15s}
-.users-btn:hover{background:var(--teal);color:#fff}
-.users-btn-icon{font-size:18px;display:block;margin-bottom:3px}
+/* ===== NAV ===== */
+.nav{
+  position:sticky;top:0;z-index:50;
+  background:rgba(255,255,255,.92);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid transparent;
+  transition:border-color .2s;
+}
+.nav.scrolled{border-color:var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{
+  font-family:'Noto Serif KR',serif;
+  font-size:22px;font-weight:700;color:var(--navy);
+  letter-spacing:-.5px;
+}
+.nav-logo .accent{color:var(--accent)}
+.nav-badge{
+  background:var(--accent-tint);color:var(--accent-dark);
+  font-size:11px;font-weight:700;padding:3px 10px;border-radius:99px;
+  letter-spacing:.3px;
+}
 
-.hero{margin-top:56px;background:linear-gradient(160deg,#042f2e 0%,#134e4a 45%,#0f766e 80%,var(--teal2) 100%);min-height:520px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 40px;position:relative;overflow:hidden}
-.hero-bg{position:absolute;font-family:'Noto Serif KR',serif;font-size:110px;color:rgba(255,255,255,.04);top:20px;right:-10px;line-height:1;pointer-events:none;white-space:nowrap}
-.hero-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:600;padding:5px 14px;border-radius:50px;display:inline-flex;align-items:center;gap:6px;margin:0 24px 16px;width:fit-content}
-.hero-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 1.5s ease-in-out infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.hero-title{font-family:'Noto Serif KR',serif;font-size:32px;font-weight:700;color:#fff;line-height:1.25;padding:0 24px;margin-bottom:10px;letter-spacing:-.5px}
-.hero-title span{color:#5eead4}
-.hero-sub{font-size:13px;color:rgba(255,255,255,.65);padding:0 24px;margin-bottom:24px;line-height:1.7}
-.hero-cta{display:flex;gap:10px;padding:0 24px}
-.btn-white{background:#fff;color:var(--teal);border:none;border-radius:50px;padding:13px 24px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;flex:1}
-.btn-ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);border-radius:50px;padding:13px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
-.hero-stats{display:flex;gap:0;padding:24px 24px 0;border-top:1px solid rgba(255,255,255,.1);margin-top:28px}
-.hero-stat{flex:1;text-align:center}
-.hero-stat+.hero-stat{border-left:1px solid rgba(255,255,255,.15)}
-.hs-num{font-size:28px;font-weight:700;color:#ccfbf1;line-height:1}
-.hs-label{font-size:10px;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.4}
+.nav-menu{display:none;align-items:center;gap:36px}
+.nav-menu a{
+  font-size:15px;font-weight:600;color:var(--gray-1);
+  transition:color .15s;letter-spacing:-.3px;
+}
+.nav-menu a:hover{color:var(--navy)}
 
-.marquee{background:var(--tl);padding:12px 20px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teal);font-weight:600;overflow:hidden;white-space:nowrap}
-.marquee-inner{display:flex;gap:40px;animation:marquee 18s linear infinite}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-login{
+  font-size:15px;font-weight:600;color:var(--gray-1);
+  padding:8px 12px;border-radius:8px;letter-spacing:-.3px;
+}
+.nav-login:hover{color:var(--navy);background:var(--bg-card)}
+.nav-cta{
+  background:var(--navy);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:11px 20px;border-radius:99px;
+  letter-spacing:-.2px;transition:all .15s;
+}
+.nav-cta:hover{background:#1e293b;transform:translateY(-1px)}
 
-.section{padding:40px 24px}
-.sec-label{font-size:11px;font-weight:700;color:var(--teal);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
-.sec-title{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:var(--navy);line-height:1.3;margin-bottom:6px}
-.sec-sub{font-size:13px;color:var(--gray);line-height:1.6;margin-bottom:24px}
-.divider{height:1px;background:var(--border);margin:0 24px}
+@media(min-width:980px){
+  .nav-menu{display:flex}
+}
 
-.svc-card{background:#fff;border-radius:20px;border:1px solid var(--border);padding:22px;margin-bottom:12px;display:flex;align-items:flex-start;gap:16px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
-.svc-icon{width:48px;height:48px;border-radius:14px;background:var(--tl);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.svc-ttl{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px}
-.svc-desc{font-size:13px;color:var(--gray);line-height:1.6}
-.svc-tag{display:inline-block;background:var(--tl);color:var(--teal);font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;margin-top:8px}
+/* ===== HERO ===== */
+.hero{padding:80px 0 100px;background:var(--bg)}
+.hero-inner{display:grid;grid-template-columns:1fr;gap:48px;align-items:center}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--accent-tint);color:var(--accent-dark);
+  font-size:13px;font-weight:700;
+  padding:8px 16px;border-radius:99px;
+  letter-spacing:-.1px;margin-bottom:24px;
+}
+.hero-eyebrow::before{
+  content:'';width:6px;height:6px;border-radius:50%;
+  background:var(--accent);
+}
 
-.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.feat-card{background:var(--tl);border-radius:18px;padding:18px;border:1px solid #99f6e4}
-.feat-icon{font-size:26px;margin-bottom:10px}
-.feat-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:4px}
-.feat-desc{font-size:12px;color:var(--gray);line-height:1.5}
+.hero-title{
+  font-size:clamp(2.5rem, 5.5vw, 4.5rem);
+  font-weight:900;line-height:1.15;
+  letter-spacing:-1.5px;margin-bottom:24px;
+  color:var(--navy);
+}
+.hero-title .accent{color:var(--accent)}
+.hero-title .break{display:block}
 
-.steps{position:relative;padding-left:40px}
-/* 세로선: 동그라미 중심과 정확히 일치하도록 left=11px (동그라미가 0~24px이므로 중심 12px, 선 width 2px이라 left:11) */
-.steps::before{content:'';position:absolute;left:11px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--teal),var(--teal2));border-radius:2px}
-.step{position:relative;margin-bottom:22px;min-height:24px}
-.step:last-child{margin-bottom:0}
-/* 동그라미: 24x24, left=-40px (step 시작점 기준) → .steps 기준 0px → 중심 12px (선과 일치) */
-.step-dot{position:absolute;left:-40px;top:0;width:24px;height:24px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;font-variant-numeric:tabular-nums;line-height:1;box-shadow:0 0 0 3px #fff,0 0 0 4px var(--teal)}
-.step-ttl{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:3px}
-.step-desc{font-size:12px;color:var(--gray);line-height:1.5}
+.hero-sub{
+  font-size:clamp(1.0625rem, 1.6vw, 1.25rem);
+  color:var(--gray-1);line-height:1.65;
+  margin-bottom:40px;font-weight:500;
+  max-width:560px;
+}
 
-.cta-sec{background:linear-gradient(135deg,#042f2e,#0f766e);padding:44px 24px;text-align:center}
-.cta-tag{display:inline-block;background:rgba(255,255,255,.15);color:#5eead4;font-size:11px;font-weight:700;padding:4px 14px;border-radius:20px;margin-bottom:14px}
-.cta-ttl{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;color:#fff;line-height:1.3;margin-bottom:8px}
-.cta-sub{font-size:13px;color:rgba(255,255,255,.65);margin-bottom:24px;line-height:1.6}
-.cta-btns{display:flex;flex-direction:column;gap:10px}
-.btn-teal{background:var(--teal2);color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
-.btn-kakao{background:#FEE500;color:#1B1B1B;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px}
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:36px}
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--navy);color:#fff;
+  font-size:16px;font-weight:700;
+  padding:18px 32px;border-radius:99px;
+  letter-spacing:-.3px;transition:all .15s;
+}
+.btn-primary:hover{background:#1e293b;transform:translateY(-1px);box-shadow:0 12px 24px rgba(15,27,45,.18)}
+.btn-primary.accent{background:var(--accent)}
+.btn-primary.accent:hover{background:var(--accent-dark);box-shadow:0 12px 24px rgba(13,148,136,.25)}
+.btn-secondary{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  background:#fff;color:var(--navy);
+  font-size:16px;font-weight:700;
+  padding:18px 28px;border-radius:99px;
+  letter-spacing:-.3px;border:1.5px solid var(--line);
+  transition:all .15s;
+}
+.btn-secondary:hover{border-color:var(--navy);background:var(--bg-card)}
 
-.footer{background:#f8fafc;padding:24px;font-size:12px;color:var(--gray);line-height:1.8;border-top:1px solid var(--border)}
-.footer strong{color:var(--navy);font-weight:700}
+.hero-checks{
+  display:flex;flex-wrap:wrap;gap:20px;
+  font-size:14px;color:var(--gray-1);font-weight:600;
+}
+.hero-check{display:inline-flex;align-items:center;gap:6px;letter-spacing:-.2px}
+.hero-check::before{
+  content:'';display:inline-block;width:18px;height:18px;border-radius:50%;
+  background:var(--accent-tint);color:var(--accent-dark);
+  font-size:11px;font-weight:900;text-align:center;line-height:18px;
+}
+.hero-check::before{content:'✓'}
 
-/* Phase 2: 가격표 */
-.price-table{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
-.price-row{display:grid;grid-template-columns:1fr 1.2fr 1fr;padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px}
-.price-row:last-child{border-bottom:none}
-.price-row.head{background:var(--tl);font-weight:700;color:var(--teal);font-size:11px}
-.price-grade{font-weight:700;color:var(--navy)}
-.price-limit{color:var(--gray);font-size:12px}
-.price-self{color:var(--teal);font-weight:800;text-align:right}
-.price-note{font-size:11px;color:var(--gray);background:#fef9c3;border:1px solid #fde68a;border-radius:10px;padding:10px 12px;margin-top:10px;line-height:1.6}
+/* Hero visual (오른쪽) */
+.hero-visual{
+  display:none;
+  position:relative;
+  aspect-ratio:1/1;
+  max-width:480px;
+  margin-left:auto;
+  border-radius:32px;
+  background:linear-gradient(160deg, #F0FDFA 0%, #FAFAF7 60%, #FFFFFF 100%);
+  border:1px solid var(--line-soft);
+  overflow:hidden;
+}
+.hv-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(13,148,136,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13,148,136,.06) 1px, transparent 1px);
+  background-size:48px 48px;
+}
+.hv-card{
+  position:absolute;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px 22px;
+  box-shadow:0 12px 32px rgba(15,27,45,.06);
+}
+.hv-card-1{
+  top:8%;left:8%;
+  display:flex;flex-direction:column;gap:6px;
+}
+.hv-card-1 .hvc-eyebrow{
+  font-size:11px;font-weight:700;color:var(--accent-dark);
+  letter-spacing:.5px;text-transform:uppercase;
+}
+.hv-card-1 .hvc-big{
+  font-size:36px;font-weight:900;color:var(--navy);
+  letter-spacing:-1.2px;line-height:1;
+}
+.hv-card-1 .hvc-sub{
+  font-size:12px;color:var(--gray-2);font-weight:600;
+}
+.hv-card-2{
+  top:42%;right:10%;
+  padding:14px 18px;
+  font-size:13px;font-weight:700;color:var(--navy);
+  display:flex;align-items:center;gap:10px;
+  letter-spacing:-.2px;
+}
+.hv-card-2::before{
+  content:'';width:10px;height:10px;border-radius:50%;
+  background:var(--accent);
+}
+.hv-card-3{
+  bottom:10%;left:14%;
+  padding:16px 20px;
+}
+.hv-card-3 .hvc-row{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:24px;font-size:13px;
+}
+.hv-card-3 .hvc-row + .hvc-row{margin-top:8px;padding-top:8px;border-top:1px solid var(--line-soft)}
+.hv-card-3 .hvc-row b{font-weight:800;color:var(--navy)}
+.hv-card-3 .hvc-row span{color:var(--gray-2);font-weight:600}
 
-/* Phase 2: 후기 */
-.review-card{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.04)}
-.review-stars{color:#facc15;font-size:14px;margin-bottom:8px}
-.review-text{font-size:13px;color:var(--navy);line-height:1.7;margin-bottom:10px}
-.review-author{font-size:11px;color:var(--gray);display:flex;align-items:center;gap:6px}
-.review-author::before{content:'—'}
+@media(min-width:980px){
+  .hero{padding:100px 0 120px}
+  .hero-inner{grid-template-columns:1.1fr 1fr;gap:64px}
+  .hero-visual{display:block}
+}
 
-/* Phase 2: 카카오맵 */
-.map-card{background:#fff;border-radius:18px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px}
-.map-frame{width:100%;height:200px;border:none;display:block}
-.map-info{padding:14px 16px}
-.map-addr{font-size:13px;color:var(--navy);font-weight:600;margin-bottom:4px}
-.map-extra{font-size:11px;color:var(--gray);margin-bottom:10px}
-.map-btn{display:inline-block;background:var(--teal);color:#fff;font-size:12px;font-weight:700;padding:8px 14px;border-radius:8px;text-decoration:none}
+/* ===== STATS BAR ===== */
+.stats{
+  background:var(--bg-soft);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  padding:32px 0;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:24px 32px;
+}
+.stat-item{text-align:center}
+.stat-num{
+  font-size:clamp(1.5rem,2.5vw,2rem);
+  font-weight:900;color:var(--navy);
+  letter-spacing:-.8px;line-height:1;
+  margin-bottom:6px;
+}
+.stat-lbl{
+  font-size:13px;color:var(--gray-1);font-weight:600;
+  letter-spacing:-.2px;
+}
+@media(min-width:680px){
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+}
 
-/* Phase 2: 응급 안내 */
-.emergency-card{background:linear-gradient(135deg,#fef3c7,#fde68a);border:1px solid #f59e0b;border-radius:18px;padding:18px;margin-bottom:12px}
-.emergency-ttl{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:800;color:#78350f;margin-bottom:8px}
-.emergency-desc{font-size:13px;color:#78350f;line-height:1.7;margin-bottom:10px}
-.emergency-btn{display:inline-block;background:#dc2626;color:#fff;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;text-decoration:none}
+/* ===== SECTION 공통 ===== */
+.section{padding:96px 0;background:var(--bg)}
+.section.soft{background:var(--bg-soft)}
+.section-head{margin-bottom:48px}
+.section-eyebrow{
+  font-size:12px;font-weight:800;color:var(--accent-dark);
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.section-title{
+  font-size:clamp(2rem,3.5vw,2.75rem);
+  font-weight:900;color:var(--navy);
+  letter-spacing:-1.2px;line-height:1.25;
+  margin-bottom:14px;
+}
+.section-sub{
+  font-size:17px;color:var(--gray-1);
+  font-weight:500;line-height:1.65;
+  max-width:580px;
+}
 
-/* Phase 2: 카카오톡 채널 */
-.btn-kakao-channel{background:#FEE500;color:#1B1B1B;border:none;border-radius:14px;padding:13px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;text-decoration:none}
+/* ===== DIAGNOSIS PROMO ===== */
+.dpromo{
+  background:var(--navy);color:#fff;
+  border-radius:28px;
+  padding:48px 32px;
+  display:grid;grid-template-columns:1fr;gap:28px;
+  align-items:center;
+  position:relative;overflow:hidden;
+}
+.dpromo::before{
+  content:'';position:absolute;
+  width:300px;height:300px;border-radius:50%;
+  background:rgba(13,148,136,.18);
+  top:-100px;right:-80px;filter:blur(40px);
+}
+.dpromo-content{position:relative;z-index:1}
+.dpromo-eyebrow{
+  display:inline-block;
+  font-size:12px;font-weight:800;color:#5EEAD4;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:14px;
+}
+.dpromo-title{
+  font-size:clamp(1.5rem,3vw,2.25rem);
+  font-weight:900;letter-spacing:-1px;line-height:1.3;
+  margin-bottom:14px;
+}
+.dpromo-sub{
+  font-size:16px;color:rgba(255,255,255,.75);
+  line-height:1.65;font-weight:500;margin-bottom:24px;
+}
+.dpromo .btn-primary{
+  background:#fff;color:var(--navy);
+}
+.dpromo .btn-primary:hover{background:#F0FDFA}
+.dpromo-side{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;gap:12px;
+}
+.dpromo-step{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;padding:16px 20px;
+  display:flex;align-items:center;gap:14px;
+}
+.dpromo-step-n{
+  width:30px;height:30px;border-radius:50%;
+  background:#5EEAD4;color:var(--navy);
+  font-size:14px;font-weight:900;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.dpromo-step-text{font-size:14px;font-weight:600;color:rgba(255,255,255,.95);letter-spacing:-.2px}
 
-/* ===== Phase 3-2: Hero 미리보기 카드 ===== */
-.hero-preview{background:rgba(255,255,255,.95);border-radius:18px;padding:14px;margin:0 24px 24px;box-shadow:0 12px 32px rgba(0,0,0,.2)}
-.preview-header{display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid #f1f5f9;margin-bottom:10px;font-size:11px;color:var(--gray)}
-.preview-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;animation:blink 1.5s infinite}
-.preview-time{flex:1;color:var(--teal);font-weight:700}
-.preview-app{font-weight:600;color:var(--navy)}
-.preview-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f8fafc}
-.preview-row:last-child{border-bottom:none}
-.preview-icon{font-size:22px;width:32px;text-align:center;flex-shrink:0}
-.preview-name{font-size:12px;font-weight:700;color:var(--navy);line-height:1.3}
-.preview-sub{font-size:10px;color:var(--gray);margin-top:2px}
-.preview-row > div{flex:1;min-width:0}
-.preview-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:#dbeafe;color:#1d4ed8;flex-shrink:0;white-space:nowrap}
-.preview-badge.done{background:#dcfce7;color:#16a34a}
+@media(min-width:880px){
+  .dpromo{grid-template-columns:1.3fr 1fr;padding:64px;gap:48px}
+}
 
-/* ===== Phase 3-3: FAQ ===== */
-.faq-item{background:#fff;border:1px solid var(--border);border-radius:14px;margin-bottom:8px;overflow:hidden}
-.faq-q{width:100%;background:none;border:none;padding:14px 16px;text-align:left;font-size:13px;font-weight:700;color:var(--navy);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:space-between;gap:10px}
-.faq-q::after{content:'+';color:var(--teal);font-size:18px;font-weight:400;transition:transform .2s;flex-shrink:0}
+/* ===== SERVICES ===== */
+.services-grid{
+  display:grid;grid-template-columns:1fr;gap:16px;
+}
+.svc-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:20px;padding:32px;
+  transition:all .2s;
+  cursor:pointer;
+}
+.svc-card:hover{border-color:var(--navy);transform:translateY(-2px);box-shadow:0 16px 32px rgba(15,27,45,.06)}
+.svc-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border-radius:12px;
+  background:var(--accent-tint);color:var(--accent-dark);
+  font-size:15px;font-weight:900;
+  letter-spacing:-.5px;margin-bottom:20px;
+}
+.svc-title{
+  font-size:22px;font-weight:800;color:var(--navy);
+  letter-spacing:-.6px;margin-bottom:10px;
+}
+.svc-desc{
+  font-size:15px;color:var(--gray-1);
+  line-height:1.7;font-weight:500;margin-bottom:18px;
+}
+.svc-tag{
+  display:inline-block;
+  font-size:12px;font-weight:700;color:var(--accent-dark);
+  background:var(--accent-tint);
+  padding:5px 12px;border-radius:99px;
+  letter-spacing:-.1px;
+}
+@media(min-width:680px){
+  .services-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ===== WHY US ===== */
+.why-grid{
+  display:grid;grid-template-columns:1fr;gap:14px;
+}
+.why-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:18px;padding:28px;
+}
+.why-num{
+  font-size:13px;font-weight:800;color:var(--accent);
+  letter-spacing:1px;margin-bottom:14px;font-family:'Noto Serif KR',serif;
+}
+.why-title{
+  font-size:18px;font-weight:800;color:var(--navy);
+  letter-spacing:-.4px;margin-bottom:8px;
+}
+.why-desc{
+  font-size:14px;color:var(--gray-1);
+  line-height:1.7;font-weight:500;
+}
+@media(min-width:680px){
+  .why-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:980px){
+  .why-grid{grid-template-columns:repeat(4,1fr)}
+}
+
+/* ===== PROCESS ===== */
+.process{
+  display:grid;grid-template-columns:1fr;gap:0;
+  position:relative;
+}
+.process-step{
+  display:flex;gap:24px;padding:24px 0;
+  border-bottom:1px solid var(--line-soft);
+}
+.process-step:last-child{border-bottom:none}
+.ps-n{
+  flex-shrink:0;
+  font-size:36px;font-weight:900;color:var(--accent);
+  letter-spacing:-1.5px;line-height:1;
+  width:54px;font-family:'Noto Serif KR',serif;
+}
+.ps-body{flex:1;padding-top:4px}
+.ps-title{font-size:18px;font-weight:800;color:var(--navy);letter-spacing:-.4px;margin-bottom:6px}
+.ps-desc{font-size:15px;color:var(--gray-1);line-height:1.7;font-weight:500}
+
+@media(min-width:880px){
+  .process{
+    grid-template-columns:repeat(5,1fr);gap:24px;
+  }
+  .process-step{
+    flex-direction:column;
+    padding:0;border:none;
+    border-right:1px solid var(--line-soft);
+    padding-right:24px;
+  }
+  .process-step:last-child{border-right:none}
+}
+
+/* ===== PRICING ===== */
+.pricing-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:24px;padding:36px;
+  max-width:760px;margin:0 auto;
+}
+.price-table{width:100%;border-collapse:collapse}
+.price-table th{
+  text-align:left;font-size:12px;font-weight:800;
+  color:var(--gray-2);letter-spacing:1px;text-transform:uppercase;
+  padding-bottom:14px;border-bottom:2px solid var(--line);
+}
+.price-table th:last-child{text-align:right}
+.price-table td{
+  padding:18px 0;border-bottom:1px solid var(--line-soft);
+  font-size:16px;color:var(--navy);letter-spacing:-.2px;
+}
+.price-table tr:last-child td{border-bottom:none}
+.price-table td:first-child{font-weight:800}
+.price-table td:nth-child(2){color:var(--gray-1);font-weight:500;font-size:15px}
+.price-table td:last-child{text-align:right;font-weight:800;color:var(--accent-dark)}
+.price-note{
+  margin-top:24px;padding:18px 22px;
+  background:var(--bg-card);border-radius:14px;
+  font-size:13.5px;color:var(--gray-1);font-weight:500;line-height:1.7;
+}
+.price-note b{color:var(--navy);font-weight:800}
+
+/* ===== REVIEWS ===== */
+.reviews-grid{display:grid;grid-template-columns:1fr;gap:16px}
+.review-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:20px;padding:32px;
+}
+.review-stars{color:var(--accent);font-size:16px;letter-spacing:2px;margin-bottom:14px}
+.review-text{
+  font-size:15.5px;color:var(--navy);
+  line-height:1.75;font-weight:500;
+  margin-bottom:20px;letter-spacing:-.2px;
+}
+.review-author{
+  font-size:13px;color:var(--gray-2);font-weight:600;
+  padding-top:16px;border-top:1px solid var(--line-soft);
+}
+@media(min-width:880px){
+  .reviews-grid{grid-template-columns:repeat(3,1fr)}
+}
+
+/* ===== LOCATION ===== */
+.location-card{
+  background:#fff;border:1px solid var(--line);
+  border-radius:24px;overflow:hidden;
+  display:grid;grid-template-columns:1fr;
+}
+.location-map{
+  width:100%;height:280px;
+  background:linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#1D4ED8;font-size:14px;font-weight:700;
+  border:none;
+}
+.location-info{padding:32px}
+.location-addr{
+  font-size:18px;font-weight:800;color:var(--navy);
+  letter-spacing:-.4px;margin-bottom:6px;
+}
+.location-extra{
+  font-size:14px;color:var(--gray-1);font-weight:500;margin-bottom:24px;
+}
+.location-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--navy);color:#fff;
+  font-size:14px;font-weight:700;
+  padding:12px 22px;border-radius:99px;
+  letter-spacing:-.2px;
+}
+.location-btn:hover{background:#1e293b}
+@media(min-width:880px){
+  .location-card{grid-template-columns:1.2fr 1fr}
+  .location-map{height:auto;min-height:340px}
+  .location-info{padding:48px}
+}
+
+/* ===== EMERGENCY ===== */
+.emergency-card{
+  background:var(--bg-soft);border:1px solid var(--line);
+  border-radius:24px;padding:36px;
+  display:grid;grid-template-columns:1fr;gap:24px;align-items:center;
+  max-width:760px;margin:0 auto;
+}
+.eg-content h3{
+  font-size:20px;font-weight:800;color:var(--navy);
+  letter-spacing:-.4px;margin-bottom:10px;
+}
+.eg-content p{font-size:14.5px;color:var(--gray-1);line-height:1.75;font-weight:500}
+.eg-content p b{color:var(--navy);font-weight:800}
+.eg-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  background:#DC2626;color:#fff;
+  font-size:15px;font-weight:800;
+  padding:14px 24px;border-radius:99px;
+  letter-spacing:-.2px;white-space:nowrap;
+}
+@media(min-width:680px){
+  .emergency-card{grid-template-columns:1fr auto}
+}
+.eg-extra{
+  background:#fff;border:1px solid var(--line);
+  border-radius:14px;padding:18px 22px;
+  font-size:14px;color:var(--gray-1);line-height:1.75;font-weight:500;
+  margin-top:14px;
+}
+.eg-extra b{color:var(--navy);font-weight:800}
+.eg-extra-mini{
+  margin-top:8px;
+  font-size:13px;color:var(--gray-2);font-weight:500;line-height:1.65;
+}
+
+/* ===== FAQ ===== */
+.faq-list{max-width:820px;margin:0 auto}
+.faq-item{
+  border-bottom:1px solid var(--line);
+}
+.faq-item:first-child{border-top:1px solid var(--line)}
+.faq-q{
+  width:100%;background:none;border:none;
+  padding:24px 0;text-align:left;
+  font-size:17px;font-weight:700;color:var(--navy);
+  letter-spacing:-.4px;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  font-family:inherit;
+}
+.faq-q::after{
+  content:'+';color:var(--accent);font-size:24px;font-weight:300;
+  transition:transform .2s;flex-shrink:0;
+}
 .faq-item.open .faq-q::after{transform:rotate(45deg)}
-.faq-a{display:none;padding:0 16px 14px;font-size:12px;color:var(--gray);line-height:1.7}
+.faq-a{
+  display:none;padding:0 0 24px;
+  font-size:15px;color:var(--gray-1);
+  line-height:1.8;font-weight:500;letter-spacing:-.2px;
+}
 .faq-item.open .faq-a{display:block}
+.faq-a b{color:var(--navy);font-weight:700}
 
-/* ===== Phase 3-4: Sticky CTA (모바일) ===== */
-.sticky-cta{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;padding:10px 14px 14px;background:linear-gradient(180deg,rgba(255,255,255,0),#fff 30%);z-index:150;display:none;pointer-events:none}
-.sticky-cta.show{display:block}
-.sticky-cta-inner{display:flex;gap:8px;background:#fff;border:1px solid var(--border);border-radius:50px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.12);pointer-events:auto}
-.sticky-cta-call{flex:0 0 44px;height:44px;border-radius:50%;background:var(--tl);color:var(--teal);border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit}
-.sticky-cta-main{flex:1;background:var(--teal);color:#fff;border:none;border-radius:50px;padding:0 18px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
-@media(min-width:768px){.sticky-cta{display:none!important}}
+/* ===== CTA SECTION ===== */
+.cta-sec{
+  background:var(--navy);color:#fff;
+  padding:96px 0;text-align:center;
+}
+.cta-eyebrow{
+  display:inline-block;
+  font-size:12px;font-weight:800;color:#5EEAD4;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:18px;
+}
+.cta-title{
+  font-size:clamp(2rem,4vw,3rem);
+  font-weight:900;letter-spacing:-1.2px;line-height:1.3;
+  margin-bottom:18px;
+}
+.cta-sub{
+  font-size:17px;color:rgba(255,255,255,.7);
+  font-weight:500;margin-bottom:36px;line-height:1.7;
+}
+.cta-buttons{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.cta-buttons .btn-primary{background:var(--accent)}
+.cta-buttons .btn-primary:hover{background:var(--accent-dark)}
+.cta-buttons .btn-secondary{
+  background:transparent;color:#fff;
+  border-color:rgba(255,255,255,.3);
+}
+.cta-buttons .btn-secondary:hover{border-color:#fff;background:rgba(255,255,255,.08)}
 
-/* ============================================
-   PC 레이아웃 (768px 이상) — 데모와 동일 풀폭 가로 레이아웃
-   ============================================ */
-@media(min-width:768px){
-  body{background:#FAFAF7;display:block;padding:0;min-height:auto}
-
-  /* 앱 컨테이너 폭 확장 */
-  .app{max-width:1100px;box-shadow:none;border-radius:0;overflow:visible}
-
-  /* 네비 폭 맞춤 (fixed→sticky 전환) */
-  .nav{position:sticky !important;left:auto !important;transform:none !important;max-width:1100px;height:64px;padding:0 32px;border-radius:0}
-  .nav-logo{font-size:18px}
-  .nav-btn{padding:10px 18px;font-size:13px}
-
-  /* ===== HERO: 좌우 2분할 ===== */
-  .hero{
-    min-height:auto;padding:60px 32px 64px;
-    display:grid !important;grid-template-columns:1.1fr 1fr;
-    gap:48px;align-items:center;flex-direction:row !important;
-  }
-  .hero-bg{font-size:180px;top:30px;right:30px;color:rgba(255,255,255,.05)}
-  .hero-badge{margin:0 0 18px;font-size:12px;padding:6px 16px}
-  .hero-title{font-size:42px;padding:0;margin-bottom:16px;line-height:1.25}
-  .hero-sub{font-size:15px;padding:0;margin-bottom:28px;line-height:1.7}
-  .hero-cta{padding:0;margin-bottom:32px}
-  .btn-white{flex:0 0 auto;padding:14px 28px;font-size:15px}
-  .btn-ghost{padding:14px 24px;font-size:15px}
-
-  /* hero-stats: hero 좌측 영역 끝에 배치 */
-  .hero-stats{grid-column:1;padding:24px 0 0;margin-top:0}
-
-  /* hero-preview: 우측 영역에 크게 표시 */
-  .hero-preview{
-    grid-column:2;grid-row:1 / span 6;
-    margin:0;padding:24px;max-width:440px;
-    justify-self:end;align-self:center;
-    box-shadow:0 20px 60px rgba(0,0,0,.25);
-  }
-  .preview-header{padding-bottom:14px;margin-bottom:14px;font-size:12px}
-  .preview-row{padding:14px 0;gap:14px}
-  .preview-icon{font-size:32px;width:44px}
-  .preview-name{font-size:14px}
-  .preview-sub{font-size:12px;margin-top:4px}
-  .preview-badge{font-size:10px;padding:3px 10px}
-
-  /* ===== Marquee: 폭 확장 ===== */
-  .marquee{padding:14px 32px}
-
-  /* ===== users-card 가로 풀폭 ===== */
-  .users-card{
-    margin:32px 32px;padding:32px;
-    border-radius:20px;
-  }
-  .users-ttl{font-size:18px;margin-bottom:8px}
-  .users-desc{font-size:14px;margin-bottom:20px}
-  .users-btns{
-    grid-template-columns:repeat(3,1fr);
-    gap:12px;max-width:720px;margin:0 auto;
-  }
-  .users-btn{padding:20px 12px;font-size:13px;border-radius:14px}
-  .users-btn-icon{font-size:32px;margin-bottom:8px}
-
-  /* ===== 공통 섹션 ===== */
-  .section{padding:64px 32px}
-  .sec-label{font-size:12px;letter-spacing:1.5px;margin-bottom:8px}
-  .sec-title{font-size:28px;margin-bottom:8px}
-  .sec-sub{font-size:15px;margin-bottom:36px}
-
-  /* ===== Services: 헤더는 풀폭, 카드만 3분할 ===== */
-  .section:has(> .svc-card){
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:20px;
-  }
-  .section:has(> .svc-card) > .sec-label,
-  .section:has(> .svc-card) > .sec-title,
-  .section:has(> .svc-card) > .sec-sub{grid-column:1 / -1;margin-bottom:0}
-  .section:has(> .svc-card) > .sec-sub{margin-bottom:16px}
-  .svc-card{
-    margin:0 !important;padding:28px !important;border-radius:16px !important;
-    flex-direction:column !important;gap:0 !important;align-items:flex-start !important;
-  }
-  .svc-icon{font-size:36px !important;width:auto !important;margin-bottom:14px !important;flex-shrink:0}
-  .svc-ttl{font-size:18px !important;margin-bottom:8px !important}
-  .svc-desc{font-size:13px !important;line-height:1.7 !important;margin-bottom:14px !important}
-
-  /* ===== Why Us: 4분할 ===== */
-  .feat-grid{
-    grid-template-columns:repeat(4,1fr) !important;
-    gap:16px !important;
-  }
-  .feat-card{padding:24px 20px !important;border-radius:14px !important}
-  .feat-icon{font-size:32px !important;margin-bottom:12px !important}
-  .feat-ttl{font-size:15px !important;margin-bottom:8px !important}
-  .feat-desc{font-size:12px !important;line-height:1.6 !important}
-
-  /* ===== Process: 5단계 가로 ===== */
-  .steps{
-    display:grid !important;
-    grid-template-columns:repeat(5,1fr) !important;
-    gap:14px !important;
-    padding-left:0 !important;
-  }
-  .steps::before{display:none !important}
-  .step{
-    padding:24px 16px !important;border-radius:12px !important;
-    text-align:center !important;
-    flex-direction:column !important;
-    align-items:center !important;
-    gap:0 !important;
-    background:#fff !important;
-    border:1px solid var(--border) !important;
-    position:relative;
-  }
-  .step::before,.step::after{display:none !important}
-  .step-dot{
-    margin:0 auto 12px !important;
-    width:36px !important;height:36px !important;
-    font-size:15px !important;flex-shrink:0;
-    position:static !important;
-  }
-  .step-ttl{font-size:14px !important;margin-bottom:6px !important}
-  .step-desc{font-size:12px !important;line-height:1.6 !important}
-
-  /* ===== Pricing: 표 폭 제한 + 가운데 정렬 ===== */
-  .price-table{max-width:720px;margin:0 auto;border-radius:14px}
-  .price-row{padding:14px 24px !important}
-  .price-row.head{font-size:13px}
-  .price-grade,.price-limit,.price-self{font-size:14px !important}
-  .price-note{max-width:720px;margin:16px auto 0;font-size:13px}
-
-  /* ===== Reviews: 헤더는 풀폭, 카드만 3분할 ===== */
-  .section:has(> .review-card){
-    display:grid;
-    grid-template-columns:1fr 1fr 1fr;
-    gap:20px;
-  }
-  .section:has(> .review-card) > .sec-label,
-  .section:has(> .review-card) > .sec-title,
-  .section:has(> .review-card) > .sec-sub{grid-column:1 / -1;margin-bottom:0}
-  .section:has(> .review-card) > .sec-sub{margin-bottom:16px}
-  .review-card{margin:0 !important;padding:28px !important;border-radius:14px !important}
-  .review-text{font-size:13px !important;line-height:1.8 !important}
-
-  /* ===== Location: iframe 사용 (.map-frame) ===== */
-  .map-card{display:grid;grid-template-columns:1fr 1fr;gap:0;align-items:stretch}
-  .map-frame{min-height:240px;width:100%}
-  .map-info{padding:28px !important;display:flex;flex-direction:column;justify-content:center}
-
-  .emergency-card{padding:32px !important}
-  .emergency-ttl{font-size:18px !important}
-  .emergency-desc{font-size:14px !important;line-height:1.8 !important}
-
-  /* ===== FAQ ===== */
-  .section:has(.faq-item){max-width:820px;margin-left:auto;margin-right:auto}
-  .faq-item{padding:20px 24px !important}
-  .faq-q{font-size:15px !important}
-  .faq-a{font-size:14px !important;line-height:1.8 !important}
-
-  /* ===== 푸터 CTA ===== */
-  .cta-sec{padding:64px 32px !important;text-align:center}
-  .cta-ttl{font-size:28px !important;margin-bottom:12px !important}
-  .cta-sub{font-size:16px !important;margin-bottom:24px !important}
-  .cta-btns{
-    justify-content:center;
-    max-width:480px;
-    margin:0 auto;
-  }
-  .cta-btns button{flex:1}
-
-  /* ===== Footer ===== */
-  .footer{padding:40px 32px !important;text-align:center}
-  .footer > div{justify-content:center !important}
-
-  .divider{margin:0 32px !important}
+/* ===== FOOTER ===== */
+.footer{
+  padding:48px 0;background:var(--bg-soft);
+  border-top:1px solid var(--line);
+}
+.footer-inner{
+  display:grid;grid-template-columns:1fr;gap:32px;
+  font-size:14px;color:var(--gray-1);line-height:1.8;font-weight:500;
+}
+.footer-brand{font-family:'Noto Serif KR',serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.footer-brand .accent{color:var(--accent)}
+.footer-meta b{font-weight:800;color:var(--navy)}
+.footer-bottom{
+  margin-top:32px;padding-top:24px;border-top:1px solid var(--line);
+  font-size:12.5px;color:var(--gray-2);
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.footer-bottom a{color:var(--gray-1);text-decoration:none;font-weight:600}
+.footer-bottom a:hover{color:var(--accent)}
+@media(min-width:680px){
+  .footer-inner{grid-template-columns:1fr 1fr 1fr}
 }
 
-/* ===== 768~1023 좁은 PC/태블릿 보정 ===== */
-@media(min-width:768px) and (max-width:1023px){
-  .section:has(> .svc-card){
-    grid-template-columns:1fr !important;
-  }
-  .svc-card{
-    flex-direction:row !important;
-    gap:16px !important;
-    align-items:flex-start !important;
-  }
-  .svc-icon{margin-bottom:0 !important;font-size:32px !important}
+/* ===== STICKY MOBILE CTA ===== */
+.sticky-cta{
+  position:fixed;bottom:0;left:0;right:0;
+  padding:12px 16px 16px;background:#fff;
+  border-top:1px solid var(--line);
+  box-shadow:0 -4px 16px rgba(0,0,0,.05);
+  z-index:40;display:none;
+}
+.sticky-cta.show{display:flex;gap:8px}
+.sticky-cta-call{
+  flex-shrink:0;width:54px;height:54px;
+  background:var(--bg-card);color:var(--navy);
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.sticky-cta-main{
+  flex:1;background:var(--navy);color:#fff;
+  border-radius:99px;font-size:15px;font-weight:800;
+  letter-spacing:-.2px;
+}
+@media(min-width:880px){.sticky-cta{display:none!important}}
 
-  .steps{
-    grid-template-columns:repeat(3,1fr) !important;
-  }
-  .step:nth-child(4),.step:nth-child(5){grid-column:span 1}
-
-  .feat-grid{grid-template-columns:repeat(2,1fr) !important}
-
-  .hero{grid-template-columns:1fr 0.85fr !important;gap:32px !important}
-  .hero-title{font-size:36px !important}
-  .hero-preview{padding:18px !important}
-  .preview-name{font-size:13px !important}
-  .preview-sub{font-size:11px !important}
-
-  .review-card{padding:20px !important}
-  .review-text{font-size:12px !important}
+@media(max-width:879px){
+  body{padding-bottom:88px}
 }
 
-/* PC 와이드 (1100px+) */
-@media(min-width:1100px){
-  .nav{padding:0 40px}
-  .hero{padding:80px 40px 80px}
-  .users-card{margin:40px}
-  .section{padding:80px 40px}
-  .cta-sec{padding:80px 40px !important}
+/* ===== TOAST ===== */
+.t-msg{
+  position:fixed;bottom:120px;left:50%;
+  transform:translateX(-50%);
+  background:var(--navy);color:#fff;
+  padding:14px 24px;border-radius:99px;
+  font-size:14px;font-weight:700;
+  z-index:999;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.25);
+  letter-spacing:-.2px;
 }
 </style>
 </head>
 <body>
 
-<!-- 데스크톱 좌측 정보 (1100px+) -->
-<aside class="desk-info" aria-hidden="true">
-  <div class="desk-info-en">CARE ON</div>
-  <div class="desk-info-ttl" data-bind="name">CareOn 요양센터</div>
-  <div class="desk-info-desc">방문요양 통합 플랫폼<br>어르신 케어부터 가족 소통까지<br>한곳에서.</div>
-  <div class="desk-info-stats">
-    <div class="desk-info-stat"><div class="desk-info-stat-num">🛰️</div><div class="desk-info-stat-lbl">GPS 자동기록</div></div>
-    <div class="desk-info-stat"><div class="desk-info-stat-num">📲</div><div class="desk-info-stat-lbl">가족 알림</div></div>
-    <div class="desk-info-stat"><div class="desk-info-stat-num">📋</div><div class="desk-info-stat-lbl">디지털 일지</div></div>
-    <div class="desk-info-stat"><div class="desk-info-stat-num">🏥</div><div class="desk-info-stat-lbl">검증 보호사</div></div>
-  </div>
-</aside>
-
-<!-- 데스크톱 우측 CTA (1100px+) -->
-<aside class="desk-cta" aria-hidden="true">
-  <div class="desk-cta-card">
-    <div class="desk-cta-ttl">📞 전화 상담</div>
-    <div class="desk-cta-desc">평일 09:00~18:00<br>전문 상담사가 안내해드립니다</div>
-    <button class="desk-cta-btn" id="deskCallBtn">전화 상담 신청</button>
-    <button class="desk-cta-btn ghost" id="deskFormBtn">📝 신청 폼 작성</button>
-  </div>
-  <div class="desk-cta-card">
-    <div class="desk-cta-ttl">🔐 이미 이용 중</div>
-    <div class="desk-cta-desc">보호자/보호사/센터장 로그인</div>
-    <button class="desk-cta-btn ghost" id="deskLoginBtn">로그인</button>
-  </div>
-</aside>
-
-<div class="app">
-<nav class="nav">
-  <div>
-    <span class="nav-logo" data-bind="name">CareOn 요양센터</span>
-    <span class="nav-badge">CareOn</span>
-  </div>
-  <div class="nav-right">
-    <button class="nav-login" id="navLoginBtn">로그인</button>
-    <button class="nav-btn">입소 문의</button>
+<!-- ===== NAV ===== -->
+<nav class="nav" id="nav">
+  <div class="container nav-inner">
+    <div class="nav-brand">
+      <span class="nav-logo" data-bind="name">CareOn 파트너 센터</span>
+    </div>
+    <div class="nav-menu">
+      <a href="#services">서비스</a>
+      <a href="#why">우리 센터</a>
+      <a href="#reviews">후기</a>
+      <a href="#location">위치</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <div class="nav-right">
+      <button class="nav-login" id="navLoginBtn">로그인</button>
+      <button class="nav-cta" onclick="showModal()">상담 신청</button>
+    </div>
   </div>
 </nav>
 
-<main>
-<div class="hero" role="banner">
-  <div class="hero-bg" aria-hidden="true">요양</div>
-  <div class="hero-badge"><span class="hero-dot" aria-hidden="true"></span> 지금 방문요양 진행 중</div>
-  <h1 class="hero-title">어르신의<br>편안한 일상을<br><span>함께합니다</span></h1>
-  <div class="hero-sub">전문 요양보호사가 어르신 곁을 지킵니다.<br>투명한 케어일지와 도착 알림으로 가족도 안심하세요.</div>
-
-  <!-- Phase 3-2: 앱 미리보기 카드 (시각적 신뢰감) -->
-  <div class="hero-preview" aria-hidden="true">
-    <div class="preview-header">
-      <span class="preview-dot"></span>
-      <span class="preview-time" id="previewTime">방금 전</span>
-      <span class="preview-app">CareOn 보호자 앱</span>
-    </div>
-    <div class="preview-row">
-      <span class="preview-icon">👴</span>
-      <div>
-        <div class="preview-name">박○○ 어르신 케어 진행 중</div>
-        <div class="preview-sub">김미영 보호사 · 11:30 도착</div>
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="hero-content">
+      <div class="hero-eyebrow">방문요양 전문 센터</div>
+      <h1 class="hero-title">
+        어르신의<br>
+        편안한 일상,<br>
+        <span class="accent" data-bind="name">우리 센터</span>가<br>
+        함께합니다.
+      </h1>
+      <p class="hero-sub">
+        검증된 요양보호사가 정성껏 케어합니다.<br>
+        부모님 등급·예상 비용은 무료 진단으로 3분 만에 확인하세요.
+      </p>
+      <div class="hero-cta">
+        <button class="btn-primary accent" onclick="goDiagnosis()">부모님 등급 무료 진단</button>
+        <button class="btn-secondary" onclick="showModal()">상담 신청</button>
       </div>
-      <span class="preview-badge">방문중</span>
-    </div>
-    <div class="preview-row">
-      <span class="preview-icon">✅</span>
-      <div>
-        <div class="preview-name">식사 보조 완료</div>
-        <div class="preview-sub">11:45 · 사진 1장 첨부</div>
+      <div class="hero-checks">
+        <span class="hero-check">공단 인정 기관</span>
+        <span class="hero-check">국가자격증 보호사</span>
+        <span class="hero-check">24시간 내 상담</span>
       </div>
-      <span class="preview-badge done">완료</span>
     </div>
-    <div class="preview-row">
-      <span class="preview-icon">💊</span>
-      <div>
-        <div class="preview-name">투약 확인 진행 중</div>
-        <div class="preview-sub">12:30 · 혈압약</div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hv-grid"></div>
+      <div class="hv-card hv-card-1">
+        <div class="hvc-eyebrow">올해 케어 어르신</div>
+        <div class="hvc-big" id="hvCount">120명</div>
+        <div class="hvc-sub">분당·수정·중원 지역</div>
       </div>
-      <span class="preview-badge">진행중</span>
+      <div class="hv-card hv-card-2">국가자격증 100%</div>
+      <div class="hv-card hv-card-3">
+        <div class="hvc-row"><b>3등급 어르신</b><span>월 한도 145만원</span></div>
+        <div class="hvc-row"><b>본인부담 15%</b><span>약 22만원</span></div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="hero-cta">
-    <button class="btn-white" id="heroDiagnosisBtn" onclick="goDiagnosis()">부모님 등급 무료 진단</button>
-    <button class="btn-ghost">센터 둘러보기</button>
-  </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hs-num">🛰️</div><div class="hs-label">GPS<br>자동 출퇴근</div></div>
-    <div class="hero-stat"><div class="hs-num">📲</div><div class="hs-label">가족 앱<br>케어 알림</div></div>
-    <div class="hero-stat"><div class="hs-num">🏥</div><div class="hs-label">국가자격증<br>보호사 배치</div></div>
-  </div>
-</div>
-
-<div class="marquee">
-  <div class="marquee-inner">
-    <span>🛰️ GPS 자동 출퇴근</span><span>📲 도착 알림</span><span>👩‍⚕️ 검증된 보호사</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span><span>📷 활동 사진 공유</span>
-    <span>🛰️ GPS 자동 출퇴근</span><span>📲 도착 알림</span><span>👩‍⚕️ 검증된 보호사</span><span>📋 디지털 케어일지</span><span>💊 투약 관리</span><span>📷 활동 사진 공유</span>
-  </div>
-</div>
-
-<!-- 기존 사용자 진입 카드 (보호자/보호사/센터장) -->
-<div class="users-card">
-  <div class="users-ttl">🔐 이미 이용 중이신 분</div>
-  <div class="users-desc">아래에서 본인 역할을 선택해 로그인하세요</div>
-  <div class="users-btns">
-    <a href="#" class="users-btn" id="goCustomer">
-      <span class="users-btn-icon">👨‍👩‍👧</span>
-      보호자 앱
-    </a>
-    <a href="#" class="users-btn" id="goWorker">
-      <span class="users-btn-icon">👩‍⚕️</span>
-      보호사 앱
-    </a>
-    <a href="#" class="users-btn" id="goAdmin">
-      <span class="users-btn-icon">📊</span>
-      센터장
-    </a>
-  </div>
-</div>
-
-<div class="section">
-  <div class="sec-label">Services</div>
-  <div class="sec-title">제공 서비스</div>
-  <div class="sec-sub">어르신의 상황에 맞는 맞춤 케어를 제공합니다</div>
-
-  <div class="svc-card">
-    <div class="svc-icon">🏠</div>
-    <div>
-      <div class="svc-ttl">방문요양</div>
-      <div class="svc-desc">전문 요양보호사가 가정을 직접 방문하여 신체활동, 가사활동, 인지활동을 지원합니다.</div>
-      <span class="svc-tag">장기요양 1~5등급</span>
+<!-- ===== STATS ===== -->
+<section class="stats">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-num">공단</div>
+        <div class="stat-lbl">장기요양 인정 기관</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">100%</div>
+        <div class="stat-lbl">국가자격증 보호사</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">평균 5년</div>
+        <div class="stat-lbl">보호사 경력</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">24h</div>
+        <div class="stat-lbl">이내 상담 응답</div>
+      </div>
     </div>
   </div>
-  <div class="svc-card">
-    <div class="svc-icon">🚿</div>
-    <div>
-      <div class="svc-ttl">방문목욕</div>
-      <div class="svc-desc">목욕 장비를 갖춘 전문 인력이 가정을 방문하여 입욕 서비스를 제공합니다.</div>
-      <span class="svc-tag">장기요양 1~5등급</span>
+</section>
+
+<!-- ===== DIAGNOSIS PROMO ===== -->
+<section class="section">
+  <div class="container">
+    <div class="dpromo">
+      <div class="dpromo-content">
+        <div class="dpromo-eyebrow">3분 무료 진단</div>
+        <div class="dpromo-title">부모님이 어느 등급인지,<br>한 달에 얼마 드는지<br>먼저 알아보세요.</div>
+        <div class="dpromo-sub">11개 객관식 질문에 답하시면 예상 등급·자부담금·맞춤 케어 안내까지 받아보실 수 있습니다.</div>
+        <button class="btn-primary" onclick="goDiagnosis()">진단 시작하기</button>
+      </div>
+      <div class="dpromo-side">
+        <div class="dpromo-step">
+          <div class="dpromo-step-n">1</div>
+          <div class="dpromo-step-text">부모님 상태 11문항 체크</div>
+        </div>
+        <div class="dpromo-step">
+          <div class="dpromo-step-n">2</div>
+          <div class="dpromo-step-text">예상 등급·비용 즉시 확인</div>
+        </div>
+        <div class="dpromo-step">
+          <div class="dpromo-step-n">3</div>
+          <div class="dpromo-step-text">맞춤 케어·신청 절차 안내</div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="svc-card">
-    <div class="svc-icon">💉</div>
-    <div>
-      <div class="svc-ttl">방문간호</div>
-      <div class="svc-desc">간호사 또는 간호조무사가 가정을 방문하여 건강 상태 체크, 투약 지도를 합니다.</div>
-      <span class="svc-tag">의사 지시서 필요</span>
+</section>
+
+<!-- ===== SERVICES ===== -->
+<section class="section soft" id="services">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">SERVICES</div>
+      <h2 class="section-title">제공 서비스</h2>
+      <p class="section-sub">어르신의 상태와 가정 환경에 맞춰 1:1 맞춤 케어 계획을 수립합니다.</p>
+    </div>
+    <div class="services-grid">
+      <div class="svc-card">
+        <div class="svc-mark">A</div>
+        <h3 class="svc-title">방문요양</h3>
+        <p class="svc-desc">요양보호사가 가정을 직접 방문하여 신체활동·가사활동·인지자극을 지원합니다.</p>
+        <span class="svc-tag">장기요양 1~5등급</span>
+      </div>
+      <div class="svc-card">
+        <div class="svc-mark">B</div>
+        <h3 class="svc-title">방문목욕</h3>
+        <p class="svc-desc">목욕 장비를 갖춘 전문 인력이 가정을 방문하여 위생·청결 케어를 제공합니다.</p>
+        <span class="svc-tag">장기요양 1~5등급</span>
+      </div>
+      <div class="svc-card">
+        <div class="svc-mark">C</div>
+        <h3 class="svc-title">방문간호</h3>
+        <p class="svc-desc">간호사 또는 간호조무사가 가정을 방문하여 건강 상태 체크·투약 지도·욕창 관리를 합니다.</p>
+        <span class="svc-tag">의사 지시서 필요</span>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="divider"></div>
-
-<div class="section">
-  <div class="sec-label">Why Us</div>
-  <div class="sec-title">왜 <span data-bind="name">CareOn 요양센터</span>인가요?</div>
-  <div class="sec-sub">다른 센터와 다른 이유가 있어요</div>
-  <div class="feat-grid">
-    <div class="feat-card">
-      <div class="feat-icon">🛰️</div>
-      <div class="feat-ttl">GPS 케어 확인</div>
-      <div class="feat-desc">보호사 도착 시 가족 앱에 자동 알림 (어르신당 1일 1회)</div>
+<!-- ===== WHY US ===== -->
+<section class="section" id="why">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">WHY US</div>
+      <h2 class="section-title">우리 센터를<br>선택하시는 이유</h2>
+      <p class="section-sub">신뢰할 수 있는 케어를 위한 4가지 약속입니다.</p>
     </div>
-    <div class="feat-card">
-      <div class="feat-icon">📲</div>
-      <div class="feat-ttl">가족 실시간 공유</div>
-      <div class="feat-desc">케어일지·사진을 앱으로 바로 확인</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">👩‍⚕️</div>
-      <div class="feat-ttl">검증된 보호사</div>
-      <div class="feat-desc">국가자격증 보유, 센터 직고용 보호사만 배치</div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">⚡</div>
-      <div class="feat-ttl">빠른 매칭</div>
-      <div class="feat-desc">신청 후 평균 3일 내 서비스 시작 가능</div>
-    </div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<div class="section">
-  <div class="sec-label">Process</div>
-  <div class="sec-title">이용 절차</div>
-  <div class="sec-sub">5단계로 쉽게 시작하세요</div>
-  <div class="steps">
-    <div class="step">
-      <div class="step-dot">1</div>
-      <div class="step-ttl">상담 신청</div>
-      <div class="step-desc">전화 또는 카카오톡으로 간단히 상담 신청</div>
-    </div>
-    <div class="step">
-      <div class="step-dot">2</div>
-      <div class="step-ttl">등급 판정 확인</div>
-      <div class="step-desc">장기요양 등급 없으시면 신청 방법 안내 드려요</div>
-    </div>
-    <div class="step">
-      <div class="step-dot">3</div>
-      <div class="step-ttl">케어 계획 수립</div>
-      <div class="step-desc">어르신 상태에 맞는 서비스 계획 함께 작성</div>
-    </div>
-    <div class="step">
-      <div class="step-dot">4</div>
-      <div class="step-ttl">보호사 매칭</div>
-      <div class="step-desc">어르신과 가장 잘 맞는 보호사를 배치해 드려요</div>
-    </div>
-    <div class="step">
-      <div class="step-dot">5</div>
-      <div class="step-ttl">케어 시작</div>
-      <div class="step-desc">첫 방문부터 케어일지·사진을 가족 앱에서 확인 가능</div>
+    <div class="why-grid">
+      <div class="why-card">
+        <div class="why-num">01</div>
+        <h3 class="why-title">공단 인정 기관</h3>
+        <p class="why-desc">국민건강보험공단 장기요양보험 정식 지정 기관으로 안전하게 서비스를 제공합니다.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">02</div>
+        <h3 class="why-title">국가자격증 보호사</h3>
+        <p class="why-desc">요양보호사 국가자격증 보유자만 배치합니다. 센터 직고용으로 책임 관리합니다.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">03</div>
+        <h3 class="why-title">1:1 맞춤 케어 계획</h3>
+        <p class="why-desc">어르신 상태·가족 요청에 맞춘 개별 케어 계획을 수립하고 정기적으로 점검합니다.</p>
+      </div>
+      <div class="why-card">
+        <div class="why-num">04</div>
+        <h3 class="why-title">정기 보호자 보고</h3>
+        <p class="why-desc">방문 케어 내용·어르신 상태 변화를 보호자에게 정기적으로 안내해 드립니다.</p>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="divider"></div>
-
-<!-- ===== Phase 2-1: 가격 / 본인부담금 ===== -->
-<div class="section">
-  <div class="sec-label">Pricing</div>
-  <h2 class="sec-title">이용 비용 안내</h2>
-  <div class="sec-sub">국민건강보험공단 장기요양보험 적용 — 본인부담금 15%만 내시면 됩니다</div>
-
-  <div class="price-table">
-    <div class="price-row head">
-      <div>등급</div><div>월 한도액</div><div>본인부담 15%</div>
+<!-- ===== PROCESS ===== -->
+<section class="section soft">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">PROCESS</div>
+      <h2 class="section-title">이용 절차</h2>
+      <p class="section-sub">상담 신청부터 첫 방문까지 평균 3~5일 이내 가능합니다 (등급 보유 시).</p>
     </div>
-    <div class="price-row">
-      <div class="price-grade">1등급</div>
-      <div class="price-limit">2,069,900원</div>
-      <div class="price-self">월 약 31만원</div>
-    </div>
-    <div class="price-row">
-      <div class="price-grade">2등급</div>
-      <div class="price-limit">1,869,600원</div>
-      <div class="price-self">월 약 28만원</div>
-    </div>
-    <div class="price-row">
-      <div class="price-grade">3등급</div>
-      <div class="price-limit">1,455,800원</div>
-      <div class="price-self">월 약 22만원</div>
-    </div>
-    <div class="price-row">
-      <div class="price-grade">4등급</div>
-      <div class="price-limit">1,341,800원</div>
-      <div class="price-self">월 약 20만원</div>
-    </div>
-    <div class="price-row">
-      <div class="price-grade">5등급</div>
-      <div class="price-limit">1,151,600원</div>
-      <div class="price-self">월 약 17만원</div>
-    </div>
-  </div>
-  <div class="price-note">
-    💡 <b>기초생활수급자</b> 본인부담 면제 · <b>차상위·감경대상자</b> 본인부담 6~9%<br>
-    💡 위 금액은 2026년 기준 월 한도액 100% 이용 시 추정치이며, 실제 본인부담금은 등급·이용 시간·서비스 종류에 따라 달라집니다.
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ===== Phase 2-3: 보호자 후기 ===== -->
-<div class="section">
-  <div class="sec-label">Reviews</div>
-  <h2 class="sec-title">보호자 후기</h2>
-  <div class="sec-sub">실제 가족분들이 남겨주신 솔직한 후기입니다</div>
-
-  <div class="review-card">
-    <div class="review-stars">★★★★★</div>
-    <div class="review-text">
-      "어머니가 무릎이 안 좋아서 외출이 어려운데, 김미영 보호사님이 꼼꼼하게 챙겨주세요.
-      특히 GPS 알림으로 도착 시간 바로 알 수 있어서 직장에서도 안심돼요. 케어일지에 사진까지 올려주셔서 어머니 표정 보면 마음이 놓입니다."
-    </div>
-    <div class="review-author">박○○ 보호자 (어머니 케어, 6개월째)</div>
-  </div>
-
-  <div class="review-card">
-    <div class="review-stars">★★★★★</div>
-    <div class="review-text">
-      "아버지 등급 신청부터 보호사 매칭까지 처음이라 막막했는데, 센터에서 처음부터 끝까지 안내해주셨어요.
-      등급 받기 전에도 신청 방법 친절히 설명해주신 게 인상 깊었습니다."
-    </div>
-    <div class="review-author">정○○ 보호자 (아버지 케어, 3개월째)</div>
-  </div>
-
-  <div class="review-card">
-    <div class="review-stars">★★★★★</div>
-    <div class="review-text">
-      "보호사 교체 부탁드렸는데 다음 주에 바로 새 분을 보내주셨어요. 다른 센터는 한 달씩 걸린다고 하던데, 응대가 정말 빠릅니다."
-    </div>
-    <div class="review-author">최○○ 보호자 (어머니 케어, 1년째)</div>
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ===== Phase 2-4: 위치 / 카카오맵 ===== -->
-<div class="section">
-  <div class="sec-label">Location</div>
-  <h2 class="sec-title">센터 위치</h2>
-  <div class="sec-sub">언제든 직접 방문하셔서 상담 받으실 수 있습니다</div>
-
-  <div class="map-card">
-    <iframe class="map-frame" id="kakaoMap"
-      src="about:blank"
-      title="센터 위치 지도"
-      loading="lazy"
-      referrerpolicy="no-referrer-when-downgrade"></iframe>
-    <div class="map-info">
-      <div class="map-addr" data-bind="address">주소 정보 로딩 중...</div>
-      <div class="map-extra">서비스 지역: <span data-bind="area">분당구 / 수정구 / 중원구</span></div>
-      <a href="#" class="map-btn" id="mapDirBtn" target="_blank" rel="noopener">🗺️ 카카오맵 길찾기</a>
+    <div class="process">
+      <div class="process-step">
+        <div class="ps-n">01</div>
+        <div class="ps-body">
+          <div class="ps-title">상담 신청</div>
+          <div class="ps-desc">전화 또는 사이트로 간단히 신청해주세요.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="ps-n">02</div>
+        <div class="ps-body">
+          <div class="ps-title">등급 확인</div>
+          <div class="ps-desc">등급 미보유 시 신청 절차도 함께 안내합니다.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="ps-n">03</div>
+        <div class="ps-body">
+          <div class="ps-title">케어 계획 수립</div>
+          <div class="ps-desc">어르신 상태에 맞춘 1:1 맞춤 계획을 작성합니다.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="ps-n">04</div>
+        <div class="ps-body">
+          <div class="ps-title">보호사 매칭</div>
+          <div class="ps-desc">어르신 성향에 가장 잘 맞는 보호사를 배정합니다.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="ps-n">05</div>
+        <div class="ps-body">
+          <div class="ps-title">케어 시작</div>
+          <div class="ps-desc">첫 방문부터 정기 보고로 안심하실 수 있습니다.</div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
-<div class="divider"></div>
-
-<!-- ===== Phase 2-6: 응급 / 야간 안내 ===== -->
-<div class="section">
-  <div class="sec-label">Emergency</div>
-  <h2 class="sec-title">응급 상황 안내</h2>
-  <div class="sec-sub">갑작스러운 상황에 침착하게 대응하실 수 있도록 안내드립니다</div>
-
-  <div class="emergency-card">
-    <div class="emergency-ttl">🚑 응급 시 119 즉시 신고</div>
-    <div class="emergency-desc">
-      어르신께 응급 상황(낙상, 의식 저하, 호흡 곤란 등) 발생 시
-      <b>가장 먼저 119에 신고</b>해 주세요. 신고 후 센터로 연락 주시면
-      보호사 출동·가족 안내·병원 동행 등을 도와드립니다.
+<!-- ===== PRICING ===== -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">PRICING</div>
+      <h2 class="section-title">이용 비용</h2>
+      <p class="section-sub">국민건강보험공단 장기요양보험 적용 — 본인부담금 15%만 부담하시면 됩니다.</p>
     </div>
-    <a href="tel:119" class="emergency-btn">📞 119 신고</a>
-  </div>
-
-  <div id="emergencyContact" style="background:var(--tl);border:1px solid #99f6e4;border-radius:14px;padding:14px 16px;font-size:13px;color:var(--navy);line-height:1.7;margin-bottom:10px;display:none">
-    <b style="color:var(--teal)">📞 센터 응급 연락처</b> <span data-bind="emergPhone" id="emergPhoneText">-</span><br>
-    <span style="font-size:11px;color:var(--gray)">119 신고 후 별도로 연락 주시면 즉시 도와드립니다</span>
-  </div>
-
-  <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px 16px;font-size:12px;color:var(--gray);line-height:1.7">
-    <b style="color:var(--navy)">📌 일반 상담은 평일 09:00 ~ 18:00 / 토요일 09:00 ~ 13:00</b><br>
-    그 외 시간엔 카카오톡 채널 또는 음성 메시지 남겨주시면 다음 영업일에 회신드립니다.
-  </div>
-</div>
-
-<div class="divider"></div>
-
-<!-- ===== Phase 3-3: FAQ ===== -->
-<div class="section">
-  <div class="sec-label">FAQ</div>
-  <h2 class="sec-title">자주 묻는 질문</h2>
-  <div class="sec-sub">상담 전 궁금한 점을 미리 확인하실 수 있어요</div>
-
-  <div class="faq-item">
-    <button class="faq-q">장기요양 등급은 어떻게 신청하나요?</button>
-    <div class="faq-a">
-      국민건강보험공단(1577-1000) 또는 가까운 지사에 등급 신청 가능합니다.
-      신청 → 방문 조사 → 등급 판정까지 평균 1~2개월 소요됩니다.<br>
-      <b>등급이 없으셔도 상담 가능</b>합니다. 신청 절차를 처음부터 안내해 드립니다.
+    <div class="pricing-card">
+      <table class="price-table">
+        <thead>
+          <tr><th>등급</th><th>월 한도액</th><th>본인부담 15%</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1등급</td><td>2,069,900원</td><td>월 약 31만원</td></tr>
+          <tr><td>2등급</td><td>1,869,600원</td><td>월 약 28만원</td></tr>
+          <tr><td>3등급</td><td>1,455,800원</td><td>월 약 22만원</td></tr>
+          <tr><td>4등급</td><td>1,341,800원</td><td>월 약 20만원</td></tr>
+          <tr><td>5등급</td><td>1,151,600원</td><td>월 약 17만원</td></tr>
+        </tbody>
+      </table>
+      <div class="price-note">
+        <b>기초생활수급자</b>는 본인부담 면제, <b>차상위·감경 대상자</b>는 6~9%만 부담합니다.<br>
+        위 금액은 2026년 기준 월 한도액 100% 이용 시 추정치입니다.
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">본인부담금은 얼마나 드나요?</button>
-    <div class="faq-a">
-      국민건강보험공단 장기요양보험에서 85%를 부담하고, 본인부담금은 15%입니다.<br>
-      예) 3등급 어르신 월 한도액 100% 이용 시 → 본인부담 약 22만원<br>
-      <b>기초생활수급자</b>는 본인부담 면제, <b>차상위·감경대상자</b>는 6~9%만 부담합니다.
+<!-- ===== REVIEWS ===== -->
+<section class="section soft" id="reviews">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">REVIEWS</div>
+      <h2 class="section-title">보호자 후기</h2>
+      <p class="section-sub">실제 가족분들이 남겨주신 솔직한 후기입니다.</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">어머니가 무릎이 안 좋아서 외출이 어려운데, 보호사 선생님이 꼼꼼하게 챙겨주세요. 케어 후 상태를 자세히 알려주셔서 직장에서도 안심됩니다.</p>
+        <div class="review-author">박○○ 보호자 (어머니 케어, 6개월째)</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">아버지 등급 신청부터 보호사 매칭까지 처음이라 막막했는데, 센터에서 처음부터 끝까지 안내해주셨어요. 등급 받기 전 신청 절차도 친절히 설명해주신 게 인상 깊었습니다.</p>
+        <div class="review-author">정○○ 보호자 (아버지 케어, 3개월째)</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p class="review-text">보호사 교체를 부탁드렸는데 일주일 내에 새 분을 보내주셨어요. 어르신 성향까지 고려해서 매칭해 주시니 만족스럽습니다.</p>
+        <div class="review-author">최○○ 보호자 (어머니 케어, 1년째)</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">신청부터 케어 시작까지 얼마나 걸리나요?</button>
-    <div class="faq-a">
-      등급이 이미 있으신 경우 <b>평균 3~5일</b> 내 시작 가능합니다.<br>
-      ① 상담 신청(즉시) → ② 케어 계획 수립(1~2일) → ③ 보호사 매칭(1~2일) → ④ 첫 방문<br>
-      등급 미신청이신 경우 등급 판정 1~2개월 후 시작됩니다.
+<!-- ===== LOCATION ===== -->
+<section class="section" id="location">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">LOCATION</div>
+      <h2 class="section-title">센터 위치</h2>
+      <p class="section-sub">언제든 직접 방문하셔서 상담 받으실 수 있습니다.</p>
+    </div>
+    <div class="location-card">
+      <iframe class="location-map" id="kakaoMap" src="" loading="lazy" title="센터 위치 지도"></iframe>
+      <div class="location-info">
+        <div class="location-addr" data-bind="address">주소 정보 로딩 중...</div>
+        <div class="location-extra">서비스 지역: <span data-bind="area">분당구 / 수정구 / 중원구</span></div>
+        <a href="#" class="location-btn" id="mapDirBtn" target="_blank" rel="noopener">카카오맵 길찾기</a>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">보호사가 어르신과 안 맞으면 교체 가능한가요?</button>
-    <div class="faq-a">
-      네, 언제든 가능합니다. 보호자님께서 센터에 요청하시면 <b>1주일 내</b>에 새 보호사를 매칭해 드립니다.
-      어르신 성향(여자/남자, 연령대, 성격 등)을 고려해 더 잘 맞는 분으로 배정합니다.
+<!-- ===== EMERGENCY ===== -->
+<section class="section soft">
+  <div class="container">
+    <div class="section-head">
+      <div class="section-eyebrow">EMERGENCY</div>
+      <h2 class="section-title">응급 상황 안내</h2>
+      <p class="section-sub">갑작스러운 상황에 침착하게 대응하실 수 있도록 안내드립니다.</p>
+    </div>
+    <div class="emergency-card">
+      <div class="eg-content">
+        <h3>응급 상황 시 119 즉시 신고</h3>
+        <p>낙상·의식 저하·호흡 곤란 등 발생 시 <b>먼저 119에 신고</b>해 주세요. 신고 후 센터로 연락 주시면 보호사 출동·가족 안내·병원 동행을 도와드립니다.</p>
+      </div>
+      <a href="tel:119" class="eg-btn">119 신고</a>
+    </div>
+    <div class="container" style="margin-top:24px;padding:0">
+      <div class="eg-extra" id="emergencyContact" style="display:none">
+        <b>센터 응급 연락처</b> <span data-bind="emergPhone" id="emergPhoneText">-</span><br>
+        <div class="eg-extra-mini">119 신고 후 별도로 연락 주시면 즉시 도와드립니다.</div>
+      </div>
+      <div class="eg-extra" style="margin-top:14px">
+        <b>일반 상담은 <span data-bind="hours">평일 09:00~18:00 · 토요일 09:00~13:00</span></b>
+        <div class="eg-extra-mini">그 외 시간엔 카카오톡 채널 또는 음성 메시지 남겨주시면 다음 영업일에 회신드립니다.</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">가족 앱은 무료인가요?</button>
-    <div class="faq-a">
-      네, 보호자 앱은 <b>완전 무료</b>입니다. 별도 구독료나 사용료 없습니다.<br>
-      어르신 케어 진행 상황, 케어일지, 사진을 실시간으로 받아보실 수 있습니다.
+<!-- ===== FAQ ===== -->
+<section class="section" id="faq">
+  <div class="container">
+    <div class="section-head" style="text-align:center;margin-left:auto;margin-right:auto">
+      <div class="section-eyebrow">FAQ</div>
+      <h2 class="section-title">자주 묻는 질문</h2>
+      <p class="section-sub" style="margin-left:auto;margin-right:auto">상담 전 궁금한 점을 미리 확인하실 수 있어요.</p>
+    </div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q">장기요양 등급은 어떻게 신청하나요?</button>
+        <div class="faq-a">국민건강보험공단(1577-1000) 또는 가까운 지사에 등급 신청 가능합니다. 신청 → 방문 조사 → 등급 판정까지 평균 1~2개월 소요됩니다. <b>등급이 없으셔도 상담 가능</b>합니다. 신청 절차를 처음부터 안내해 드립니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">본인부담금은 얼마나 드나요?</button>
+        <div class="faq-a">공단에서 85%, 보호자가 15%를 부담합니다. 예) 3등급 어르신 월 한도액 100% 이용 시 본인부담 약 22만원. <b>기초생활수급자</b>는 본인부담 면제, <b>차상위·감경 대상자</b>는 6~9%만 부담합니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">신청부터 케어 시작까지 얼마나 걸리나요?</button>
+        <div class="faq-a">등급이 이미 있으신 경우 <b>평균 3~5일</b> 내 시작 가능합니다. 등급 미신청이신 경우 등급 판정 1~2개월 후 시작됩니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">보호사가 어르신과 안 맞으면 교체 가능한가요?</button>
+        <div class="faq-a">네, 언제든 가능합니다. 보호자님께서 센터에 요청하시면 <b>1주일 내</b>에 새 보호사를 매칭해 드립니다. 어르신 성향(여자/남자, 연령대, 성격)을 고려해 더 잘 맞는 분으로 배정합니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">방문 시간 외 응급 상황엔 어떻게 하나요?</button>
+        <div class="faq-a">응급 상황 발생 시 <b>가장 먼저 119에 신고</b>해 주세요. 골든타임이 가장 중요합니다. 이후 센터에 연락 주시면 가족 안내·병원 동행·다음 방문 일정 조정을 도와드립니다.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">상담 시 어떤 정보를 준비하면 좋나요?</button>
+        <div class="faq-a">어르신의 <b>현재 거동 상태·인지 상태·진단받은 질환</b> 정도만 알고 계시면 됩니다. 등급 인정서가 있으시면 더 정확한 안내가 가능합니다.</div>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">케어일지는 어떻게 확인하나요?</button>
-    <div class="faq-a">
-      매 방문 종료 시 보호사가 작성한 <b>케어일지</b>가 자동으로 가족 앱에 전송됩니다.
-      체크리스트 5종(식사·체위변경·스트레칭·투약·청결)과 어르신 상태 메모, 활동 사진까지 확인 가능합니다.
+<!-- ===== CTA ===== -->
+<section class="cta-sec">
+  <div class="container">
+    <div class="cta-eyebrow">CONTACT</div>
+    <div class="cta-title">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
+    <div class="cta-sub" data-bind="hours">평일 09:00~18:00 · 토요일 09:00~13:00<br>일요일 휴무 · 응급 시 119 안내</div>
+    <div class="cta-buttons">
+      <button class="btn-primary" id="btnCallCenter">전화 상담 <span data-bind="phone">대표번호</span></button>
+      <button class="btn-secondary btn-kakao">카카오톡 상담하기</button>
     </div>
   </div>
+</section>
 
-  <div class="faq-item">
-    <button class="faq-q">보호자 앱은 어떻게 받나요?</button>
-    <div class="faq-a">
-      케어 시작 시 센터에서 <b>초대 코드 + 가입 링크</b>를 SMS 또는 카카오톡으로 보내드립니다.
-      가입 링크 클릭 후 이메일·비밀번호만 입력하시면 자동으로 어르신과 연결됩니다.
-      여러 가족(자녀, 배우자 등)이 동시에 사용 가능합니다.
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-brand" data-bind="name">CareOn 파트너 센터</div>
+        <div class="footer-meta">
+          <span data-bind="address">-</span><br>
+          TEL: <a data-bind="phone" id="footerPhone" href="#">대표번호</a>
+        </div>
+      </div>
+      <div class="footer-meta">
+        <b>사업 정보</b><br>
+        대표자: <span data-bind="rep">-</span><br>
+        사업자번호: <span data-bind="biznum">-</span><br>
+        장기요양기관 지정번호: <span data-bind="ltcnum">-</span>
+      </div>
+      <div class="footer-meta">
+        <b>운영 시간</b><br>
+        <span data-bind="hours">평일 09:00~18:00 · 토요일 09:00~13:00</span><br>
+        일요일 휴무 · 응급 시 119
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 <span data-bind="name">CareOn 파트너 센터</span> · Powered by <a href="https://crescentstudio.co.kr">Crescent Studio</a></div>
+      <div><a href="/care-diagnosis.html?c=demo" onclick="event.preventDefault();goDiagnosis()">부모님 등급 무료 진단</a></div>
     </div>
   </div>
+</footer>
 
-  <div class="faq-item">
-    <button class="faq-q">방문 시간 외 응급 상황엔 어떻게 하나요?</button>
-    <div class="faq-a">
-      응급 상황(낙상·의식 저하·호흡 곤란 등) 발생 시 <b>가장 먼저 119에 신고</b>해 주세요.
-      골든타임이 가장 중요합니다.<br>
-      이후 센터에 연락 주시면 가족 안내·병원 동행·다음 방문 일정 조정 등을 도와드립니다.
-      센터별 응급 연락처는 위 "응급 상황 안내" 섹션에서 확인하세요.
-    </div>
-  </div>
-</div>
-
-<div class="cta-sec">
-  <div class="cta-tag">✨ 지금 바로 시작하세요</div>
-  <div class="cta-ttl">상담은 무료입니다.<br>부담 없이 연락주세요.</div>
-  <div class="cta-sub" data-bind="hours">평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00<br>일요일 휴무 · 응급 시 119 안내</div>
-  <div class="cta-btns">
-    <button class="btn-teal" id="btnCallCenter">📞 전화 상담 <span data-bind="phone">대표번호</span></button>
-    <button class="btn-kakao">💬 카카오톡 상담하기</button>
-  </div>
-</div>
-
-<div class="footer">
-  <strong data-bind="name">CareOn 요양센터</strong><br>
-  <span data-bind="address">주소 정보 로딩 중...</span><br>
-  대표자: <span data-bind="rep">-</span> · 사업자번호: <span data-bind="biznum">-</span><br>
-  장기요양기관 지정번호: <span data-bind="ltcnum">-</span><br>
-  TEL: <a data-bind="phone" id="footerPhone" href="#" style="color:inherit;text-decoration:none">대표번호</a>
-  <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;flex-wrap:wrap;gap:12px;font-size:11px">
-    <a href="#" id="footerCustomer" style="color:var(--teal);text-decoration:none;font-weight:600">보호자 앱</a>
-    <a href="#" id="footerWorker" style="color:var(--teal);text-decoration:none;font-weight:600">보호사 앱</a>
-    <a href="#" id="footerAdmin" style="color:var(--teal);text-decoration:none;font-weight:600">센터장</a>
-    <a href="#" id="footerSignup" style="color:var(--teal);text-decoration:none;font-weight:600">신규 가입</a>
-  </div>
-  <div style="margin-top:10px;font-size:10px;color:#9ca3af">
-    Powered by <a href="https://crescentstudio.co.kr" style="color:var(--teal);text-decoration:none">CareOn</a> · 방문요양 통합 플랫폼
-  </div>
-</div>
-</main>
-</div><!-- /.app -->
-
-<!-- Phase 3-4: 모바일 Sticky CTA -->
+<!-- ===== STICKY MOBILE CTA ===== -->
 <div class="sticky-cta" id="stickyCta">
-  <div class="sticky-cta-inner">
-    <button class="sticky-cta-call" id="stickyCallBtn" aria-label="전화 상담">📞</button>
-    <button class="sticky-cta-main" id="stickyMainBtn">부모님 등급 무료 진단</button>
-  </div>
+  <button class="sticky-cta-call" id="stickyCallBtn" aria-label="전화 상담">📞</button>
+  <button class="sticky-cta-main" id="stickyMainBtn">부모님 등급 무료 진단</button>
 </div>
 
-<!-- Phase 3-5: SEO Schema.org JSON-LD (동적 주입) -->
+<!-- ===== Schema.org JSON-LD (동적 주입) ===== -->
 <script type="application/ld+json" id="schemaJsonLd"></script>
 
 <script>
-function toast(msg,duration=2500){
+/* ===== Toast ===== */
+function toast(msg, duration=2500){
   document.querySelectorAll('.t-msg').forEach(e=>e.remove());
   const el=document.createElement('div');
   el.className='t-msg';
-  el.style.cssText='position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:#0F1B2D;color:#fff;padding:12px 22px;border-radius:50px;font-size:13px;font-weight:700;z-index:999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.25)';
   el.textContent=msg;
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),duration);
 }
+
+/* ===== Modal (상담 신청) ===== */
 function showModal(){
   const ov=document.createElement('div');
   ov.id='consultationModal';
-  ov.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:300;display:flex;align-items:flex-end;justify-content:center';
-  ov.innerHTML=`<div style="background:#fff;border-radius:24px 24px 0 0;padding:28px 24px 36px;width:100%;max-width:430px">
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:18px;font-weight:800;color:#0F1B2D;margin-bottom:4px">입소 상담 신청</div>
-      <div style="font-size:13px;color:#6b7280">24시간 이내 연락드립니다</div>
+  ov.style.cssText='position:fixed;inset:0;background:rgba(15,27,45,.5);backdrop-filter:blur(8px);z-index:300;display:flex;align-items:center;justify-content:center;padding:20px';
+  ov.innerHTML=`<div style="background:#fff;border-radius:24px;padding:32px;width:100%;max-width:460px;max-height:90vh;overflow-y:auto">
+    <div style="margin-bottom:24px">
+      <div style="font-size:22px;font-weight:900;color:#0F1B2D;letter-spacing:-.5px;margin-bottom:6px">입소 상담 신청</div>
+      <div style="font-size:14px;color:#6B7280;font-weight:500">24시간 이내 연락드립니다.</div>
     </div>
-    <div id="consultMsg" style="display:none;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px"></div>
-    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-      <input id="cf-name" placeholder="어르신 성함" maxlength="20" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
-      <input id="cf-phone" type="tel" placeholder="보호자 연락처 (010-0000-0000)" maxlength="13" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D">
-      <select id="cf-grade" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;background:#fff">
+    <div id="consultMsg" style="display:none;padding:12px 14px;border-radius:10px;font-size:13.5px;font-weight:600;margin-bottom:14px"></div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+      <input id="cf-name" placeholder="어르신 성함" maxlength="20" style="border:1.5px solid #E5E7EB;border-radius:12px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;font-weight:500">
+      <input id="cf-phone" type="tel" placeholder="보호자 연락처 (010-0000-0000)" maxlength="13" style="border:1.5px solid #E5E7EB;border-radius:12px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;font-weight:500">
+      <select id="cf-grade" style="border:1.5px solid #E5E7EB;border-radius:12px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;background:#fff;font-weight:500">
         <option value="">장기요양 등급 선택</option>
         <option value="1등급">1등급</option>
         <option value="2등급">2등급</option>
@@ -883,14 +1134,13 @@ function showModal(){
         <option value="5등급">5등급</option>
         <option value="미신청">등급 미신청 (신청 방법 안내 원함)</option>
       </select>
-      <textarea id="cf-msg" rows="2" placeholder="요청사항이 있으면 적어주세요 (선택)" maxlength="500" style="border:1.5px solid #e2e8f0;border-radius:12px;padding:13px 16px;font-size:14px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;resize:none"></textarea>
+      <textarea id="cf-msg" rows="2" placeholder="요청사항이 있으면 적어주세요 (선택)" maxlength="500" style="border:1.5px solid #E5E7EB;border-radius:12px;padding:15px 18px;font-size:15px;font-family:inherit;outline:none;width:100%;color:#0F1B2D;resize:none;font-weight:500"></textarea>
     </div>
-    <div style="font-size:11px;color:#9ca3af;line-height:1.5;margin-bottom:14px">상담 신청 시 개인정보가 해당 센터로 전달되며, 24시간 내 연락드립니다.</div>
-    <button id="submitBtn" style="background:#0D9488;color:#fff;border:none;border-radius:14px;padding:15px;font-size:15px;font-weight:700;width:100%;cursor:pointer;font-family:inherit;margin-bottom:10px">상담 신청하기</button>
-    <button id="cancelBtn" style="background:#f8fafc;color:#6b7280;border:none;border-radius:14px;padding:14px;font-size:14px;font-weight:600;width:100%;cursor:pointer;font-family:inherit">취소</button>
+    <div style="font-size:12px;color:#9CA3AF;line-height:1.6;margin-bottom:16px;font-weight:500">상담 신청 시 개인정보가 해당 센터로 전달되며, 24시간 내 연락드립니다.</div>
+    <button id="submitBtn" style="background:#0D9488;color:#fff;border:none;border-radius:99px;padding:16px;font-size:15px;font-weight:800;width:100%;cursor:pointer;font-family:inherit;margin-bottom:10px;letter-spacing:-.2px">상담 신청하기</button>
+    <button id="cancelBtn" style="background:#F8FAFC;color:#6B7280;border:none;border-radius:99px;padding:14px;font-size:14px;font-weight:700;width:100%;cursor:pointer;font-family:inherit">취소</button>
   </div>`;
 
-  // 전화번호 자동 하이픈
   const phoneInput = ov.querySelector('#cf-phone');
   phoneInput.addEventListener('input', e => {
     let v = e.target.value.replace(/[^0-9]/g, '');
@@ -907,14 +1157,14 @@ function showModal(){
     const errEl = ov.querySelector('#consultMsg');
     const showErr = (text) => {
       errEl.textContent = text;
-      errEl.style.cssText = 'display:block;padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;margin-bottom:12px;background:#fee2e2;color:#dc2626';
+      errEl.style.cssText = 'display:block;padding:12px 14px;border-radius:10px;font-size:13.5px;font-weight:600;margin-bottom:14px;background:#FEE2E2;color:#DC2626';
     };
 
     if (name.length < 2) return showErr('어르신 성함을 입력해주세요');
     const phoneNorm = phone.replace(/-/g, '');
     if (!/^01[016789][0-9]{7,8}$/.test(phoneNorm)) return showErr('연락처 형식을 확인해주세요');
 
-    const slug = CenterRouter.detectSlug();
+    const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
     if (!slug) return showErr('센터 정보를 찾을 수 없습니다. URL을 확인해주세요');
 
     const btn = ov.querySelector('#submitBtn');
@@ -938,12 +1188,11 @@ function showModal(){
       return showErr(data?.error || error?.message || '신청 실패. 잠시 후 다시 시도해주세요');
     }
 
-    // 센터장에게 알림 발송 (Edge Function)
     try {
       await sb.functions.invoke('send-notification', {
         body: {
           type: 'new_consultation',
-          title: '🆕 신규 상담 신청',
+          title: '신규 상담 신청',
           body: `${name} 어르신 (${grade || '등급 미정'}) · ${phone}\n${msg ? '메모: ' + msg.slice(0, 50) : ''}`,
           recipient_phone: window._centerOwnerPhone || null,
           center_id: data.center_id,
@@ -953,18 +1202,22 @@ function showModal(){
     } catch(e) { console.warn('알림 발송 실패:', e); }
 
     ov.remove();
-    toast('✅ 상담 신청이 접수되었습니다!\n24시간 내 연락드릴게요.', 4000);
+    toast('상담 신청이 접수되었습니다. 24시간 내 연락드립니다.', 4000);
   };
 
   ov.querySelector('#cancelBtn').onclick = () => ov.remove();
   ov.onclick = e => { if (e.target === ov) ov.remove(); };
   document.body.appendChild(ov);
 }
-document.querySelector('.nav-btn').onclick=()=>showModal();
-document.querySelector('.btn-white').onclick=()=>showModal();
-document.querySelector('.btn-ghost').onclick=()=>document.querySelector('.section').scrollIntoView({behavior:'smooth'});
 
-// ===== 앱 진입점 (slug 유지) =====
+/* ===== 진단 페이지 진입 ===== */
+function goDiagnosis(){
+  const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
+  const target = slug ? `/care-diagnosis.html?c=${encodeURIComponent(slug)}` : '/care-diagnosis.html?c=demo';
+  location.href = target;
+}
+
+/* ===== appUrl (slug 유지) ===== */
 function appUrl(path, extraParams){
   const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
   const params = new URLSearchParams();
@@ -974,56 +1227,9 @@ function appUrl(path, extraParams){
   return qs ? `${path}?${qs}` : path;
 }
 
-// 상단 nav 로그인 버튼 → care-login.html (역할 자동 라우팅)
 document.getElementById('navLoginBtn').onclick = () => location.href = appUrl('/care-login.html');
 
-// 기존 사용자 카드: care-login.html로 보내되, role 힌트 전달
-// (이미 로그인되어 있으면 redirectByRole이 즉시 본인 앱으로 라우팅)
-// (미가입 사용자가 가입 탭 누르면 자동으로 해당 역할 선택됨)
-document.getElementById('goCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'guardian'}); };
-document.getElementById('goWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'worker'}); };
-document.getElementById('goAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'admin'}); };
-
-// footer 링크 (동일 정책)
-document.getElementById('footerCustomer').onclick = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'guardian'}); };
-document.getElementById('footerWorker').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'worker'}); };
-document.getElementById('footerAdmin').onclick    = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {role:'admin'}); };
-document.getElementById('footerSignup').onclick   = e => { e.preventDefault(); location.href = appUrl('/care-login.html', {tab:'signup'}); };
-document.getElementById('btnCallCenter').onclick=async ()=>{
-  // 로드 완료 전이면 잠깐 대기
-  if(!_centerLoaded){
-    toast('📞 연결 준비 중...');
-    for(let i=0;i<20;i++){
-      await new Promise(r=>setTimeout(r,100));
-      if(_centerLoaded) break;
-    }
-  }
-  if(_centerPhone) location.href='tel:'+_centerPhone.replace(/-/g,'');
-  else toast('전화번호가 등록되지 않은 센터입니다');
-};
-document.querySelector('.btn-kakao').onclick=()=>{
-  // 카카오톡 공유 (PC: 텍스트 복사 / 모바일: 카톡 직접 열기)
-  const text = `[CareOn] 방문요양 상담 문의\n${location.href}`;
-  if(navigator.share){
-    navigator.share({ title: 'CareOn 방문요양 상담', text, url: location.href }).catch(()=>{});
-  } else if(navigator.clipboard){
-    navigator.clipboard.writeText(text).then(()=>toast('💬 메시지가 복사되었습니다. 카카오톡에 붙여넣어 보내주세요'));
-  } else {
-    toast('💬 카카오톡 앱에서 직접 검색해주세요');
-  }
-};
-// 서비스 카드 클릭 → 상담 신청 모달 (실제 전환 유도)
-document.querySelectorAll('.svc-card').forEach(card=>{
-  card.style.cursor='pointer';
-  card.setAttribute('role','button');
-  card.setAttribute('tabindex','0');
-  card.onclick = () => showModal();
-  card.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){ e.preventDefault(); showModal(); }});
-});
-// feature/step 카드는 정보 전달용 - 클릭 인터랙션 제거 (가짜 클릭 제거)
-// 모바일에서 hover 효과만 살짝
-
-// ===== 센터 정보 동적 로딩 (slug 기반) =====
+/* ===== 전화·카톡 ===== */
 let _centerPhone = '';
 let _centerLoaded = false;
 function setOgMeta(prop, content){
@@ -1031,20 +1237,55 @@ function setOgMeta(prop, content){
   if(!el){ el = document.createElement('meta'); el.setAttribute('property', prop); document.head.appendChild(el); }
   el.setAttribute('content', content);
 }
+
+document.getElementById('btnCallCenter').onclick = async () => {
+  if(!_centerLoaded){
+    toast('연결 준비 중...');
+    for(let i=0;i<20;i++){
+      await new Promise(r=>setTimeout(r,100));
+      if(_centerLoaded) break;
+    }
+  }
+  if(_centerPhone) location.href = 'tel:' + _centerPhone.replace(/-/g,'');
+  else toast('전화번호가 등록되지 않은 센터입니다');
+};
+
+document.querySelector('.btn-kakao').onclick = () => {
+  const text = `방문요양 상담 문의\n${location.href}`;
+  if(navigator.share){
+    navigator.share({ title: '방문요양 상담', text, url: location.href }).catch(()=>{});
+  } else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>toast('메시지가 복사되었습니다. 카카오톡에 붙여넣어 보내주세요'));
+  } else {
+    toast('카카오톡 앱에서 직접 검색해주세요');
+  }
+};
+
+/* ===== 서비스 카드 → 상담 모달 ===== */
+document.querySelectorAll('.svc-card').forEach(card => {
+  card.addEventListener('keydown', e => {
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); showModal(); }
+  });
+  card.setAttribute('role','button');
+  card.setAttribute('tabindex','0');
+  card.onclick = () => showModal();
+});
+
+/* ===== 센터 정보 동적 로딩 (slug 기반) ===== */
 (async function loadCenter(){
   const sb = window.supabase.createClient(
     'https://swsemxzgzcwwrhowuaqz.supabase.co',
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN3c2VteHpnemN3d3Job3d1YXF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDMyMjAsImV4cCI6MjA5MjcxOTIyMH0.ebLiCDnTfnd-rCcBcMFiN_BYpIcOcTqfi_Mh_xQqD2Q'
   );
-  const slug = CenterRouter.detectSlug();
+  const slug = (typeof CenterRouter !== 'undefined') ? CenterRouter.detectSlug() : null;
   if(!slug){
-    // 슬러그 없으면 일반 안내 페이지로 (CareOn 메인 마케팅 톤)
+    // 슬러그 없으면 일반 안내 톤
     document.querySelectorAll('[data-bind]').forEach(el=>{
       const k = el.getAttribute('data-bind');
       if(k==='name') el.textContent='CareOn 파트너 센터';
       else if(k==='phone') el.textContent='상담 연결';
       else if(k==='address') el.textContent='가까운 CareOn 파트너 센터를 안내해 드립니다';
-      else if(k==='hours') el.textContent='평일 09:00 ~ 18:00 · 토요일 09:00 ~ 13:00';
+      else if(k==='hours') el.textContent='평일 09:00~18:00 · 토요일 09:00~13:00';
     });
     _centerLoaded = true;
     return;
@@ -1052,9 +1293,10 @@ function setOgMeta(prop, content){
   const center = await CenterRouter.loadCenterBySlug(sb, slug);
   if(!center){
     document.querySelectorAll('[data-bind]').forEach(el=>{
-      if(el.getAttribute('data-bind')==='name') el.textContent='존재하지 않는 센터';
-      if(el.getAttribute('data-bind')==='phone') el.textContent='-';
-      if(el.getAttribute('data-bind')==='address') el.textContent='URL을 다시 확인해주세요';
+      const k = el.getAttribute('data-bind');
+      if(k==='name') el.textContent='존재하지 않는 센터';
+      if(k==='phone') el.textContent='-';
+      if(k==='address') el.textContent='URL을 다시 확인해주세요';
     });
     _centerLoaded = true;
     return;
@@ -1063,12 +1305,10 @@ function setOgMeta(prop, content){
   _centerPhone = center.phone || '';
   document.title = center.name + ' — 방문요양 전문';
 
-  // OG 메타 동적 업데이트 (카카오톡/페이스북 미리보기)
-  setOgMeta('og:title', `${center.name} · 요양 통합 플랫폼 CareOn`);
+  setOgMeta('og:title', center.name + ' · 방문요양 전문 센터');
   if(center.description) setOgMeta('og:description', center.description);
   setOgMeta('og:url', location.href);
 
-  // Phase 2 추가 data-bind (사업자등록 정보)
   document.querySelectorAll('[data-bind]').forEach(el => {
     const k = el.getAttribute('data-bind');
     if(k === 'rep')    el.textContent = center.representative_name || '-';
@@ -1077,55 +1317,44 @@ function setOgMeta(prop, content){
     if(k === 'area')   el.textContent = center.service_area || '-';
   });
 
-  // 카카오맵 (좌표 있으면 임베드, 없으면 주소 텍스트만)
   if(center.location_lat && center.location_lng){
     const mapFrame = document.getElementById('kakaoMap');
     if(mapFrame){
-      // 카카오맵 정적 임베드 URL
       mapFrame.src = `https://map.kakao.com/?urlX=${center.location_lng}&urlY=${center.location_lat}&urlLevel=3&map_type=TYPE_MAP&itemId=&map_attribute=ROADVIEW`;
     }
   }
-  // 카카오맵 길찾기 버튼 (주소 기반)
   const mapBtn = document.getElementById('mapDirBtn');
   if(mapBtn && center.address){
-    mapBtn.href = `https://map.kakao.com/link/to/${encodeURIComponent(center.name)},${center.location_lat||0},${center.location_lng||0}`;
-    if(!center.location_lat){
-      // 좌표 없으면 주소 검색
-      mapBtn.href = `https://map.kakao.com/link/search/${encodeURIComponent(center.address)}`;
-    }
+    mapBtn.href = center.location_lat
+      ? `https://map.kakao.com/link/to/${encodeURIComponent(center.name)},${center.location_lat},${center.location_lng}`
+      : `https://map.kakao.com/link/search/${encodeURIComponent(center.address)}`;
   }
 
-  // 센터 응급 연락처 (등록된 경우만 노출)
   const emergContact = document.getElementById('emergencyContact');
   const emergPhoneText = document.getElementById('emergPhoneText');
   if(emergContact && center.emergency_phone){
     emergContact.style.display = 'block';
     if(emergPhoneText){
-      emergPhoneText.innerHTML = `<a href="tel:${center.emergency_phone.replace(/-/g,'')}" style="color:var(--teal);font-weight:700;text-decoration:none">${center.emergency_phone}</a>`;
+      emergPhoneText.innerHTML = `<a href="tel:${center.emergency_phone.replace(/-/g,'')}" style="color:var(--accent-dark);font-weight:800;text-decoration:none">${center.emergency_phone}</a>`;
     }
   }
 
-  // 카카오톡 채널 버튼 (kakao_channel_url 있으면 직접 연결)
   const kakaoBtn = document.querySelector('.btn-kakao');
   if(center.kakao_channel_url){
     kakaoBtn.onclick = () => window.open(center.kakao_channel_url, '_blank');
   }
 
-  // 센터장 휴대폰 (상담 신청 시 알림 발송용)
   window._centerOwnerPhone = center.phone;
 
-  // footer 전화번호 링크 동작
   const fp = document.getElementById('footerPhone');
   if(fp && _centerPhone) fp.href = 'tel:' + _centerPhone.replace(/-/g,'');
 
-  // ===== Phase 3-5: SEO 동적 description + JSON-LD =====
-  // meta description 동적 갱신
+  // SEO
   const metaDesc = document.querySelector('meta[name="description"]');
   if(metaDesc && center.description){
     metaDesc.setAttribute('content', `${center.name} — ${center.description.slice(0,140)}`);
-    setOgMeta('og:description', `${center.name} — 투명한 케어일지 · 도착 알림 · 검증된 보호사`);
+    setOgMeta('og:description', `${center.name} — 검증된 보호사 · 1:1 맞춤 케어 · 24시간 이내 상담`);
   }
-  // canonical
   let canonical = document.querySelector('link[rel="canonical"]');
   if(!canonical){
     canonical = document.createElement('link');
@@ -1134,12 +1363,11 @@ function setOgMeta(prop, content){
   }
   canonical.href = `https://crescentstudio.co.kr/care-site.html?c=${center.slug}`;
 
-  // Schema.org LocalBusiness JSON-LD
   const schema = {
     "@context": "https://schema.org",
     "@type": "MedicalBusiness",
     "name": center.name,
-    "description": center.description || '방문요양 전문 — 투명한 케어일지 · 도착 알림 · 검증된 보호사',
+    "description": center.description || '방문요양 전문 — 검증된 보호사 · 1:1 맞춤 케어',
     "telephone": center.phone || '',
     "address": center.address ? {
       "@type": "PostalAddress",
@@ -1161,54 +1389,37 @@ function setOgMeta(prop, content){
   _centerLoaded = true;
 })();
 
-// ===== Phase 3-3: FAQ 아코디언 =====
+/* ===== FAQ Accordion ===== */
 document.querySelectorAll('.faq-q').forEach(btn => {
   btn.onclick = () => btn.closest('.faq-item').classList.toggle('open');
 });
 
-// ===== Phase 3-4: Sticky CTA (모바일) =====
+/* ===== Nav 스크롤 시 그림자 ===== */
+const navEl = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  navEl.classList.toggle('scrolled', window.scrollY > 8);
+}, { passive: true });
+
+/* ===== Sticky Mobile CTA ===== */
 const stickyCta = document.getElementById('stickyCta');
-let _heroCtaBottom = 0;
 function checkSticky(){
-  // hero CTA 영역을 지나치고, footer 도달 전까지만 노출
   const hero = document.querySelector('.hero-cta');
   const ctaSec = document.querySelector('.cta-sec');
   if(!hero || !stickyCta) return;
   const heroRect = hero.getBoundingClientRect();
   const ctaRect = ctaSec ? ctaSec.getBoundingClientRect() : { top: Infinity };
-  // hero CTA가 화면 위로 사라지고, 마지막 CTA 섹션이 아직 안 보일 때
   const show = heroRect.bottom < 0 && ctaRect.top > window.innerHeight;
   stickyCta.classList.toggle('show', show);
 }
 window.addEventListener('scroll', checkSticky, { passive:true });
 window.addEventListener('resize', checkSticky);
+checkSticky();
 
 document.getElementById('stickyMainBtn').onclick = () => goDiagnosis();
-
-// 슬러그 기반 진단 페이지 이동
-function goDiagnosis(){
-  const params = new URLSearchParams(location.search);
-  const slug = params.get('c') || 'demo';
-  location.href = '/care-diagnosis.html?c=' + encodeURIComponent(slug);
-}
-window.goDiagnosis = goDiagnosis;
 document.getElementById('stickyCallBtn').onclick = async () => {
   if(_centerPhone) location.href = 'tel:' + _centerPhone.replace(/-/g,'');
   else toast('전화번호 로드 중...');
 };
-
-// ===== Phase 3-1: 데스크톱 보조 영역 버튼 =====
-const deskCallBtn = document.getElementById('deskCallBtn');
-const deskFormBtn = document.getElementById('deskFormBtn');
-const deskLoginBtn = document.getElementById('deskLoginBtn');
-if(deskCallBtn) deskCallBtn.onclick = async () => {
-  if(_centerPhone) location.href = 'tel:' + _centerPhone.replace(/-/g,'');
-};
-if(deskFormBtn) deskFormBtn.onclick = () => showModal();
-if(deskLoginBtn) deskLoginBtn.onclick = () => location.href = appUrl('/care-login.html');
-
-// 초기 sticky 체크
-checkSticky();
 </script>
 <script>if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));}</script>
 </body>
