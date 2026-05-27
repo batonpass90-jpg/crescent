@@ -3,231 +3,280 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>시간표 | 스튜디오 코어</title>
+<title>시간표 | 필라테스</title>
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
+.schedule-wrap {
+  background: white;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  overflow-x: auto;
+}
 .schedule-table {
   width: 100%;
   border-collapse: collapse;
-  background: white;
-  border-radius: 16px;
-  overflow: hidden;
   font-size: 13px;
+  min-width: 640px;
 }
 .schedule-table th {
   background: var(--purple);
   color: white;
-  padding: 12px 8px;
-  font-weight: 700;
+  padding: 14px 8px;
+  font-weight: 800;
   text-align: center;
+  font-size: 13px;
 }
 .schedule-table td {
   padding: 12px 8px;
   text-align: center;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border-2);
+  border-right: 1px solid var(--border-2);
+  vertical-align: middle;
 }
-.schedule-table td:first-child { font-weight: 700; color: var(--dark); background: var(--gray-light); }
+.schedule-table tr:last-child td { border-bottom: none; }
+.schedule-table td:first-child {
+  font-weight: 800;
+  color: var(--dark);
+  background: var(--gray-light);
+}
 .tag {
   display: inline-block;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
 }
 .tag.solo { background: var(--purple-pale); color: var(--purple); }
 .tag.duo { background: #FEF3C7; color: #D97706; }
 .tag.group { background: #EDE9FE; color: #7C3AED; }
 .tag.preg { background: #ECFDF5; color: #059669; }
+.tag-instructor {
+  display:block;
+  margin-top:4px;
+  color: var(--gray);
+  font-size:11px;
+  font-weight:600;
+}
 
 .price-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-  margin-top: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-top: 48px;
 }
 .price-card {
   background: white;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
   border: 1.5px solid var(--border);
+  position: relative;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.price-card.featured { border-color: var(--purple); }
-.price-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.price-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+.price-card.featured {
+  border-color: var(--purple);
+  border-width: 2px;
+  box-shadow: var(--shadow-lg);
+}
+.price-name {
+  font-size: 17px;
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--dark);
+}
 .price-badge {
   display: inline-block;
   background: var(--purple);
   color: white;
   font-size: 10px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 4px;
-  margin-bottom: 12px;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 14px;
+  letter-spacing: 0.5px;
 }
-.price-amount { font-size: 28px; font-weight: 900; color: var(--purple); margin-bottom: 4px; }
-.price-unit { font-size: 13px; color: var(--gray); margin-bottom: 14px; }
-.price-features { list-style: none; font-size: 13px; color: var(--gray); }
-.price-features li { padding: 4px 0; }
-.price-features li::before { content: '✓ '; color: var(--purple); font-weight: 700; }
-
-@media (max-width: 640px) {
-  .price-grid { grid-template-columns: 1fr; }
-  .schedule-table { font-size: 11px; }
-  .schedule-table th, .schedule-table td { padding: 8px 4px; }
+.price-amount {
+  font-size: 36px;
+  font-weight: 900;
+  color: var(--purple);
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.price-amount .unit {
+  font-size: 14px;
+  color: var(--gray);
+  font-weight: 600;
+  margin-left: 2px;
+}
+.price-features {
+  list-style: none;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-2);
+  margin-top: 16px;
+}
+.price-features li {
+  padding: 6px 0;
+  font-size: 13.5px;
+  color: var(--gray);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.price-features li::before {
+  content: '✓';
+  color: var(--purple);
+  font-weight: 800;
 }
 </style>
 </head>
 <body>
 
-<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+<div class="top-banner">로딩 중…</div>
 
 <nav>
-  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html">홈</a></li>
-    <li><a href="instructor.html">강사</a></li>
-    <li><a href="schedule.html" class="active">시간표</a></li>
-    <li><a href="youtube.html">유튜브</a></li>
-    <li><a href="location.html">오시는 길</a></li>
-  </ul>
-  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">홈</a></li>
+      <li><a href="instructor.html">강사</a></li>
+      <li><a href="schedule.html" class="active">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
 </nav>
 
-<div class="page-wrap">
-  <div class="section-header">
-    <div class="section-label">SCHEDULE</div>
-    <div class="section-title">주간 시간표</div>
-    <div class="section-desc">예약은 카카오 채널 또는 전화로 문의해 주세요 · 월~토 운영</div>
-  </div>
-
-  <div style="overflow-x: auto;">
-    <table class="schedule-table">
-      <thead>
-        <tr>
-          <th>시간</th>
-          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>10:00</td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag duo">듀엣</span></td>
-        </tr>
-        <tr>
-          <td>12:00</td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag duo">듀엣</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag solo">1:1</span></td>
-        </tr>
-        <tr>
-          <td>14:00</td>
-          <td><span class="tag preg">임산부</span></td>
-          <td><span class="tag duo">듀엣</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag preg">임산부</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag group">그룹</span></td>
-        </tr>
-        <tr>
-          <td>19:00</td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag solo">1:1</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag group">그룹</span></td>
-          <td><span class="tag duo">듀엣</span></td>
-          <td>-</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div style="margin-top: 40px;">
+<main>
+  <section class="page-wrap">
     <div class="section-header">
-      <div class="section-label">PRICE</div>
-      <div class="section-title">수업 요금</div>
+      <div class="section-label">SCHEDULE</div>
+      <div class="section-title">주간 시간표</div>
+      <div class="section-desc">원하는 시간대에 자유롭게 예약하세요</div>
     </div>
-    <div class="price-grid">
-      <div class="price-card featured">
-        <div class="price-name">1:1 개인 수업</div>
-        <div class="price-badge">인기</div>
-        <div class="price-amount">30만원~</div>
-        <div class="price-unit">/ 월 8회 기준</div>
-        <ul class="price-features">
-          <li>강사 1:1 맞춤 케어</li>
-          <li>체형 분석 포함</li>
-          <li>재활·교정 특화</li>
-        </ul>
-      </div>
-      <div class="price-card">
-        <div class="price-name">듀엣 수업</div>
-        <div class="price-amount">22만원~</div>
-        <div class="price-unit">/ 월 8회 기준 (1인)</div>
-        <ul class="price-features">
-          <li>2인 동시 진행</li>
-          <li>합리적인 가격</li>
-          <li>친구·커플 추천</li>
-        </ul>
-      </div>
-      <div class="price-card">
-        <div class="price-name">그룹 수업</div>
-        <div class="price-amount">15만원~</div>
-        <div class="price-unit">/ 월 8회 기준</div>
-        <ul class="price-features">
-          <li>최대 6인 소규모</li>
-          <li>함께하는 동기부여</li>
-          <li>입문자 추천</li>
-        </ul>
-      </div>
-      <div class="price-card">
-        <div class="price-name">임산부 수업</div>
-        <div class="price-amount">28만원~</div>
-        <div class="price-unit">/ 월 8회 기준</div>
-        <ul class="price-features">
-          <li>전문 자격 강사</li>
-          <li>산전·산후 모두 가능</li>
-          <li>안전한 맞춤 운동</li>
-        </ul>
-      </div>
-    </div>
-  </div>
 
-  <div style="text-align: center; margin-top: 40px; padding: 40px; background: white; border-radius: 20px; border: 1.5px solid var(--border);">
-    <div style="font-size: 20px; font-weight: 900; margin-bottom: 8px;">예약 문의</div>
-    <div style="font-size: 14px; color: var(--gray); margin-bottom: 20px;">전화 또는 카카오 채널로 편하게 문의해 주세요</div>
-    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
-      <a href="tel:010-0000-0000" class="btn-purple">📞 전화 예약</a>
-      <a href="https://open.kakao.com/" class="btn-outline">💬 카카오 문의</a>
+    <div class="schedule-wrap">
+      <table class="schedule-table" id="schedule-table">
+        <thead>
+          <tr>
+            <th>시간</th>
+            <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th><th>일</th>
+          </tr>
+        </thead>
+        <tbody id="schedule-body">
+          <tr><td colspan="8"><div class="loading-wrap"><div class="loader"></div></div></td></tr>
+        </tbody>
+      </table>
     </div>
-  </div>
-</div>
+
+    <div style="margin-top:80px;">
+      <div class="section-header">
+        <div class="section-label">PRICING</div>
+        <div class="section-title">가격 안내</div>
+        <div class="section-desc">필요에 맞는 패키지를 선택하세요</div>
+      </div>
+      <div class="price-grid" id="price-grid">
+        <div class="loading-wrap" style="grid-column:1/-1"><div class="loader"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <h2>지금 등록하고 첫 수업 무료로</h2>
+      <p>전화 한 통이면 끝. 부담 없이 문의하세요.</p>
+      <a href="#" data-tel class="btn-white btn-lg">전화 문의하기</a>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div>
-    <div class="footer-logo">스튜디오코어</div>
-    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+        <a href="schedule.html">가격</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="instructor.html">강사 소개</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
   </div>
-  <div class="footer-links">
-    <div class="footer-col">
-      <h4>수업</h4>
-      <a href="index.html">수업 소개</a>
-      <a href="instructor.html">강사 소개</a>
-    </div>
-    <div class="footer-col">
-      <h4>안내</h4>
-      <a href="youtube.html">유튜브</a>
-      <a href="location.html">오시는 길</a>
-    </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
   </div>
 </footer>
 
-<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  // ── 시간표 ──
+  const { data: rows } = await PILATES.sb
+    .from('pilates_schedule')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('day_of_week', { ascending: true })
+    .order('start_time', { ascending: true });
+
+  // 시간별로 묶기 (start_time 기준)
+  const byTime = new Map();
+  (rows || []).forEach(r => {
+    const key = r.start_time;
+    if (!byTime.has(key)) byTime.set(key, {});
+    byTime.get(key)[r.day_of_week] = r;
+  });
+
+  const tbody = document.getElementById('schedule-body');
+  if (!byTime.size) {
+    tbody.innerHTML = `<tr><td colspan="8" class="muted" style="padding:40px;">등록된 시간표가 없습니다.</td></tr>`;
+  } else {
+    const sortedTimes = [...byTime.keys()].sort();
+    tbody.innerHTML = sortedTimes.map(time => {
+      const row = byTime.get(time);
+      const cells = [0,1,2,3,4,5,6].map(d => {
+        const item = row[d];
+        if (!item) return '<td>-</td>';
+        const typeClass = item.class_type || 'solo';
+        return `<td>
+          <span class="tag ${PILATES.esc(typeClass)}">${PILATES.esc(item.class_name || '')}</span>
+          ${item.instructor_name ? `<span class="tag-instructor">${PILATES.esc(item.instructor_name)}</span>` : ''}
+        </td>`;
+      }).join('');
+      return `<tr><td>${PILATES.esc(time)}</td>${cells}</tr>`;
+    }).join('');
+  }
+
+  // ── 가격 ──
+  const { data: prices } = await PILATES.sb
+    .from('pilates_pricing')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('price-grid').innerHTML = (prices || []).length
+    ? prices.map(p => `
+        <div class="price-card ${p.featured ? 'featured' : ''}">
+          ${p.badge ? `<div class="price-badge">${PILATES.esc(p.badge)}</div>` : ''}
+          <div class="price-name">${PILATES.esc(p.name)}</div>
+          <div class="price-amount">${PILATES.esc(p.amount)}<span class="unit">${PILATES.esc(p.unit || '원')}</span></div>
+          ${(p.features && p.features.length)
+            ? `<ul class="price-features">${p.features.map(f => `<li>${PILATES.esc(f)}</li>`).join('')}</ul>`
+            : ''}
+        </div>`).join('')
+    : `<div class="muted text-center" style="padding:40px; grid-column:1/-1;">등록된 가격이 없습니다.</div>`;
+});
+</script>
 </body>
 </html>

@@ -3,171 +3,249 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>오시는 길 | 스튜디오 코어</title>
+<title>오시는 길 | 필라테스</title>
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 .location-wrap {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 32px;
   align-items: start;
 }
 .map-box {
-  background: var(--purple-pale);
-  border-radius: 20px;
-  height: 320px;
+  background: linear-gradient(135deg, var(--purple-pale), #DDD6FE);
+  border-radius: var(--radius-lg);
+  height: 380px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 60px;
+  font-size: 72px;
   border: 1.5px solid var(--border);
+  position: relative;
+}
+.map-pin {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 10px 18px;
+  border-radius: var(--radius-pill);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--dark);
+  box-shadow: var(--shadow-md);
 }
 .info-card {
   background: white;
-  border-radius: 20px;
-  padding: 28px;
+  border-radius: var(--radius-lg);
+  padding: 32px;
   border: 1.5px solid var(--border);
 }
 .info-row {
   display: flex;
-  gap: 14px;
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border-2);
   align-items: flex-start;
 }
-.info-row:last-child { border-bottom: none; }
+.info-row:first-child { padding-top: 0; }
+.info-row:last-child { border-bottom: none; padding-bottom: 0; }
 .info-icon {
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   background: var(--purple-pale);
-  border-radius: 10px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
+  font-size: 20px;
   flex-shrink: 0;
 }
-.info-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; font-weight: 600; }
-.info-value { font-size: 14px; color: var(--dark); line-height: 1.6; }
+.info-label {
+  font-size: 12px;
+  color: var(--gray);
+  margin-bottom: 4px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+}
+.info-value {
+  font-size: 15px;
+  color: var(--dark);
+  line-height: 1.6;
+  font-weight: 500;
+}
 
 .contact-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
-  margin-top: 32px;
+  margin-top: 48px;
 }
 .contact-card {
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radius-md);
   padding: 24px;
-  text-align: center;
   border: 1.5px solid var(--border);
-  text-decoration: none;
-  color: inherit;
-  transition: border-color 0.2s;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
-.contact-card:hover { border-color: var(--purple); }
+.contact-card:hover {
+  border-color: var(--purple);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+}
 .contact-icon { font-size: 32px; margin-bottom: 10px; }
-.contact-label { font-size: 13px; color: var(--gray); margin-bottom: 4px; }
-.contact-value { font-size: 16px; font-weight: 700; color: var(--purple); }
+.contact-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 4px;
+}
+.contact-sub {
+  font-size: 13px;
+  color: var(--gray);
+}
 
-@media (max-width: 640px) {
-  .location-wrap { grid-template-columns: 1fr; }
-  .contact-grid { grid-template-columns: 1fr; }
-  .map-box { height: 200px; }
+@media (max-width: 768px) {
+  .location-wrap { grid-template-columns: 1fr; gap: 20px; }
+  .map-box { height: 240px; font-size: 48px; }
 }
 </style>
 </head>
 <body>
 
-<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+<div class="top-banner">로딩 중…</div>
 
 <nav>
-  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html">홈</a></li>
-    <li><a href="instructor.html">강사</a></li>
-    <li><a href="schedule.html">시간표</a></li>
-    <li><a href="youtube.html">유튜브</a></li>
-    <li><a href="location.html" class="active">오시는 길</a></li>
-  </ul>
-  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">홈</a></li>
+      <li><a href="instructor.html">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html" class="active">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
 </nav>
 
-<div class="page-wrap">
-  <div class="section-header">
-    <div class="section-label">LOCATION</div>
-    <div class="section-title">오시는 길</div>
-    <div class="section-desc">역삼역 2번 출구에서 도보 3분 거리에 위치해 있습니다</div>
-  </div>
+<main>
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">LOCATION</div>
+      <div class="section-title">오시는 길</div>
+      <div class="section-desc">교통 편한 위치, 주차 가능</div>
+    </div>
 
-  <div class="location-wrap">
-    <div class="map-box">🗺️</div>
-    <div class="info-card">
-      <div class="info-row">
-        <div class="info-icon">📍</div>
-        <div>
-          <div class="info-label">주소</div>
-          <div class="info-value">서울시 강남구 테헤란로 123, 4층<br><small style="color:var(--gray)">역삼역 2번 출구 도보 3분</small></div>
-        </div>
+    <div class="location-wrap">
+      <div class="map-box">
+        📍
+        <div class="map-pin" id="map-pin-name">스튜디오</div>
       </div>
-      <div class="info-row">
-        <div class="info-icon">🕐</div>
-        <div>
-          <div class="info-label">운영시간</div>
-          <div class="info-value">월~금 09:00 ~ 21:00<br>토 09:00 ~ 18:00<br>일요일 휴무</div>
+
+      <div class="info-card" id="info-card">
+        <div class="info-row">
+          <div class="info-icon">📍</div>
+          <div>
+            <div class="info-label">주소</div>
+            <div class="info-value" id="info-address">-</div>
+          </div>
         </div>
-      </div>
-      <div class="info-row">
-        <div class="info-icon">🚇</div>
-        <div>
-          <div class="info-label">지하철</div>
-          <div class="info-value">2호선 역삼역 2번 출구<br>도보 3분</div>
+        <div class="info-row">
+          <div class="info-icon">📞</div>
+          <div>
+            <div class="info-label">전화</div>
+            <div class="info-value"><a id="info-phone" href="#" data-tel style="color:var(--purple);">-</a></div>
+          </div>
         </div>
-      </div>
-      <div class="info-row">
-        <div class="info-icon">🅿️</div>
-        <div>
-          <div class="info-label">주차</div>
-          <div class="info-value">건물 내 주차 가능<br>수업 시간 2시간 무료</div>
+        <div class="info-row">
+          <div class="info-icon">🕒</div>
+          <div>
+            <div class="info-label">운영시간</div>
+            <div class="info-value" id="info-hours">-</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🚇</div>
+          <div>
+            <div class="info-label">대중교통</div>
+            <div class="info-value" id="info-subway">-</div>
+          </div>
+        </div>
+        <div class="info-row">
+          <div class="info-icon">🅿️</div>
+          <div>
+            <div class="info-label">주차</div>
+            <div class="info-value" id="info-parking">-</div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="contact-grid">
-    <a href="tel:010-0000-0000" class="contact-card">
-      <div class="contact-icon">📞</div>
-      <div class="contact-label">전화 문의</div>
-      <div class="contact-value">010-0000-0000</div>
-    </a>
-    <a href="https://open.kakao.com/" class="contact-card" target="_blank">
-      <div class="contact-icon">💬</div>
-      <div class="contact-label">카카오 문의</div>
-      <div class="contact-value">카카오 채널 바로가기</div>
-    </a>
-  </div>
-</div>
+    <div class="contact-grid">
+      <a href="#" data-tel class="contact-card">
+        <div class="contact-icon">📞</div>
+        <div class="contact-title">전화 문의</div>
+        <div class="contact-sub">바로 통화</div>
+      </a>
+      <a href="#" id="contact-kakao" target="_blank" class="contact-card">
+        <div class="contact-icon">💬</div>
+        <div class="contact-title">카카오톡</div>
+        <div class="contact-sub">채팅 문의</div>
+      </a>
+      <a href="schedule.html" class="contact-card">
+        <div class="contact-icon">📅</div>
+        <div class="contact-title">예약하기</div>
+        <div class="contact-sub">시간표 보기</div>
+      </a>
+      <a href="instructor.html" class="contact-card">
+        <div class="contact-icon">🧘</div>
+        <div class="contact-title">강사 소개</div>
+        <div class="contact-sub">전문 강사진</div>
+      </a>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div>
-    <div class="footer-logo">스튜디오코어</div>
-    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="instructor.html">강사</a>
+        <a href="youtube.html">유튜브</a>
+      </div>
+    </div>
   </div>
-  <div class="footer-links">
-    <div class="footer-col">
-      <h4>수업</h4>
-      <a href="index.html">수업 소개</a>
-      <a href="schedule.html">시간표</a>
-    </div>
-    <div class="footer-col">
-      <h4>안내</h4>
-      <a href="instructor.html">강사 소개</a>
-      <a href="youtube.html">유튜브</a>
-    </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
   </div>
 </footer>
 
-<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  document.getElementById('map-pin-name').textContent = center.name;
+  document.getElementById('info-address').textContent =
+    [center.address, center.address_detail].filter(Boolean).join(' ') || '-';
+  document.getElementById('info-phone').textContent = center.phone || '-';
+  document.getElementById('info-hours').textContent = center.business_hours || '-';
+  document.getElementById('info-subway').textContent = center.subway_info || '-';
+  document.getElementById('info-parking').textContent = center.parking_info || '-';
+  if (center.kakao_link) {
+    document.getElementById('contact-kakao').setAttribute('href', center.kakao_link);
+  }
+});
+</script>
 </body>
 </html>

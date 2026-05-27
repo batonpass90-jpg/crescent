@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대시보드 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main-content">
+    <div class="page-head">
+      <div>
+        <h1>대시보드</h1>
+        <p>한눈에 보는 내 사이트 현황</p>
+      </div>
+      <div class="page-head-actions">
+        <a id="preview-link" href="#" target="_blank" class="btn-outline">내 사이트 미리보기 →</a>
+      </div>
+    </div>
+
+    <div class="kpi-grid" id="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">강사</div><div class="kpi-num" id="kpi-instructors">-</div><a href="instructors.html">관리 →</a></div>
+      <div class="kpi-card"><div class="kpi-label">수업 종류</div><div class="kpi-num" id="kpi-classes">-</div><a href="classes.html">관리 →</a></div>
+      <div class="kpi-card"><div class="kpi-label">시간표</div><div class="kpi-num" id="kpi-schedule">-</div><a href="schedule.html">관리 →</a></div>
+      <div class="kpi-card"><div class="kpi-label">가격</div><div class="kpi-num" id="kpi-pricing">-</div><a href="pricing.html">관리 →</a></div>
+      <div class="kpi-card"><div class="kpi-label">유튜브</div><div class="kpi-num" id="kpi-youtube">-</div><a href="youtube.html">관리 →</a></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">내 사이트 주소</div>
+      <p style="color:var(--gray); font-size:14px; margin-bottom:14px;">
+        아래 주소를 명함, SNS, 카카오톡 채널 등에 공유하세요.
+      </p>
+      <div style="background: var(--gray-light); padding:14px 16px; border-radius:10px; font-family:monospace; font-size:14px; color:var(--purple); word-break:break-all;" id="site-url">로딩중…</div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">빠른 시작</div>
+      <ol style="padding-left:20px; color:var(--dark); line-height:2; font-size:14px;">
+        <li><a href="info.html" style="color:var(--purple); font-weight:700;">기본 정보</a>에서 스튜디오 이름, 전화번호, 주소를 입력하세요.</li>
+        <li><a href="instructors.html" style="color:var(--purple); font-weight:700;">강사</a> 페이지에서 우리 센터 강사들을 등록하세요.</li>
+        <li><a href="classes.html" style="color:var(--purple); font-weight:700;">수업 종류</a>를 우리 센터에 맞게 추가/수정하세요.</li>
+        <li><a href="schedule.html" style="color:var(--purple); font-weight:700;">시간표</a>와 <a href="pricing.html" style="color:var(--purple); font-weight:700;">가격</a>을 입력하세요.</li>
+        <li><a href="youtube.html" style="color:var(--purple); font-weight:700;">유튜브 영상</a>도 등록할 수 있습니다.</li>
+      </ol>
+    </div>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+ADMIN.bootAdmin('index.html', async ({ user, center }) => {
+  // 사이트 URL
+  const url = `${location.origin}/pilates/?c=${encodeURIComponent(center.slug)}`;
+  document.getElementById('site-url').textContent = url;
+  document.getElementById('preview-link').href = `../index.html?c=${encodeURIComponent(center.slug)}`;
+
+  // KPI 카운트
+  async function count(table) {
+    const { count: n } = await ADMIN.sb
+      .from(table).select('id', { count: 'exact', head: true })
+      .eq('center_id', center.id);
+    return n ?? 0;
+  }
+  document.getElementById('kpi-instructors').textContent = await count('pilates_instructors');
+  document.getElementById('kpi-classes').textContent    = await count('pilates_classes');
+  document.getElementById('kpi-schedule').textContent   = await count('pilates_schedule');
+  document.getElementById('kpi-pricing').textContent    = await count('pilates_pricing');
+  document.getElementById('kpi-youtube').textContent    = await count('pilates_youtube');
+});
+</script>
+</body>
+</html>

@@ -3,174 +3,143 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>유튜브 | 스튜디오 코어</title>
+<title>유튜브 | 필라테스</title>
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-.yt-grid {
+.video-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 28px;
 }
-.yt-card {
+.video-card {
   background: white;
-  border-radius: 16px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1.5px solid var(--border);
-  transition: box-shadow 0.2s;
-  text-decoration: none;
-  color: inherit;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.yt-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-.yt-thumb {
-  background: #1A1A2E;
-  aspect-ratio: 16/9;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.video-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+.video-frame {
   position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #000;
 }
-.yt-play {
-  width: 52px;
-  height: 52px;
-  background: rgba(255,255,255,0.9);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-}
-.yt-duration {
+.video-frame iframe {
   position: absolute;
-  bottom: 8px;
-  right: 10px;
-  background: rgba(0,0,0,0.7);
-  color: white;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
 }
-.yt-info { padding: 16px; }
-.yt-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
-.yt-meta { font-size: 12px; color: var(--gray); }
-
-.yt-banner {
-  background: var(--dark);
-  border-radius: 20px;
-  padding: 40px;
-  text-align: center;
-  margin-top: 40px;
+.video-body { padding: 22px 24px 26px; }
+.video-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.4px;
 }
-.yt-banner h3 { font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px; }
-.yt-banner p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
-.btn-red {
-  display: inline-block;
-  background: #FF0000;
-  color: white;
-  font-weight: 700;
+.video-desc {
   font-size: 14px;
-  padding: 12px 28px;
-  border-radius: 99px;
-  text-decoration: none;
-}
-
-@media (max-width: 640px) {
-  .yt-grid { grid-template-columns: 1fr; }
+  color: var(--gray);
+  line-height: 1.7;
 }
 </style>
 </head>
 <body>
 
-<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+<div class="top-banner">로딩 중…</div>
 
 <nav>
-  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html">홈</a></li>
-    <li><a href="instructor.html">강사</a></li>
-    <li><a href="schedule.html">시간표</a></li>
-    <li><a href="youtube.html" class="active">유튜브</a></li>
-    <li><a href="location.html">오시는 길</a></li>
-  </ul>
-  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">홈</a></li>
+      <li><a href="instructor.html">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html" class="active">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
 </nav>
 
-<div class="page-wrap">
-  <div class="section-header">
-    <div class="section-label">YOUTUBE</div>
-    <div class="section-title">집에서 먼저 만나보세요</div>
-    <div class="section-desc">무료 필라테스 영상으로 스튜디오 코어의 수업을 미리 경험해 보세요</div>
-  </div>
+<main>
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">YOUTUBE</div>
+      <div class="section-title">집에서 따라하는 영상</div>
+      <div class="section-desc">강사가 직접 촬영한 운동 영상으로 미리 체험해 보세요</div>
+    </div>
 
-  <div class="yt-grid">
-    <a href="https://youtube.com" class="yt-card" target="_blank">
-      <div class="yt-thumb">
-        <div class="yt-play">▶</div>
-        <div class="yt-duration">10:24</div>
-      </div>
-      <div class="yt-info">
-        <div class="yt-title">초보자도 할 수 있는 허리 강화 필라테스 루틴</div>
-        <div class="yt-meta">조회수 12,400 · 2주 전</div>
-      </div>
-    </a>
-    <a href="https://youtube.com" class="yt-card" target="_blank">
-      <div class="yt-thumb">
-        <div class="yt-play">▶</div>
-        <div class="yt-duration">8:15</div>
-      </div>
-      <div class="yt-info">
-        <div class="yt-title">10분 코어 강화 운동 — 매일 따라해 보세요</div>
-        <div class="yt-meta">조회수 8,700 · 3주 전</div>
-      </div>
-    </a>
-    <a href="https://youtube.com" class="yt-card" target="_blank">
-      <div class="yt-thumb">
-        <div class="yt-play">▶</div>
-        <div class="yt-duration">12:38</div>
-      </div>
-      <div class="yt-info">
-        <div class="yt-title">어깨 교정 스트레칭 — 직장인 필수 루틴</div>
-        <div class="yt-meta">조회수 21,300 · 1개월 전</div>
-      </div>
-    </a>
-    <a href="https://youtube.com" class="yt-card" target="_blank">
-      <div class="yt-thumb">
-        <div class="yt-play">▶</div>
-        <div class="yt-duration">9:52</div>
-      </div>
-      <div class="yt-info">
-        <div class="yt-title">골반 교정 필라테스 — 체형 불균형 해결</div>
-        <div class="yt-meta">조회수 15,600 · 1개월 전</div>
-      </div>
-    </a>
-  </div>
+    <div class="video-grid" id="video-grid">
+      <div class="loading-wrap" style="grid-column:1/-1"><div class="loader"></div></div>
+    </div>
+  </section>
 
-  <div class="yt-banner">
-    <h3>📺 유튜브 채널 구독하기</h3>
-    <p>새 영상이 업로드될 때마다 알림을 받아보세요</p>
-    <a href="https://youtube.com" class="btn-red" target="_blank">🔔 채널 구독하기</a>
-  </div>
-</div>
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <h2>영상만으론 부족하다면?</h2>
+      <p>전문 강사와 함께 1:1 맞춤 수업을 받아보세요</p>
+      <a href="#" data-tel class="btn-white btn-lg">무료 체험 신청</a>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div>
-    <div class="footer-logo">스튜디오코어</div>
-    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="instructor.html">강사</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
   </div>
-  <div class="footer-links">
-    <div class="footer-col">
-      <h4>수업</h4>
-      <a href="index.html">수업 소개</a>
-      <a href="schedule.html">시간표</a>
-    </div>
-    <div class="footer-col">
-      <h4>안내</h4>
-      <a href="instructor.html">강사 소개</a>
-      <a href="location.html">오시는 길</a>
-    </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
   </div>
 </footer>
 
-<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  const { data: videos } = await PILATES.sb
+    .from('pilates_youtube')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('video-grid').innerHTML = (videos || []).length
+    ? videos.map(v => `
+        <div class="video-card">
+          <div class="video-frame">
+            <iframe
+              src="https://www.youtube.com/embed/${PILATES.esc(v.video_id)}"
+              title="${PILATES.esc(v.title || '')}"
+              loading="lazy"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen></iframe>
+          </div>
+          <div class="video-body">
+            <div class="video-title">${PILATES.esc(v.title || '제목 없음')}</div>
+            ${v.description ? `<div class="video-desc">${PILATES.nl2br(v.description)}</div>` : ''}
+          </div>
+        </div>`).join('')
+    : `<div class="muted text-center" style="padding:60px; grid-column:1/-1;">등록된 영상이 없습니다.</div>`;
+});
+</script>
 </body>
 </html>

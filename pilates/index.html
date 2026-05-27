@@ -3,285 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>스튜디오 코어 | 필라테스</title>
+<title>홈 | 필라테스</title>
 <link rel="stylesheet" href="common.css">
-<style>
-/* ── 히어로 ── */
-.hero {
-  background: white;
-  padding: 64px 40px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 48px;
-  align-items: center;
-  max-width: 960px;
-  margin: 0 auto;
-}
-.hero-title { font-size: clamp(28px, 4vw, 42px); font-weight: 900; line-height: 1.3; margin-bottom: 16px; }
-.hero-title .highlight { color: var(--purple); }
-.hero-desc { font-size: 15px; color: var(--gray); line-height: 1.8; margin-bottom: 28px; }
-.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
-.hero-map {
-  background: var(--purple-pale);
-  border-radius: 20px;
-  height: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-.map-circle {
-  width: 200px;
-  height: 200px;
-  background: rgba(107,92,231,0.12);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-.map-center {
-  width: 52px;
-  height: 52px;
-  background: var(--purple);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 16px rgba(107,92,231,0.4);
-}
-.map-dot {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background: rgba(107,92,231,0.25);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 15px;
-}
-.map-bubble {
-  position: absolute;
-  top: 16px;
-  right: -10px;
-  background: white;
-  border-radius: 12px;
-  padding: 8px 14px;
-  font-size: 13px;
-  font-weight: 700;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  white-space: nowrap;
-}
-
-/* ── 수치 바 ── */
-.stats-bar {
-  background: var(--purple);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-.stat-item {
-  padding: 28px 20px;
-  text-align: center;
-  border-right: 1px solid rgba(255,255,255,0.15);
-}
-.stat-item:last-child { border-right: none; }
-.stat-num { font-size: 32px; font-weight: 900; color: white; display: block; }
-.stat-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px; }
-
-/* ── 수업 카드 ── */
-.class-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px;
-}
-.class-card {
-  background: white;
-  border-radius: 16px;
-  padding: 24px;
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-  border: 1.5px solid var(--border);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  text-decoration: none;
-  color: inherit;
-}
-.class-card:hover {
-  border-color: var(--purple-light);
-  box-shadow: 0 4px 20px rgba(107,92,231,0.1);
-}
-.class-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px;
-  flex-shrink: 0;
-}
-.class-name { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
-.class-info { font-size: 13px; color: var(--gray); line-height: 1.6; margin-bottom: 8px; }
-.class-price { font-size: 14px; font-weight: 700; color: var(--purple); }
-
-/* ── CTA 배너 ── */
-.cta-banner {
-  background: var(--purple);
-  border-radius: 20px;
-  padding: 48px 40px;
-  text-align: center;
-  margin-top: 48px;
-}
-.cta-banner h2 { font-size: 24px; font-weight: 900; color: white; margin-bottom: 10px; }
-.cta-banner p { color: rgba(255,255,255,0.75); font-size: 14px; margin-bottom: 24px; }
-.btn-white {
-  display: inline-block;
-  background: white;
-  color: var(--purple);
-  font-weight: 800;
-  font-size: 15px;
-  padding: 14px 32px;
-  border-radius: 99px;
-  text-decoration: none;
-}
-
-@media (max-width: 640px) {
-  .hero { grid-template-columns: 1fr; padding: 32px 20px; }
-  .hero-map { display: none; }
-  .class-grid { grid-template-columns: 1fr; }
-  .stats-bar { grid-template-columns: 1fr 1fr 1fr; }
-}
-</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 </head>
 <body>
 
-<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+<div class="top-banner">로딩 중…</div>
 
 <nav>
-  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html" class="active">홈</a></li>
-    <li><a href="instructor.html">강사</a></li>
-    <li><a href="schedule.html">시간표</a></li>
-    <li><a href="youtube.html">유튜브</a></li>
-    <li><a href="location.html">오시는 길</a></li>
-  </ul>
-  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">홈</a></li>
+      <li><a href="instructor.html">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
 </nav>
 
-<!-- 히어로 -->
-<div style="background: white;">
-  <div class="hero">
-    <div>
-      <div class="hero-title">
-        내 몸에 딱 맞는<br>
-        <span class="highlight">1:1 맞춤 필라테스</span><br>
-        지금 시작하세요
-      </div>
-      <div class="hero-desc">
-        체형 교정부터 코어 강화까지,<br>
-        전문 강사와 함께하는 맞춤형 프로그램을 경험해 보세요.
-      </div>
+<main>
+  <!-- 풀폭 히어로 -->
+  <section class="hero-full">
+    <div class="hero-inner">
+      <h1 class="hero-title-big" id="hero-title">
+        <span id="hero-line-1">로딩 중</span><br>
+        <span class="highlight" id="hero-line-2"></span><br>
+        <span id="hero-line-3"></span>
+      </h1>
+      <p class="hero-desc-big" id="hero-desc"></p>
       <div class="hero-btns">
-        <a href="schedule.html" class="btn-outline">수업 둘러보기</a>
-        <a href="tel:010-0000-0000" class="btn-purple">무료 체험 신청 →</a>
+        <a href="schedule.html" class="btn-outline btn-lg">수업 둘러보기</a>
+        <a href="#" data-tel class="btn-purple btn-lg">무료 체험 신청 →</a>
       </div>
     </div>
-    <div class="hero-map">
-      <div class="map-circle">
-        <div class="map-center">🏃</div>
-        <div class="map-dot" style="top:20px; left:20px;">👤</div>
-        <div class="map-dot" style="bottom:30px; left:15px;">👤</div>
-        <div class="map-dot" style="bottom:20px; right:25px;">👤</div>
-      </div>
-      <div class="map-bubble">스튜디오 코어 필라테스</div>
+  </section>
+
+  <!-- 통계 -->
+  <section class="stats-full">
+    <div class="stats-grid" id="stats-grid"></div>
+  </section>
+
+  <!-- 수업 종류 -->
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">CLASS</div>
+      <div class="section-title">목적에 맞는 수업을 선택하세요</div>
+      <div class="section-desc">1:1 집중 케어부터 소그룹까지, 체형과 목적에 맞게 설계합니다</div>
     </div>
-  </div>
-</div>
+    <div class="class-grid" id="class-grid">
+      <div class="loading-wrap"><div class="loader"></div></div>
+    </div>
+  </section>
 
-<!-- 수치 -->
-<div class="stats-bar">
-  <div class="stat-item"><span class="stat-num">500+</span><div class="stat-label">누적 회원</div></div>
-  <div class="stat-item"><span class="stat-num">5년</span><div class="stat-label">운영 경력</div></div>
-  <div class="stat-item"><span class="stat-num">4.9★</span><div class="stat-label">회원 만족도</div></div>
-</div>
-
-<!-- 수업 -->
-<div class="page-wrap">
-  <div class="section-header">
-    <div class="section-label">CLASS</div>
-    <div class="section-title">목적에 맞는 수업을 선택하세요</div>
-    <div class="section-desc">1:1 집중 케어부터 소그룹 수업까지, 체형과 목적에 맞게 설계합니다</div>
-  </div>
-  <div class="class-grid">
-    <a href="schedule.html" class="class-card">
-      <div class="class-icon" style="background:#F0EFFE;">🧘</div>
-      <div>
-        <div class="class-name">1:1 개인 수업</div>
-        <div class="class-info">강사와 단둘이 진행하는 맞춤형 수업. 체형 교정·재활에 최적화.</div>
-        <div class="class-price">월 30만원~</div>
-      </div>
-    </a>
-    <a href="schedule.html" class="class-card">
-      <div class="class-icon" style="background:#FFF9E6;">👥</div>
-      <div>
-        <div class="class-name">듀엣 수업</div>
-        <div class="class-info">친구·커플과 함께 받는 2인 수업. 합리적인 가격으로 케어.</div>
-        <div class="class-price">월 22만원~</div>
-      </div>
-    </a>
-    <a href="schedule.html" class="class-card">
-      <div class="class-icon" style="background:#FEF0F0;">🏃</div>
-      <div>
-        <div class="class-name">그룹 수업</div>
-        <div class="class-info">최대 6인 소규모 그룹. 함께하는 동기부여와 즐거움.</div>
-        <div class="class-price">월 15만원~</div>
-      </div>
-    </a>
-    <a href="schedule.html" class="class-card">
-      <div class="class-icon" style="background:#EFF6FF;">🌿</div>
-      <div>
-        <div class="class-name">임산부 수업</div>
-        <div class="class-info">임신 중 안전한 운동. 전문 자격 강사와 함께.</div>
-        <div class="class-price">월 28만원~</div>
-      </div>
-    </a>
-  </div>
-
-  <div class="cta-banner">
-    <h2>지금 첫 수업 무료로 경험해보세요</h2>
-    <p>등록비 0원 · 약정 없음 · 언제든지 해지 가능</p>
-    <a href="tel:010-0000-0000" class="btn-white">무료 체험 신청하기</a>
-  </div>
-</div>
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <h2>지금 첫 수업 무료로 경험해보세요</h2>
+      <p>등록비 0원 · 약정 없음 · 언제든지 해지 가능</p>
+      <a href="#" data-tel class="btn-white btn-lg">무료 체험 신청하기</a>
+    </div>
+  </section>
+</main>
 
 <footer>
-  <div>
-    <div class="footer-logo">스튜디오코어</div>
-    <div>대표: 김지연 | 사업자등록번호: 000-00-00000<br>
-    서울시 강남구 테헤란로 123, 4층<br>
-    Tel: 010-0000-0000<br>
-    <a href="#" style="color:rgba(255,255,255,0.4); text-decoration:none;">이용약관</a> |
-    <a href="#" style="color:rgba(255,255,255,0.4); text-decoration:none;">개인정보처리방침</a></div>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+        <a href="schedule.html">가격</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="instructor.html">강사 소개</a>
+        <a href="youtube.html">유튜브</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
   </div>
-  <div class="footer-links">
-    <div class="footer-col">
-      <h4>수업</h4>
-      <a href="schedule.html">1:1 수업</a>
-      <a href="schedule.html">듀엣 수업</a>
-      <a href="schedule.html">그룹 수업</a>
-    </div>
-    <div class="footer-col">
-      <h4>안내</h4>
-      <a href="instructor.html">강사 소개</a>
-      <a href="youtube.html">유튜브</a>
-      <a href="location.html">오시는 길</a>
-    </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
   </div>
 </footer>
 
-<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  // 히어로
+  document.getElementById('hero-line-1').textContent = center.hero_title || '내 몸에 딱 맞는';
+  document.getElementById('hero-line-2').textContent = center.hero_highlight || '1:1 맞춤 필라테스';
+  document.getElementById('hero-line-3').textContent = center.hero_subtitle || '지금 시작하세요';
+  document.getElementById('hero-desc').textContent = center.hero_description || '';
+
+  // 통계
+  const stats = Array.isArray(center.stats) ? center.stats : [];
+  document.getElementById('stats-grid').innerHTML = stats.length
+    ? stats.map(s => `
+        <div class="stat-item">
+          <span class="stat-num">${PILATES.esc(s.num)}</span>
+          <div class="stat-label">${PILATES.esc(s.label)}</div>
+        </div>`).join('')
+    : '';
+
+  // 수업 종류
+  const { data: classes } = await PILATES.sb
+    .from('pilates_classes')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('class-grid').innerHTML = (classes || []).length
+    ? classes.map(c => `
+        <a href="schedule.html" class="class-card">
+          <div class="class-icon" style="background:${PILATES.esc(c.bg_color || '#F0EFFE')};">${PILATES.esc(c.emoji || '🧘')}</div>
+          <div class="class-body">
+            <div class="class-name">${PILATES.esc(c.name)}</div>
+            <div class="class-info">${PILATES.esc(c.description || '')}</div>
+            ${c.price ? `<div class="class-price">${PILATES.esc(c.price)}</div>` : ''}
+          </div>
+        </a>`).join('')
+    : `<div class="muted text-center" style="padding:40px; grid-column:1/-1;">등록된 수업이 없습니다.</div>`;
+});
+</script>
 </body>
 </html>
