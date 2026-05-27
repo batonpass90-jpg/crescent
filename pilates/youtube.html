@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>유튜브 | 스튜디오 코어</title>
+<link rel="stylesheet" href="common.css">
+<style>
+.yt-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+.yt-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  transition: box-shadow 0.2s;
+  text-decoration: none;
+  color: inherit;
+}
+.yt-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.yt-thumb {
+  background: #1A1A2E;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.yt-play {
+  width: 52px;
+  height: 52px;
+  background: rgba(255,255,255,0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.yt-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.yt-info { padding: 16px; }
+.yt-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; line-height: 1.4; }
+.yt-meta { font-size: 12px; color: var(--gray); }
+
+.yt-banner {
+  background: var(--dark);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  margin-top: 40px;
+}
+.yt-banner h3 { font-size: 20px; font-weight: 900; color: white; margin-bottom: 8px; }
+.yt-banner p { font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 20px; }
+.btn-red {
+  display: inline-block;
+  background: #FF0000;
+  color: white;
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 28px;
+  border-radius: 99px;
+  text-decoration: none;
+}
+
+@media (max-width: 640px) {
+  .yt-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+
+<nav>
+  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="instructor.html">강사</a></li>
+    <li><a href="schedule.html">시간표</a></li>
+    <li><a href="youtube.html" class="active">유튜브</a></li>
+    <li><a href="location.html">오시는 길</a></li>
+  </ul>
+  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="section-header">
+    <div class="section-label">YOUTUBE</div>
+    <div class="section-title">집에서 먼저 만나보세요</div>
+    <div class="section-desc">무료 필라테스 영상으로 스튜디오 코어의 수업을 미리 경험해 보세요</div>
+  </div>
+
+  <div class="yt-grid">
+    <a href="https://youtube.com" class="yt-card" target="_blank">
+      <div class="yt-thumb">
+        <div class="yt-play">▶</div>
+        <div class="yt-duration">10:24</div>
+      </div>
+      <div class="yt-info">
+        <div class="yt-title">초보자도 할 수 있는 허리 강화 필라테스 루틴</div>
+        <div class="yt-meta">조회수 12,400 · 2주 전</div>
+      </div>
+    </a>
+    <a href="https://youtube.com" class="yt-card" target="_blank">
+      <div class="yt-thumb">
+        <div class="yt-play">▶</div>
+        <div class="yt-duration">8:15</div>
+      </div>
+      <div class="yt-info">
+        <div class="yt-title">10분 코어 강화 운동 — 매일 따라해 보세요</div>
+        <div class="yt-meta">조회수 8,700 · 3주 전</div>
+      </div>
+    </a>
+    <a href="https://youtube.com" class="yt-card" target="_blank">
+      <div class="yt-thumb">
+        <div class="yt-play">▶</div>
+        <div class="yt-duration">12:38</div>
+      </div>
+      <div class="yt-info">
+        <div class="yt-title">어깨 교정 스트레칭 — 직장인 필수 루틴</div>
+        <div class="yt-meta">조회수 21,300 · 1개월 전</div>
+      </div>
+    </a>
+    <a href="https://youtube.com" class="yt-card" target="_blank">
+      <div class="yt-thumb">
+        <div class="yt-play">▶</div>
+        <div class="yt-duration">9:52</div>
+      </div>
+      <div class="yt-info">
+        <div class="yt-title">골반 교정 필라테스 — 체형 불균형 해결</div>
+        <div class="yt-meta">조회수 15,600 · 1개월 전</div>
+      </div>
+    </a>
+  </div>
+
+  <div class="yt-banner">
+    <h3>📺 유튜브 채널 구독하기</h3>
+    <p>새 영상이 업로드될 때마다 알림을 받아보세요</p>
+    <a href="https://youtube.com" class="btn-red" target="_blank">🔔 채널 구독하기</a>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-logo">스튜디오코어</div>
+    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  </div>
+  <div class="footer-links">
+    <div class="footer-col">
+      <h4>수업</h4>
+      <a href="index.html">수업 소개</a>
+      <a href="schedule.html">시간표</a>
+    </div>
+    <div class="footer-col">
+      <h4>안내</h4>
+      <a href="instructor.html">강사 소개</a>
+      <a href="location.html">오시는 길</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+</body>
+</html>

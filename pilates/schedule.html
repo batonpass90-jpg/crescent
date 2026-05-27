@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간표 | 스튜디오 코어</title>
+<link rel="stylesheet" href="common.css">
+<style>
+.schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.schedule-table th {
+  background: var(--purple);
+  color: white;
+  padding: 12px 8px;
+  font-weight: 700;
+  text-align: center;
+}
+.schedule-table td {
+  padding: 12px 8px;
+  text-align: center;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.schedule-table td:first-child { font-weight: 700; color: var(--dark); background: var(--gray-light); }
+.tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.tag.solo { background: var(--purple-pale); color: var(--purple); }
+.tag.duo { background: #FEF3C7; color: #D97706; }
+.tag.group { background: #EDE9FE; color: #7C3AED; }
+.tag.preg { background: #ECFDF5; color: #059669; }
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 32px;
+}
+.price-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  border: 1.5px solid var(--border);
+}
+.price-card.featured { border-color: var(--purple); }
+.price-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+.price-badge {
+  display: inline-block;
+  background: var(--purple);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+.price-amount { font-size: 28px; font-weight: 900; color: var(--purple); margin-bottom: 4px; }
+.price-unit { font-size: 13px; color: var(--gray); margin-bottom: 14px; }
+.price-features { list-style: none; font-size: 13px; color: var(--gray); }
+.price-features li { padding: 4px 0; }
+.price-features li::before { content: '✓ '; color: var(--purple); font-weight: 700; }
+
+@media (max-width: 640px) {
+  .price-grid { grid-template-columns: 1fr; }
+  .schedule-table { font-size: 11px; }
+  .schedule-table th, .schedule-table td { padding: 8px 4px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+
+<nav>
+  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="instructor.html">강사</a></li>
+    <li><a href="schedule.html" class="active">시간표</a></li>
+    <li><a href="youtube.html">유튜브</a></li>
+    <li><a href="location.html">오시는 길</a></li>
+  </ul>
+  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="section-header">
+    <div class="section-label">SCHEDULE</div>
+    <div class="section-title">주간 시간표</div>
+    <div class="section-desc">예약은 카카오 채널 또는 전화로 문의해 주세요 · 월~토 운영</div>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table class="schedule-table">
+      <thead>
+        <tr>
+          <th>시간</th>
+          <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>10:00</td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag duo">듀엣</span></td>
+        </tr>
+        <tr>
+          <td>12:00</td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag duo">듀엣</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag solo">1:1</span></td>
+        </tr>
+        <tr>
+          <td>14:00</td>
+          <td><span class="tag preg">임산부</span></td>
+          <td><span class="tag duo">듀엣</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag preg">임산부</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag group">그룹</span></td>
+        </tr>
+        <tr>
+          <td>19:00</td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag solo">1:1</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag group">그룹</span></td>
+          <td><span class="tag duo">듀엣</span></td>
+          <td>-</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top: 40px;">
+    <div class="section-header">
+      <div class="section-label">PRICE</div>
+      <div class="section-title">수업 요금</div>
+    </div>
+    <div class="price-grid">
+      <div class="price-card featured">
+        <div class="price-name">1:1 개인 수업</div>
+        <div class="price-badge">인기</div>
+        <div class="price-amount">30만원~</div>
+        <div class="price-unit">/ 월 8회 기준</div>
+        <ul class="price-features">
+          <li>강사 1:1 맞춤 케어</li>
+          <li>체형 분석 포함</li>
+          <li>재활·교정 특화</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-name">듀엣 수업</div>
+        <div class="price-amount">22만원~</div>
+        <div class="price-unit">/ 월 8회 기준 (1인)</div>
+        <ul class="price-features">
+          <li>2인 동시 진행</li>
+          <li>합리적인 가격</li>
+          <li>친구·커플 추천</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-name">그룹 수업</div>
+        <div class="price-amount">15만원~</div>
+        <div class="price-unit">/ 월 8회 기준</div>
+        <ul class="price-features">
+          <li>최대 6인 소규모</li>
+          <li>함께하는 동기부여</li>
+          <li>입문자 추천</li>
+        </ul>
+      </div>
+      <div class="price-card">
+        <div class="price-name">임산부 수업</div>
+        <div class="price-amount">28만원~</div>
+        <div class="price-unit">/ 월 8회 기준</div>
+        <ul class="price-features">
+          <li>전문 자격 강사</li>
+          <li>산전·산후 모두 가능</li>
+          <li>안전한 맞춤 운동</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div style="text-align: center; margin-top: 40px; padding: 40px; background: white; border-radius: 20px; border: 1.5px solid var(--border);">
+    <div style="font-size: 20px; font-weight: 900; margin-bottom: 8px;">예약 문의</div>
+    <div style="font-size: 14px; color: var(--gray); margin-bottom: 20px;">전화 또는 카카오 채널로 편하게 문의해 주세요</div>
+    <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+      <a href="tel:010-0000-0000" class="btn-purple">📞 전화 예약</a>
+      <a href="https://open.kakao.com/" class="btn-outline">💬 카카오 문의</a>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-logo">스튜디오코어</div>
+    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  </div>
+  <div class="footer-links">
+    <div class="footer-col">
+      <h4>수업</h4>
+      <a href="index.html">수업 소개</a>
+      <a href="instructor.html">강사 소개</a>
+    </div>
+    <div class="footer-col">
+      <h4>안내</h4>
+      <a href="youtube.html">유튜브</a>
+      <a href="location.html">오시는 길</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+</body>
+</html>
