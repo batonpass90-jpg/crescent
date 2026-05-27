@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>로그인 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="auth-shell">
+  <div class="auth-card">
+    <div class="logo">필라테스 <span style="color:var(--purple);">원장님</span></div>
+    <div class="auth-sub">내 사이트를 직접 편집하세요</div>
+
+    <div class="auth-tabs" id="auth-tabs">
+      <div class="auth-tab active" data-mode="login">로그인</div>
+      <div class="auth-tab" data-mode="signup">회원가입</div>
+    </div>
+
+    <form id="auth-form" autocomplete="on">
+      <div class="form-row">
+        <label>이메일</label>
+        <input type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+      </div>
+      <div class="form-row">
+        <label>비밀번호</label>
+        <input type="password" name="password" required placeholder="8자 이상" minlength="8" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-purple btn-lg" style="width:100%;" id="submit-btn">로그인</button>
+      <div class="hint" id="hint" style="text-align:center; margin-top:14px; min-height:18px;"></div>
+    </form>
+
+    <div style="text-align:center; margin-top:20px; padding-top:20px; border-top:1px solid var(--border-2); font-size:13px; color:var(--gray);">
+      ← <a href="../index.html" style="color:var(--purple); font-weight:700;">데모 사이트 보기</a>
+    </div>
+  </div>
+</div>
+
+<script src="admin.js"></script>
+<script>
+let mode = 'login';
+const tabs = document.querySelectorAll('.auth-tab');
+const submitBtn = document.getElementById('submit-btn');
+const hint = document.getElementById('hint');
+const form = document.getElementById('auth-form');
+const pwField = form.password;
+
+tabs.forEach(t => t.addEventListener('click', () => {
+  tabs.forEach(x => x.classList.remove('active'));
+  t.classList.add('active');
+  mode = t.dataset.mode;
+  submitBtn.textContent = mode === 'signup' ? '회원가입' : '로그인';
+  pwField.setAttribute('autocomplete', mode === 'signup' ? 'new-password' : 'current-password');
+  hint.textContent = '';
+}));
+
+// 이미 로그인되어 있으면 대시보드로
+(async () => {
+  const { data: { session } } = await ADMIN.sb.auth.getSession();
+  if (session) location.replace('index.html');
+})();
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  submitBtn.disabled = true;
+  hint.textContent = '처리 중...';
+  hint.style.color = 'var(--gray)';
+
+  const email = form.email.value.trim();
+  const password = form.password.value;
+
+  try {
+    if (mode === 'signup') {
+      const { data, error } = await ADMIN.sb.auth.signUp({ email, password });
+      if (error) throw error;
+      if (data.session) {
+        // 즉시 로그인되었으면 대시보드로
+        location.replace('index.html');
+      } else {
+        hint.style.color = 'var(--success)';
+        hint.textContent = '확인 이메일을 보냈습니다. 받은편지함을 확인하세요.';
+      }
+    } else {
+      const { error } = await ADMIN.sb.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      location.replace('index.html');
+    }
+  } catch (err) {
+    hint.style.color = 'var(--danger)';
+    hint.textContent = err.message || '오류가 발생했습니다.';
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+</script>
+</body>
+</html>

@@ -3,135 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>강사 소개 | 스튜디오 코어</title>
+<title>강사 | 필라테스</title>
 <link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
-.instructor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.instructor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+}
 .instructor-card {
   background: white;
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1.5px solid var(--border);
-  transition: box-shadow 0.2s;
+  transition: box-shadow 0.2s, transform 0.2s;
 }
-.instructor-card:hover { box-shadow: 0 8px 32px rgba(107,92,231,0.12); }
+.instructor-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
 .instructor-photo {
-  height: 200px;
-  background: linear-gradient(135deg, var(--purple-pale), #DDD6FE);
+  height: 240px;
+  background: linear-gradient(135deg, var(--purple-pale) 0%, #DDD6FE 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 72px;
+  font-size: 96px;
+  position: relative;
 }
-.instructor-body { padding: 24px; }
-.instructor-name { font-size: 20px; font-weight: 900; margin-bottom: 6px; }
+.instructor-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.instructor-body { padding: 28px; }
+.instructor-name {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  color: var(--dark);
+  letter-spacing: -0.5px;
+}
 .instructor-badge {
   display: inline-block;
   background: var(--purple-pale);
   color: var(--purple);
   font-size: 12px;
   font-weight: 700;
-  padding: 4px 12px;
-  border-radius: 99px;
-  margin-bottom: 14px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
 }
-.instructor-bio { font-size: 14px; color: var(--gray); line-height: 1.8; margin-bottom: 16px; }
+.instructor-bio {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
 .cert-list { list-style: none; }
 .cert-list li {
   font-size: 13px;
   color: var(--dark);
-  padding: 5px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-2);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
-.cert-list li::before { content: '✓'; color: var(--purple); font-weight: 700; }
-
-@media (max-width: 640px) {
-  .instructor-grid { grid-template-columns: 1fr; }
-}
+.cert-list li:last-child { border-bottom: none; }
+.cert-list li::before { content: '✓'; color: var(--purple); font-weight: 800; }
 </style>
 </head>
 <body>
 
-<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+<div class="top-banner">로딩 중…</div>
 
 <nav>
-  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
-  <ul class="nav-links">
-    <li><a href="index.html">홈</a></li>
-    <li><a href="instructor.html" class="active">강사</a></li>
-    <li><a href="schedule.html">시간표</a></li>
-    <li><a href="youtube.html">유튜브</a></li>
-    <li><a href="location.html">오시는 길</a></li>
-  </ul>
-  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">홈</a></li>
+      <li><a href="instructor.html" class="active">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
 </nav>
 
-<div class="page-wrap">
-  <div class="section-header">
-    <div class="section-label">INSTRUCTOR</div>
-    <div class="section-title">전문 강사를 소개합니다</div>
-    <div class="section-desc">검증된 자격증과 다년간의 현장 경험을 갖춘 강사진이 함께합니다</div>
-  </div>
-
-  <div class="instructor-grid">
-    <div class="instructor-card">
-      <div class="instructor-photo">👩</div>
-      <div class="instructor-body">
-        <div class="instructor-name">김지연 원장</div>
-        <div class="instructor-badge">대표 강사 · 10년 경력</div>
-        <div class="instructor-bio">
-          척추측만증·디스크 재활 전문 강사로, 2,000명 이상의 회원을 지도한 경험을 보유하고 있습니다. 체형 분석을 통한 맞춤형 프로그램 설계가 강점입니다.
-        </div>
-        <ul class="cert-list">
-          <li>STOTT PILATES 국제 자격증</li>
-          <li>재활 필라테스 전문 과정 수료</li>
-          <li>척추측만증 교정 전문 과정</li>
-          <li>스포츠재활 지도자 2급</li>
-        </ul>
-      </div>
+<main>
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">INSTRUCTOR</div>
+      <div class="section-title">전문 강사를 소개합니다</div>
+      <div class="section-desc" id="intro-desc"></div>
     </div>
-
-    <div class="instructor-card">
-      <div class="instructor-photo">👩</div>
-      <div class="instructor-body">
-        <div class="instructor-name">이서현 강사</div>
-        <div class="instructor-badge">그룹·임산부 전문 · 5년 경력</div>
-        <div class="instructor-bio">
-          임산부 필라테스 전문 수료 후 산전·산후 관리에 특화된 강사입니다. 따뜻하고 꼼꼼한 케어로 회원 만족도가 가장 높습니다.
-        </div>
-        <ul class="cert-list">
-          <li>BASI PILATES 국제 자격증</li>
-          <li>임산부 필라테스 전문 과정 수료</li>
-          <li>산전·산후 운동 지도사</li>
-          <li>그룹 피트니스 지도자 1급</li>
-        </ul>
-      </div>
+    <div class="instructor-grid" id="instructor-grid">
+      <div class="loading-wrap"><div class="loader"></div></div>
     </div>
-  </div>
-</div>
+  </section>
+</main>
 
 <footer>
-  <div>
-    <div class="footer-logo">스튜디오코어</div>
-    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+        <a href="index.html">수업 소개</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="youtube.html">유튜브</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
   </div>
-  <div class="footer-links">
-    <div class="footer-col">
-      <h4>수업</h4>
-      <a href="schedule.html">시간표 보기</a>
-      <a href="index.html">수업 소개</a>
-    </div>
-    <div class="footer-col">
-      <h4>안내</h4>
-      <a href="youtube.html">유튜브</a>
-      <a href="location.html">오시는 길</a>
-    </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
   </div>
 </footer>
 
-<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  document.getElementById('intro-desc').textContent =
+    center.intro_paragraph || '검증된 자격증과 다년간의 현장 경험을 갖춘 강사진이 함께합니다';
+
+  const { data: instructors } = await PILATES.sb
+    .from('pilates_instructors')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('instructor-grid').innerHTML = (instructors || []).length
+    ? instructors.map(i => `
+        <div class="instructor-card">
+          <div class="instructor-photo">
+            ${i.photo_url
+              ? `<img src="${PILATES.esc(i.photo_url)}" alt="${PILATES.esc(i.name)}">`
+              : PILATES.esc(i.emoji || '👩')}
+          </div>
+          <div class="instructor-body">
+            <div class="instructor-name">${PILATES.esc(i.name)}</div>
+            ${i.role ? `<div class="instructor-badge">${PILATES.esc(i.role)}</div>` : ''}
+            ${i.bio ? `<div class="instructor-bio">${PILATES.nl2br(i.bio)}</div>` : ''}
+            ${(i.certs && i.certs.length)
+              ? `<ul class="cert-list">${i.certs.map(c => `<li>${PILATES.esc(c)}</li>`).join('')}</ul>`
+              : ''}
+          </div>
+        </div>`).join('')
+    : `<div class="muted text-center" style="padding:40px; grid-column:1/-1;">등록된 강사가 없습니다.</div>`;
+});
+</script>
 </body>
 </html>

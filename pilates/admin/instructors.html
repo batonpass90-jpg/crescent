@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강사 관리 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main-content">
+    <div class="page-head">
+      <div>
+        <h1>강사</h1>
+        <p>등록된 강사를 관리합니다 (위에서 아래 순서대로 사이트에 표시)</p>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn-purple" id="add-btn">+ 강사 추가</button>
+      </div>
+    </div>
+
+    <div class="card" id="list-card">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th style="width: 60px;">순서</th>
+            <th>이름</th>
+            <th>역할</th>
+            <th style="width: 80px;">자격증</th>
+            <th style="width: 140px; text-align:right;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="list-body">
+          <tr><td colspan="5"><div class="loading-wrap"><div class="loader"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 폼 카드 (추가/수정 통합) -->
+    <div class="card hidden" id="form-card">
+      <div class="card-title" id="form-title">강사 추가</div>
+      <form id="instructor-form" onsubmit="return false;">
+        <input type="hidden" name="id">
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>이름 *</label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-row">
+            <label>역할 / 경력</label>
+            <input type="text" name="role" placeholder="대표 강사 · 10년 경력">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>소개</label>
+          <textarea name="bio" rows="3"></textarea>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>사진 URL</label>
+            <input type="url" name="photo_url" placeholder="https://...">
+            <span class="hint">비워두면 아래 이모지가 표시됩니다.</span>
+          </div>
+          <div class="form-row">
+            <label>이모지 (사진 대신)</label>
+            <input type="text" name="emoji" placeholder="👩" maxlength="4">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>자격증 (한 줄에 하나씩)</label>
+          <textarea name="certs" rows="4" placeholder="STOTT PILATES 국제 자격증&#10;재활 필라테스 전문 과정"></textarea>
+        </div>
+        <div class="form-row">
+          <label>표시 순서</label>
+          <input type="number" name="display_order" value="0" min="0">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="cancel-btn">취소</button>
+          <button type="button" class="btn-purple" id="save-btn">저장</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+let _center = null;
+
+async function load() {
+  const { data } = await ADMIN.sb
+    .from('pilates_instructors')
+    .select('*')
+    .eq('center_id', _center.id)
+    .order('display_order', { ascending: true });
+
+  const body = document.getElementById('list-body');
+  if (!data || !data.length) {
+    body.innerHTML = `<tr><td colspan="5" class="muted text-center" style="padding:40px;">등록된 강사가 없습니다. 우측 상단 [+ 강사 추가] 버튼을 누르세요.</td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(i => `
+    <tr>
+      <td>${i.display_order}</td>
+      <td>
+        <div class="row-handle">
+          <span class="row-emoji">${ADMIN.esc(i.emoji || '👩')}</span>
+          <b>${ADMIN.esc(i.name)}</b>
+        </div>
+      </td>
+      <td>${ADMIN.esc(i.role || '-')}</td>
+      <td>${(i.certs || []).length}개</td>
+      <td class="actions">
+        <button class="icon-btn" data-edit="${i.id}" title="수정">✏️</button>
+        <button class="icon-btn danger" data-del="${i.id}" title="삭제">🗑️</button>
+      </td>
+    </tr>`).join('');
+
+  body.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEdit(data.find(x => x.id === b.dataset.edit))));
+  body.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => del(b.dataset.del)));
+}
+
+function openAdd() {
+  const form = document.getElementById('instructor-form');
+  form.reset();
+  form.id.value = '';
+  document.getElementById('form-title').textContent = '강사 추가';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+function openEdit(row) {
+  const form = document.getElementById('instructor-form');
+  form.reset();
+  form.id.value = row.id;
+  form.name.value = row.name || '';
+  form.role.value = row.role || '';
+  form.bio.value = row.bio || '';
+  form.photo_url.value = row.photo_url || '';
+  form.emoji.value = row.emoji || '';
+  form.certs.value = (row.certs || []).join('\n');
+  form.display_order.value = row.display_order ?? 0;
+  document.getElementById('form-title').textContent = '강사 수정';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth', block:'start' });
+}
+
+async function save() {
+  const form = document.getElementById('instructor-form');
+  if (!form.name.value.trim()) {
+    ADMIN.toast('이름을 입력하세요.', 'error');
+    return;
+  }
+  const certs = form.certs.value.split('\n').map(s => s.trim()).filter(Boolean);
+  const payload = {
+    center_id: _center.id,
+    name: form.name.value.trim(),
+    role: form.role.value.trim() || null,
+    bio: form.bio.value.trim() || null,
+    photo_url: form.photo_url.value.trim() || null,
+    emoji: form.emoji.value.trim() || '👩',
+    certs,
+    display_order: parseInt(form.display_order.value, 10) || 0,
+  };
+  const id = form.id.value;
+  let error;
+  if (id) {
+    ({ error } = await ADMIN.sb.from('pilates_instructors').update(payload).eq('id', id));
+  } else {
+    ({ error } = await ADMIN.sb.from('pilates_instructors').insert(payload));
+  }
+  if (error) return ADMIN.toast('저장 실패: ' + error.message, 'error');
+  ADMIN.toast('저장되었습니다');
+  document.getElementById('form-card').classList.add('hidden');
+  load();
+}
+
+async function del(id) {
+  if (!ADMIN.confirmAction('이 강사를 삭제하시겠습니까?')) return;
+  const { error } = await ADMIN.sb.from('pilates_instructors').delete().eq('id', id);
+  if (error) return ADMIN.toast('삭제 실패: ' + error.message, 'error');
+  ADMIN.toast('삭제되었습니다');
+  load();
+}
+
+ADMIN.bootAdmin('instructors.html', async ({ center }) => {
+  _center = center;
+  document.getElementById('add-btn').addEventListener('click', openAdd);
+  document.getElementById('save-btn').addEventListener('click', save);
+  document.getElementById('cancel-btn').addEventListener('click', () =>
+    document.getElementById('form-card').classList.add('hidden'));
+  await load();
+});
+</script>
+</body>
+</html>
