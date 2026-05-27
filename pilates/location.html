@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>오시는 길 | 스튜디오 코어</title>
+<link rel="stylesheet" href="common.css">
+<style>
+.location-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+.map-box {
+  background: var(--purple-pale);
+  border-radius: 20px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+  border: 1.5px solid var(--border);
+}
+.info-card {
+  background: white;
+  border-radius: 20px;
+  padding: 28px;
+  border: 1.5px solid var(--border);
+}
+.info-row {
+  display: flex;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: flex-start;
+}
+.info-row:last-child { border-bottom: none; }
+.info-icon {
+  width: 36px;
+  height: 36px;
+  background: var(--purple-pale);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.info-label { font-size: 12px; color: var(--gray); margin-bottom: 4px; font-weight: 600; }
+.info-value { font-size: 14px; color: var(--dark); line-height: 1.6; }
+
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 32px;
+}
+.contact-card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  border: 1.5px solid var(--border);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s;
+}
+.contact-card:hover { border-color: var(--purple); }
+.contact-icon { font-size: 32px; margin-bottom: 10px; }
+.contact-label { font-size: 13px; color: var(--gray); margin-bottom: 4px; }
+.contact-value { font-size: 16px; font-weight: 700; color: var(--purple); }
+
+@media (max-width: 640px) {
+  .location-wrap { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .map-box { height: 200px; }
+}
+</style>
+</head>
+<body>
+
+<div class="top-banner">지금 등록하면, 첫 수업 1회 무료 체험!</div>
+
+<nav>
+  <a href="index.html" class="logo">스튜디오코어 <span>필라테스</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html">홈</a></li>
+    <li><a href="instructor.html">강사</a></li>
+    <li><a href="schedule.html">시간표</a></li>
+    <li><a href="youtube.html">유튜브</a></li>
+    <li><a href="location.html" class="active">오시는 길</a></li>
+  </ul>
+  <a href="tel:010-0000-0000" class="nav-cta">무료체험</a>
+</nav>
+
+<div class="page-wrap">
+  <div class="section-header">
+    <div class="section-label">LOCATION</div>
+    <div class="section-title">오시는 길</div>
+    <div class="section-desc">역삼역 2번 출구에서 도보 3분 거리에 위치해 있습니다</div>
+  </div>
+
+  <div class="location-wrap">
+    <div class="map-box">🗺️</div>
+    <div class="info-card">
+      <div class="info-row">
+        <div class="info-icon">📍</div>
+        <div>
+          <div class="info-label">주소</div>
+          <div class="info-value">서울시 강남구 테헤란로 123, 4층<br><small style="color:var(--gray)">역삼역 2번 출구 도보 3분</small></div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🕐</div>
+        <div>
+          <div class="info-label">운영시간</div>
+          <div class="info-value">월~금 09:00 ~ 21:00<br>토 09:00 ~ 18:00<br>일요일 휴무</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🚇</div>
+        <div>
+          <div class="info-label">지하철</div>
+          <div class="info-value">2호선 역삼역 2번 출구<br>도보 3분</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-icon">🅿️</div>
+        <div>
+          <div class="info-label">주차</div>
+          <div class="info-value">건물 내 주차 가능<br>수업 시간 2시간 무료</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="contact-grid">
+    <a href="tel:010-0000-0000" class="contact-card">
+      <div class="contact-icon">📞</div>
+      <div class="contact-label">전화 문의</div>
+      <div class="contact-value">010-0000-0000</div>
+    </a>
+    <a href="https://open.kakao.com/" class="contact-card" target="_blank">
+      <div class="contact-icon">💬</div>
+      <div class="contact-label">카카오 문의</div>
+      <div class="contact-value">카카오 채널 바로가기</div>
+    </a>
+  </div>
+</div>
+
+<footer>
+  <div>
+    <div class="footer-logo">스튜디오코어</div>
+    <div>대표: 김지연 | 서울시 강남구 테헤란로 123, 4층<br>Tel: 010-0000-0000</div>
+  </div>
+  <div class="footer-links">
+    <div class="footer-col">
+      <h4>수업</h4>
+      <a href="index.html">수업 소개</a>
+      <a href="schedule.html">시간표</a>
+    </div>
+    <div class="footer-col">
+      <h4>안내</h4>
+      <a href="instructor.html">강사 소개</a>
+      <a href="youtube.html">유튜브</a>
+    </div>
+  </div>
+</footer>
+
+<a href="https://open.kakao.com/" class="kakao-float" target="_blank">💬</a>
+</body>
+</html>
