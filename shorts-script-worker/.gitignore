@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.env
+data/
+!data/.gitkeep
+venv/
+.venv/
+*.exe
+test-clip.mp4
+worker.log
+
