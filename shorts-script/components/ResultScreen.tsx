@@ -11,6 +11,9 @@ export default function ResultScreen({ jobId, productName }: { jobId: string; pr
   const [error, setError] = useState("");
   const [research, setResearch] = useState<ProductResearch | null>(null);
   const [script, setScript] = useState<GeneratedScript | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const [regenerating, setRegenerating] = useState(false);
+  const [regenerateError, setRegenerateError] = useState("");
   const startedRef = useRef(false);
 
   async function runPipeline() {
@@ -48,6 +51,29 @@ export default function ResultScreen({ jobId, productName }: { jobId: string; pr
     runPipeline();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId]);
+
+  async function regenerateWithFeedback() {
+    if (!research || !script || !feedback.trim()) return;
+    setRegenerating(true);
+    setRegenerateError("");
+    try {
+      const res = await fetch(`/api/jobs/${jobId}/script`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ research, feedback, previous_script: script }),
+      });
+      const data = await res.json();
+      if (!res.ok || !data.ok) {
+        throw new Error(data?.error ?? "대본 재생성에 실패했습니다.");
+      }
+      setScript(data.script);
+      setFeedback("");
+    } catch (e) {
+      setRegenerateError(e instanceof Error ? e.message : "알 수 없는 오류가 발생했습니다.");
+    } finally {
+      setRegenerating(false);
+    }
+  }
 
   if (stage === "researching" || stage === "writing") {
     return (
@@ -172,6 +198,30 @@ export default function ResultScreen({ jobId, productName }: { jobId: string; pr
         <p className="mt-8 text-xs text-gray-400">
           이 대본은 자동 생성되었습니다. 발행 전 반드시 사람이 최종 검수해 주세요.
         </p>
+
+        <section className="mt-10 border-t border-gray-100 pt-6">
+          <p className="text-sm font-semibold text-navy mb-1">마음에 안 드는 부분이 있나요?</p>
+          <p className="text-xs text-gray-500 mb-3">
+            원하는 방향이나 후킹 문장 아이디어를 적어주시면 그 내용을 반영해서 다시 만듭니다. (예: &quot;후킹 문장을
+            가격 얘기로 바꿔줘&quot;, &quot;3번 컷 화면 설명을 더 자세하게&quot;)
+          </p>
+          <textarea
+            value={feedback}
+            onChange={(e) => setFeedback(e.target.value)}
+            disabled={regenerating}
+            placeholder="예: 후킹 문장을 더 자극적으로 바꿔줘"
+            rows={3}
+            className="w-full rounded-lg border border-gray-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-crescent disabled:opacity-50"
+          />
+          {regenerateError && <p className="mt-2 text-xs text-red-600">{regenerateError}</p>}
+          <button
+            onClick={regenerateWithFeedback}
+            disabled={regenerating || !feedback.trim()}
+            className="mt-3 rounded-lg bg-crescent px-4 py-2 text-sm font-semibold text-white hover:bg-crescent-light disabled:opacity-50"
+          >
+            {regenerating ? "다시 만드는 중..." : "이 피드백으로 다시 만들기"}
+          </button>
+        </section>
       </div>
     </main>
   );

@@ -65,6 +65,9 @@ interface GenerateScriptParams {
   transcriptSummary: string;
   scenesSummary: string;
   durationSec: number;
+  /** 사용자가 이전 결과에 대해 남긴 수정 요청. 있으면 초안부터 다시 쓰지 않고 이전 대본을 그 방향으로 고친다. */
+  feedback?: string;
+  previousScript?: GeneratedScript;
 }
 
 function buildContextPrompt(p: GenerateScriptParams): string {
@@ -87,9 +90,29 @@ ${p.transcriptSummary}
 ${p.scenesSummary}`;
 }
 
-/** 초안 생성 → 자기검증 재작성의 2단계로 대본을 만든다. */
+/** 초안 생성 → 자기검증 재작성의 2단계로 대본을 만든다. 피드백이 있으면 처음부터 다시 쓰지 않고 이전 결과를 그 방향으로 고친다. */
 export async function generateScript(params: GenerateScriptParams): Promise<GeneratedScript> {
   const contextPrompt = buildContextPrompt(params);
+
+  if (params.feedback && params.previousScript) {
+    return completeStructured<GeneratedScript>({
+      model: MODELS.SONNET,
+      system: HOOK_RULES,
+      prompt: `${contextPrompt}
+
+아래는 이전에 만든 대본이다. 사용자 피드백을 반영해서 대본을 고쳐라. 피드백에서 언급하지 않은 부분은 가능한 한 그대로 유지하고, 후킹 규칙(3초룰, 역순구조, 리스트형, 8~12단어, 반전 요소, 담백한 CTA, 근거 없는 스펙 금지)은 항상 지켜라.
+
+이전 대본:
+${JSON.stringify(params.previousScript, null, 2)}
+
+사용자 피드백:
+${params.feedback}`,
+      toolName: "submit_script",
+      toolDescription: "피드백을 반영해 수정한 쇼츠 대본을 제출한다.",
+      inputSchema: SCRIPT_SCHEMA,
+      maxTokens: 3000,
+    });
+  }
 
   const draft = await completeStructured<GeneratedScript>({
     model: MODELS.SONNET,

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateScript, summarizeScenes } from "@/lib/script";
 import { upsertScript } from "@/lib/supabase";
 import { summarizeTranscript } from "@/lib/transcript-summary";
-import type { ProductResearch } from "@/lib/types";
+import type { GeneratedScript, ProductResearch } from "@/lib/types";
 import { WorkerError, workerGetJob } from "@/lib/worker";
 
 export const runtime = "nodejs";
@@ -12,6 +12,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { id } = await params;
   const body = await req.json().catch(() => null);
   const research = body?.research as ProductResearch | undefined;
+  const feedback = typeof body?.feedback === "string" && body.feedback.trim() ? body.feedback.trim() : undefined;
+  const previousScript = body?.previous_script as GeneratedScript | undefined;
 
   if (!research) {
     return NextResponse.json(
@@ -42,6 +44,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       transcriptSummary,
       scenesSummary,
       durationSec,
+      feedback,
+      previousScript,
     });
 
     await upsertScript(id, script);
