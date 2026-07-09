@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수업 종류 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main-content">
+    <div class="page-head">
+      <div>
+        <h1>수업 종류</h1>
+        <p>홈 화면 카드로 표시되는 수업 메뉴를 관리합니다</p>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn-purple" id="add-btn">+ 수업 추가</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th style="width:60px;">순서</th>
+            <th>수업명</th>
+            <th>가격</th>
+            <th style="width:140px; text-align:right;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="list-body">
+          <tr><td colspan="4"><div class="loading-wrap"><div class="loader"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card hidden" id="form-card">
+      <div class="card-title" id="form-title">수업 추가</div>
+      <form id="form" onsubmit="return false;">
+        <input type="hidden" name="id">
+        <div class="form-grid-2">
+          <div class="form-row"><label>수업명 *</label><input type="text" name="name" required></div>
+          <div class="form-row"><label>가격</label><input type="text" name="price" placeholder="월 30만원~"></div>
+        </div>
+        <div class="form-row"><label>설명</label><textarea name="description" rows="2"></textarea></div>
+        <div class="form-grid-2">
+          <div class="form-row"><label>이모지</label><input type="text" name="emoji" placeholder="🧘" maxlength="4"></div>
+          <div class="form-row"><label>아이콘 배경색 (HEX)</label><input type="text" name="bg_color" placeholder="#F0EFFE"></div>
+        </div>
+        <div class="form-row"><label>표시 순서</label><input type="number" name="display_order" value="0" min="0"></div>
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="cancel-btn">취소</button>
+          <button type="button" class="btn-purple" id="save-btn">저장</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+let _center = null;
+
+async function load() {
+  const { data } = await ADMIN.sb.from('pilates_classes')
+    .select('*').eq('center_id', _center.id)
+    .order('display_order', { ascending: true });
+
+  const body = document.getElementById('list-body');
+  if (!data || !data.length) {
+    body.innerHTML = `<tr><td colspan="4" class="muted text-center" style="padding:40px;">등록된 수업이 없습니다.</td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(c => `
+    <tr>
+      <td>${c.display_order}</td>
+      <td><div class="row-handle"><span class="row-emoji" style="background:${ADMIN.esc(c.bg_color || '#F0EFFE')};">${ADMIN.esc(c.emoji || '🧘')}</span><b>${ADMIN.esc(c.name)}</b></div></td>
+      <td>${ADMIN.esc(c.price || '-')}</td>
+      <td class="actions">
+        <button class="icon-btn" data-edit="${c.id}">✏️</button>
+        <button class="icon-btn danger" data-del="${c.id}">🗑️</button>
+      </td>
+    </tr>`).join('');
+  body.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEdit(data.find(x => x.id === b.dataset.edit))));
+  body.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => del(b.dataset.del)));
+}
+
+function openAdd() {
+  const f = document.getElementById('form');
+  f.reset(); f.id.value = '';
+  f.emoji.value = '🧘'; f.bg_color.value = '#F0EFFE'; f.display_order.value = 0;
+  document.getElementById('form-title').textContent = '수업 추가';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth' });
+}
+function openEdit(row) {
+  const f = document.getElementById('form');
+  f.reset();
+  f.id.value = row.id;
+  f.name.value = row.name || '';
+  f.description.value = row.description || '';
+  f.price.value = row.price || '';
+  f.emoji.value = row.emoji || '🧘';
+  f.bg_color.value = row.bg_color || '#F0EFFE';
+  f.display_order.value = row.display_order ?? 0;
+  document.getElementById('form-title').textContent = '수업 수정';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth' });
+}
+async function save() {
+  const f = document.getElementById('form');
+  if (!f.name.value.trim()) return ADMIN.toast('수업명을 입력하세요.', 'error');
+  const payload = {
+    center_id: _center.id,
+    name: f.name.value.trim(),
+    description: f.description.value.trim() || null,
+    price: f.price.value.trim() || null,
+    emoji: f.emoji.value.trim() || '🧘',
+    bg_color: f.bg_color.value.trim() || '#F0EFFE',
+    display_order: parseInt(f.display_order.value, 10) || 0,
+  };
+  const id = f.id.value;
+  const { error } = id
+    ? await ADMIN.sb.from('pilates_classes').update(payload).eq('id', id)
+    : await ADMIN.sb.from('pilates_classes').insert(payload);
+  if (error) return ADMIN.toast('저장 실패: ' + error.message, 'error');
+  ADMIN.toast('저장되었습니다');
+  document.getElementById('form-card').classList.add('hidden');
+  load();
+}
+async function del(id) {
+  if (!ADMIN.confirmAction('이 수업을 삭제하시겠습니까?')) return;
+  const { error } = await ADMIN.sb.from('pilates_classes').delete().eq('id', id);
+  if (error) return ADMIN.toast('삭제 실패: ' + error.message, 'error');
+  ADMIN.toast('삭제되었습니다');
+  load();
+}
+
+ADMIN.bootAdmin('classes.html', async ({ center }) => {
+  _center = center;
+  document.getElementById('add-btn').addEventListener('click', openAdd);
+  document.getElementById('save-btn').addEventListener('click', save);
+  document.getElementById('cancel-btn').addEventListener('click', () =>
+    document.getElementById('form-card').classList.add('hidden'));
+  await load();
+});
+</script>
+</body>
+</html>

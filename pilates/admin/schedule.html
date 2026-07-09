@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간표 관리 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main-content">
+    <div class="page-head">
+      <div>
+        <h1>시간표</h1>
+        <p>요일 + 시간 + 수업 종류로 등록합니다</p>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn-purple" id="add-btn">+ 시간 추가</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <table class="list-table">
+        <thead>
+          <tr>
+            <th style="width:80px;">요일</th>
+            <th style="width:160px;">시작 ~ 종료</th>
+            <th>수업</th>
+            <th>강사</th>
+            <th style="width:140px; text-align:right;">관리</th>
+          </tr>
+        </thead>
+        <tbody id="list-body">
+          <tr><td colspan="5"><div class="loading-wrap"><div class="loader"></div></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card hidden" id="form-card">
+      <div class="card-title" id="form-title">시간 추가</div>
+      <form id="form" onsubmit="return false;">
+        <input type="hidden" name="id">
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>요일 *</label>
+            <select name="day_of_week" required>
+              <option value="0">월요일</option>
+              <option value="1">화요일</option>
+              <option value="2">수요일</option>
+              <option value="3">목요일</option>
+              <option value="4">금요일</option>
+              <option value="5">토요일</option>
+              <option value="6">일요일</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label>수업 종류 *</label>
+            <select name="class_type" required>
+              <option value="solo">1:1 (보라)</option>
+              <option value="duo">듀엣 (노랑)</option>
+              <option value="group">그룹 (보라연)</option>
+              <option value="preg">임산부 (초록)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row"><label>시작 시간 *</label><input type="time" name="start_time" required></div>
+          <div class="form-row"><label>종료 시간</label><input type="time" name="end_time"></div>
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row"><label>수업명 (표에 표시)</label><input type="text" name="class_name" placeholder="1:1 수업"></div>
+          <div class="form-row"><label>담당 강사명</label><input type="text" name="instructor_name" placeholder="김지연"></div>
+        </div>
+        <div class="form-row"><label>표시 순서</label><input type="number" name="display_order" value="0" min="0"></div>
+        <div class="form-actions">
+          <button type="button" class="btn-ghost" id="cancel-btn">취소</button>
+          <button type="button" class="btn-purple" id="save-btn">저장</button>
+        </div>
+      </form>
+    </div>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+const DAYS = ['월','화','수','목','금','토','일'];
+let _center = null;
+
+async function load() {
+  const { data } = await ADMIN.sb.from('pilates_schedule')
+    .select('*').eq('center_id', _center.id)
+    .order('day_of_week', { ascending: true })
+    .order('start_time', { ascending: true });
+  const body = document.getElementById('list-body');
+  if (!data || !data.length) {
+    body.innerHTML = `<tr><td colspan="5" class="muted text-center" style="padding:40px;">등록된 시간이 없습니다.</td></tr>`;
+    return;
+  }
+  body.innerHTML = data.map(r => `
+    <tr>
+      <td><b>${DAYS[r.day_of_week]}</b></td>
+      <td>${ADMIN.esc(r.start_time)}${r.end_time ? ' ~ ' + ADMIN.esc(r.end_time) : ''}</td>
+      <td><span class="tag-pill">${ADMIN.esc(r.class_name || r.class_type)}</span></td>
+      <td>${ADMIN.esc(r.instructor_name || '-')}</td>
+      <td class="actions">
+        <button class="icon-btn" data-edit="${r.id}">✏️</button>
+        <button class="icon-btn danger" data-del="${r.id}">🗑️</button>
+      </td>
+    </tr>`).join('');
+  body.querySelectorAll('[data-edit]').forEach(b => b.addEventListener('click', () => openEdit(data.find(x => x.id === b.dataset.edit))));
+  body.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => del(b.dataset.del)));
+}
+
+function openAdd() {
+  const f = document.getElementById('form');
+  f.reset(); f.id.value=''; f.class_type.value='solo'; f.day_of_week.value='0';
+  document.getElementById('form-title').textContent = '시간 추가';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth' });
+}
+function openEdit(row) {
+  const f = document.getElementById('form');
+  f.reset();
+  f.id.value = row.id;
+  f.day_of_week.value = row.day_of_week;
+  f.start_time.value = row.start_time || '';
+  f.end_time.value = row.end_time || '';
+  f.class_type.value = row.class_type || 'solo';
+  f.class_name.value = row.class_name || '';
+  f.instructor_name.value = row.instructor_name || '';
+  f.display_order.value = row.display_order ?? 0;
+  document.getElementById('form-title').textContent = '시간 수정';
+  document.getElementById('form-card').classList.remove('hidden');
+  document.getElementById('form-card').scrollIntoView({ behavior:'smooth' });
+}
+async function save() {
+  const f = document.getElementById('form');
+  if (!f.start_time.value) return ADMIN.toast('시작 시간을 입력하세요.', 'error');
+  const payload = {
+    center_id: _center.id,
+    day_of_week: parseInt(f.day_of_week.value, 10),
+    start_time: f.start_time.value,
+    end_time: f.end_time.value || null,
+    class_type: f.class_type.value,
+    class_name: f.class_name.value.trim() || null,
+    instructor_name: f.instructor_name.value.trim() || null,
+    display_order: parseInt(f.display_order.value, 10) || 0,
+  };
+  const id = f.id.value;
+  const { error } = id
+    ? await ADMIN.sb.from('pilates_schedule').update(payload).eq('id', id)
+    : await ADMIN.sb.from('pilates_schedule').insert(payload);
+  if (error) return ADMIN.toast('저장 실패: ' + error.message, 'error');
+  ADMIN.toast('저장되었습니다');
+  document.getElementById('form-card').classList.add('hidden');
+  load();
+}
+async function del(id) {
+  if (!ADMIN.confirmAction('삭제하시겠습니까?')) return;
+  const { error } = await ADMIN.sb.from('pilates_schedule').delete().eq('id', id);
+  if (error) return ADMIN.toast('삭제 실패: ' + error.message, 'error');
+  ADMIN.toast('삭제되었습니다');
+  load();
+}
+
+ADMIN.bootAdmin('schedule.html', async ({ center }) => {
+  _center = center;
+  document.getElementById('add-btn').addEventListener('click', openAdd);
+  document.getElementById('save-btn').addEventListener('click', save);
+  document.getElementById('cancel-btn').addEventListener('click', () =>
+    document.getElementById('form-card').classList.add('hidden'));
+  await load();
+});
+</script>
+</body>
+</html>

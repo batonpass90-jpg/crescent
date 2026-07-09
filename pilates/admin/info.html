@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기본 정보 | 필라테스 관리자</title>
+<link rel="stylesheet" href="admin.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="admin-shell">
+  <div id="sidebar-mount"></div>
+
+  <main class="main-content">
+    <div class="page-head">
+      <div>
+        <h1>기본 정보</h1>
+        <p>스튜디오 이름, 연락처, 히어로 카피 등을 관리합니다</p>
+      </div>
+      <div class="page-head-actions">
+        <button class="btn-purple" id="save-btn">저장</button>
+      </div>
+    </div>
+
+    <form id="info-form" onsubmit="return false;">
+
+      <div class="card">
+        <div class="card-title">스튜디오</div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>스튜디오 이름 *</label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-row">
+            <label>브랜드 라벨 (로고 옆 작은 글자)</label>
+            <input type="text" name="brand" placeholder="필라테스">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>슬러그 (URL 주소) *</label>
+          <input type="text" name="slug" required pattern="[a-z0-9-]+" placeholder="my-studio">
+          <span class="hint">소문자/숫자/하이픈만 가능. 변경 시 기존 링크가 깨질 수 있습니다.</span>
+        </div>
+        <div class="form-row">
+          <label>상단 띠 메시지</label>
+          <input type="text" name="tagline" placeholder="지금 등록하면, 첫 수업 1회 무료 체험!">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">홈 화면 히어로</div>
+        <div class="form-row">
+          <label>메인 카피 1번째 줄</label>
+          <input type="text" name="hero_title" placeholder="내 몸에 딱 맞는">
+        </div>
+        <div class="form-row">
+          <label>메인 카피 2번째 줄 (강조)</label>
+          <input type="text" name="hero_highlight" placeholder="1:1 맞춤 필라테스">
+        </div>
+        <div class="form-row">
+          <label>메인 카피 3번째 줄</label>
+          <input type="text" name="hero_subtitle" placeholder="지금 시작하세요">
+        </div>
+        <div class="form-row">
+          <label>설명 문장</label>
+          <textarea name="hero_description" rows="3" placeholder="체형 교정부터 코어 강화까지..."></textarea>
+        </div>
+        <div class="form-row">
+          <label>통계 (JSON 형식)</label>
+          <textarea name="stats" rows="5" placeholder='[{"num":"500+","label":"누적 회원"},{"num":"5년","label":"운영 경력"}]'></textarea>
+          <span class="hint">예: <code>[{"num":"500+","label":"누적 회원"}]</code> — 최대 4개 권장</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">연락처 / 위치</div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>전화번호</label>
+            <input type="tel" name="phone" placeholder="010-0000-0000">
+          </div>
+          <div class="form-row">
+            <label>카카오톡 채널 URL</label>
+            <input type="url" name="kakao_link" placeholder="https://open.kakao.com/...">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>주소</label>
+          <input type="text" name="address" placeholder="서울시 강남구 ...">
+        </div>
+        <div class="form-row">
+          <label>상세 주소 (동/호수)</label>
+          <input type="text" name="address_detail" placeholder="강남빌딩 4F">
+        </div>
+        <div class="form-row">
+          <label>운영시간</label>
+          <input type="text" name="business_hours" placeholder="평일 07:00~22:00 | 주말 09:00~18:00">
+        </div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>대중교통</label>
+            <input type="text" name="subway_info" placeholder="강남역 11번 출구 도보 5분">
+          </div>
+          <div class="form-row">
+            <label>주차</label>
+            <input type="text" name="parking_info" placeholder="건물 지하 무료 주차">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">사업자 정보 (푸터에 표시)</div>
+        <div class="form-grid-2">
+          <div class="form-row">
+            <label>대표자</label>
+            <input type="text" name="ceo_name" placeholder="김지연">
+          </div>
+          <div class="form-row">
+            <label>사업자등록번호</label>
+            <input type="text" name="business_number" placeholder="000-00-00000">
+          </div>
+        </div>
+        <div class="form-row">
+          <label>강사 페이지 인트로 문구</label>
+          <textarea name="intro_paragraph" rows="2" placeholder="검증된 자격증과..."></textarea>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <a href="index.html" class="btn-ghost">취소</a>
+        <button type="button" class="btn-purple" id="save-btn-2">저장</button>
+      </div>
+    </form>
+
+  </main>
+</div>
+
+<script src="admin.js"></script>
+<script>
+let _center = null;
+
+ADMIN.bootAdmin('info.html', async ({ center }) => {
+  _center = center;
+  const form = document.getElementById('info-form');
+
+  // 필드 채우기
+  for (const f of form.elements) {
+    if (!f.name) continue;
+    if (f.name === 'stats') {
+      f.value = JSON.stringify(center.stats || [], null, 2);
+    } else {
+      f.value = center[f.name] ?? '';
+    }
+  }
+
+  // 저장 핸들러
+  async function save() {
+    const fd = new FormData(form);
+    const patch = {};
+    for (const [k, v] of fd.entries()) {
+      patch[k] = v.trim() === '' ? null : v.trim();
+    }
+    // stats: JSON 파싱
+    try {
+      patch.stats = patch.stats ? JSON.parse(patch.stats) : [];
+    } catch (e) {
+      ADMIN.toast('통계 JSON 형식이 잘못되었습니다.', 'error');
+      return;
+    }
+    // slug 변경 시 충돌 검사
+    if (patch.slug !== _center.slug) {
+      const { data: dup } = await ADMIN.sb
+        .from('pilates_centers')
+        .select('id')
+        .eq('slug', patch.slug)
+        .neq('id', _center.id)
+        .maybeSingle();
+      if (dup) {
+        ADMIN.toast('이미 사용 중인 슬러그입니다.', 'error');
+        return;
+      }
+    }
+    const { error } = await ADMIN.sb
+      .from('pilates_centers')
+      .update(patch)
+      .eq('id', _center.id);
+    if (error) {
+      ADMIN.toast('저장 실패: ' + error.message, 'error');
+      return;
+    }
+    Object.assign(_center, patch);
+    ADMIN.toast('저장되었습니다');
+  }
+
+  document.getElementById('save-btn').addEventListener('click', save);
+  document.getElementById('save-btn-2').addEventListener('click', save);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>홈 | 필라테스</title>
+<link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<div class="top-banner">로딩 중…</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">홈</a></li>
+      <li><a href="instructor.html">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
+</nav>
+
+<main>
+  <!-- 풀폭 히어로 -->
+  <section class="hero-full">
+    <div class="hero-inner">
+      <h1 class="hero-title-big" id="hero-title">
+        <span id="hero-line-1">로딩 중</span><br>
+        <span class="highlight" id="hero-line-2"></span><br>
+        <span id="hero-line-3"></span>
+      </h1>
+      <p class="hero-desc-big" id="hero-desc"></p>
+      <div class="hero-btns">
+        <a href="schedule.html" class="btn-outline btn-lg">수업 둘러보기</a>
+        <a href="#" data-tel class="btn-purple btn-lg">무료 체험 신청 →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 통계 -->
+  <section class="stats-full">
+    <div class="stats-grid" id="stats-grid"></div>
+  </section>
+
+  <!-- 수업 종류 -->
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">CLASS</div>
+      <div class="section-title">목적에 맞는 수업을 선택하세요</div>
+      <div class="section-desc">1:1 집중 케어부터 소그룹까지, 체형과 목적에 맞게 설계합니다</div>
+    </div>
+    <div class="class-grid" id="class-grid">
+      <div class="loading-wrap"><div class="loader"></div></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-banner">
+    <div class="cta-inner">
+      <h2>지금 첫 수업 무료로 경험해보세요</h2>
+      <p>등록비 0원 · 약정 없음 · 언제든지 해지 가능</p>
+      <a href="#" data-tel class="btn-white btn-lg">무료 체험 신청하기</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+        <a href="schedule.html">가격</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="instructor.html">강사 소개</a>
+        <a href="youtube.html">유튜브</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
+  </div>
+</footer>
+
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  // 히어로
+  document.getElementById('hero-line-1').textContent = center.hero_title || '내 몸에 딱 맞는';
+  document.getElementById('hero-line-2').textContent = center.hero_highlight || '1:1 맞춤 필라테스';
+  document.getElementById('hero-line-3').textContent = center.hero_subtitle || '지금 시작하세요';
+  document.getElementById('hero-desc').textContent = center.hero_description || '';
+
+  // 통계
+  const stats = Array.isArray(center.stats) ? center.stats : [];
+  document.getElementById('stats-grid').innerHTML = stats.length
+    ? stats.map(s => `
+        <div class="stat-item">
+          <span class="stat-num">${PILATES.esc(s.num)}</span>
+          <div class="stat-label">${PILATES.esc(s.label)}</div>
+        </div>`).join('')
+    : '';
+
+  // 수업 종류
+  const { data: classes } = await PILATES.sb
+    .from('pilates_classes')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('class-grid').innerHTML = (classes || []).length
+    ? classes.map(c => `
+        <a href="schedule.html" class="class-card">
+          <div class="class-icon" style="background:${PILATES.esc(c.bg_color || '#F0EFFE')};">${PILATES.esc(c.emoji || '🧘')}</div>
+          <div class="class-body">
+            <div class="class-name">${PILATES.esc(c.name)}</div>
+            <div class="class-info">${PILATES.esc(c.description || '')}</div>
+            ${c.price ? `<div class="class-price">${PILATES.esc(c.price)}</div>` : ''}
+          </div>
+        </a>`).join('')
+    : `<div class="muted text-center" style="padding:40px; grid-column:1/-1;">등록된 수업이 없습니다.</div>`;
+});
+</script>
+</body>
+</html>

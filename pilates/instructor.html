@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>강사 | 필라테스</title>
+<link rel="stylesheet" href="common.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<style>
+.instructor-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 28px;
+}
+.instructor-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1.5px solid var(--border);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.instructor-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-4px);
+}
+.instructor-photo {
+  height: 240px;
+  background: linear-gradient(135deg, var(--purple-pale) 0%, #DDD6FE 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 96px;
+  position: relative;
+}
+.instructor-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.instructor-body { padding: 28px; }
+.instructor-name {
+  font-size: 22px;
+  font-weight: 900;
+  margin-bottom: 8px;
+  color: var(--dark);
+  letter-spacing: -0.5px;
+}
+.instructor-badge {
+  display: inline-block;
+  background: var(--purple-pale);
+  color: var(--purple);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 16px;
+}
+.instructor-bio {
+  font-size: 14px;
+  color: var(--gray);
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+.cert-list { list-style: none; }
+.cert-list li {
+  font-size: 13px;
+  color: var(--dark);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cert-list li:last-child { border-bottom: none; }
+.cert-list li::before { content: '✓'; color: var(--purple); font-weight: 800; }
+</style>
+</head>
+<body>
+
+<div class="top-banner">로딩 중…</div>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">스튜디오 <span>필라테스</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">홈</a></li>
+      <li><a href="instructor.html" class="active">강사</a></li>
+      <li><a href="schedule.html">시간표</a></li>
+      <li><a href="youtube.html">유튜브</a></li>
+      <li><a href="location.html">오시는 길</a></li>
+    </ul>
+    <a href="#" data-tel class="nav-cta">무료체험</a>
+  </div>
+</nav>
+
+<main>
+  <section class="page-wrap">
+    <div class="section-header">
+      <div class="section-label">INSTRUCTOR</div>
+      <div class="section-title">전문 강사를 소개합니다</div>
+      <div class="section-desc" id="intro-desc"></div>
+    </div>
+    <div class="instructor-grid" id="instructor-grid">
+      <div class="loading-wrap"><div class="loader"></div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div data-footer-info></div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>수업</h4>
+        <a href="schedule.html">시간표</a>
+        <a href="index.html">수업 소개</a>
+      </div>
+      <div class="footer-col">
+        <h4>안내</h4>
+        <a href="youtube.html">유튜브</a>
+        <a href="location.html">오시는 길</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    Powered by Studio Core Template · <a href="admin/login.html">원장님 로그인</a>
+  </div>
+</footer>
+
+<a href="#" class="kakao-float" target="_blank" rel="noopener">💬</a>
+
+<script src="app.js"></script>
+<script>
+PILATES.bootPage(async (center) => {
+  document.getElementById('intro-desc').textContent =
+    center.intro_paragraph || '검증된 자격증과 다년간의 현장 경험을 갖춘 강사진이 함께합니다';
+
+  const { data: instructors } = await PILATES.sb
+    .from('pilates_instructors')
+    .select('*')
+    .eq('center_id', center.id)
+    .order('display_order', { ascending: true });
+
+  document.getElementById('instructor-grid').innerHTML = (instructors || []).length
+    ? instructors.map(i => `
+        <div class="instructor-card">
+          <div class="instructor-photo">
+            ${i.photo_url
+              ? `<img src="${PILATES.esc(i.photo_url)}" alt="${PILATES.esc(i.name)}">`
+              : PILATES.esc(i.emoji || '👩')}
+          </div>
+          <div class="instructor-body">
+            <div class="instructor-name">${PILATES.esc(i.name)}</div>
+            ${i.role ? `<div class="instructor-badge">${PILATES.esc(i.role)}</div>` : ''}
+            ${i.bio ? `<div class="instructor-bio">${PILATES.nl2br(i.bio)}</div>` : ''}
+            ${(i.certs && i.certs.length)
+              ? `<ul class="cert-list">${i.certs.map(c => `<li>${PILATES.esc(c)}</li>`).join('')}</ul>`
+              : ''}
+          </div>
+        </div>`).join('')
+    : `<div class="muted text-center" style="padding:40px; grid-column:1/-1;">등록된 강사가 없습니다.</div>`;
+});
+</script>
+</body>
+</html>
