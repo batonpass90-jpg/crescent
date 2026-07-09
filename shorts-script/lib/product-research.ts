@@ -49,6 +49,24 @@ const EMPTY_RESULT: ProductResearch = {
   insufficient_data: true,
 };
 
+const NOT_FOUND_PLACEHOLDER = "확인 안 됨";
+const NOT_FOUND_PATTERNS = /^(<unknown>|unknown|n\/?a|none|null|없음|미확인)$/i;
+
+/** LLM이 프롬프트 지시를 어기고 "<UNKNOWN>"/"N/A" 같은 제각각 표현을 쓰는 경우를 통일한다. */
+function normalizeNotFound(value: string): string {
+  const trimmed = value.trim();
+  return NOT_FOUND_PATTERNS.test(trimmed) ? NOT_FOUND_PLACEHOLDER : value;
+}
+
+function normalizeResearch(research: ProductResearch): ProductResearch {
+  return {
+    ...research,
+    problem_solved: normalizeNotFound(research.problem_solved),
+    selling_points: research.selling_points.map(normalizeNotFound),
+    review_keywords: research.review_keywords.map(normalizeNotFound),
+  };
+}
+
 /**
  * 1단계: web_search 툴로 실제 상품 정보를 조사한다(자유 텍스트).
  * 2단계: 그 결과를 Haiku로 구조화된 JSON으로 정리한다.
@@ -73,7 +91,7 @@ export async function researchProduct(productName: string): Promise<ProductResea
 5. 참고한 출처 URL 목록`,
       },
     ],
-    tools: [{ type: "web_search_20260318", name: "web_search", max_uses: 5 }],
+    tools: [{ type: "web_search_20260318", name: "web_search", max_uses: 5, allowed_callers: ["direct"] }],
   });
 
   const researchText = searchRes.content
@@ -93,7 +111,8 @@ export async function researchProduct(productName: string): Promise<ProductResea
 
   const structured = await completeStructured<ProductResearch>({
     model: MODELS.HAIKU,
-    system: "아래 리서치 결과를 구조화된 형식으로 정리해라. 리서치에 없는 내용은 추측해서 채우지 마라.",
+    system:
+      "아래 리서치 결과를 구조화된 형식으로 정리해라. 리서치에 없는 내용은 추측해서 채우지 마라. 정보를 찾지 못한 필드는 반드시 정확히 '확인 안 됨'이라는 문자열을 써라 (예: <UNKNOWN>, N/A, 없음 등 다른 표현 금지).",
     prompt: `상품명: "${productName}"\n\n리서치 결과:\n${researchText}`,
     toolName: "submit_product_research",
     toolDescription: "구조화된 상품 조사 결과를 제출한다.",
@@ -101,8 +120,8 @@ export async function researchProduct(productName: string): Promise<ProductResea
     maxTokens: 1536,
   });
 
-  return {
+  return normalizeResearch({
     ...structured,
     sources: structured.sources?.length ? structured.sources : Array.from(new Set(sourceUrls)),
-  };
+  });
 }
