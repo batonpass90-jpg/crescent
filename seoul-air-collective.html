@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SEOUL AIR COLLECTIVE — A piece of Seoul in your pocket</title>
+<meta name="description" content="Card-shaped pocket dress perfumes that bottle the authentic mood and nostalgia of Seoul's most loved neighborhoods. Worldwide shipping." />
+
+<!-- Fonts: Cormorant Garamond (serif headings) + Inter (sans body) -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* ============================================================
+     SEOUL AIR COLLECTIVE — minimalist luxury single-page
+     ============================================================ */
+
+  :root {
+    --black: #111110;
+    --ink: #1c1c1a;
+    --gray-700: #44443f;
+    --gray-500: #76746c;
+    --gray-300: #c9c7bf;
+    --gray-150: #e7e5df;
+    --gray-100: #f1efe9;
+    --paper: #faf9f5;
+    --white: #ffffff;
+
+    --serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    --maxw: 1240px;
+    --gutter: clamp(20px, 5vw, 64px);
+    --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--paper);
+    color: var(--ink);
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  img { display: block; max-width: 100%; height: auto; }
+
+  a { color: inherit; text-decoration: none; }
+
+  .wrap {
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Shared type utilities ----------------------------------- */
+  .eyebrow {
+    font-family: var(--sans);
+    font-size: clamp(11px, 1.1vw, 13px);
+    font-weight: 500;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gray-500);
+  }
+
+  .serif {
+    font-family: var(--serif);
+    font-weight: 500;
+    letter-spacing: 0.005em;
+    line-height: 1.08;
+  }
+
+  /* Buttons -------------------------------------------------- */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7em;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 16px 34px;
+    border: 1px solid currentColor;
+    border-radius: 0;
+    cursor: pointer;
+    background: transparent;
+    transition: background-color 0.45s var(--ease), color 0.45s var(--ease), transform 0.45s var(--ease);
+  }
+  .btn--light { color: var(--white); border-color: rgba(255,255,255,0.7); }
+  .btn--light:hover { background: var(--white); color: var(--black); }
+  .btn--dark { color: var(--ink); border-color: var(--ink); }
+  .btn--dark:hover { background: var(--ink); color: var(--paper); }
+  .btn .arrow { transition: transform 0.45s var(--ease); }
+  .btn:hover .arrow { transform: translateX(5px); }
+
+  /* ===========================================================
+     NAV
+     =========================================================== */
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px var(--gutter);
+    mix-blend-mode: difference;
+    color: #fff;
+  }
+  .nav__brand {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+  }
+  .nav__links { display: flex; gap: 32px; }
+  .nav__links a {
+    font-size: 12px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    opacity: 0.85;
+    transition: opacity 0.3s;
+  }
+  .nav__links a:hover { opacity: 1; }
+  @media (max-width: 720px) { .nav__links { display: none; } }
+
+  /* ===========================================================
+     SECTION 1 — HERO
+     =========================================================== */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    color: var(--white);
+    overflow: hidden;
+  }
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    background-color: #2a2a28;
+    /* Replace url() below with: [메인_랜딩페이지_이미지_URL_여기에_입력] */
+    background-image:
+      linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.05) 38%, rgba(0,0,0,0.55) 100%),
+      url('[메인_랜딩페이지_이미지_URL_여기에_입력]');
+    background-size: cover;
+    background-position: center 42%;
+    transform: scale(1.06);
+    animation: heroZoom 14s var(--ease) forwards;
+  }
+  @keyframes heroZoom { to { transform: scale(1); } }
+
+  .hero__inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: var(--maxw);
+    margin-inline: auto;
+    padding: 0 var(--gutter) clamp(56px, 9vh, 110px);
+  }
+  .hero__eyebrow { color: rgba(255,255,255,0.82); margin-bottom: 22px; }
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(44px, 8.5vw, 116px);
+    line-height: 0.98;
+    letter-spacing: -0.01em;
+    margin: 0 0 36px;
+    max-width: 14ch;
+    text-shadow: 0 2px 40px rgba(0,0,0,0.25);
+  }
+  .hero h1 em { font-style: italic; font-weight: 400; }
+
+  /* scroll cue */
+  .hero__cue {
+    position: absolute;
+    right: var(--gutter);
+    bottom: clamp(56px, 9vh, 110px);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+  }
+  .hero__cue span {
+    width: 38px; height: 1px; background: rgba(255,255,255,0.6);
+    transform-origin: left; animation: cueLine 2.4s var(--ease) infinite;
+  }
+  @keyframes cueLine { 0%,100% { transform: scaleX(0.4); opacity: .4 } 50% { transform: scaleX(1); opacity: 1 } }
+  @media (max-width: 720px) { .hero__cue { display: none; } }
+
+  /* ===========================================================
+     SECTION 2 — BRAND STORY
+     =========================================================== */
+  .story {
+    background: var(--white);
+    padding: clamp(96px, 17vh, 200px) 0;
+  }
+  .story__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(28px, 5vw, 72px);
+    max-width: 980px;
+    margin-inline: auto;
+    text-align: center;
+  }
+  .story h2 {
+    font-size: clamp(32px, 5.6vw, 68px);
+    margin: 14px 0 0;
+    color: var(--black);
+  }
+  .story p {
+    font-size: clamp(16px, 1.5vw, 19px);
+    line-height: 1.85;
+    color: var(--gray-700);
+    font-weight: 300;
+    max-width: 56ch;
+    margin: 0 auto;
+  }
+  .story .divider {
+    width: 1px; height: 64px; background: var(--gray-300); margin: 6px auto 0;
+  }
+
+  /* ===========================================================
+     SECTION 3 — PRODUCT SHOWCASE
+     =========================================================== */
+  .showcase {
+    background: var(--paper);
+    padding: clamp(80px, 13vh, 150px) 0 clamp(96px, 15vh, 170px);
+  }
+  .showcase__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: clamp(44px, 7vh, 84px);
+    flex-wrap: wrap;
+  }
+  .showcase__head h2 {
+    font-size: clamp(30px, 4.6vw, 56px);
+    margin: 12px 0 0;
+    color: var(--black);
+  }
+  .showcase__count {
+    font-family: var(--sans);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    color: var(--gray-500);
+    text-transform: uppercase;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(20px, 2.6vw, 40px);
+  }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; max-width: 460px; margin-inline: auto; } }
+
+  .card { position: relative; }
+  .card__media {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--gray-150);
+    margin-bottom: 24px;
+  }
+  .card__media img,
+  .card__media .ph {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform 0.9s var(--ease);
+  }
+  .card:hover .card__media img,
+  .card:hover .card__media .ph { transform: scale(1.05); }
+
+  /* placeholder swatch when no image URL is set */
+  .ph {
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-size: 11px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gray-500);
+  }
+  .ph--1 { background: linear-gradient(150deg, #8a6f5e, #c4a08a); }
+  .ph--2 { background: linear-gradient(150deg, #c46a4a, #e9b24c); }
+  .ph--3 { background: linear-gradient(150deg, #6f93a8, #b8d4dc); }
+
+  .card__index {
+    position: absolute; top: 16px; left: 16px;
+    z-index: 2;
+    font-family: var(--sans); font-size: 12px; font-weight: 500;
+    letter-spacing: 0.12em; color: #fff;
+    mix-blend-mode: difference;
+  }
+  .card__title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    color: var(--black);
+    line-height: 1.5;
+    margin: 0 0 4px;
+  }
+  .card__coords {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--gray-500);
+    margin: 0 0 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  .card__scent {
+    font-family: var(--serif);
+    font-size: clamp(19px, 2vw, 23px);
+    font-weight: 500;
+    color: var(--ink);
+    margin: 0 0 8px;
+    line-height: 1.2;
+  }
+  .card__desc {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--gray-700);
+    font-weight: 300;
+    margin: 0;
+    max-width: 36ch;
+  }
+
+  /* ===========================================================
+     SECTION 4 — THE COLLECTIVE (set offer)
+     =========================================================== */
+  .collective {
+    background: var(--black);
+    color: var(--paper);
+    padding: clamp(0px, 0, 0);
+  }
+  .collective__grid {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    align-items: stretch;
+    min-height: 86vh;
+  }
+  @media (max-width: 900px) { .collective__grid { grid-template-columns: 1fr; } }
+
+  .collective__media {
+    position: relative;
+    background-color: #1d1d1b;
+    /* Replace url() with: [3종세트_패키지_이미지_URL] */
+    background-image: url('[3종세트_패키지_이미지_URL]');
+    background-size: cover;
+    background-position: center;
+    min-height: 50vh;
+  }
+  .collective__media::after {
+    content: '3 PCS · POCKET SET';
+    position: absolute; bottom: 24px; left: 24px;
+    font-size: 11px; letter-spacing: 0.24em; color: rgba(255,255,255,0.7);
+  }
+
+  .collective__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: clamp(56px, 9vw, 110px) clamp(32px, 6vw, 88px);
+  }
+  .collective__body .eyebrow { color: var(--gray-300); }
+  .collective__body h2 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.04;
+    margin: 18px 0 28px;
+  }
+  .collective__body h2 em { font-style: italic; font-weight: 400; }
+  .collective__lead {
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--gray-300);
+    max-width: 42ch;
+    margin: 0 0 40px;
+  }
+  .collective__price {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(255,255,255,0.16);
+    margin-bottom: 36px;
+  }
+  .collective__price .amount {
+    font-family: var(--sans);
+    font-size: clamp(30px, 4vw, 42px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    font-variant-numeric: tabular-nums;
+  }
+  .collective__price .unit { font-size: 15px; color: var(--gray-300); letter-spacing: 0.1em; }
+  .collective__price .note { margin-left: auto; font-size: 12px; color: var(--gray-500); letter-spacing: 0.08em; }
+  .collective .btn--light { align-self: flex-start; }
+
+  /* ===========================================================
+     SECTION 5 — FOOTER
+     =========================================================== */
+  .footer {
+    background: var(--paper);
+    padding: clamp(72px, 11vh, 130px) 0 40px;
+  }
+  .footer__top {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: clamp(32px, 5vw, 64px);
+    padding-bottom: clamp(48px, 8vh, 88px);
+    border-bottom: 1px solid var(--gray-150);
+  }
+  @media (max-width: 760px) { .footer__top { grid-template-columns: 1fr; gap: 40px; } }
+
+  .footer__brand {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.4vw, 40px);
+    color: var(--black);
+    line-height: 1.1;
+    margin: 0 0 14px;
+  }
+  .footer__brand-sub { font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gray-500); }
+
+  .footer__col h4 {
+    font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
+    color: var(--gray-500); font-weight: 500; margin: 0 0 18px;
+  }
+  .footer__col ul { list-style: none; margin: 0; padding: 0; }
+  .footer__col li { margin-bottom: 11px; }
+  .footer__col a {
+    font-size: 14.5px; color: var(--gray-700); font-weight: 300;
+    transition: color 0.3s;
+  }
+  .footer__col a:hover { color: var(--black); }
+
+  .footer__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-top: 32px;
+  }
+  .footer__trust { font-size: 12.5px; color: var(--gray-500); letter-spacing: 0.04em; }
+  .footer__pay { display: flex; align-items: center; gap: 12px; }
+  .footer__pay .card-icon {
+    height: 26px; width: 40px;
+    border: 1px solid var(--gray-300);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.04em;
+    color: var(--gray-700); background: var(--white);
+  }
+  .footer__copy {
+    margin-top: 36px;
+    font-size: 11.5px;
+    letter-spacing: 0.06em;
+    color: var(--gray-300);
+  }
+
+  /* ===========================================================
+     Scroll reveal
+     =========================================================== */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 1s var(--ease), transform 1s var(--ease); }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .hero__bg { animation: none; transform: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <a href="#top" class="nav__brand">Seoul Air Collective</a>
+    <div class="nav__links">
+      <a href="#story">Concept</a>
+      <a href="#showcase">Collection</a>
+      <a href="#set">The Set</a>
+    </div>
+  </nav>
+
+  <!-- SECTION 1 — HERO -->
+  <header class="hero" id="top">
+    <div class="hero__bg" role="img" aria-label="Nostalgic film photograph of a Seoul neighborhood"></div>
+    <div class="hero__inner">
+      <p class="eyebrow hero__eyebrow">Pocket Dress Perfume · Seoul</p>
+      <h1 class="serif">A piece of Seoul<br /><em>in your pocket.</em></h1>
+      <a href="#set" class="btn btn--light">Shop Now <span class="arrow">→</span></a>
+    </div>
+    <div class="hero__cue"><span></span> Scroll</div>
+  </header>
+
+  <!-- SECTION 2 — BRAND STORY -->
+  <section class="story" id="story">
+    <div class="wrap">
+      <div class="story__grid reveal">
+        <p class="eyebrow">The Concept</p>
+        <h2 class="serif">Bottled Memories<br />of Seoul</h2>
+        <p>
+          Forget ordinary souvenirs. SEOUL AIR COLLECTIVE bottles the authentic mood,
+          energy, and nostalgia of the most loved local neighborhoods in Seoul.
+          Carry the scent of your Seoul journey with you.
+        </p>
+        <div class="divider"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3 — PRODUCT SHOWCASE -->
+  <section class="showcase" id="showcase">
+    <div class="wrap">
+      <div class="showcase__head reveal">
+        <div>
+          <p class="eyebrow">The Details</p>
+          <h2 class="serif">Three Streets,<br />Three Scents</h2>
+        </div>
+        <p class="showcase__count">01 — 03</p>
+      </div>
+
+      <div class="cards">
+
+        <!-- Card 1 -->
+        <article class="card reveal">
+          <div class="card__media">
+            <span class="card__index">01</span>
+            <!-- Replace .ph with: <img src="[성수역_카드_이미지_URL]" alt="Seongsu Station card" /> -->
+            <div class="ph ph--1">[성수역_카드_이미지_URL]</div>
+          </div>
+          <h3 class="card__title">SEONGSU STN. EXIT 2</h3>
+          <p class="card__coords">Line 2 / 37.5445° N, 127.0559° E</p>
+          <p class="card__scent serif">Metallic Woody &amp; Espresso</p>
+          <p class="card__desc">Industrial red brick streets and the scent of fresh coffee.</p>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="card reveal">
+          <div class="card__media">
+            <span class="card__index">02</span>
+            <!-- Replace .ph with: <img src="[남대문_카드_이미지_URL]" alt="Namdaemun Market card" /> -->
+            <div class="ph ph--2">[남대문_카드_이미지_URL]</div>
+          </div>
+          <h3 class="card__title">NAMDAEMUN MARKET</h3>
+          <p class="card__coords">Crosswalk / 37.5601° N, 126.9768° E</p>
+          <p class="card__scent serif">Spicy Citrus &amp; Grapefruit</p>
+          <p class="card__desc">Vibrant crosswalk connecting Seoul's rich history and bustling market energy.</p>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="card reveal">
+          <div class="card__media">
+            <span class="card__index">03</span>
+            <!-- Replace .ph with: <img src="[잠실_카드_이미지_URL]" alt="Jamsil Hangang Park card" /> -->
+            <div class="ph ph--3">[잠실_카드_이미지_URL]</div>
+          </div>
+          <h3 class="card__title">JAMSIL HANGANG PARK</h3>
+          <p class="card__coords">Picnic Mat / 18:00 / 37.5181° N, 127.0818° E</p>
+          <p class="card__scent serif">Fresh Aqua &amp; Clean Musk</p>
+          <p class="card__desc">Chilling on a picnic mat, watching the sunset under the Lotte Tower.</p>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4 — THE COLLECTIVE -->
+  <section class="collective" id="set">
+    <div class="collective__grid">
+      <div class="collective__media" role="img" aria-label="The three-card pocket perfume set in minimalist packaging"></div>
+      <div class="collective__body reveal">
+        <p class="eyebrow">The Set</p>
+        <h2 class="serif">Three cities,<br />one <em>collective.</em></h2>
+        <p class="collective__lead">
+          The full trilogy in a single minimalist case. Slip the whole of Seoul into
+          your bag — a card for every mood, a scent for every memory.
+        </p>
+        <div class="collective__price">
+          <span class="amount">15,000</span>
+          <span class="unit">KRW</span>
+          <span class="note">3 PCS SET</span>
+        </div>
+        <a href="#" class="btn btn--light">Add to Bag <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5 — FOOTER -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__top">
+        <div>
+          <p class="footer__brand serif">Seoul Air<br />Collective</p>
+          <p class="footer__brand-sub">A piece of Seoul in your pocket</p>
+        </div>
+
+        <div class="footer__col">
+          <h4>Contact</h4>
+          <ul>
+            <li><a href="mailto:hello@seoulair.co">hello@seoulair.co</a></li>
+            <li><a href="#">Stockists</a></li>
+            <li><a href="#">Shipping &amp; Returns</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>Follow</h4>
+          <ul>
+            <li><a href="#" target="_blank" rel="noopener">Instagram</a></li>
+            <li><a href="#" target="_blank" rel="noopener">TikTok</a></li>
+            <li><a href="#" target="_blank" rel="noopener">Pinterest</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <p class="footer__trust">Worldwide Shipping Available · Payment via Global Cards Enabled.</p>
+        <div class="footer__pay" aria-label="Accepted payment methods">
+          <span class="card-icon">VISA</span>
+          <span class="card-icon">MC</span>
+          <span class="card-icon">AMEX</span>
+        </div>
+      </div>
+
+      <p class="footer__copy">© 2026 Seoul Air Collective. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Lightweight scroll-reveal — no dependencies
+    (function () {
+      var els = document.querySelectorAll('.reveal');
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function (el) { el.classList.add('in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in');
+            io.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function (el) { io.observe(el); });
+    })();
+  </script>
+
+</body>
+</html>
